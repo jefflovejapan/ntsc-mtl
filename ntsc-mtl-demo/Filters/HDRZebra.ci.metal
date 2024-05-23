@@ -10,5 +10,14 @@ using namespace metal;
 
 extern "C" float4 Blue (coreimage::sample_t s, float time, coreimage::destination dest)
 {
-    return float4(0.0, 0.0, 1.0, 1.0);
+    // Define the blue color
+    float4 blueColor = float4(0.0, 0.0, 1.0, 1.0);
+
+    // Define the blending factor (0.5 for a 50/50 blend)
+    float blendFactor = 0.5;
+
+    // Blend the blue color with the input pixel color
+    float4 blendedColor = mix(s, blueColor, blendFactor);
+
+    return blendedColor;
 }
