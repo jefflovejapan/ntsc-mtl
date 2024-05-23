@@ -13,8 +13,12 @@ struct ContentView: View {
     var body: some View {
         VStack {
             CameraView(filter: NTSCFilter(), intensity: $intensity)
-            Slider.init(value: $intensity, in: 0...1)
+            HStack {
+                Text("Intensity")
+                Slider.init(value: $intensity, in: 0...1)
+            }
         }
+        .padding()
     }
 }
 
