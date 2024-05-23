@@ -9,20 +9,25 @@ import SwiftUI
 import UIKit
 
 struct ContentView: View {
-    @State private var uiImage: UIImage
+    private let uiImage: UIImage
     init() {
         let url = Bundle.main.url(forResource: "michael", withExtension: "jpeg")!
         let ciImage = CIImage(contentsOf: url)
-        let filter = HDRZebraFilter()
+        let filter = NTSCFilter()
         filter.inputImage = ciImage
         let outputImage = filter.outputImage!
-        _uiImage = State.init(initialValue: UIImage(ciImage: outputImage))
+        let ciContext = CIContext()
+        let cgImage = ciContext.createCGImage(outputImage, from: outputImage.extent)!
+        let uiImage = UIImage(cgImage: cgImage)
+        self.uiImage = uiImage
     }
     
     var body: some View {
         VStack {
             Image(uiImage: uiImage)
                 .resizable()
+                .frame(width: 100, height: 100)
+                .border(Color.red)
                 
             Text("It's me, Michael!")
         }

@@ -8,14 +8,14 @@
 import CoreImage
 import Foundation
 
-class HDRZebraFilter: CIFilter {
+class NTSCFilter: CIFilter {
     var inputImage: CIImage?
     var inputTime: Float = 0.0
 
     static var kernel: CIColorKernel = { () -> CIColorKernel in
         let url = Bundle.main.url(forResource: "default", withExtension: "metallib")!
         let data = try! Data(contentsOf: url)
-        return try! CIColorKernel(functionName: "HDRZebra", fromMetalLibraryData: data)
+        return try! CIColorKernel(functionName: "Blue", fromMetalLibraryData: data)
     }()
 
     override var outputImage: CIImage? {
@@ -23,6 +23,6 @@ class HDRZebraFilter: CIFilter {
             return nil
         }
 
-        return HDRZebraFilter.kernel.apply(extent: input.extent, arguments: [input, inputTime])
+        return NTSCFilter.kernel.apply(extent: input.extent, arguments: [input, inputTime])
     }
 }
