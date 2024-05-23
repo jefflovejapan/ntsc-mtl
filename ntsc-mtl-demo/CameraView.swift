@@ -13,10 +13,10 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     private let captureSession = AVCaptureSession()
     private let videoOutput = AVCaptureVideoDataOutput()
     private let ciContext = CIContext()
-    private var filter: CIFilter
+    private var filter: NTSCFilter
     private let previewLayer = AVCaptureVideoPreviewLayer()
     
-    init(filter: CIFilter) {
+    init(filter: NTSCFilter) {
         self.filter = filter
         super.init(frame: .zero)
         setupCamera()
@@ -35,17 +35,7 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         
         videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "cameraQueue"))
         captureSession.addOutput(videoOutput)
-        
-        previewLayer.session = captureSession
-        previewLayer.videoGravity = .resizeAspectFill
-        layer.addSublayer(previewLayer)
-        
         captureSession.startRunning()
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        previewLayer.frame = bounds
     }
     
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
@@ -53,11 +43,11 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         let ciImage = CIImage(cvImageBuffer: pixelBuffer)
         
         // Apply CIFilter
-        filter.setValue(ciImage, forKey: kCIInputImageKey)
+        filter.inputImage = ciImage
         guard let filteredImage = filter.outputImage else { return }
         
         // Render the filtered image to the preview layer
-        let cgImage = ciContext.createCGImage(filteredImage, from: filteredImage.extent)
+        guard let cgImage = ciContext.createCGImage(filteredImage, from: filteredImage.extent) else { return }
         DispatchQueue.main.async {
             self.layer.contents = cgImage
         }
@@ -65,9 +55,9 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
 }
 
 struct CameraView: UIViewRepresentable {
-    @State var filter: CIFilter
+    @State var filter: NTSCFilter
     
-    init(filter: CIFilter) {
+    init(filter: NTSCFilter) {
         _filter = State(initialValue: filter)
     }
     
