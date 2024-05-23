@@ -10,6 +10,7 @@ import Foundation
 
 class NTSCFilter: CIFilter {
     var inputImage: CIImage?
+    var intensity: CGFloat = 0
     var inputTime: Float = 0.0
 
     static var kernel: CIColorKernel = { () -> CIColorKernel in
@@ -23,6 +24,6 @@ class NTSCFilter: CIFilter {
             return nil
         }
 
-        return NTSCFilter.kernel.apply(extent: input.extent, arguments: [input, inputTime])
+        return NTSCFilter.kernel.apply(extent: input.extent, arguments: [input, inputTime, intensity])
     }
 }

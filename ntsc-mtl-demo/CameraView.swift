@@ -56,14 +56,18 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
 
 struct CameraView: UIViewRepresentable {
     @State var filter: NTSCFilter
+    @Binding var intensity: CGFloat
     
-    init(filter: NTSCFilter) {
+    init(filter: NTSCFilter, intensity: Binding<CGFloat>) {
         _filter = State(initialValue: filter)
+        _intensity = intensity
     }
     
     func makeUIView(context: Context) -> CameraUIView {
         return CameraUIView(filter: filter)
     }
     
-    func updateUIView(_ uiView: CameraUIView, context: Context) {}
+    func updateUIView(_ uiView: CameraUIView, context: Context) {
+        filter.intensity = intensity
+    }
 }

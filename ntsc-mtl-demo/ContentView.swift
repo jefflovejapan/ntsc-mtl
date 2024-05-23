@@ -9,14 +9,11 @@ import SwiftUI
 import UIKit
 
 struct ContentView: View {
+    @State private var intensity: CGFloat = 0
     var body: some View {
-        ZStack {
-            Color.blue
-            GeometryReader { proxy in
-                CameraView(filter: NTSCFilter())
-                    .frame(width: proxy.size.width, height: proxy.size.height)
-            }
-            .border(Color.red)
+        VStack {
+            CameraView(filter: NTSCFilter(), intensity: $intensity)
+            Slider.init(value: $intensity, in: 0...1)
         }
     }
 }
