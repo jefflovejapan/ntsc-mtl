@@ -26,7 +26,7 @@ struct ContentView: View {
         VStack {
             Image(uiImage: uiImage)
                 .resizable()
-                .frame(width: 100, height: 100)
+                .aspectRatio(contentMode: .fit)
                 .border(Color.red)
                 
             Text("It's me, Michael!")
