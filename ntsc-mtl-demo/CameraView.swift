@@ -41,9 +41,11 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
         let ciImage = CIImage(cvImageBuffer: pixelBuffer)
+        let orientedImage = ciImage.oriented(forExifOrientation: Int32(CGImagePropertyOrientation.right.rawValue))
+
         
         // Apply CIFilter
-        filter.inputImage = ciImage
+        filter.inputImage = orientedImage
         guard let filteredImage = filter.outputImage else { return }
         
         // Render the filtered image to the preview layer
