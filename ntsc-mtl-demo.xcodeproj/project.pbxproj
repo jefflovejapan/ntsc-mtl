@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -14,26 +14,10 @@
 		1F6BFDFC2BFF79A000883169 /* ntsc_mtl_demoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDFB2BFF79A000883169 /* ntsc_mtl_demoTests.swift */; };
 		1F6BFE062BFF79A000883169 /* ntsc_mtl_demoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE052BFF79A000883169 /* ntsc_mtl_demoUITests.swift */; };
 		1F6BFE082BFF79A000883169 /* ntsc_mtl_demoUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE072BFF79A000883169 /* ntsc_mtl_demoUITestsLaunchTests.swift */; };
-		1F6BFE192BFF7E9000883169 /* NTSCFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE182BFF7E9000883169 /* NTSCFilter.swift */; };
-		1F6BFE1D2BFF7ED400883169 /* ntsc-mtl in Frameworks */ = {isa = PBXBuildFile; productRef = 1F6BFE1C2BFF7ED400883169 /* ntsc-mtl */; };
+		1F6BFE202BFF9EC500883169 /* michael.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 1F6BFE1F2BFF9EC500883169 /* michael.jpeg */; };
+		1F6BFE252BFFADA200883169 /* HDRZebra.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE242BFFADA200883169 /* HDRZebra.ci.metal */; };
+		1F6BFE272BFFADB700883169 /* HDRZebraFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE262BFFADB700883169 /* HDRZebraFilter.swift */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXBuildRule section */
-		1F6BFE172BFF7BED00883169 /* PBXBuildRule */ = {
-			isa = PBXBuildRule;
-			compilerSpec = com.apple.compilers.proxy.script;
-			filePatterns = "*.ci.metal";
-			fileType = pattern.proxy;
-			inputFiles = (
-			);
-			isEditable = 1;
-			outputFiles = (
-				"${DERIVED_FILE_DIR}/$(INPUT_FILE_BASE).air",
-			);
-			runOncePerArchitecture = 0;
-			script = "xcrun metal -c -I $MTL_HEADER_SEARCH_PATHS -fcikernel \"${INPUT_FILE_PATH}\" -o \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-		};
-/* End PBXBuildRule section */
 
 /* Begin PBXContainerItemProxy section */
 		1F6BFDF82BFF79A000883169 /* PBXContainerItemProxy */ = {
@@ -63,7 +47,9 @@
 		1F6BFE012BFF79A000883169 /* ntsc-mtl-demoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ntsc-mtl-demoUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F6BFE052BFF79A000883169 /* ntsc_mtl_demoUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ntsc_mtl_demoUITests.swift; sourceTree = "<group>"; };
 		1F6BFE072BFF79A000883169 /* ntsc_mtl_demoUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ntsc_mtl_demoUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		1F6BFE182BFF7E9000883169 /* NTSCFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSCFilter.swift; sourceTree = "<group>"; };
+		1F6BFE1F2BFF9EC500883169 /* michael.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = michael.jpeg; sourceTree = "<group>"; };
+		1F6BFE242BFFADA200883169 /* HDRZebra.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = HDRZebra.ci.metal; sourceTree = "<group>"; };
+		1F6BFE262BFFADB700883169 /* HDRZebraFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HDRZebraFilter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,7 +57,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1F6BFE1D2BFF7ED400883169 /* ntsc-mtl in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -116,6 +101,7 @@
 		1F6BFDE92BFF799F00883169 /* ntsc-mtl-demo */ = {
 			isa = PBXGroup;
 			children = (
+				1F6BFE212BFF9EC900883169 /* Resources */,
 				1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */,
 				1F6BFDEC2BFF799F00883169 /* ContentView.swift */,
 				1F6BFE1A2BFF7E9600883169 /* Filters */,
@@ -153,7 +139,8 @@
 		1F6BFE1A2BFF7E9600883169 /* Filters */ = {
 			isa = PBXGroup;
 			children = (
-				1F6BFE182BFF7E9000883169 /* NTSCFilter.swift */,
+				1F6BFE242BFFADA200883169 /* HDRZebra.ci.metal */,
+				1F6BFE262BFFADB700883169 /* HDRZebraFilter.swift */,
 			);
 			path = Filters;
 			sourceTree = "<group>";
@@ -163,6 +150,14 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		1F6BFE212BFF9EC900883169 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				1F6BFE1F2BFF9EC500883169 /* michael.jpeg */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -177,13 +172,11 @@
 				1F6BFDE52BFF799F00883169 /* Resources */,
 			);
 			buildRules = (
-				1F6BFE172BFF7BED00883169 /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
 			name = "ntsc-mtl-demo";
 			packageProductDependencies = (
-				1F6BFE1C2BFF7ED400883169 /* ntsc-mtl */,
 			);
 			productName = "ntsc-mtl-demo";
 			productReference = 1F6BFDE72BFF799F00883169 /* ntsc-mtl-demo.app */;
@@ -258,7 +251,6 @@
 			);
 			mainGroup = 1F6BFDDE2BFF799F00883169;
 			packageReferences = (
-				1F6BFE142BFF79BB00883169 /* XCLocalSwiftPackageReference "../ntsc-mtl" */,
 			);
 			productRefGroup = 1F6BFDE82BFF799F00883169 /* Products */;
 			projectDirPath = "";
@@ -278,6 +270,7 @@
 			files = (
 				1F6BFDF22BFF79A000883169 /* Preview Assets.xcassets in Resources */,
 				1F6BFDEF2BFF79A000883169 /* Assets.xcassets in Resources */,
+				1F6BFE202BFF9EC500883169 /* michael.jpeg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -303,8 +296,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				1F6BFDED2BFF799F00883169 /* ContentView.swift in Sources */,
-				1F6BFE192BFF7E9000883169 /* NTSCFilter.swift in Sources */,
 				1F6BFDEB2BFF799F00883169 /* ntsc_mtl_demoApp.swift in Sources */,
+				1F6BFE252BFFADA200883169 /* HDRZebra.ci.metal in Sources */,
+				1F6BFE272BFFADB700883169 /* HDRZebraFilter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -395,6 +389,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTLLINKER_FLAGS = "-fcikernel";
+				MTL_COMPILER_FLAGS = "-fcikernel";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -452,6 +448,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTLLINKER_FLAGS = "-fcikernel";
+				MTL_COMPILER_FLAGS = "-fcikernel";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -634,21 +632,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCLocalSwiftPackageReference section */
-		1F6BFE142BFF79BB00883169 /* XCLocalSwiftPackageReference "../ntsc-mtl" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = "../ntsc-mtl";
-		};
-/* End XCLocalSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		1F6BFE1C2BFF7ED400883169 /* ntsc-mtl */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 1F6BFE142BFF79BB00883169 /* XCLocalSwiftPackageReference "../ntsc-mtl" */;
-			productName = "ntsc-mtl";
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1F6BFDDF2BFF799F00883169 /* Project object */;
 }

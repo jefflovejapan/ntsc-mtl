@@ -6,14 +6,25 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct ContentView: View {
+    @State private var uiImage: UIImage
+    init() {
+        let url = Bundle.main.url(forResource: "michael", withExtension: "jpeg")!
+        let ciImage = CIImage(contentsOf: url)
+        let filter = HDRZebraFilter()
+        filter.inputImage = ciImage
+        let outputImage = filter.outputImage!
+        _uiImage = State.init(initialValue: UIImage(ciImage: outputImage))
+    }
+    
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            Image(uiImage: uiImage)
+                .resizable()
+                
+            Text("It's me, Michael!")
         }
         .padding()
     }
