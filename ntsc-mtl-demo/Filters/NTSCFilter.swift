@@ -15,7 +15,7 @@ class NTSCFilter: CIFilter {
     static var kernel: CIColorKernel = { () -> CIColorKernel in
         let url = Bundle.main.url(forResource: "default", withExtension: "metallib")!
         let data = try! Data(contentsOf: url)
-        return try! CIColorKernel(functionName: "Blue", fromMetalLibraryData: data)
+        return try! CIColorKernel(functionName: "NTSC", fromMetalLibraryData: data)
     }()
 
     override var outputImage: CIImage? {

@@ -15,8 +15,9 @@
 		1F6BFE062BFF79A000883169 /* ntsc_mtl_demoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE052BFF79A000883169 /* ntsc_mtl_demoUITests.swift */; };
 		1F6BFE082BFF79A000883169 /* ntsc_mtl_demoUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE072BFF79A000883169 /* ntsc_mtl_demoUITestsLaunchTests.swift */; };
 		1F6BFE202BFF9EC500883169 /* michael.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 1F6BFE1F2BFF9EC500883169 /* michael.jpeg */; };
-		1F6BFE252BFFADA200883169 /* HDRZebra.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE242BFFADA200883169 /* HDRZebra.ci.metal */; };
-		1F6BFE272BFFADB700883169 /* HDRZebraFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE262BFFADB700883169 /* HDRZebraFilter.swift */; };
+		1F6BFE252BFFADA200883169 /* NTSC.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE242BFFADA200883169 /* NTSC.ci.metal */; };
+		1F6BFE272BFFADB700883169 /* NTSCFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE262BFFADB700883169 /* NTSCFilter.swift */; };
+		1F6BFE2A2BFFBFC200883169 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE292BFFBFC200883169 /* CameraView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,8 +49,10 @@
 		1F6BFE052BFF79A000883169 /* ntsc_mtl_demoUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ntsc_mtl_demoUITests.swift; sourceTree = "<group>"; };
 		1F6BFE072BFF79A000883169 /* ntsc_mtl_demoUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ntsc_mtl_demoUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		1F6BFE1F2BFF9EC500883169 /* michael.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = michael.jpeg; sourceTree = "<group>"; };
-		1F6BFE242BFFADA200883169 /* HDRZebra.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = HDRZebra.ci.metal; sourceTree = "<group>"; };
-		1F6BFE262BFFADB700883169 /* HDRZebraFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HDRZebraFilter.swift; sourceTree = "<group>"; };
+		1F6BFE242BFFADA200883169 /* NTSC.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = NTSC.ci.metal; sourceTree = "<group>"; };
+		1F6BFE262BFFADB700883169 /* NTSCFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSCFilter.swift; sourceTree = "<group>"; };
+		1F6BFE282BFFBCF000883169 /* Scratchpad.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Scratchpad.md; sourceTree = "<group>"; };
+		1F6BFE292BFFBFC200883169 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +83,7 @@
 		1F6BFDDE2BFF799F00883169 = {
 			isa = PBXGroup;
 			children = (
+				1F6BFE282BFFBCF000883169 /* Scratchpad.md */,
 				1F6BFDE92BFF799F00883169 /* ntsc-mtl-demo */,
 				1F6BFDFA2BFF79A000883169 /* ntsc-mtl-demoTests */,
 				1F6BFE042BFF79A000883169 /* ntsc-mtl-demoUITests */,
@@ -107,6 +111,7 @@
 				1F6BFE1A2BFF7E9600883169 /* Filters */,
 				1F6BFDEE2BFF79A000883169 /* Assets.xcassets */,
 				1F6BFDF02BFF79A000883169 /* Preview Content */,
+				1F6BFE292BFFBFC200883169 /* CameraView.swift */,
 			);
 			path = "ntsc-mtl-demo";
 			sourceTree = "<group>";
@@ -139,8 +144,8 @@
 		1F6BFE1A2BFF7E9600883169 /* Filters */ = {
 			isa = PBXGroup;
 			children = (
-				1F6BFE242BFFADA200883169 /* HDRZebra.ci.metal */,
-				1F6BFE262BFFADB700883169 /* HDRZebraFilter.swift */,
+				1F6BFE242BFFADA200883169 /* NTSC.ci.metal */,
+				1F6BFE262BFFADB700883169 /* NTSCFilter.swift */,
 			);
 			path = Filters;
 			sourceTree = "<group>";
@@ -297,8 +302,9 @@
 			files = (
 				1F6BFDED2BFF799F00883169 /* ContentView.swift in Sources */,
 				1F6BFDEB2BFF799F00883169 /* ntsc_mtl_demoApp.swift in Sources */,
-				1F6BFE252BFFADA200883169 /* HDRZebra.ci.metal in Sources */,
-				1F6BFE272BFFADB700883169 /* HDRZebraFilter.swift in Sources */,
+				1F6BFE252BFFADA200883169 /* NTSC.ci.metal in Sources */,
+				1F6BFE2A2BFFBFC200883169 /* CameraView.swift in Sources */,
+				1F6BFE272BFFADB700883169 /* NTSCFilter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -469,6 +475,7 @@
 				DEVELOPMENT_TEAM = LD8C254XK3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Who wants to party?";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -498,6 +505,7 @@
 				DEVELOPMENT_TEAM = LD8C254XK3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Who wants to party?";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

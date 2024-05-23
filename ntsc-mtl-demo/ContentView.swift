@@ -23,15 +23,14 @@ struct ContentView: View {
     }
     
     var body: some View {
-        VStack {
-            Image(uiImage: uiImage)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .border(Color.red)
-                
-            Text("It's me, Michael!")
+        ZStack {
+            Color.blue
+            GeometryReader { proxy in
+                CameraView(filter: NTSCFilter())
+                    .frame(width: proxy.size.width, height: proxy.size.height)
+            }
+            .border(Color.red)
         }
-        .padding()
     }
 }
 
