@@ -8,25 +8,31 @@
 #include <CoreImage/CoreImage.h>
 using namespace metal;
 
-extern "C" float4 LumaBox (coreimage::sample_t s, float time, float intensity, coreimage::destination dest)
+// Helper function to clamp coordinates within the image bounds given an origin
+static float2 clampCoord(float2 coord, float2 origin, float2 size) {
+    return float2(
+                  clamp(coord.x, origin.x, origin.x + size.x - 1.0),
+                  clamp(coord.y, origin.y, origin.y + size.y - 1.0));
+}
+
+extern "C" float4 LumaBox (coreimage::sampler s)
 {
-//    frame.y.par_chunks_mut(frame.dimensions.0).for_each(|y| {
-//                    let mut delay = VecDeque::<f32>::with_capacity(4);
-//                    delay.push_back(16.0 / 255.0);
-//                    delay.push_back(16.0 / 255.0);
-//                    delay.push_back(y[0]);
-//                    delay.push_back(y[1]);
-//                    let mut sum: f32 = delay.iter().sum();
-//                    let width = y.len();
-//
-//                    for index in 0..width {
-//                        // Box-blur the signal.
-//                        let c = y[usize::min(index + 2, width - 1)];
-//                        sum -= delay.pop_front().unwrap();
-//                        delay.push_back(c);
-//                        sum += c;
-//                        y[index] = sum * 0.25;
-//                    }
-//                });
-    return s;
+    float4 imageExtent = s.extent();
+    float2 imageOrigin = imageExtent.xy;
+    float2 imageSize = imageExtent.zw;
+    float2 current = s.coord();
+    
+    float2 left2 = clampCoord(current + float2(-2, 0), imageOrigin, imageSize);
+    float2 left1 = clampCoord(current + float2(-1, 0), imageOrigin, imageSize);
+    float2 right1 = clampCoord(current + float2(1, 0), imageOrigin, imageSize);
+    
+    // Sample the pixel values
+    float4 sampleLeft2 = s.sample(left2);
+    float4 sampleLeft1 = s.sample(left1);
+    float4 sampleCurrent = s.sample(current);
+    float4 sampleRight1 = s.sample(right1);
+    
+    float averageR = (sampleLeft2.r + sampleLeft1.r + sampleCurrent.r + sampleRight1.r) / 4.0;
+    
+    return float4(averageR, sampleCurrent.g, sampleCurrent.b, sampleCurrent.a);
 }

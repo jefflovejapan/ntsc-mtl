@@ -27,7 +27,7 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     }
     
     private func setupCamera() {
-        captureSession.sessionPreset = .hd4K3840x2160
+        captureSession.sessionPreset = .hd1920x1080
         guard let captureDevice = AVCaptureDevice.default(for: .video) else { return }
         
         guard let input = try? AVCaptureDeviceInput(device: captureDevice) else { return }
@@ -57,12 +57,13 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
 }
 
 struct CameraView: UIViewRepresentable {
+    typealias InputLuma = NTSCFilter.InputLuma
     @State var filter: NTSCFilter
-    @Binding var intensity: CGFloat
+    @Binding var lumaLowpass: InputLuma
     
-    init(filter: NTSCFilter, intensity: Binding<CGFloat>) {
+    init(filter: NTSCFilter, lumaLowpass: Binding<InputLuma>) {
         _filter = State(initialValue: filter)
-        _intensity = intensity
+        _lumaLowpass = lumaLowpass
     }
     
     func makeUIView(context: Context) -> CameraUIView {
@@ -70,6 +71,6 @@ struct CameraView: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: CameraUIView, context: Context) {
-        filter.intensity = intensity
+        filter.inputLuma = lumaLowpass
     }
 }
