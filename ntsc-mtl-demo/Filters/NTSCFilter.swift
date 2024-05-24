@@ -55,7 +55,7 @@ class NTSCFilter: CIFilter {
         let lumaed: CIImage?
         switch inputLuma {
         case .box:
-            lumaed = Self.kernels.lumaBox.apply(extent: input.extent, roiCallback: { _, rect in rect }, arguments: [convertedToYIQ])
+            lumaed = Self.kernels.lumaBox.apply(extent: convertedToYIQ.extent, roiCallback: { _, rect in rect }, arguments: [convertedToYIQ])
         case .notch:
             lumaed = nil
         case .none:
@@ -64,7 +64,7 @@ class NTSCFilter: CIFilter {
         guard let lumaed else {
             return nil
         }
-        guard let convertedToRGB = Self.kernels.toRGB.apply(extent: input.extent, arguments: [lumaed]) else {
+        guard let convertedToRGB = Self.kernels.toRGB.apply(extent: lumaed.extent, arguments: [lumaed]) else {
             return nil
         }
         return convertedToRGB
