@@ -11,24 +11,19 @@
 		1F6BFDED2BFF799F00883169 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEC2BFF799F00883169 /* ContentView.swift */; };
 		1F6BFDEF2BFF79A000883169 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEE2BFF79A000883169 /* Assets.xcassets */; };
 		1F6BFDF22BFF79A000883169 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F6BFDF12BFF79A000883169 /* Preview Assets.xcassets */; };
-		1F6BFDFC2BFF79A000883169 /* ntsc_mtl_demoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDFB2BFF79A000883169 /* ntsc_mtl_demoTests.swift */; };
-		1F6BFE062BFF79A000883169 /* ntsc_mtl_demoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE052BFF79A000883169 /* ntsc_mtl_demoUITests.swift */; };
-		1F6BFE082BFF79A000883169 /* ntsc_mtl_demoUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE072BFF79A000883169 /* ntsc_mtl_demoUITestsLaunchTests.swift */; };
 		1F6BFE202BFF9EC500883169 /* michael.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 1F6BFE1F2BFF9EC500883169 /* michael.jpeg */; };
-		1F6BFE252BFFADA200883169 /* NTSC.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE242BFFADA200883169 /* NTSC.ci.metal */; };
+		1F6BFE252BFFADA200883169 /* Blue.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE242BFFADA200883169 /* Blue.ci.metal */; };
 		1F6BFE272BFFADB700883169 /* NTSCFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE262BFFADB700883169 /* NTSCFilter.swift */; };
 		1F6BFE2A2BFFBFC200883169 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE292BFFBFC200883169 /* CameraView.swift */; };
+		1FAFEAEE2C00DBA7000D906A /* ToRGB.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FAFEAED2C00DBA7000D906A /* ToRGB.ci.metal */; };
+		1FEEA8512BFFD2E200101141 /* LumaBox.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FEEA8502BFFD2E200101141 /* LumaBox.ci.metal */; };
+		1FEEA8552BFFD4A700101141 /* LumaNotch.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FEEA8542BFFD4A700101141 /* LumaNotch.ci.metal */; };
+		1FEEA8572C00C47200101141 /* ToYIQ.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FEEA8562C00C47200101141 /* ToYIQ.ci.metal */; };
+		1FEEA8592C00C6B000101141 /* MetalConversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FEEA8582C00C6B000101141 /* MetalConversionTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
 		1F6BFDF82BFF79A000883169 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1F6BFDDF2BFF799F00883169 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1F6BFDE62BFF799F00883169;
-			remoteInfo = "ntsc-mtl-demo";
-		};
-		1F6BFE022BFF79A000883169 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1F6BFDDF2BFF799F00883169 /* Project object */;
 			proxyType = 1;
@@ -44,15 +39,18 @@
 		1F6BFDEE2BFF79A000883169 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1F6BFDF12BFF79A000883169 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		1F6BFDF72BFF79A000883169 /* ntsc-mtl-demoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ntsc-mtl-demoTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		1F6BFDFB2BFF79A000883169 /* ntsc_mtl_demoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ntsc_mtl_demoTests.swift; sourceTree = "<group>"; };
-		1F6BFE012BFF79A000883169 /* ntsc-mtl-demoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ntsc-mtl-demoUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F6BFE052BFF79A000883169 /* ntsc_mtl_demoUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ntsc_mtl_demoUITests.swift; sourceTree = "<group>"; };
 		1F6BFE072BFF79A000883169 /* ntsc_mtl_demoUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ntsc_mtl_demoUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		1F6BFE1F2BFF9EC500883169 /* michael.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = michael.jpeg; sourceTree = "<group>"; };
-		1F6BFE242BFFADA200883169 /* NTSC.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = NTSC.ci.metal; sourceTree = "<group>"; };
+		1F6BFE242BFFADA200883169 /* Blue.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Blue.ci.metal; sourceTree = "<group>"; };
 		1F6BFE262BFFADB700883169 /* NTSCFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSCFilter.swift; sourceTree = "<group>"; };
 		1F6BFE282BFFBCF000883169 /* Scratchpad.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Scratchpad.md; sourceTree = "<group>"; };
 		1F6BFE292BFFBFC200883169 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
+		1FAFEAED2C00DBA7000D906A /* ToRGB.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ToRGB.ci.metal; sourceTree = "<group>"; };
+		1FEEA8502BFFD2E200101141 /* LumaBox.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = LumaBox.ci.metal; sourceTree = "<group>"; };
+		1FEEA8542BFFD4A700101141 /* LumaNotch.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = LumaNotch.ci.metal; sourceTree = "<group>"; };
+		1FEEA8562C00C47200101141 /* ToYIQ.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ToYIQ.ci.metal; sourceTree = "<group>"; };
+		1FEEA8582C00C6B000101141 /* MetalConversionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalConversionTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,13 +62,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		1F6BFDF42BFF79A000883169 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		1F6BFDFE2BFF79A000883169 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -97,7 +88,6 @@
 			children = (
 				1F6BFDE72BFF799F00883169 /* ntsc-mtl-demo.app */,
 				1F6BFDF72BFF79A000883169 /* ntsc-mtl-demoTests.xctest */,
-				1F6BFE012BFF79A000883169 /* ntsc-mtl-demoUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -127,7 +117,7 @@
 		1F6BFDFA2BFF79A000883169 /* ntsc-mtl-demoTests */ = {
 			isa = PBXGroup;
 			children = (
-				1F6BFDFB2BFF79A000883169 /* ntsc_mtl_demoTests.swift */,
+				1FEEA8582C00C6B000101141 /* MetalConversionTests.swift */,
 			);
 			path = "ntsc-mtl-demoTests";
 			sourceTree = "<group>";
@@ -144,7 +134,11 @@
 		1F6BFE1A2BFF7E9600883169 /* Filters */ = {
 			isa = PBXGroup;
 			children = (
-				1F6BFE242BFFADA200883169 /* NTSC.ci.metal */,
+				1F6BFE242BFFADA200883169 /* Blue.ci.metal */,
+				1FEEA8562C00C47200101141 /* ToYIQ.ci.metal */,
+				1FAFEAED2C00DBA7000D906A /* ToRGB.ci.metal */,
+				1FEEA8502BFFD2E200101141 /* LumaBox.ci.metal */,
+				1FEEA8542BFFD4A700101141 /* LumaNotch.ci.metal */,
 				1F6BFE262BFFADB700883169 /* NTSCFilter.swift */,
 			);
 			path = Filters;
@@ -205,24 +199,6 @@
 			productReference = 1F6BFDF72BFF79A000883169 /* ntsc-mtl-demoTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		1F6BFE002BFF79A000883169 /* ntsc-mtl-demoUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 1F6BFE112BFF79A000883169 /* Build configuration list for PBXNativeTarget "ntsc-mtl-demoUITests" */;
-			buildPhases = (
-				1F6BFDFD2BFF79A000883169 /* Sources */,
-				1F6BFDFE2BFF79A000883169 /* Frameworks */,
-				1F6BFDFF2BFF79A000883169 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				1F6BFE032BFF79A000883169 /* PBXTargetDependency */,
-			);
-			name = "ntsc-mtl-demoUITests";
-			productName = "ntsc-mtl-demoUITests";
-			productReference = 1F6BFE012BFF79A000883169 /* ntsc-mtl-demoUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -237,10 +213,6 @@
 						CreatedOnToolsVersion = 15.3;
 					};
 					1F6BFDF62BFF79A000883169 = {
-						CreatedOnToolsVersion = 15.3;
-						TestTargetID = 1F6BFDE62BFF799F00883169;
-					};
-					1F6BFE002BFF79A000883169 = {
 						CreatedOnToolsVersion = 15.3;
 						TestTargetID = 1F6BFDE62BFF799F00883169;
 					};
@@ -263,7 +235,6 @@
 			targets = (
 				1F6BFDE62BFF799F00883169 /* ntsc-mtl-demo */,
 				1F6BFDF62BFF79A000883169 /* ntsc-mtl-demoTests */,
-				1F6BFE002BFF79A000883169 /* ntsc-mtl-demoUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -286,13 +257,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		1F6BFDFF2BFF79A000883169 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -301,10 +265,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				1F6BFDED2BFF799F00883169 /* ContentView.swift in Sources */,
+				1FEEA8512BFFD2E200101141 /* LumaBox.ci.metal in Sources */,
 				1F6BFDEB2BFF799F00883169 /* ntsc_mtl_demoApp.swift in Sources */,
-				1F6BFE252BFFADA200883169 /* NTSC.ci.metal in Sources */,
+				1FAFEAEE2C00DBA7000D906A /* ToRGB.ci.metal in Sources */,
+				1F6BFE252BFFADA200883169 /* Blue.ci.metal in Sources */,
 				1F6BFE2A2BFFBFC200883169 /* CameraView.swift in Sources */,
 				1F6BFE272BFFADB700883169 /* NTSCFilter.swift in Sources */,
+				1FEEA8552BFFD4A700101141 /* LumaNotch.ci.metal in Sources */,
+				1FEEA8572C00C47200101141 /* ToYIQ.ci.metal in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -312,16 +280,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1F6BFDFC2BFF79A000883169 /* ntsc_mtl_demoTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		1F6BFDFD2BFF79A000883169 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				1F6BFE062BFF79A000883169 /* ntsc_mtl_demoUITests.swift in Sources */,
-				1F6BFE082BFF79A000883169 /* ntsc_mtl_demoUITestsLaunchTests.swift in Sources */,
+				1FEEA8592C00C6B000101141 /* MetalConversionTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -332,11 +291,6 @@
 			isa = PBXTargetDependency;
 			target = 1F6BFDE62BFF799F00883169 /* ntsc-mtl-demo */;
 			targetProxy = 1F6BFDF82BFF79A000883169 /* PBXContainerItemProxy */;
-		};
-		1F6BFE032BFF79A000883169 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1F6BFDE62BFF799F00883169 /* ntsc-mtl-demo */;
-			targetProxy = 1F6BFE022BFF79A000883169 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -564,42 +518,6 @@
 			};
 			name = Release;
 		};
-		1F6BFE122BFF79A000883169 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = LD8C254XK3;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.polyergy.ntsc-mtl-demoUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = "ntsc-mtl-demo";
-			};
-			name = Debug;
-		};
-		1F6BFE132BFF79A000883169 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = LD8C254XK3;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.polyergy.ntsc-mtl-demoUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = "ntsc-mtl-demo";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -626,15 +544,6 @@
 			buildConfigurations = (
 				1F6BFE0F2BFF79A000883169 /* Debug */,
 				1F6BFE102BFF79A000883169 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		1F6BFE112BFF79A000883169 /* Build configuration list for PBXNativeTarget "ntsc-mtl-demoUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				1F6BFE122BFF79A000883169 /* Debug */,
-				1F6BFE132BFF79A000883169 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -11,3 +11,8 @@ Looking at the Rust code, the main function is `NtscEffect.apply_effect_to_yiq_f
 ...
 
 I think a good first goal is to apply the luma filter to the entire yiq field / frame
+
+### Questions for Valerie
+
+- What is `filter_signal_in_place` doing?
+- 
