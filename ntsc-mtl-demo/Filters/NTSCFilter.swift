@@ -16,7 +16,7 @@ class NTSCFilter: CIFilter {
         var toYIQ: CIColorKernel
         var blue: CIColorKernel
         var lumaBox: CIKernel
-//        var lumaNotch: CIColorKernel
+        var lumaNotch: CIKernel
         var toRGB: CIColorKernel
     }
     
@@ -27,7 +27,7 @@ class NTSCFilter: CIFilter {
             toYIQ: try! CIColorKernel(functionName: "ToYIQ", fromMetalLibraryData: data),
             blue: try! CIColorKernel(functionName: "Blue", fromMetalLibraryData: data),
             lumaBox: try! CIKernel(functionName: "LumaBox", fromMetalLibraryData: data),
-//            lumaNotch: try! CIColorKernel(functionName: "LumaNotch", fromMetalLibraryData: data),
+            lumaNotch: try! CIKernel(functionName: "LumaNotch", fromMetalLibraryData: data),
             toRGB: try! CIColorKernel(functionName: "ToRGB", fromMetalLibraryData: data)
         )
     }
@@ -45,7 +45,7 @@ class NTSCFilter: CIFilter {
         case .box:
             lumaed = Self.kernels.lumaBox.apply(extent: convertedToYIQ.extent, roiCallback: { _, rect in rect }, arguments: [convertedToYIQ])
         case .notch:
-            lumaed = nil
+            lumaed = Self.kernels.lumaNotch.apply(extent: convertedToYIQ.extent, roiCallback: { _, rect in rect }, arguments: [convertedToYIQ])
         case .none:
             lumaed = convertedToYIQ
         }
