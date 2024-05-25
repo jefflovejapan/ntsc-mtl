@@ -19,14 +19,12 @@ struct NTSCEffect {
     var videoScanlinePhaseShift: PhaseShift
     var videoScanlinePhaseShiftOffset: Int
     
-    // MARK: - Nested Settings
-    var headSwitching: HeadSwitchingSettings
-    var trackingNoise: TrackingNoiseSettings
-    var compositeNoise: FBMNoiseSettings
-    var ringing: RingingSettings
-    var lumaNoise: FBMNoiseSettings
-    var chromaNoise: FBMNoiseSettings
-    
+    var headSwitching: HeadSwitchingSettings?
+    var trackingNoise: TrackingNoiseSettings?
+    var compositeNoise: FBMNoiseSettings?
+    var ringing: RingingSettings?
+    var lumaNoise: FBMNoiseSettings?
+    var chromaNoise: FBMNoiseSettings?
     
     var snowIntensity: Float
     var snowAnisotropy: Float
@@ -35,7 +33,7 @@ struct NTSCEffect {
     var chromaDelay: (Float, Int)
     var vhsSettings: VHSSettings
     var chromaVertBlend: Bool
-    var chromaLowpassOut: Bool
+    var chromaLowpassOut: ChromaLowpass
     var bandwidthScale: Float
 }
 
