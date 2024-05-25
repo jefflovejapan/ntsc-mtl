@@ -10,7 +10,6 @@ using namespace metal;
 
 extern "C" float4 Fun (coreimage::sampler s, coreimage::destination dest)
 {
-    float2 imageOrigin = s.origin();
     float2 imageSize = s.size();
     float2 current = s.coord();
     

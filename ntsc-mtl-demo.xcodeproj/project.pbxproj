@@ -10,6 +10,7 @@
 		1F259EDC2C022F7500937D0A /* NTSCEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EDB2C022F7500937D0A /* NTSCEffect.swift */; };
 		1F259EDE2C02399C00937D0A /* NTSCEffect+Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EDD2C02399C00937D0A /* NTSCEffect+Defaults.swift */; };
 		1F259EE02C026A6700937D0A /* Fun.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EDF2C026A6700937D0A /* Fun.ci.metal */; };
+		1F259EE22C0273F600937D0A /* ComposeLuma.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EE12C0273F600937D0A /* ComposeLuma.ci.metal */; };
 		1F6BFDEB2BFF799F00883169 /* ntsc_mtl_demoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */; };
 		1F6BFDED2BFF799F00883169 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEC2BFF799F00883169 /* ContentView.swift */; };
 		1F6BFDEF2BFF79A000883169 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEE2BFF79A000883169 /* Assets.xcassets */; };
@@ -19,7 +20,6 @@
 		1F6BFE272BFFADB700883169 /* NTSCFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE262BFFADB700883169 /* NTSCFilter.swift */; };
 		1F6BFE2A2BFFBFC200883169 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE292BFFBFC200883169 /* CameraView.swift */; };
 		1FAFEAEE2C00DBA7000D906A /* ToRGB.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FAFEAED2C00DBA7000D906A /* ToRGB.ci.metal */; };
-		1FEEA8512BFFD2E200101141 /* LumaBox.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FEEA8502BFFD2E200101141 /* LumaBox.ci.metal */; };
 		1FEEA8552BFFD4A700101141 /* LumaNotch.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FEEA8542BFFD4A700101141 /* LumaNotch.ci.metal */; };
 		1FEEA8572C00C47200101141 /* ToYIQ.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FEEA8562C00C47200101141 /* ToYIQ.ci.metal */; };
 		1FEEA8592C00C6B000101141 /* MetalConversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FEEA8582C00C6B000101141 /* MetalConversionTests.swift */; };
@@ -40,6 +40,7 @@
 		1F259EDB2C022F7500937D0A /* NTSCEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSCEffect.swift; sourceTree = "<group>"; };
 		1F259EDD2C02399C00937D0A /* NTSCEffect+Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NTSCEffect+Defaults.swift"; sourceTree = "<group>"; };
 		1F259EDF2C026A6700937D0A /* Fun.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Fun.ci.metal; sourceTree = "<group>"; };
+		1F259EE12C0273F600937D0A /* ComposeLuma.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ComposeLuma.ci.metal; sourceTree = "<group>"; };
 		1F6BFDE72BFF799F00883169 /* ntsc-mtl-demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ntsc-mtl-demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ntsc_mtl_demoApp.swift; sourceTree = "<group>"; };
 		1F6BFDEC2BFF799F00883169 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -54,7 +55,6 @@
 		1F6BFE282BFFBCF000883169 /* Scratchpad.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Scratchpad.md; sourceTree = "<group>"; };
 		1F6BFE292BFFBFC200883169 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		1FAFEAED2C00DBA7000D906A /* ToRGB.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ToRGB.ci.metal; sourceTree = "<group>"; };
-		1FEEA8502BFFD2E200101141 /* LumaBox.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = LumaBox.ci.metal; sourceTree = "<group>"; };
 		1FEEA8542BFFD4A700101141 /* LumaNotch.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = LumaNotch.ci.metal; sourceTree = "<group>"; };
 		1FEEA8562C00C47200101141 /* ToYIQ.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ToYIQ.ci.metal; sourceTree = "<group>"; };
 		1FEEA8582C00C6B000101141 /* MetalConversionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalConversionTests.swift; sourceTree = "<group>"; };
@@ -146,8 +146,8 @@
 				1F259EDF2C026A6700937D0A /* Fun.ci.metal */,
 				1FEEA8562C00C47200101141 /* ToYIQ.ci.metal */,
 				1FAFEAED2C00DBA7000D906A /* ToRGB.ci.metal */,
-				1FEEA8502BFFD2E200101141 /* LumaBox.ci.metal */,
 				1FEEA8542BFFD4A700101141 /* LumaNotch.ci.metal */,
+				1F259EE12C0273F600937D0A /* ComposeLuma.ci.metal */,
 				1F6BFE262BFFADB700883169 /* NTSCFilter.swift */,
 				1F259EDB2C022F7500937D0A /* NTSCEffect.swift */,
 				1F259EDD2C02399C00937D0A /* NTSCEffect+Defaults.swift */,
@@ -276,10 +276,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				1F6BFDED2BFF799F00883169 /* ContentView.swift in Sources */,
-				1FEEA8512BFFD2E200101141 /* LumaBox.ci.metal in Sources */,
 				1F6BFDEB2BFF799F00883169 /* ntsc_mtl_demoApp.swift in Sources */,
 				1FAFEAEE2C00DBA7000D906A /* ToRGB.ci.metal in Sources */,
 				1F259EDC2C022F7500937D0A /* NTSCEffect.swift in Sources */,
+				1F259EE22C0273F600937D0A /* ComposeLuma.ci.metal in Sources */,
 				1F6BFE252BFFADA200883169 /* Blue.ci.metal in Sources */,
 				1F6BFE2A2BFFBFC200883169 /* CameraView.swift in Sources */,
 				1F6BFE272BFFADB700883169 /* NTSCFilter.swift in Sources */,

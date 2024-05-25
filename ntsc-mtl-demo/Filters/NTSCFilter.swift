@@ -7,6 +7,7 @@
 
 import CoreImage
 import Foundation
+import CoreImage.CIFilterBuiltins
 
 class NTSCFilter: CIFilter {
     var inputImage: CIImage?
@@ -15,7 +16,7 @@ class NTSCFilter: CIFilter {
     struct Kernels {
         var toYIQ: CIColorKernel
         var blue: CIColorKernel
-        var lumaBox: CIKernel
+        var composeLuma: CIColorKernel
         var lumaNotch: CIKernel
         var toRGB: CIColorKernel
         var fun: CIKernel
@@ -26,8 +27,8 @@ class NTSCFilter: CIFilter {
         let data = try! Data(contentsOf: url)
         return Kernels(
             toYIQ: try! CIColorKernel(functionName: "ToYIQ", fromMetalLibraryData: data),
-            blue: try! CIColorKernel(functionName: "Blue", fromMetalLibraryData: data),
-            lumaBox: try! CIKernel(functionName: "LumaBox", fromMetalLibraryData: data),
+            blue: try! CIColorKernel(functionName: "Blue", fromMetalLibraryData: data), 
+            composeLuma: try! CIColorKernel(functionName: "ComposeLuma", fromMetalLibraryData: data),
             lumaNotch: try! CIKernel(functionName: "LumaNotch", fromMetalLibraryData: data),
             toRGB: try! CIColorKernel(functionName: "ToRGB", fromMetalLibraryData: data),
             fun: try! CIKernel(functionName: "Fun", fromMetalLibraryData: data)
@@ -45,7 +46,14 @@ class NTSCFilter: CIFilter {
         let lumaed: CIImage?
         switch effect.inputLumaFilter {
         case .box:
-            lumaed = Self.kernels.lumaBox.apply(extent: convertedToYIQ.extent, roiCallback: { _, rect in rect }, arguments: [convertedToYIQ])
+            let boxBlur = CIFilter.boxBlur()
+            boxBlur.inputImage = input
+            boxBlur.radius = 20
+            guard let blurred = boxBlur.outputImage else {
+                return nil
+            }
+            
+            lumaed = Self.kernels.composeLuma.apply(extent: input.extent, arguments: [blurred, convertedToYIQ])
         case .notch:
             lumaed = Self.kernels.lumaNotch.apply(extent: convertedToYIQ.extent, roiCallback: { _, rect in rect }, arguments: [convertedToYIQ])
         case .none:
