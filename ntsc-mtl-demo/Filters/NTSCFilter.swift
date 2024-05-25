@@ -48,7 +48,7 @@ class NTSCFilter: CIFilter {
         case .box:
             let boxBlur = CIFilter.boxBlur()
             boxBlur.inputImage = input
-            boxBlur.radius = 20
+            boxBlur.radius = 4
             guard let blurred = boxBlur.outputImage else {
                 return nil
             }
