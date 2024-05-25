@@ -49,21 +49,26 @@ class NTSCFilter: CIFilter {
             return nil
         }
 
-//        guard let convertedToYIQ = Self.kernels.toYIQ.apply(extent: input.extent, arguments: [input]) else {
-//            return nil
-//        }
+        guard let convertedToYIQ = Self.kernels.toYIQ.apply(extent: input.extent, arguments: [input]) else {
+            return nil
+        }
         let lumaed: CIImage?
         switch inputLuma {
         case .box:
-            lumaed = Self.kernels.lumaBox.apply(extent: input.extent, roiCallback: { _, rect in rect }, arguments: [input])
+            lumaed = Self.kernels.lumaBox.apply(extent: convertedToYIQ.extent, roiCallback: { _, rect in rect }, arguments: [convertedToYIQ])
         case .notch:
             lumaed = nil
         case .none:
-            lumaed = input
+            lumaed = convertedToYIQ
         }
         guard let lumaed else {
             return nil
         }
-        return lumaed
+        
+        guard let convertedToRGB = Self.kernels.toRGB.apply(extent: lumaed.extent, arguments: [lumaed]) else {
+            return nil
+        }
+        
+        return convertedToRGB
     }
 }
