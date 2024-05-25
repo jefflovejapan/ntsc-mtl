@@ -14,8 +14,8 @@
             filePath = "ntsc-mtl-demo/Filters/NTSCFilter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "53"
-            endingLineNumber = "53"
+            startingLineNumber = "55"
+            endingLineNumber = "55"
             landmarkName = "outputImage"
             landmarkType = "24">
          </BreakpointContent>
@@ -30,8 +30,8 @@
             filePath = "ntsc-mtl-demo/Filters/NTSCFilter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "41"
-            endingLineNumber = "41"
+            startingLineNumber = "43"
+            endingLineNumber = "43"
             landmarkName = "outputImage"
             landmarkType = "24">
          </BreakpointContent>
@@ -46,8 +46,8 @@
             filePath = "ntsc-mtl-demo/Filters/NTSCFilter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "37"
-            endingLineNumber = "37"
+            startingLineNumber = "39"
+            endingLineNumber = "39"
             landmarkName = "outputImage"
             landmarkType = "24">
          </BreakpointContent>
@@ -62,40 +62,10 @@
             filePath = "ntsc-mtl-demo/Filters/NTSCFilter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "48"
-            endingLineNumber = "48"
+            startingLineNumber = "50"
+            endingLineNumber = "50"
             landmarkName = "outputImage"
             landmarkType = "24">
-            <Locations>
-               <Location
-                  uuid = "BFC5B192-565F-40B0-9529-35B109FC1C82 - 42d4f59d2b4f5505"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ntsc_mtl_demo.NTSCFilter.outputImage.getter : Swift.Optional&lt;__C.CIImage&gt;"
-                  moduleName = "ntsc-mtl-demo"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jeff/Developer/recurse/ntsc-mtl-demo/ntsc-mtl-demo/Filters/NTSCFilter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "48"
-                  endingLineNumber = "48">
-               </Location>
-               <Location
-                  uuid = "BFC5B192-565F-40B0-9529-35B109FC1C82 - cd61dce16e2ce1f4"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #2 (Swift.Int32, __C.CGRect) -&gt; __C.CGRect in ntsc_mtl_demo.NTSCFilter.outputImage.getter : Swift.Optional&lt;__C.CIImage&gt;"
-                  moduleName = "ntsc-mtl-demo"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jeff/Developer/recurse/ntsc-mtl-demo/ntsc-mtl-demo/Filters/NTSCFilter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "48"
-                  endingLineNumber = "48">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

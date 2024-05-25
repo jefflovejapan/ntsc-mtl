@@ -18,6 +18,7 @@ class NTSCFilter: CIFilter {
         var lumaBox: CIKernel
         var lumaNotch: CIKernel
         var toRGB: CIColorKernel
+        var fun: CIKernel
     }
     
     private static func newKernels() -> Kernels {
@@ -28,7 +29,8 @@ class NTSCFilter: CIFilter {
             blue: try! CIColorKernel(functionName: "Blue", fromMetalLibraryData: data),
             lumaBox: try! CIKernel(functionName: "LumaBox", fromMetalLibraryData: data),
             lumaNotch: try! CIKernel(functionName: "LumaNotch", fromMetalLibraryData: data),
-            toRGB: try! CIColorKernel(functionName: "ToRGB", fromMetalLibraryData: data)
+            toRGB: try! CIColorKernel(functionName: "ToRGB", fromMetalLibraryData: data),
+            fun: try! CIKernel(functionName: "Fun", fromMetalLibraryData: data)
         )
     }
 
