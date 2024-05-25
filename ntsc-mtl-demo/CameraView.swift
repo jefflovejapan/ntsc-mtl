@@ -15,9 +15,11 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     private let ciContext = CIContext()
     private var filter: NTSCFilter
     private let previewLayer = AVCaptureVideoPreviewLayer()
+    var isFilterEnabled: Bool
     
-    init(filter: NTSCFilter) {
+    init(filter: NTSCFilter, isFilterEnabled: Bool) {
         self.filter = filter
+        self.isFilterEnabled = isFilterEnabled
         super.init(frame: .zero)
         setupCamera()
     }
@@ -41,15 +43,21 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
         let ciImage = CIImage(cvImageBuffer: pixelBuffer)
-        let orientedImage = ciImage.oriented(forExifOrientation: Int32(CGImagePropertyOrientation.right.rawValue))
-
         
         // Apply CIFilter
-        filter.inputImage = orientedImage
-        guard let filteredImage = filter.outputImage else { return }
+        let outputImage: CIImage?
+        if isFilterEnabled {
+            filter.inputImage = ciImage
+            outputImage = filter.outputImage
+        } else {
+            outputImage = ciImage
+        }
+        
+        guard let outputImage else { return }
+        let orientedImage = outputImage.oriented(forExifOrientation: Int32(CGImagePropertyOrientation.right.rawValue))
         
         // Render the filtered image to the preview layer
-        guard let cgImage = ciContext.createCGImage(filteredImage, from: filteredImage.extent) else { return }
+        guard let cgImage = ciContext.createCGImage(orientedImage, from: orientedImage.extent) else { return }
         DispatchQueue.main.async {
             self.layer.contents = cgImage
         }
@@ -57,20 +65,19 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
 }
 
 struct CameraView: UIViewRepresentable {
-    typealias InputLuma = NTSCFilter.InputLuma
     @State var filter: NTSCFilter
-    @Binding var lumaLowpass: InputLuma
+    @Binding var enableFilter: Bool
     
-    init(filter: NTSCFilter, lumaLowpass: Binding<InputLuma>) {
+    init(filter: NTSCFilter, enableFilter: Binding<Bool>) {
         _filter = State(initialValue: filter)
-        _lumaLowpass = lumaLowpass
+        _enableFilter = enableFilter
     }
     
     func makeUIView(context: Context) -> CameraUIView {
-        return CameraUIView(filter: filter)
+        return CameraUIView(filter: filter, isFilterEnabled: enableFilter)
     }
     
     func updateUIView(_ uiView: CameraUIView, context: Context) {
-        filter.inputLuma = lumaLowpass
+        uiView.isFilterEnabled = enableFilter
     }
 }

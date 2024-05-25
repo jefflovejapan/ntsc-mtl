@@ -9,21 +9,12 @@ import SwiftUI
 import UIKit
 
 struct ContentView: View {
-    typealias InputLuma = NTSCFilter.InputLuma
-    
     @State private var intensity: CGFloat = 0
-    @State private var inputLuma: InputLuma = .box
+    @State private var enableFilter: Bool = true
     var body: some View {
         VStack {
-            CameraView(filter: NTSCFilter(), lumaLowpass: $inputLuma)
-            Picker(selection: $inputLuma, content: {
-                ForEach(InputLuma.allCases) { luma in
-                    Text(luma.rawValue)
-                        .tag(luma)
-                }
-            }, label: {
-                Text("Input Luma")
-            })
+            CameraView(filter: NTSCFilter(), enableFilter: $enableFilter)
+            Toggle("Enable filter?", isOn: $enableFilter)
         }
         .padding()
     }

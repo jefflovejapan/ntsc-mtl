@@ -9,20 +9,8 @@ import CoreImage
 import Foundation
 
 class NTSCFilter: CIFilter {
-    enum InputLuma: String, CaseIterable, Identifiable {
-        case box
-        case notch
-        case none
-        
-        var id: String {
-            rawValue
-        }
-    }
-    
     var inputImage: CIImage?
-    var intensity: CGFloat = 0
-    var inputTime: Float = 0.0
-    var inputLuma: InputLuma = .box
+    var effect: NTSCEffect = .default
     static var kernels: Kernels = newKernels()
     struct Kernels {
         var toYIQ: CIColorKernel
@@ -53,7 +41,7 @@ class NTSCFilter: CIFilter {
             return nil
         }
         let lumaed: CIImage?
-        switch inputLuma {
+        switch effect.inputLumaFilter {
         case .box:
             lumaed = Self.kernels.lumaBox.apply(extent: convertedToYIQ.extent, roiCallback: { _, rect in rect }, arguments: [convertedToYIQ])
         case .notch:
