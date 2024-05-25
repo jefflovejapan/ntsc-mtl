@@ -16,15 +16,30 @@ extern "C" float4 LumaBox(coreimage::sampler s) {
     float2 imageSize = s.size();
     float2 current = s.coord();
     
-    float2 anotherCoord = float2(current.x + (1.0 / imageSize.x), current.y);
-    float2 clampedCoord = clampCoord(anotherCoord, imageOrigin, imageSize);
-    float4 sample = s.sample(clampedCoord);
-    return sample;
+    // Define symmetric sampling offsets for 5-tap horizontal box filter
+    float2 offsets[5] = {
+        float2((-2.0 / imageSize.x), 0.0),
+        float2((-1.0 / imageSize.x), 0.0),
+        float2(0.0, 0.0),
+        float2((1.0 / imageSize.x), 0.0),
+        float2((2.0 / imageSize.x), 0.0)
+    };
     
-//    float2 sampleCoord = clampCoord(anotherCoord, imageOrigin, imageSize);
+    float averageR = 0.0;
     
-//    float4 currentSample = s.sample(current);
-//    
-//    // Output the result
-//    return float4(sample.r, currentSample.yzw);
+    // Accumulate the samples
+    for (int i = 0; i < 5; ++i) {
+        float2 sampleCoord = clampCoord(current + offsets[i], imageOrigin, imageSize);
+        float4 sample = s.sample(sampleCoord);
+        averageR += sample.r;
+    }
+    
+    // Calculate the average
+    averageR /= 5.0;
+    
+    // Output the result
+    float4 sampleCurrent = s.sample(current);
+    return float4(averageR, sampleCurrent.g, sampleCurrent.b, sampleCurrent.a);
+
+
 }
