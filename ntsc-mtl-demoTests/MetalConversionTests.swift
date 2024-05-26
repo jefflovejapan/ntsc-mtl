@@ -40,11 +40,21 @@ extension CIColor {
 }
 
 final class MetalConversionTests: XCTestCase {
+    var filter: NTSCFilter!
+    
+    override func setUpWithError() throws {
+        filter = NTSCFilter()
+    }
+    
+    override func tearDownWithError() throws {
+        filter = nil
+    }
         
     func testConverstionToYIQ() throws {
-        let kernel = NTSCFilter.kernels.toYIQ
+        let toYIQFilter = filter.filters.toYIQ
         let inputImage = createTestImage(color: CIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1))
-        let outputImage = try XCTUnwrap(kernel.apply(extent: inputImage.extent, arguments: [inputImage]))
+        toYIQFilter.inputImage = inputImage
+        let outputImage = try XCTUnwrap(toYIQFilter.outputImage)
         let outputColor = try color(from: outputImage)
         
         let (y, i, q, a) = (outputColor.red, outputColor.green, outputColor.blue, outputColor.alpha)
@@ -55,9 +65,10 @@ final class MetalConversionTests: XCTestCase {
     }
     
     func testConverstionFromYIQ() throws {
-        let kernel = NTSCFilter.kernels.toRGB
+        let toRGBFilter = filter.filters.toRGB
         let inputImage = createTestImage(color: CIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1))
-        let outputImage = try XCTUnwrap(kernel.apply(extent: inputImage.extent, arguments: [inputImage]))
+        toRGBFilter.inputImage = inputImage
+        let outputImage = try XCTUnwrap(toRGBFilter.outputImage)
         let outputColor = try color(from: outputImage)
         
         let (r, g, b, a) = outputColor.channelValues
@@ -68,12 +79,14 @@ final class MetalConversionTests: XCTestCase {
     }
     
     func testRoundTrip() throws {
-        let toYIQ = NTSCFilter.kernels.toYIQ
-        let toRGB = NTSCFilter.kernels.toRGB
+        let toYIQFilter = filter.filters.toYIQ
+        let toRGBFilter = filter.filters.toRGB
         let inputColor = CIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1)
         let inputImage = createTestImage(color: inputColor)
-        let yiqImage = try XCTUnwrap(toYIQ.apply(extent: inputImage.extent, arguments: [inputImage]))
-        let rgbImage = try XCTUnwrap(toRGB.apply(extent: yiqImage.extent, arguments: [yiqImage]))
+        toYIQFilter.inputImage = inputImage
+        let yiqImage = try XCTUnwrap(toYIQFilter.outputImage)
+        toRGBFilter.inputImage = yiqImage
+        let rgbImage  = try XCTUnwrap(toRGBFilter.outputImage)
         let outputColor = try color(from: rgbImage)
         let channels = (inputColor.channelValues, outputColor.channelValues)
         let (leftR, rightR) = (channels.0.0, channels.1.0)
@@ -87,12 +100,14 @@ final class MetalConversionTests: XCTestCase {
     }
     
     func testRoundTripHDR() throws {
-        let toYIQ = NTSCFilter.kernels.toYIQ
-        let toRGB = NTSCFilter.kernels.toRGB
+        let toYIQFilter = filter.filters.toYIQ
+        let toRGBFilter = filter.filters.toRGB
         let inputColor = CIColor(red: 1.2, green: 1.2, blue: 1.2, alpha: 1)
         let inputImage = createTestImage(color: inputColor)
-        let yiqImage = try XCTUnwrap(toYIQ.apply(extent: inputImage.extent, arguments: [inputImage]))
-        let rgbImage = try XCTUnwrap(toRGB.apply(extent: yiqImage.extent, arguments: [yiqImage]))
+        toYIQFilter.inputImage = inputImage
+        let yiqImage = try XCTUnwrap(toYIQFilter.outputImage)
+        toRGBFilter.inputImage = yiqImage
+        let rgbImage  = try XCTUnwrap(toRGBFilter.outputImage)
         let outputColor = try color(from: rgbImage)
         let channels = (inputColor.channelValues, outputColor.channelValues)
         let (leftR, rightR) = (channels.0.0, channels.1.0)

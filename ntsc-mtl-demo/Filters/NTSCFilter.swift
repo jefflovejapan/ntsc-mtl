@@ -13,7 +13,7 @@ class NTSCFilter: CIFilter {
     var inputImage: CIImage?
     var effect: NTSCEffect = .default
     
-    private lazy var filters = newFilters()
+    private(set) lazy var filters = newFilters()
     
     class Filters {
         let toYIQ: ToYIQFilter
