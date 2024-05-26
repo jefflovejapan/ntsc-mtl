@@ -12,8 +12,17 @@ import CoreImage.CIFilterBuiltins
 class NTSCFilter: CIFilter {
     var inputImage: CIImage?
     var effect: NTSCEffect = .default
+    let size: CGSize
+    private(set) lazy var filters = newFilters(size: size)
     
-    private(set) lazy var filters = newFilters()
+    init(size: CGSize) {
+        self.size = size
+        super.init()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("Not implemented")
+    }
     
     class Filters {
         let toYIQ: ToYIQFilter
@@ -37,12 +46,12 @@ class NTSCFilter: CIFilter {
         }
     }
     
-    private func newFilters() -> Filters {
+    private func newFilters(size: CGSize) -> Filters {
         return Filters(
             toYIQ: ToYIQFilter(),
             composeLuma: ComposeLumaFilter(),
             lumaBoxBlur: newBoxBlurFilter(),
-            lumaNotchBlur: IIRFilter.lumaNotch(),
+            lumaNotchBlur: IIRFilter.lumaNotch(size: size),
             toRGB: ToRGBFilter()
         )
     }

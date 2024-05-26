@@ -9,6 +9,6 @@
 using namespace metal;
 
 extern "C" float4 IIRFilterSample(coreimage::sample_t sample, coreimage::sample_t prevSample, float numerator) {
-    return prevSample + (numerator * prevSample);
+    return prevSample + (numerator * sample);
 }
 

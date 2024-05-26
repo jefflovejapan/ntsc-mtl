@@ -13,12 +13,11 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     private let captureSession = AVCaptureSession()
     private let videoOutput = AVCaptureVideoDataOutput()
     private let ciContext = CIContext()
-    private var filter: NTSCFilter
+    private var filter: NTSCFilter!
     private let previewLayer = AVCaptureVideoPreviewLayer()
     var isFilterEnabled: Bool
     
-    init(filter: NTSCFilter, isFilterEnabled: Bool) {
-        self.filter = filter
+    init(isFilterEnabled: Bool) {
         self.isFilterEnabled = isFilterEnabled
         super.init(frame: .zero)
         setupCamera()
@@ -49,6 +48,9 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             return
         }
         let ciImage = CIImage(cvImageBuffer: pixelBuffer)
+        if filter == nil {
+            self.filter = NTSCFilter(size: ciImage.extent.size)
+        }
         
         // Apply CIFilter
         let outputImage: CIImage?
@@ -75,7 +77,6 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
 }
 
 struct CameraView: UIViewRepresentable {
-    @State var filter = NTSCFilter()
     @Binding var enableFilter: Bool
     
     init(enableFilter: Binding<Bool>) {
@@ -83,7 +84,7 @@ struct CameraView: UIViewRepresentable {
     }
     
     func makeUIView(context: Context) -> CameraUIView {
-        return CameraUIView(filter: filter, isFilterEnabled: enableFilter)
+        return CameraUIView(isFilterEnabled: enableFilter)
     }
     
     func updateUIView(_ uiView: CameraUIView, context: Context) {
