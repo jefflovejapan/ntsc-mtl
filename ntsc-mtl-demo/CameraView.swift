@@ -30,9 +30,13 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     private func setupCamera() {
         captureSession.sessionPreset = .hd1920x1080
-        guard let captureDevice = AVCaptureDevice.default(for: .video) else { return }
+        guard let captureDevice = AVCaptureDevice.default(for: .video) else {
+            return
+        }
         
-        guard let input = try? AVCaptureDeviceInput(device: captureDevice) else { return }
+        guard let input = try? AVCaptureDeviceInput(device: captureDevice) else {
+            return
+        }
         captureSession.addInput(input)
         
         videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "cameraQueue"))
@@ -41,7 +45,9 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     }
     
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+            return
+        }
         let ciImage = CIImage(cvImageBuffer: pixelBuffer)
         
         // Apply CIFilter
@@ -53,11 +59,15 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             outputImage = ciImage
         }
         
-        guard let outputImage else { return }
+        guard let outputImage else {
+            return
+        }
         let orientedImage = outputImage.oriented(forExifOrientation: Int32(CGImagePropertyOrientation.right.rawValue))
         
         // Render the filtered image to the preview layer
-        guard let cgImage = ciContext.createCGImage(orientedImage, from: orientedImage.extent) else { return }
+        guard let cgImage = ciContext.createCGImage(orientedImage, from: orientedImage.extent) else {
+            return
+        }
         DispatchQueue.main.async {
             self.layer.contents = cgImage
         }
@@ -65,11 +75,10 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
 }
 
 struct CameraView: UIViewRepresentable {
-    @State var filter: NTSCFilter
+    @State var filter = NTSCFilter()
     @Binding var enableFilter: Bool
     
-    init(filter: NTSCFilter, enableFilter: Binding<Bool>) {
-        _filter = State(initialValue: filter)
+    init(enableFilter: Binding<Bool>) {
         _enableFilter = enableFilter
     }
     

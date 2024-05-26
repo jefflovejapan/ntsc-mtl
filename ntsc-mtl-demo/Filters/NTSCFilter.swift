@@ -12,61 +12,76 @@ import CoreImage.CIFilterBuiltins
 class NTSCFilter: CIFilter {
     var inputImage: CIImage?
     var effect: NTSCEffect = .default
-    static var kernels: Kernels = newKernels()
-    struct Kernels {
-        var toYIQ: CIColorKernel
-        var blue: CIColorKernel
-        var composeLuma: CIColorKernel
-        var lumaNotch: CIKernel
-        var toRGB: CIColorKernel
-        var fun: CIKernel
+    
+    private lazy var filters = newFilters()
+    
+    class Filters {
+        let toYIQ: ToYIQFilter
+        let composeLuma: ComposeLumaFilter
+        let lumaBoxBlur: CIFilter
+        let lumaNotchBlur: IIRFilter
+        let toRGB: ToRGBFilter
+        
+        init(
+            toYIQ: ToYIQFilter,
+            composeLuma: ComposeLumaFilter,
+            lumaBoxBlur: CIFilter,
+            lumaNotchBlur: IIRFilter,
+            toRGB: ToRGBFilter
+        ) {
+            self.toYIQ = toYIQ
+            self.composeLuma = composeLuma
+            self.lumaBoxBlur = lumaBoxBlur
+            self.lumaNotchBlur = lumaNotchBlur
+            self.toRGB = toRGB
+        }
     }
     
-    private static func newKernels() -> Kernels {
-        let url = Bundle.main.url(forResource: "default", withExtension: "metallib")!
-        let data = try! Data(contentsOf: url)
-        return Kernels(
-            toYIQ: try! CIColorKernel(functionName: "ToYIQ", fromMetalLibraryData: data),
-            blue: try! CIColorKernel(functionName: "Blue", fromMetalLibraryData: data), 
-            composeLuma: try! CIColorKernel(functionName: "ComposeLuma", fromMetalLibraryData: data),
-            lumaNotch: try! CIKernel(functionName: "LumaNotch", fromMetalLibraryData: data),
-            toRGB: try! CIColorKernel(functionName: "ToRGB", fromMetalLibraryData: data),
-            fun: try! CIKernel(functionName: "Fun", fromMetalLibraryData: data)
+    private func newFilters() -> Filters {
+        return Filters(
+            toYIQ: ToYIQFilter(),
+            composeLuma: ComposeLumaFilter(),
+            lumaBoxBlur: newBoxBlurFilter(),
+            lumaNotchBlur: IIRFilter.lumaNotch(),
+            toRGB: ToRGBFilter()
         )
+    }
+    
+    private func newBoxBlurFilter() -> CIFilter {
+        let boxBlur = CIFilter.boxBlur()
+        boxBlur.radius = 4
+        return boxBlur
     }
 
     override var outputImage: CIImage? {
         guard let input = inputImage else {
             return nil
         }
-
-        guard let convertedToYIQ = Self.kernels.toYIQ.apply(extent: input.extent, arguments: [input]) else {
+        
+        let maybeYIQ: CIImage?
+        self.filters.toYIQ.inputImage = input
+        maybeYIQ = self.filters.toYIQ.outputImage
+        guard let yiq = maybeYIQ else {
             return nil
         }
+        
         let lumaed: CIImage?
         switch effect.inputLumaFilter {
         case .box:
-            let boxBlur = CIFilter.boxBlur()
-            boxBlur.inputImage = input
-            boxBlur.radius = 4
-            guard let blurred = boxBlur.outputImage else {
-                return nil
-            }
-            
-            lumaed = Self.kernels.composeLuma.apply(extent: input.extent, arguments: [blurred, convertedToYIQ])
+            self.filters.lumaBoxBlur.setValue(yiq, forKey: kCIInputImageKey)
+            lumaed = self.filters.lumaBoxBlur.outputImage
         case .notch:
-            lumaed = Self.kernels.lumaNotch.apply(extent: convertedToYIQ.extent, roiCallback: { _, rect in rect }, arguments: [convertedToYIQ])
+            self.filters.lumaNotchBlur.inputImage = yiq
+            lumaed = self.filters.lumaNotchBlur.outputImage
         case .none:
-            lumaed = convertedToYIQ
+            lumaed = yiq
         }
         guard let lumaed else {
             return nil
-        }
+        }  
         
-        guard let convertedToRGB = Self.kernels.toRGB.apply(extent: lumaed.extent, arguments: [lumaed]) else {
-            return nil
-        }
-        
-        return convertedToRGB
+        self.filters.toRGB.inputImage = lumaed
+        let rgb = self.filters.toRGB.outputImage
+        return rgb
     }
 }

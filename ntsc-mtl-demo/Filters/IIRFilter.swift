@@ -14,7 +14,7 @@ class IIRFilter: CIFilter {
         var finalImage: CIColorKernel
     }
     
-    private var previousImages: [CIImage] = []
+    private var previousImages: [CIImage?]
     private static let kernels: Kernels = loadKernels()
     private let numerators: [Float]
     private let denominators: [Float]
@@ -28,6 +28,7 @@ class IIRFilter: CIFilter {
         paddedDenominators[0..<denominators.count] = denominators[0...]
         self.numerators = paddedNumerators
         self.denominators = paddedDenominators
+        self.previousImages = Array(repeating: nil, count: maxLength)
         self.scale = scale
         super.init()
     }
@@ -47,9 +48,18 @@ class IIRFilter: CIFilter {
     }
     
     override var outputImage: CIImage? {
-        guard let inputImage else { return nil }
-        let prevImage = previousImages.first ?? inputImage
-        guard let num = numerators.first else { return nil }
+        guard let inputImage else {
+            return nil
+        }
+        let prevImage: CIImage
+        if let maybeFirstImage = previousImages.first, let firstImage = maybeFirstImage {
+            prevImage = firstImage
+        } else {
+            prevImage = inputImage
+        }
+        guard let num = numerators.first else {
+            return nil
+        }
         guard let filteredImage = Self.kernels.filterSample.apply(extent: inputImage.extent, arguments: [inputImage, prevImage, num]) else {
             return nil
         }
@@ -57,9 +67,9 @@ class IIRFilter: CIFilter {
             let nextIdx = i + 1
             guard nextIdx < numerators.count else { break }
             let imageIPlusOne: CIImage
-            if nextIdx < previousImages.count {
-                imageIPlusOne = previousImages[nextIdx]
-            } else if let lastImg = previousImages.last {
+            if nextIdx < previousImages.count, let prevImg = previousImages[nextIdx] {
+                imageIPlusOne = prevImg
+            } else if let lastImg = previousImages.compactMap({ $0 }).last {
                 imageIPlusOne = lastImg
             } else {
                 imageIPlusOne = inputImage
@@ -78,5 +88,16 @@ class IIRFilter: CIFilter {
             }
         }
         return Self.kernels.finalImage.apply(extent: inputImage.extent, arguments: [inputImage, filteredImage, scale])
+    }
+}
+
+extension IIRFilter {
+    static func lumaNotch() -> IIRFilter {
+        let notchFunction = IIRTransferFunction.lumaNotch
+        return IIRFilter(
+            numerators: notchFunction.numerators,
+            denominators: notchFunction.denominators,
+            scale: 1.0
+        )
     }
 }

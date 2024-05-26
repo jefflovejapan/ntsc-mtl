@@ -10,10 +10,10 @@ import UIKit
 
 struct ContentView: View {
     @State private var intensity: CGFloat = 0
-    @State private var enableFilter: Bool = true
+    @State private var enableFilter: Bool = false
     var body: some View {
         VStack {
-            CameraView(filter: NTSCFilter(), enableFilter: $enableFilter)
+            CameraView(enableFilter: $enableFilter)
             Toggle("Enable filter?", isOn: $enableFilter)
         }
         .padding()
