@@ -18,6 +18,8 @@ class IIRFilter: CIFilter {
     private static let kernels: Kernels = loadKernels()
     private let numerators: [Float]
     private let denominators: [Float]
+    static let ctx = CIContext()
+    
     var inputImage: CIImage?
     var scale: Float
     init(numerators: [Float], denominators: [Float], scale: Float) {
@@ -83,8 +85,10 @@ class IIRFilter: CIFilter {
                     numerators[nextIdx],
                     denominators[nextIdx]
                 ]
-            ) {
-                previousImages[i] = img
+            ), let cgImage = Self.ctx.createCGImage(img, from: img.extent) {
+                let convertedImage = CIImage(cgImage: cgImage)
+                
+                previousImages[i] = convertedImage
             }
         }
         return Self.kernels.finalImage.apply(extent: inputImage.extent, arguments: [inputImage, filteredImage, scale])
