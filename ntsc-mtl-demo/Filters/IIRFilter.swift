@@ -9,17 +9,18 @@ import CoreImage
 
 class IIRFilter: CIFilter {
     struct Kernels {
-        var iir1: CIColorKernel
-        var iir2: CIColorKernel
-        var iir3: CIColorKernel
+        var filterSample: CIColorKernel
+        var sideEffect: CIColorKernel
+        var finalImage: CIColorKernel
     }
     
-    private var previousImages: FixedLengthQueue<CIImage>
-    private lazy var kernel: CIColorKernel = loadKernel()
+    private var previousImages: [CIImage] = []
+    private static let kernels: Kernels = loadKernels()
     private let numerators: [Float]
     private let denominators: [Float]
     var inputImage: CIImage?
-    init(numerators: [Float], denominators: [Float]) {
+    var scale: Float
+    init(numerators: [Float], denominators: [Float], scale: Float) {
         let maxLength = max(numerators.count, denominators.count)
         var paddedNumerators: [Float] = Array(repeating: 0, count: maxLength)
         paddedNumerators[0..<numerators.count] = numerators[0...]
@@ -27,7 +28,7 @@ class IIRFilter: CIFilter {
         paddedDenominators[0..<denominators.count] = denominators[0...]
         self.numerators = paddedNumerators
         self.denominators = paddedDenominators
-        self.previousImages = FixedLengthQueue(capacity: maxLength)
+        self.scale = scale
         super.init()
     }
     
@@ -35,40 +36,47 @@ class IIRFilter: CIFilter {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func loadKernel() -> CIColorKernel {
+    private static func loadKernels() -> Kernels {
         let url = Bundle.main.url(forResource: "default", withExtension: "metallib")!
         let data = try! Data(contentsOf: url)
-        switch numerators.count {
-        case 1:
-            return try! CIColorKernel(functionName: "IIR1", fromMetalLibraryData: data)
-        case 2:
-            return try! CIColorKernel(functionName: "IIR2", fromMetalLibraryData: data)
-        case 3:
-            return try! CIColorKernel(functionName: "IIR3", fromMetalLibraryData: data)
-        default:
-            fatalError("No kernel available for numerator count of \(numerators.count)")
-        }
-    }
-    
-    func paddedOutputImages(count: Int) -> [CIImage] {
-        let previousImages = previousImages.elements
-        if previousImages.count >= count {
-            return Array(previousImages[0..<count])
-        }
-        guard let imageToRepeat = previousImages.first ?? inputImage else {
-            return []
-        }
-        var images = Array(repeating: imageToRepeat, count: count)
-        let sliceStartIndex = count - previousImages.count
-        images[sliceStartIndex..<count-1] = previousImages[0...]
-        return images
+        return Kernels(
+            filterSample: try! CIColorKernel(functionName: "IIRFilterSample", fromMetalLibraryData: data),
+            sideEffect: try! CIColorKernel(functionName: "IIRSideEffect", fromMetalLibraryData: data),
+            finalImage: try! CIColorKernel(functionName: "IIRFinalImage", fromMetalLibraryData: data)
+        )
     }
     
     override var outputImage: CIImage? {
         guard let inputImage else { return nil }
-        let pastImages = self.paddedOutputImages(count: numerators.count)
-        guard let outputImage = kernel.apply(extent: inputImage.extent, arguments: pastImages) else { return nil }
-        self.previousImages.push(outputImage)
-        return outputImage
+        let prevImage = previousImages.first ?? inputImage
+        guard let num = numerators.first else { return nil }
+        guard let filteredImage = Self.kernels.filterSample.apply(extent: inputImage.extent, arguments: [inputImage, prevImage, num]) else {
+            return nil
+        }
+        for i in 0..<numerators.count {
+            let nextIdx = i + 1
+            guard nextIdx < numerators.count else { break }
+            let imageIPlusOne: CIImage
+            if nextIdx < previousImages.count {
+                imageIPlusOne = previousImages[nextIdx]
+            } else if let lastImg = previousImages.last {
+                imageIPlusOne = lastImg
+            } else {
+                imageIPlusOne = inputImage
+            }
+            if let img = Self.kernels.sideEffect.apply(
+                extent: inputImage.extent,
+                arguments: [
+                    inputImage,
+                    imageIPlusOne,
+                    filteredImage,
+                    numerators[nextIdx],
+                    denominators[nextIdx]
+                ]
+            ) {
+                previousImages[i] = img
+            }
+        }
+        return Self.kernels.finalImage.apply(extent: inputImage.extent, arguments: [inputImage, filteredImage, scale])
     }
 }

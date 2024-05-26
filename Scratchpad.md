@@ -31,3 +31,56 @@ I think a good first goal is to apply the luma filter to the entire yiq field / 
 - It really seems like the alternating upper/lower stuff in YIQView in `apply_effect_to_yiq` was intended to interlace the rows but it looks like it's splitting the whole field into upper and lower parts. Does that sound right?
 - What is `filter_signal_in_place` doing?
 - 
+
+## May 26
+
+OK, let's look at the outputImage code
+
+```
+override var outputImage: CIImage? {
+    guard let inputImage else { return nil }
+    let prevImage = previousImages.first ?? inputImage
+    guard let num = numerators.first else { return nil }
+    guard let filteredImage = Self.kernels.filterSample.apply(extent: inputImage.extent, arguments: [inputImage, prevImage, num]) else {
+        return nil
+    }
+    for i in 0..<numerators.count {
+        let nextIdx = i + 1
+        guard nextIdx < previousImages.count, nextIdx < numerators.count else { break }
+        if let img = Self.kernels.sideEffect.apply(extent: inputImage.extent, arguments: [inputImage, filteredImage, numerators[nextIdx], denominators[nextIdx]]) {
+            previousImages[i] = img
+        }
+    }
+    return Self.kernels.finalImage.apply(extent: inputImage.extent, arguments: [])
+}
+```
+
+### Single coefficient
+
+- Let's say 1 numerator/denominator
+- On the 0th step, previousImages will be empty, so we'll pass the inputImage twice to filterSample
+- The for loop is only going to contain index 0, so index 1 will be out of bounds
+- There's no way to maintain state with a single numerator/denominator so the single coefficient case is constant
+
+### Double coefficient
+
+- Let's say 2 numerators/denominators
+- On the 0th step, previousImages will be empty, so we'll pass the inputImage twice to filterSample
+
+Input at t0
+
+- First step of the for loop (input 0, index 0):
+    - nextIdx (1) is valid
+    - we haven't built up previousImages yet so we need to use inputImage0 again I guess?
+    - previousImages[0] = f(inputImage0, inputImage0, num[1], den[1])
+- Second step of the for loop (input 0, index 1)
+    - nextIdx (2) is invalid
+    
+Input at t1 
+    
+- First step of the for loop (input 1, index 0):
+    - nextIdx (1) is valid
+    - we have a previous image now
+    - previousImages[0] = f(input 1, previous 0, num[1], den[1])
+
+
