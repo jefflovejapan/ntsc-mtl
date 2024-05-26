@@ -119,4 +119,10 @@ final class MetalConversionTests: XCTestCase {
         let (leftA, rightA) = (channels.0.3, channels.1.3)
         XCTAssertEqual(leftA, rightA, accuracy: 0.01)
     }
+    
+    func testNotchBlur() throws {
+        let notchBlurFilter = filter.filters.lumaNotchBlur
+        let inputColor = CIColor(red: 1, green: 0, blue: 0)
+        let inputImage = createTestImage(color: inputColor)
+    }
 }

@@ -9,7 +9,8 @@ import Foundation
 import CoreImage
 
 class ComposeLumaFilter: CIFilter {
-    var inputImage: CIImage?
+    var yImage: CIImage?
+    var iqImage: CIImage?
     
     private static let kernel = loadKernel()
     private static func loadKernel() -> CIColorKernel {
@@ -19,7 +20,7 @@ class ComposeLumaFilter: CIFilter {
     }
     
     override var outputImage: CIImage? {
-        guard let inputImage else { return nil }
-        return Self.kernel.apply(extent: inputImage.extent, arguments: [inputImage])
+        guard let yImage, let iqImage else { return nil }
+        return Self.kernel.apply(extent: yImage.extent, arguments: [yImage, iqImage])
     }
 }

@@ -78,9 +78,17 @@ class NTSCFilter: CIFilter {
         }
         guard let lumaed else {
             return nil
-        }  
+        }
         
-        self.filters.toRGB.inputImage = lumaed
+        let lumaComposed: CIImage?
+        self.filters.composeLuma.yImage = lumaed
+        self.filters.composeLuma.iqImage = yiq
+        lumaComposed = self.filters.composeLuma.outputImage
+        guard let lumaComposed else {
+            return nil
+        }
+        
+        self.filters.toRGB.inputImage = lumaComposed
         let rgb = self.filters.toRGB.outputImage
         return rgb
     }
