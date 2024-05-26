@@ -21,7 +21,6 @@ class IIRFilter: CIFilter {
     private let denominators: [Float]
     private let device: MTLDevice
     private let ciContext: CIContext
-    private var hasInitializedTextures = false
     
     var inputImage: CIImage?
     var scale: Float
@@ -82,14 +81,10 @@ class IIRFilter: CIFilter {
         guard let inputImage else {
             return nil
         }
-        if !hasInitializedTextures {
-            for texture in previousImages {
-                ciContext.render(inputImage, to: texture, commandBuffer: nil, bounds: inputImage.extent, colorSpace: self.ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
-            }
-            hasInitializedTextures = true
-        }
 
-        let firstImage = CIImage(mtlTexture: previousImages[0]) ?? inputImage
+        guard let firstImage = CIImage(mtlTexture: previousImages[0]) else {
+            return nil
+        }
         
         guard let num = numerators.first else {
             return nil
@@ -97,7 +92,7 @@ class IIRFilter: CIFilter {
         guard let filteredImage = Self.kernels.filterSample.apply(extent: inputImage.extent, arguments: [inputImage, firstImage, num]) else {
             return nil
         }
-        for i in 0..<numerators.count - 1 {
+        for i in numerators.indices {
             let nextIdx = i + 1
             guard nextIdx < numerators.count else {
                 break
