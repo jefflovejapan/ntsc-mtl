@@ -14,7 +14,7 @@ class IIRFilter: CIFilter {
         var finalImage: CIColorKernel
     }
     
-    private var previousImages: [CIImage?]
+    private(set) var previousImages: [CIImage?]
     private static let kernels: Kernels = loadKernels()
     private let numerators: [Float]
     private let denominators: [Float]

@@ -124,5 +124,11 @@ final class MetalConversionTests: XCTestCase {
         let notchBlurFilter = filter.filters.lumaNotchBlur
         let inputColor = CIColor(red: 1, green: 0, blue: 0)
         let inputImage = createTestImage(color: inputColor)
+        for i in 0 ..< 100 {
+            notchBlurFilter.inputImage = inputImage
+            let outputImage = notchBlurFilter.outputImage
+            XCTAssertNotNil(outputImage)
+            print("JB iteration \(i), previousImages: \(notchBlurFilter.previousImages)")
+        }
     }
 }
