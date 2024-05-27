@@ -30,6 +30,7 @@ class NTSCFilter: CIFilter {
         let lumaBoxBlur: CIFilter
         let lumaNotchBlur: IIRFilter
         let chromaIntoLuma: ChromaIntoLumaFilter
+        let compositePreemphasis: IIRFilter
         let toRGB: ToRGBFilter
         
         init(
@@ -38,6 +39,7 @@ class NTSCFilter: CIFilter {
             lumaBoxBlur: CIFilter,
             lumaNotchBlur: IIRFilter,
             chromaIntoLuma: ChromaIntoLumaFilter,
+            compositePreemphasis: IIRFilter,
             toRGB: ToRGBFilter
         ) {
             self.toYIQ = toYIQ
@@ -45,6 +47,7 @@ class NTSCFilter: CIFilter {
             self.lumaBoxBlur = lumaBoxBlur
             self.lumaNotchBlur = lumaNotchBlur
             self.chromaIntoLuma = chromaIntoLuma
+            self.compositePreemphasis = compositePreemphasis
             self.toRGB = toRGB
         }
     }
@@ -54,8 +57,9 @@ class NTSCFilter: CIFilter {
             toYIQ: ToYIQFilter(),
             composeLuma: ComposeLumaFilter(),
             lumaBoxBlur: newBoxBlurFilter(),
-            lumaNotchBlur: IIRFilter.lumaNotch(size: size),
-            chromaIntoLuma: ChromaIntoLumaFilter(),
+            lumaNotchBlur: IIRFilter.lumaNotch(),
+            chromaIntoLuma: ChromaIntoLumaFilter(), 
+            compositePreemphasis: IIRFilter.compositePreemphasis(effect.compositePreemphasis, bandwidthScale: effect.bandwidthScale), // TODO: Is this going to break when compositePreemphasis and bandwidthScale dynamically change?
             toRGB: ToRGBFilter()
         )
     }
@@ -72,7 +76,7 @@ class NTSCFilter: CIFilter {
         return self.filters.toYIQ.outputImage
     }
     
-    private func inputLumaFilter(inputImage: CIImage?) -> CIImage? {
+    private func inputLuma(inputImage: CIImage?) -> CIImage? {
         guard let inputImage else { return nil }
         let lumaed: CIImage?
         switch effect.inputLumaFilter {
@@ -100,6 +104,12 @@ class NTSCFilter: CIFilter {
         return self.filters.chromaIntoLuma.outputImage
     }
     
+    private func compositePreemphasis(inputImage: CIImage?) -> CIImage? {
+        guard let inputImage else { return nil }
+        self.filters.compositePreemphasis.inputImage = inputImage
+        return self.filters.compositePreemphasis.outputImage
+    }
+    
     private func toRGB(inputImage: CIImage?) -> CIImage? {
         guard let inputImage else { return nil }
         self.filters.toRGB.inputImage = inputImage
@@ -108,7 +118,8 @@ class NTSCFilter: CIFilter {
 
     override var outputImage: CIImage? {
         let yiq = toYIQ(inputImage: inputImage)
-        let lumaed = inputLumaFilter(inputImage: yiq)
+        let lumaed = inputLuma(inputImage: yiq)
+        let composited = compositePreemphasis(inputImage: lumaed)
         let rgb = toRGB(inputImage: lumaed)
         return rgb
     }

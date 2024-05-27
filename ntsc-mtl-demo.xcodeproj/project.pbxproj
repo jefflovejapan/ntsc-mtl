@@ -21,6 +21,7 @@
 		1F259EEC2C02A2C300937D0A /* IIRFilterSample.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EEB2C02A2C300937D0A /* IIRFilterSample.ci.metal */; };
 		1F5B6CBE2C04BB970051A9ED /* ChromaIntoLumaFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CBD2C04BB970051A9ED /* ChromaIntoLumaFilter.swift */; };
 		1F5B6CC02C04BBF10051A9ED /* ChromaIntoLuma.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CBF2C04BBF10051A9ED /* ChromaIntoLuma.ci.metal */; };
+		1F5B6CC22C04D4010051A9ED /* NTSC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CC12C04D4010051A9ED /* NTSC.swift */; };
 		1F6BFDEB2BFF799F00883169 /* ntsc_mtl_demoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */; };
 		1F6BFDED2BFF799F00883169 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEC2BFF799F00883169 /* ContentView.swift */; };
 		1F6BFDEF2BFF79A000883169 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEE2BFF79A000883169 /* Assets.xcassets */; };
@@ -61,6 +62,7 @@
 		1F259EEB2C02A2C300937D0A /* IIRFilterSample.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = IIRFilterSample.ci.metal; sourceTree = "<group>"; };
 		1F5B6CBD2C04BB970051A9ED /* ChromaIntoLumaFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromaIntoLumaFilter.swift; sourceTree = "<group>"; };
 		1F5B6CBF2C04BBF10051A9ED /* ChromaIntoLuma.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ChromaIntoLuma.ci.metal; sourceTree = "<group>"; };
+		1F5B6CC12C04D4010051A9ED /* NTSC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSC.swift; sourceTree = "<group>"; };
 		1F6BFDE72BFF799F00883169 /* ntsc-mtl-demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ntsc-mtl-demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ntsc_mtl_demoApp.swift; sourceTree = "<group>"; };
 		1F6BFDEC2BFF799F00883169 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -171,6 +173,7 @@
 				1F259EE52C027D0800937D0A /* IIRFilter.swift */,
 				1F6BFE262BFFADB700883169 /* NTSCFilter.swift */,
 				1F1F9B682C03C3980085048F /* IIRTransferFunction.swift */,
+				1F5B6CC12C04D4010051A9ED /* NTSC.swift */,
 				1F259EDB2C022F7500937D0A /* NTSCEffect.swift */,
 				1F259EDD2C02399C00937D0A /* NTSCEffect+Defaults.swift */,
 				1F1F9B622C03BEAA0085048F /* ToRGBFilter.swift */,
@@ -322,6 +325,7 @@
 				1F259EDE2C02399C00937D0A /* NTSCEffect+Defaults.swift in Sources */,
 				1F5B6CBE2C04BB970051A9ED /* ChromaIntoLumaFilter.swift in Sources */,
 				1F1F9B692C03C3980085048F /* IIRTransferFunction.swift in Sources */,
+				1F5B6CC22C04D4010051A9ED /* NTSC.swift in Sources */,
 				1FEEA8572C00C47200101141 /* ToYIQ.ci.metal in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

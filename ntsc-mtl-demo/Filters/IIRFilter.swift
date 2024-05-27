@@ -15,7 +15,7 @@ class IIRFilter: CIFilter {
         var finalImage: CIColorKernel
     }
     
-    private(set) var previousImages: [MTLTexture]
+    private(set) var previousImages: [MTLTexture] = []
     private static let kernels: Kernels = loadKernels()
     private let numerators: [Float]
     private let denominators: [Float]
@@ -29,7 +29,7 @@ class IIRFilter: CIFilter {
         case noMetalDevice
     }
     
-    init(numerators: [Float], denominators: [Float], scale: Float, size: CGSize) throws {
+    init(numerators: [Float], denominators: [Float], scale: Float, delay: UInt) throws {
         guard let device = MTLCreateSystemDefaultDevice() else {
             throw Error.noMetalDevice
         }
@@ -43,7 +43,6 @@ class IIRFilter: CIFilter {
         paddedDenominators[0..<denominators.count] = denominators[0...]
         self.numerators = paddedNumerators
         self.denominators = paddedDenominators
-        self.previousImages = Array(Self.textures(size: size, device: device).prefix(maxLength))
         self.scale = scale
         super.init()
     }
@@ -80,6 +79,10 @@ class IIRFilter: CIFilter {
     override var outputImage: CIImage? {
         guard let inputImage else {
             return nil
+        }
+        
+        if previousImages.isEmpty {
+            previousImages = Array(Self.textures(size: inputImage.extent.size, device: device).prefix(numerators.count))
         }
 
         guard let firstImage = CIImage(mtlTexture: previousImages[0]) else {
@@ -120,13 +123,23 @@ class IIRFilter: CIFilter {
 }
 
 extension IIRFilter {
-    static func lumaNotch(size: CGSize) -> IIRFilter {
+    static func lumaNotch() -> IIRFilter {
         let notchFunction = IIRTransferFunction.lumaNotch
         return try! IIRFilter(
             numerators: notchFunction.numerators,
             denominators: notchFunction.denominators,
             scale: 1.0,
-            size: size
+            delay: 0
+        )
+    }
+    
+    static func compositePreemphasis(_ compositePreemphasis: Float, bandwidthScale: Float) -> IIRFilter {
+        let preemphasisFunction = IIRTransferFunction.compositePreemphasis(bandwidthScale: bandwidthScale)
+        return try! IIRFilter(
+            numerators: preemphasisFunction.numerators,
+            denominators: preemphasisFunction.denominators,
+            scale: -compositePreemphasis,
+            delay: 0
         )
     }
 }

@@ -29,4 +29,40 @@ struct IIRTransferFunction {
         let denominators: [Float] = [1, -2 * cos(newFreq) * gain, (2 * gain) - 1]
         return IIRTransferFunction(numerators: numerators, denominators: denominators)
     }
+    
+    static func compositePreemphasis(bandwidthScale: Float) -> IIRTransferFunction {
+        let cutoff: Float = (315000000.0 / 88.0 / 2.0) * bandwidthScale
+        let rate = NTSC.rate * bandwidthScale
+        return lowpassFilter(cutoff: cutoff, rate: rate)
+    }
+    
+    /*
+    if self.composite_preemphasis != 0.0 {
+        let preemphasis_filter = make_lowpass(
+            (315000000.0 / 88.0 / 2.0) * self.bandwidth_scale,
+            NTSC_RATE * self.bandwidth_scale,
+        );
+        filter_plane(
+            yiq.y,
+            width,
+            &preemphasis_filter,
+            InitialCondition::Zero,
+            -self.composite_preemphasis,
+            0,
+        );
+    }
+     */
+    
+    static func lowpassFilter(cutoff: Float, rate: Float) -> IIRTransferFunction {
+        let timeInterval = 1.0 / rate
+        let tau = 1.0 / (cutoff * 2.0 * .pi)
+        let alpha = timeInterval / (tau + timeInterval)
+        
+        let numerators: [Float] = [alpha]
+        let denominators: [Float] = [1, -(1 - alpha)]
+        return IIRTransferFunction(
+            numerators: numerators,
+            denominators: denominators
+        )
+    }
 }
