@@ -33,6 +33,7 @@ class NTSCFilter: CIFilter {
         let chromaLowpassFull: ChromaLowpassFilter
         let chromaIntoLuma: ChromaIntoLumaFilter
         let compositePreemphasis: IIRFilter
+        let compositeNoise: CompositeNoiseFilter
         let toRGB: ToRGBFilter
         
         init(
@@ -44,6 +45,7 @@ class NTSCFilter: CIFilter {
             chromaLowpassFull: ChromaLowpassFilter,
             chromaIntoLuma: ChromaIntoLumaFilter,
             compositePreemphasis: IIRFilter,
+            compositeNoise: CompositeNoiseFilter,
             toRGB: ToRGBFilter
         ) {
             self.toYIQ = toYIQ
@@ -54,6 +56,7 @@ class NTSCFilter: CIFilter {
             self.chromaLowpassFull = chromaLowpassFull
             self.chromaIntoLuma = chromaIntoLuma
             self.compositePreemphasis = compositePreemphasis
+            self.compositeNoise = compositeNoise
             self.toRGB = toRGB
         }
     }
@@ -79,7 +82,8 @@ class NTSCFilter: CIFilter {
             compositePreemphasis: IIRFilter.compositePreemphasis(
                 effect.compositePreemphasis,
                 bandwidthScale: effect.bandwidthScale
-            ),
+            ), 
+            compositeNoise: CompositeNoiseFilter(),
             toRGB: ToRGBFilter()
         )
     }
@@ -121,17 +125,17 @@ class NTSCFilter: CIFilter {
     }
     
     // Step2
-    private func chromaLowpassIn(inputImage: CIImage?) -> CIImage? {
+    private func chromaLowpass(inputImage: CIImage?) -> CIImage? {
         guard let inputImage else { return nil }
         switch effect.chromaLowpassIn {
         case .none:
             return inputImage
         case .light:
-            self.filters.chromaLowpassLight.inputImage = inputImage
-            return self.filters.chromaLowpassLight.outputImage
+            filters.chromaLowpassLight.inputImage = inputImage
+            return filters.chromaLowpassLight.outputImage
         case .full:
-            self.filters.chromaLowpassFull.inputImage = inputImage
-            return self.filters.chromaLowpassFull.outputImage
+            filters.chromaLowpassFull.inputImage = inputImage
+            return filters.chromaLowpassFull.outputImage
         }
     }
     
@@ -149,25 +153,22 @@ class NTSCFilter: CIFilter {
         return self.filters.compositePreemphasis.outputImage
     }
     
+    private func compositeNoise(inputImage: CIImage?) -> CIImage? {
+        guard let inputImage else { return nil }
+        self.filters.compositeNoise.inputImage = inputImage
+        return self.filters.compositeNoise.outputImage
+    }
+    
+    // StepFinal
     private func toRGB(inputImage: CIImage?) -> CIImage? {
         guard let inputImage else { return nil }
         self.filters.toRGB.inputImage = inputImage
         return self.filters.toRGB.outputImage
     }
     
-    private func chromaLowpass(inputImage: CIImage?) -> CIImage? {
-        guard let inputImage else { return nil }
-        switch effect.chromaLowpassIn {
-        case .none:
-            return inputImage
-        case .light:
-            filters.chromaLowpassLight.inputImage = inputImage
-            return filters.chromaLowpassLight.outputImage
-        case .full:
-            filters.chromaLowpassFull.inputImage = inputImage
-            return filters.chromaLowpassFull.outputImage
-        }
-    }
+    
+    
+    
 
     override var outputImage: CIImage? {
         // step0
@@ -180,8 +181,10 @@ class NTSCFilter: CIFilter {
         let chromaedIntoLuma = chromaIntoLuma(inputImage: chromaLowpassed)
         // step4
         let composited = compositePreemphasis(inputImage: chromaedIntoLuma)
+        // step5
+        let compositeNoised = compositeNoise(inputImage: composited)
         // stepFinal
-        let rgb = toRGB(inputImage: lumaed)
+        let rgb = toRGB(inputImage: compositeNoised)
         return rgb
     }
 }
