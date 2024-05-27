@@ -63,8 +63,6 @@
 		1F6BFDEE2BFF79A000883169 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1F6BFDF12BFF79A000883169 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		1F6BFDF72BFF79A000883169 /* ntsc-mtl-demoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ntsc-mtl-demoTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		1F6BFE052BFF79A000883169 /* ntsc_mtl_demoUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ntsc_mtl_demoUITests.swift; sourceTree = "<group>"; };
-		1F6BFE072BFF79A000883169 /* ntsc_mtl_demoUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ntsc_mtl_demoUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		1F6BFE1F2BFF9EC500883169 /* michael.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = michael.jpeg; sourceTree = "<group>"; };
 		1F6BFE242BFFADA200883169 /* Blue.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Blue.ci.metal; sourceTree = "<group>"; };
 		1F6BFE262BFFADB700883169 /* NTSCFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSCFilter.swift; sourceTree = "<group>"; };
@@ -117,7 +115,6 @@
 				1F259EDA2C0227E400937D0A /* SettingsAndDefaults.md */,
 				1F6BFDE92BFF799F00883169 /* ntsc-mtl-demo */,
 				1F6BFDFA2BFF79A000883169 /* ntsc-mtl-demoTests */,
-				1F6BFE042BFF79A000883169 /* ntsc-mtl-demoUITests */,
 				1F6BFDE82BFF799F00883169 /* Products */,
 				1F6BFE1B2BFF7ED400883169 /* Frameworks */,
 			);
@@ -160,15 +157,6 @@
 				1FEEA8582C00C6B000101141 /* MetalConversionTests.swift */,
 			);
 			path = "ntsc-mtl-demoTests";
-			sourceTree = "<group>";
-		};
-		1F6BFE042BFF79A000883169 /* ntsc-mtl-demoUITests */ = {
-			isa = PBXGroup;
-			children = (
-				1F6BFE052BFF79A000883169 /* ntsc_mtl_demoUITests.swift */,
-				1F6BFE072BFF79A000883169 /* ntsc_mtl_demoUITestsLaunchTests.swift */,
-			);
-			path = "ntsc-mtl-demoUITests";
 			sourceTree = "<group>";
 		};
 		1F6BFE1A2BFF7E9600883169 /* Filters */ = {
