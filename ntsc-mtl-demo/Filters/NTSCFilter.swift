@@ -61,44 +61,46 @@ class NTSCFilter: CIFilter {
         boxBlur.radius = 4
         return boxBlur
     }
-
-    override var outputImage: CIImage? {
-        guard let input = inputImage else {
-            return nil
-        }
-        
+    
+    private func toYIQ(inputImage: CIImage?) -> CIImage? {
+        guard let inputImage else { return nil }
         let maybeYIQ: CIImage?
-        self.filters.toYIQ.inputImage = input
-        maybeYIQ = self.filters.toYIQ.outputImage
-        guard let yiq = maybeYIQ else {
-            return nil
-        }
-        
+        self.filters.toYIQ.inputImage = inputImage
+        return self.filters.toYIQ.outputImage
+    }
+    
+    private func inputLumaFilter(inputImage: CIImage?) -> CIImage? {
+        guard let inputImage else { return nil }
         let lumaed: CIImage?
         switch effect.inputLumaFilter {
         case .box:
-            self.filters.lumaBoxBlur.setValue(yiq, forKey: kCIInputImageKey)
+            self.filters.lumaBoxBlur.setValue(inputImage, forKey: kCIInputImageKey)
             lumaed = self.filters.lumaBoxBlur.outputImage
         case .notch:
-            self.filters.lumaNotchBlur.inputImage = yiq
+            self.filters.lumaNotchBlur.inputImage = inputImage
             lumaed = self.filters.lumaNotchBlur.outputImage
         case .none:
-            lumaed = yiq
+            lumaed = inputImage
         }
         guard let lumaed else {
             return nil
         }
         
-        let lumaComposed: CIImage?
         self.filters.composeLuma.yImage = lumaed
-        self.filters.composeLuma.iqImage = yiq
-        lumaComposed = self.filters.composeLuma.outputImage
-        guard let lumaComposed else {
-            return nil
-        }
-        
-        self.filters.toRGB.inputImage = lumaComposed
-        let rgb = self.filters.toRGB.outputImage
-        return rgb
+        self.filters.composeLuma.iqImage = inputImage
+        return self.filters.composeLuma.outputImage
+    }
+    
+    private func toRBG(inputImage: CIImage?) -> CIImage? {
+        guard let inputImage else { return nil }
+        self.filters.toRGB.inputImage = inputImage
+        return self.filters.toRGB.outputImage
+    }
+
+    override var outputImage: CIImage? {
+        let yiq = toYIQ(inputImage: inputImage)
+        let lumaed = inputLumaFilter(inputImage: yiq)
+        let rbg = toRBG(inputImage: lumaed)
+        return rbg
     }
 }
