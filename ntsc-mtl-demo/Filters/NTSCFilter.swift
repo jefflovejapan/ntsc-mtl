@@ -29,6 +29,7 @@ class NTSCFilter: CIFilter {
         let composeLuma: ComposeLumaFilter
         let lumaBoxBlur: CIFilter
         let lumaNotchBlur: IIRFilter
+        let chromaIntoLuma: ChromaIntoLumaFilter
         let toRGB: ToRGBFilter
         
         init(
@@ -36,12 +37,14 @@ class NTSCFilter: CIFilter {
             composeLuma: ComposeLumaFilter,
             lumaBoxBlur: CIFilter,
             lumaNotchBlur: IIRFilter,
+            chromaIntoLuma: ChromaIntoLumaFilter,
             toRGB: ToRGBFilter
         ) {
             self.toYIQ = toYIQ
             self.composeLuma = composeLuma
             self.lumaBoxBlur = lumaBoxBlur
             self.lumaNotchBlur = lumaNotchBlur
+            self.chromaIntoLuma = chromaIntoLuma
             self.toRGB = toRGB
         }
     }
@@ -52,6 +55,7 @@ class NTSCFilter: CIFilter {
             composeLuma: ComposeLumaFilter(),
             lumaBoxBlur: newBoxBlurFilter(),
             lumaNotchBlur: IIRFilter.lumaNotch(size: size),
+            chromaIntoLuma: ChromaIntoLumaFilter(),
             toRGB: ToRGBFilter()
         )
     }
@@ -64,7 +68,6 @@ class NTSCFilter: CIFilter {
     
     private func toYIQ(inputImage: CIImage?) -> CIImage? {
         guard let inputImage else { return nil }
-        let maybeYIQ: CIImage?
         self.filters.toYIQ.inputImage = inputImage
         return self.filters.toYIQ.outputImage
     }
@@ -91,7 +94,13 @@ class NTSCFilter: CIFilter {
         return self.filters.composeLuma.outputImage
     }
     
-    private func toRBG(inputImage: CIImage?) -> CIImage? {
+    private func chromaIntoLuma(inputImage: CIImage?) -> CIImage? {
+        guard let inputImage else { return nil }
+        self.filters.chromaIntoLuma.inputImage = inputImage
+        return self.filters.chromaIntoLuma.outputImage
+    }
+    
+    private func toRGB(inputImage: CIImage?) -> CIImage? {
         guard let inputImage else { return nil }
         self.filters.toRGB.inputImage = inputImage
         return self.filters.toRGB.outputImage
@@ -100,7 +109,7 @@ class NTSCFilter: CIFilter {
     override var outputImage: CIImage? {
         let yiq = toYIQ(inputImage: inputImage)
         let lumaed = inputLumaFilter(inputImage: yiq)
-        let rbg = toRBG(inputImage: lumaed)
-        return rbg
+        let rgb = toRGB(inputImage: lumaed)
+        return rgb
     }
 }

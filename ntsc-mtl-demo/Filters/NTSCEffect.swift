@@ -70,8 +70,8 @@ enum ChromaLowpass {
     case full
 }
 
-enum PhaseShift {
-    case degrees0
+enum PhaseShift: UInt {
+    case degrees0 = 0
     case degrees90
     case degrees180
     case degrees270
