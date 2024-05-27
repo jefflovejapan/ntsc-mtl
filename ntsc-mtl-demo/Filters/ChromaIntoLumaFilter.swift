@@ -25,7 +25,7 @@ class ChromaIntoLumaFilter: CIFilter {
     override var outputImage: CIImage? {
         guard let inputImage else { return nil }
         defer { frameNumber += 1 }
-        return Self.kernel.apply(extent: inputImage.extent, arguments: [inputImage, phaseShift.rawValue, phaseShiftOffset])
+        return Self.kernel.apply(extent: inputImage.extent, arguments: [inputImage, frameNumber, phaseShift.rawValue, phaseShiftOffset])
     }
 }
 

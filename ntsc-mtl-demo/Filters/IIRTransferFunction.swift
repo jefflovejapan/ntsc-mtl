@@ -65,4 +65,56 @@ struct IIRTransferFunction {
             denominators: denominators
         )
     }
+    
+    static func butterworth(cutoff: Float, rate: Float) -> IIRTransferFunction {
+        let newCutoff = min(cutoff, rate * 0.5)
+        
+        // Calculate normalized frequency
+        let omega = 2.0 * .pi * newCutoff / rate
+        let cosOmega = cos(omega)
+        let sinOmega = sin(omega)
+        let alpha = sinOmega / 2.0
+        
+        // Butterworth filter (Q factor is sqrt(2)/2 for a Butterworth filter)
+        let a0 = 1.0 + alpha
+        let a1 = -2.0 * cosOmega
+        let a2 = 1.0 - alpha
+        let b0 = (1.0 - cosOmega) / 2.0
+        let b1 = 1.0 - cosOmega
+        let b2 = (1.0 - cosOmega) / 2.0
+        
+        // Normalize coefficients
+        let nums = [b0 / a0, b1 / a0, b2 / a0]
+        let denoms = [1.0, a1 / a0, a2 / a0]
+        
+        return IIRTransferFunction(numerators: nums, denominators: denoms)
+    }
+}
+
+private func trimZeroes<A: Comparable & SignedNumeric>(_ a: [A]) -> [A] {
+    var idx = a.count - 1
+    while abs(a[idx]) == .zero {
+        idx -= 1
+    }
+    return Array(a[0...idx])
+}
+
+extension IIRTransferFunction {
+    static func *(lhs: IIRTransferFunction, rhs: IIRTransferFunction) -> IIRTransferFunction {
+        let lNums = trimZeroes(lhs.numerators)
+        let rNums = trimZeroes(rhs.numerators)
+        let nums = polynomialMultiply(lNums, rNums)
+        let lDenoms = trimZeroes(lhs.denominators)
+        let rDenoms = trimZeroes(rhs.denominators)
+        let denoms = polynomialMultiply(lDenoms, rDenoms)
+        return IIRTransferFunction(numerators: nums, denominators: denoms)
+    }
+    
+    func cascade(n: UInt) -> IIRTransferFunction {
+        var fn = self
+        for _ in 0..<n {
+            fn = fn * fn
+        }
+        return fn
+    }
 }
