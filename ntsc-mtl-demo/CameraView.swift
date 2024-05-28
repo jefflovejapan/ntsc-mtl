@@ -33,6 +33,16 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             return
         }
         
+        do {
+            try captureDevice.lockForConfiguration()
+            captureDevice.automaticallyAdjustsVideoHDREnabled = false
+            captureDevice.isVideoHDREnabled = false
+            captureDevice.unlockForConfiguration()
+        } catch {
+            print("Couldn't turn off HDR: \(error)")
+        }
+        
+        
         guard let input = try? AVCaptureDeviceInput(device: captureDevice) else {
             return
         }
