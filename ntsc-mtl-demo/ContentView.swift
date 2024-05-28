@@ -10,13 +10,11 @@ import UIKit
 
 struct ContentView: View {
     @State private var intensity: CGFloat = 0
+    @State private var enableFilter: Bool = false
     var body: some View {
         VStack {
-            CameraView(filter: NTSCFilter(), intensity: $intensity)
-            HStack {
-                Text("Intensity")
-                Slider.init(value: $intensity, in: 0...1)
-            }
+            CameraView(enableFilter: $enableFilter)
+            Toggle("Enable filter?", isOn: $enableFilter)
         }
         .padding()
     }
