@@ -8,18 +8,38 @@
 import SwiftUI
 import AVFoundation
 import CoreImage
+import MetalKit
 
 class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     private let captureSession = AVCaptureSession()
     private let videoOutput = AVCaptureVideoDataOutput()
-    private let ciContext = CIContext()
+    private let ciContext: CIContext
+    private let device: MTLDevice
+    private let mtkView: MTKView
+    private let commandQueue: MTLCommandQueue
     private var filter: NTSCFilter!
-    private let previewLayer = AVCaptureVideoPreviewLayer()
+    
     var isFilterEnabled: Bool
     
     init(isFilterEnabled: Bool) {
+        let device = MTLCreateSystemDefaultDevice()!
+        self.device = device
+        let commandQueue = device.makeCommandQueue()!
+        self.commandQueue = commandQueue
+        self.ciContext = CIContext(mtlCommandQueue: commandQueue)
+        let mtkView = MTKView(frame: .zero, device: device)
+        mtkView.framebufferOnly = false
+        mtkView.enableSetNeedsDisplay = true
+        mtkView.isPaused = false
+        self.mtkView = mtkView
         self.isFilterEnabled = isFilterEnabled
         super.init(frame: .zero)
+        self.mtkView.delegate = self
+        addSubview(self.mtkView)
+        self.mtkView.translatesAutoresizingMaskIntoConstraints = false
+        let hConstraints = NSLayoutConstraint.constraints(withVisualFormat: "H:|[mtk]|", metrics: nil, views: ["mtk": mtkView])
+        let vConstraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|[mtk]|", metrics: nil, views: ["mtk": mtkView])
+        NSLayoutConstraint.activate(hConstraints + vConstraints)
         setupCamera()
     }
     
@@ -28,6 +48,7 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     }
     
     private func setupCamera() {
+        
         captureSession.sessionPreset = .hd1920x1080
         guard let captureDevice = AVCaptureDevice.default(for: .video) else {
             return
@@ -79,15 +100,13 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             return
         }
         let orientedImage = outputImage.oriented(forExifOrientation: Int32(CGImagePropertyOrientation.right.rawValue))
-        
-        // Render the filtered image to the preview layer
-        guard let cgImage = ciContext.createCGImage(orientedImage, from: orientedImage.extent) else {
-            return
-        }
+        self.lastImage = orientedImage
         DispatchQueue.main.async {
-            self.layer.contents = cgImage
+            self.mtkView.setNeedsDisplay()
         }
     }
+    
+    var lastImage: CIImage?
 }
 
 struct CameraView: UIViewRepresentable {
@@ -103,5 +122,39 @@ struct CameraView: UIViewRepresentable {
     
     func updateUIView(_ uiView: CameraUIView, context: Context) {
         uiView.isFilterEnabled = enableFilter
+    }
+}
+
+extension CameraUIView: MTKViewDelegate {
+    func draw(in view: MTKView) {
+        guard let lastImage else {
+            return
+        }
+        guard let drawable = view.currentDrawable else {
+            return
+        }
+        guard let commandBuffer = self.commandQueue.makeCommandBuffer() else {
+            return
+        }
+        let dSize = view.drawableSize
+        let destination = CIRenderDestination(
+            width: Int(dSize.width),
+            height: Int(dSize.height),
+            pixelFormat: view.colorPixelFormat, 
+            commandBuffer: commandBuffer,
+            mtlTextureProvider: {
+                drawable.texture
+            })
+        do {
+            try ciContext.startTask(toRender: lastImage, to: destination)
+            commandBuffer.present(drawable)
+            commandBuffer.commit()
+        } catch {
+            print("Error starting render task: \(error)")
+        }
+    }
+    
+    func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
+        print("mtkView will change drawable size to \(size)")
     }
 }
