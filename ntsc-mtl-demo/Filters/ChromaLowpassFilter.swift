@@ -21,16 +21,17 @@ class ChromaLowpassFilter: CIFilter {
     
     init(intensity: Intensity, bandwidthScale: Float, filterType: FilterType) {
         self.intensity = intensity
+        let initialCondition: IIRFilter.InitialCondition = .zero
         switch intensity {
         case .full:
             let iFunction = Self.lowpassFilter(cutoff: 1300000.0, rate: NTSC.rate * bandwidthScale, filterType: filterType)
-            iFilter = try! IIRFilter(numerators: iFunction.numerators, denominators: iFunction.denominators, scale: 1, delay: 2)
+            iFilter = try! IIRFilter(numerators: iFunction.numerators, denominators: iFunction.denominators, initialCondition: initialCondition, scale: 1, delay: 2)
             let qFunction = Self.lowpassFilter(cutoff: 600000.0, rate: NTSC.rate * bandwidthScale, filterType: filterType)
-            qFilter = try! IIRFilter(numerators: qFunction.numerators, denominators: qFunction.denominators, scale: 1, delay: 4)
+            qFilter = try! IIRFilter(numerators: qFunction.numerators, denominators: qFunction.denominators, initialCondition: initialCondition, scale: 1, delay: 4)
         case .light:
-            let function = Self.lowpassFilter(cutoff: 2600000.0, rate: NTSC.rate * bandwidthScale, filterType: filterType)
-            iFilter = try! IIRFilter(numerators: function.numerators, denominators: function.denominators, scale: 1, delay: 1)
-            qFilter = try! IIRFilter(numerators: function.numerators, denominators: function.denominators, scale: 1, delay: 1)
+            let function = Self.lowpassFilter(cutoff: 2_600_000.0/*26_000_000.0*/, rate: NTSC.rate * bandwidthScale, filterType: filterType)
+            iFilter = try! IIRFilter(numerators: function.numerators, denominators: function.denominators, initialCondition: initialCondition, scale: 1, delay: 1)
+            qFilter = try! IIRFilter(numerators: function.numerators, denominators: function.denominators, initialCondition: initialCondition, scale: 1, delay: 1)
         }
         super.init()
     }

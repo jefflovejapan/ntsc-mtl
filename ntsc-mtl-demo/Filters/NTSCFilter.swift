@@ -12,12 +12,13 @@ import SimplexNoiseFilter
 
 class NTSCFilter: CIFilter {
     var inputImage: CIImage?
-    var effect: NTSCEffect = .default
+    var effect: NTSCEffect
     let size: CGSize
     private(set) lazy var filters = newFilters(size: size)
     
-    init(size: CGSize) {
+    init(size: CGSize, effect: NTSCEffect) {
         self.size = size
+        self.effect = effect
         super.init()
     }
     
@@ -167,24 +168,49 @@ class NTSCFilter: CIFilter {
         self.filters.toRGB.inputImage = inputImage
         return self.filters.toRGB.outputImage
     }
+    private let yOnlyFilter = YOnlyFilter()
+    private let iOnlyFilter = IOnlyFilter()
+    private let qOnlyFilter = QOnlyFilter()
+    
+    private enum Channel {
+        case y
+        case i
+        case q
+    }
+    private func channelMix(inputImage: CIImage?, channel: Channel) -> CIImage? {
+        guard let inputImage else { return nil }
+        switch channel {
+        case .y:
+            yOnlyFilter.inputImage = inputImage
+            return yOnlyFilter.outputImage
+        case .i:
+            iOnlyFilter.inputImage = inputImage
+            return iOnlyFilter.outputImage
+        case .q:
+            qOnlyFilter.inputImage = inputImage
+            return qOnlyFilter.outputImage
+        }
+    }
     
     override var outputImage: CIImage? {
 //         step0
         let yiq = toYIQ(inputImage: inputImage)
         // step1
-        let lumaed = inputLuma(inputImage: yiq)
-        // step2
-        // TODO: looks super grayscale, check math
-//        let chromaLowpassed = chromaLowpass(inputImage: lumaed)
-        // step3
-        // TODO: introduces flickering when combined with compositeNoise
+//        let lumaed = inputLuma(inputImage: yiq)
+//        // step2
+//        // TODO: looks super grayscale, check math
+        let chromaLowpassed = chromaLowpass(inputImage: yiq)
+//        // step3
+//        // TODO: introduces flickering when combined with compositeNoise
 //        let chromaedIntoLuma = chromaIntoLuma(inputImage: lumaed)
-        // step4
-        let composited = compositePreemphasis(inputImage: lumaed)
-        // step5
-        let compositeNoised = compositeNoise(inputImage: composited)
+//        // step4
+//        let composited = compositePreemphasis(inputImage: chromaedIntoLuma)
+////        // step5
+//        let compositeNoised = compositeNoise(inputImage: composited)
+//        let qOnly = qOnly(inputImage: yiq)
+//        let mixed = channelMix(inputImage: yiq, channel: .i)
         // stepFinal
-        let rgb = toRGB(inputImage: compositeNoised)
+        let rgb = toRGB(inputImage: chromaLowpassed)
         return rgb
     }
 }

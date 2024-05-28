@@ -49,7 +49,11 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         }
         let ciImage = CIImage(cvImageBuffer: pixelBuffer)
         if filter == nil {
-            self.filter = NTSCFilter(size: ciImage.extent.size)
+            var effect = NTSCEffect.default
+            effect.chromaLowpassIn = .light
+//            effect.inputLumaFilter = .box
+//            effect.chromaLowpassIn = .light
+            self.filter = NTSCFilter(size: ciImage.extent.size, effect: effect)
         }
         
         // Apply CIFilter

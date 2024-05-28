@@ -30,7 +30,7 @@ I think a good first goal is to apply the luma filter to the entire yiq field / 
 - There are a lot of "delay" parameters but it's not clear that these are actually introducing a temporal delay. Is that the intention? Does the YIQPlane represent multiple frames of data, like a ring buffer?
 - It really seems like the alternating upper/lower stuff in YIQView in `apply_effect_to_yiq` was intended to interlace the rows but it looks like it's splitting the whole field into upper and lower parts. Does that sound right?
 - What is `filter_signal_in_place` doing?
-- 
+- Am I correct in assuming that initialCondition::firstSample takes the pixel (luma) value at the first position in the row and uses that for the entire row?
 
 ## May 26
 
@@ -83,4 +83,52 @@ Input at t1
     - we have a previous image now
     - previousImages[0] = f(input 1, previous 0, num[1], den[1])
 
+## Debugging `luma_notch`
+
+- The Rust code uses initialSample, right?
+    - Yes, ntsc.rs line 208
+- Does initialSample do what I think it does?
+    - in `filter_plane_with_rows` we switch on `initial` to get a single float
+    - in the case of `firstSample` it's `row[0]` -- does that mean that the same pixel value is used for all pixels in the row?
+        - question for Valerie: 
+    
+- Does the math check out for `luma_notch`?
+- Can I write a test that verifies it works the way I expect?
+- I think my IIR implementation is wrong. Let's revisit
+
+### `filter_signal_in_place_impl`
+
+```
+/// The row of samples
+for samp_idx in 0..N {
+    // An individual pixel
+    let signal = &mut signal[samp_idx];
+    // Iterate over the entire sample plus the delay -- why?
+    for i in 0..(signal.len() + delay) {
+        // guarding that we don't sample out of bounds
+        let sample = unsafe { signal.get_unchecked(i.min(signal.len() - 1)) };
+        let filt_sample =
+            Self::filter_sample(filter_len, num, den, z[samp_idx], *sample, scale);
+        if i >= delay {
+            signal[i - delay] = filt_sample;
+        }
+    }
+```
+
+If we weren't doing any filtering, we'd be replacing data in the current frame
+
+
+### Current IIR Filter implementations
+
+- Composite preemphasis
+- Chroma lowpass (full and lite)
+- Luma notch blur
+
+
+### Stuff to look into
+
+- MetalKit view (to be sure)
+- testing against Rust values
+- better understanding of what the lowpass filters are/should be doing
+- What happens if we use SDR video as the input?
 

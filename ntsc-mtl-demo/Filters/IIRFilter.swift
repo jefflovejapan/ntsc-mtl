@@ -15,13 +15,19 @@ class IIRFilter: CIFilter {
         var finalImage: CIColorKernel
     }
     
+    enum InitialCondition {
+        case zero
+        case firstSample
+        case constant(CIColor)
+    }
+    
     private(set) var previousImages: [MTLTexture] = []
     private static let kernels: Kernels = loadKernels()
     private let numerators: [Float]
     private let denominators: [Float]
     private let device: MTLDevice
     private let ciContext: CIContext
-    
+    private let initialCondition: InitialCondition
     var inputImage: CIImage?
     var scale: Float
     
@@ -29,7 +35,7 @@ class IIRFilter: CIFilter {
         case noMetalDevice
     }
     
-    init(numerators: [Float], denominators: [Float], scale: Float, delay: UInt) throws {
+    init(numerators: [Float], denominators: [Float], initialCondition: InitialCondition, scale: Float, delay: UInt) throws {
         guard let device = MTLCreateSystemDefaultDevice() else {
             throw Error.noMetalDevice
         }
@@ -41,6 +47,7 @@ class IIRFilter: CIFilter {
         paddedNumerators[0..<numerators.count] = numerators[0...]
         var paddedDenominators: [Float] = Array(repeating: 0, count: maxLength)
         paddedDenominators[0..<denominators.count] = denominators[0...]
+        self.initialCondition = initialCondition
         self.numerators = paddedNumerators
         self.denominators = paddedDenominators
         self.scale = scale
@@ -76,6 +83,23 @@ class IIRFilter: CIFilter {
         )
     }
     
+    private func fillTextures(withColor color: CIColor, bounds: CGRect) {
+        let colorImage = CIImage(color: color)
+        for texture in previousImages {
+            ciContext.render(colorImage, to: texture, commandBuffer: nil, bounds: bounds, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
+        }
+    }
+    
+    private func fillTextures(withImage image: CIImage) {
+        firstColumnFilter.inputImage = image
+        guard let outputImage = firstColumnFilter.outputImage else { return }
+        for texture in previousImages {
+            ciContext.render(outputImage, to: texture, commandBuffer: nil, bounds: image.extent, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
+        }
+    }
+    
+    private let firstColumnFilter = FirstColumnFilter()
+    
     override var outputImage: CIImage? {
         guard let inputImage else {
             return nil
@@ -83,6 +107,14 @@ class IIRFilter: CIFilter {
         
         if previousImages.isEmpty {
             previousImages = Array(Self.textures(size: inputImage.extent.size, device: device).prefix(numerators.count))
+            switch initialCondition {
+            case let .constant(color):
+                fillTextures(withColor: color, bounds: inputImage.extent)
+            case .firstSample:
+                fillTextures(withImage: inputImage)
+            case .zero:
+                break
+            }
         }
 
         guard let firstImage = CIImage(mtlTexture: previousImages[0]) else {
@@ -100,20 +132,20 @@ class IIRFilter: CIFilter {
             guard nextIdx < numerators.count else {
                 break
             }
-            guard let previousIPlusOne = CIImage(mtlTexture: previousImages[nextIdx]) else {
+            guard let sideEffectIPlus1 = CIImage(mtlTexture: previousImages[nextIdx]) else {
                 break
             }
-            if let img = Self.kernels.sideEffect.apply(
+            if let sideEffectI = Self.kernels.sideEffect.apply(
                 extent: inputImage.extent,
                 arguments: [
                     inputImage,
-                    previousIPlusOne,
+                    sideEffectIPlus1,
                     filteredImage,
                     numerators[nextIdx],
                     denominators[nextIdx]
                 ]
             ) {
-                ciContext.render(img, to: previousImages[i], commandBuffer: nil, bounds: img.extent, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
+                ciContext.render(sideEffectI, to: previousImages[i], commandBuffer: nil, bounds: sideEffectI.extent, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
             } else {
                 break
             }
@@ -127,7 +159,8 @@ extension IIRFilter {
         let notchFunction = IIRTransferFunction.lumaNotch
         return try! IIRFilter(
             numerators: notchFunction.numerators,
-            denominators: notchFunction.denominators,
+            denominators: notchFunction.denominators, 
+            initialCondition: .firstSample,
             scale: 1.0,
             delay: 0
         )
@@ -137,7 +170,8 @@ extension IIRFilter {
         let preemphasisFunction = IIRTransferFunction.compositePreemphasis(bandwidthScale: bandwidthScale)
         return try! IIRFilter(
             numerators: preemphasisFunction.numerators,
-            denominators: preemphasisFunction.denominators,
+            denominators: preemphasisFunction.denominators, 
+            initialCondition: .zero,
             scale: -compositePreemphasis,
             delay: 0
         )
