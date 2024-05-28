@@ -168,28 +168,24 @@ class NTSCFilter: CIFilter {
         self.filters.toRGB.inputImage = inputImage
         return self.filters.toRGB.outputImage
     }
-    private let yOnlyFilter = YOnlyFilter()
-    private let iOnlyFilter = IOnlyFilter()
-    private let qOnlyFilter = QOnlyFilter()
-    
+    private let channelMixerFilter = ChannelMixerFilter()
     private enum Channel {
-        case y
-        case i
-        case q
+        case y, i, q
     }
+    
     private func channelMix(inputImage: CIImage?, channel: Channel) -> CIImage? {
         guard let inputImage else { return nil }
+        channelMixerFilter.inputImage = inputImage
+        
         switch channel {
         case .y:
-            yOnlyFilter.inputImage = inputImage
-            return yOnlyFilter.outputImage
+            channelMixerFilter.factors = ChannelMixerFilter.yOnlyFactors
         case .i:
-            iOnlyFilter.inputImage = inputImage
-            return iOnlyFilter.outputImage
+            channelMixerFilter.factors = ChannelMixerFilter.iOnlyFactors
         case .q:
-            qOnlyFilter.inputImage = inputImage
-            return qOnlyFilter.outputImage
+            channelMixerFilter.factors = ChannelMixerFilter.qOnlyFactors
         }
+        return channelMixerFilter.outputImage
     }
     
     override var outputImage: CIImage? {
