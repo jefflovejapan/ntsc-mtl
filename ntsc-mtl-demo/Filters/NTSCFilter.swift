@@ -8,6 +8,7 @@
 import CoreImage
 import Foundation
 import CoreImage.CIFilterBuiltins
+import SimplexNoiseFilter
 
 class NTSCFilter: CIFilter {
     var inputImage: CIImage?
@@ -83,7 +84,7 @@ class NTSCFilter: CIFilter {
                 effect.compositePreemphasis,
                 bandwidthScale: effect.bandwidthScale
             ), 
-            compositeNoise: CompositeNoiseFilter(),
+            compositeNoise: CompositeNoiseFilter(noise: effect.compositeNoise),
             toRGB: ToRGBFilter()
         )
     }
@@ -153,6 +154,7 @@ class NTSCFilter: CIFilter {
         return self.filters.compositePreemphasis.outputImage
     }
     
+    // Step5
     private func compositeNoise(inputImage: CIImage?) -> CIImage? {
         guard let inputImage else { return nil }
         self.filters.compositeNoise.inputImage = inputImage
@@ -166,21 +168,19 @@ class NTSCFilter: CIFilter {
         return self.filters.toRGB.outputImage
     }
     
-    
-    
-    
-
     override var outputImage: CIImage? {
-        // step0
+//         step0
         let yiq = toYIQ(inputImage: inputImage)
         // step1
         let lumaed = inputLuma(inputImage: yiq)
         // step2
-        let chromaLowpassed = chromaLowpass(inputImage: lumaed)
+        // TODO: looks super grayscale, check math
+//        let chromaLowpassed = chromaLowpass(inputImage: lumaed)
         // step3
-        let chromaedIntoLuma = chromaIntoLuma(inputImage: chromaLowpassed)
+        // TODO: introduces flickering when combined with compositeNoise
+//        let chromaedIntoLuma = chromaIntoLuma(inputImage: lumaed)
         // step4
-        let composited = compositePreemphasis(inputImage: chromaedIntoLuma)
+        let composited = compositePreemphasis(inputImage: lumaed)
         // step5
         let compositeNoised = compositeNoise(inputImage: composited)
         // stepFinal

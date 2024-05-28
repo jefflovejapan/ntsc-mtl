@@ -29,6 +29,9 @@
 		1F5B6CCC2C05244F0051A9ED /* CompositeNoiseFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CCB2C05244F0051A9ED /* CompositeNoiseFilter.swift */; };
 		1F5B6CCE2C0525C80051A9ED /* CompositeNoise.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CCD2C0525C80051A9ED /* CompositeNoise.ci.metal */; };
 		1F5B6CD02C0536600051A9ED /* Clamped.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CCF2C0536600051A9ED /* Clamped.swift */; };
+		1F5B6CD82C05552B0051A9ED /* SimplexNoiseFilter in Frameworks */ = {isa = PBXBuildFile; productRef = 1F5B6CD72C05552B0051A9ED /* SimplexNoiseFilter */; };
+		1F5B6CDC2C0558140051A9ED /* MultiplyLumaFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CDB2C0558140051A9ED /* MultiplyLumaFilter.swift */; };
+		1F5B6CDE2C05585B0051A9ED /* MultiplyLuma.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CDD2C05585B0051A9ED /* MultiplyLuma.ci.metal */; };
 		1F6BFDEB2BFF799F00883169 /* ntsc_mtl_demoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */; };
 		1F6BFDED2BFF799F00883169 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEC2BFF799F00883169 /* ContentView.swift */; };
 		1F6BFDEF2BFF79A000883169 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEE2BFF79A000883169 /* Assets.xcassets */; };
@@ -77,6 +80,9 @@
 		1F5B6CCB2C05244F0051A9ED /* CompositeNoiseFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompositeNoiseFilter.swift; sourceTree = "<group>"; };
 		1F5B6CCD2C0525C80051A9ED /* CompositeNoise.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CompositeNoise.ci.metal; sourceTree = "<group>"; };
 		1F5B6CCF2C0536600051A9ED /* Clamped.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Clamped.swift; sourceTree = "<group>"; };
+		1F5B6CD22C0546870051A9ED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		1F5B6CDB2C0558140051A9ED /* MultiplyLumaFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplyLumaFilter.swift; sourceTree = "<group>"; };
+		1F5B6CDD2C05585B0051A9ED /* MultiplyLuma.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = MultiplyLuma.ci.metal; sourceTree = "<group>"; };
 		1F6BFDE72BFF799F00883169 /* ntsc-mtl-demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ntsc-mtl-demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ntsc_mtl_demoApp.swift; sourceTree = "<group>"; };
 		1F6BFDEC2BFF799F00883169 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -99,6 +105,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F5B6CD82C05552B0051A9ED /* SimplexNoiseFilter in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,6 +132,7 @@
 				1F5B6CC92C050A8E0051A9ED /* YIQCompose.ci.metal */,
 				1F5B6CCD2C0525C80051A9ED /* CompositeNoise.ci.metal */,
 				1F259EEB2C02A2C300937D0A /* IIRFilterSample.ci.metal */,
+				1F5B6CDD2C05585B0051A9ED /* MultiplyLuma.ci.metal */,
 				1F1F9B5E2C03AFAD0085048F /* IIRSideEffect.metal */,
 				1F1F9B602C03B03B0085048F /* IIRFinalImage.metal */,
 			);
@@ -155,6 +163,7 @@
 		1F6BFDE92BFF799F00883169 /* ntsc-mtl-demo */ = {
 			isa = PBXGroup;
 			children = (
+				1F5B6CD22C0546870051A9ED /* Info.plist */,
 				1F6BFE212BFF9EC900883169 /* Resources */,
 				1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */,
 				1F6BFDEC2BFF799F00883169 /* ContentView.swift */,
@@ -189,6 +198,7 @@
 				1F1F9B6A2C03CF690085048F /* Kernels */,
 				1F259EE52C027D0800937D0A /* IIRFilter.swift */,
 				1F5B6CCB2C05244F0051A9ED /* CompositeNoiseFilter.swift */,
+				1F5B6CDB2C0558140051A9ED /* MultiplyLumaFilter.swift */,
 				1F5B6CC32C04F5770051A9ED /* ChromaLowpassFilter.swift */,
 				1F5B6CC72C0509F00051A9ED /* YIQComposeFilter.swift */,
 				1F6BFE262BFFADB700883169 /* NTSCFilter.swift */,
@@ -237,6 +247,7 @@
 			);
 			name = "ntsc-mtl-demo";
 			packageProductDependencies = (
+				1F5B6CD72C05552B0051A9ED /* SimplexNoiseFilter */,
 			);
 			productName = "ntsc-mtl-demo";
 			productReference = 1F6BFDE72BFF799F00883169 /* ntsc-mtl-demo.app */;
@@ -289,6 +300,7 @@
 			);
 			mainGroup = 1F6BFDDE2BFF799F00883169;
 			packageReferences = (
+				1F5B6CD62C05552B0051A9ED /* XCRemoteSwiftPackageReference "SimplexNoiseFilter" */,
 			);
 			productRefGroup = 1F6BFDE82BFF799F00883169 /* Products */;
 			projectDirPath = "";
@@ -337,6 +349,7 @@
 				1F1F9B632C03BEAA0085048F /* ToRGBFilter.swift in Sources */,
 				1F5B6CCE2C0525C80051A9ED /* CompositeNoise.ci.metal in Sources */,
 				1F5B6CCA2C050A8E0051A9ED /* YIQCompose.ci.metal in Sources */,
+				1F5B6CDC2C0558140051A9ED /* MultiplyLumaFilter.swift in Sources */,
 				1F6BFE252BFFADA200883169 /* Blue.ci.metal in Sources */,
 				1F6BFE2A2BFFBFC200883169 /* CameraView.swift in Sources */,
 				1F5B6CC82C0509F00051A9ED /* YIQComposeFilter.swift in Sources */,
@@ -355,6 +368,7 @@
 				1F1F9B692C03C3980085048F /* IIRTransferFunction.swift in Sources */,
 				1F5B6CC22C04D4010051A9ED /* NTSC.swift in Sources */,
 				1FEEA8572C00C47200101141 /* ToYIQ.ci.metal in Sources */,
+				1F5B6CDE2C05585B0051A9ED /* MultiplyLuma.ci.metal in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -511,6 +525,7 @@
 				DEVELOPMENT_TEAM = LD8C254XK3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "ntsc-mtl-demo/Info.plist";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Who wants to party?";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -541,6 +556,7 @@
 				DEVELOPMENT_TEAM = LD8C254XK3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "ntsc-mtl-demo/Info.plist";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Who wants to party?";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -631,6 +647,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1F5B6CD62C05552B0051A9ED /* XCRemoteSwiftPackageReference "SimplexNoiseFilter" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/JoshuaSullivan/SimplexNoiseFilter";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1F5B6CD72C05552B0051A9ED /* SimplexNoiseFilter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1F5B6CD62C05552B0051A9ED /* XCRemoteSwiftPackageReference "SimplexNoiseFilter" */;
+			productName = SimplexNoiseFilter;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1F6BFDDF2BFF799F00883169 /* Project object */;
 }
