@@ -85,7 +85,7 @@ static float4 ProcessPhase(coreimage::sample_t sample, uint32_t chromaPhaseShift
 
 extern "C" float4 ChromaIntoLuma(coreimage::sample_t sample, uint32_t frameNum, PhaseShift phaseShift, int phaseShiftOffset, coreimage::destination dest) {
     int2 intCoord = int2(dest.coord());
-    uint32_t chromaPhaseShift = ChromaPhaseShift(phaseShift, phaseShiftOffset, frameNum, intCoord);
+    uint32_t chromaPhaseShift = ChromaPhaseShift(phaseShift, phaseShiftOffset, frameNum, intCoord * 2);
     
     return ProcessPhase(sample, chromaPhaseShift, intCoord);
 }
