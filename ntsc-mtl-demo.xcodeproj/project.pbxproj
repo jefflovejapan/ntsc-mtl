@@ -35,7 +35,7 @@
 		1F5B6CE02C0629070051A9ED /* FirstColumnFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CDF2C0629070051A9ED /* FirstColumnFilter.swift */; };
 		1F5B6CE22C0629650051A9ED /* FirstColumn.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CE12C0629650051A9ED /* FirstColumn.ci.metal */; };
 		1F5B6CE42C065CFC0051A9ED /* QOnlyFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CE32C065CFC0051A9ED /* QOnlyFilter.swift */; };
-		1F5B6CE62C065D330051A9ED /* QOnly.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CE52C065D330051A9ED /* QOnly.ci.metal */; };
+		1F5B6CE62C065D330051A9ED /* ChannelMixer.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CE52C065D330051A9ED /* ChannelMixer.ci.metal */; };
 		1F5B6CE82C065DB30051A9ED /* IOnlyFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CE72C065DB30051A9ED /* IOnlyFilter.swift */; };
 		1F5B6CEA2C065DCE0051A9ED /* YOnlyFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CE92C065DCE0051A9ED /* YOnlyFilter.swift */; };
 		1F6BFDEB2BFF799F00883169 /* ntsc_mtl_demoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */; };
@@ -91,7 +91,7 @@
 		1F5B6CDF2C0629070051A9ED /* FirstColumnFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstColumnFilter.swift; sourceTree = "<group>"; };
 		1F5B6CE12C0629650051A9ED /* FirstColumn.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = FirstColumn.ci.metal; sourceTree = "<group>"; };
 		1F5B6CE32C065CFC0051A9ED /* QOnlyFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QOnlyFilter.swift; sourceTree = "<group>"; };
-		1F5B6CE52C065D330051A9ED /* QOnly.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = QOnly.ci.metal; sourceTree = "<group>"; };
+		1F5B6CE52C065D330051A9ED /* ChannelMixer.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ChannelMixer.ci.metal; sourceTree = "<group>"; };
 		1F5B6CE72C065DB30051A9ED /* IOnlyFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOnlyFilter.swift; sourceTree = "<group>"; };
 		1F5B6CE92C065DCE0051A9ED /* YOnlyFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YOnlyFilter.swift; sourceTree = "<group>"; };
 		1F6BFDE72BFF799F00883169 /* ntsc-mtl-demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ntsc-mtl-demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -144,7 +144,7 @@
 				1F5B6CE12C0629650051A9ED /* FirstColumn.ci.metal */,
 				1F5B6CDD2C05585B0051A9ED /* MultiplyLuma.ci.metal */,
 				1F1F9B5E2C03AFAD0085048F /* IIRSideEffect.metal */,
-				1F5B6CE52C065D330051A9ED /* QOnly.ci.metal */,
+				1F5B6CE52C065D330051A9ED /* ChannelMixer.ci.metal */,
 				1F1F9B602C03B03B0085048F /* IIRFinalImage.metal */,
 			);
 			path = Kernels;
@@ -355,7 +355,7 @@
 				1F6BFDED2BFF799F00883169 /* ContentView.swift in Sources */,
 				1F6BFDEB2BFF799F00883169 /* ntsc_mtl_demoApp.swift in Sources */,
 				1F5B6CC62C04FCA50051A9ED /* PolynomialMultiply.swift in Sources */,
-				1F5B6CE62C065D330051A9ED /* QOnly.ci.metal in Sources */,
+				1F5B6CE62C065D330051A9ED /* ChannelMixer.ci.metal in Sources */,
 				1FAFEAEE2C00DBA7000D906A /* ToRGB.ci.metal in Sources */,
 				1F1F9B612C03B03B0085048F /* IIRFinalImage.metal in Sources */,
 				1F1F9B672C03C18D0085048F /* ComposeLumaFilter.swift in Sources */,

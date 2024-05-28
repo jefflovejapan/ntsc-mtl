@@ -1,5 +1,5 @@
 //
-//  QOnly.ci.metal
+//  ChannelMixer.ci.metal
 //  ntsc-mtl-demo
 //
 //  Created by Jeffrey Blagdon on 2024-05-28.

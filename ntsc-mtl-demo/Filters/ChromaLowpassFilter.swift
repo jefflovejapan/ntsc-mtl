@@ -29,7 +29,7 @@ class ChromaLowpassFilter: CIFilter {
             let qFunction = Self.lowpassFilter(cutoff: 600000.0, rate: NTSC.rate * bandwidthScale, filterType: filterType)
             qFilter = try! IIRFilter(numerators: qFunction.numerators, denominators: qFunction.denominators, initialCondition: initialCondition, scale: 1, delay: 4)
         case .light:
-            let function = Self.lowpassFilter(cutoff: 2_600_000.0/*26_000_000.0*/, rate: NTSC.rate * bandwidthScale, filterType: filterType)
+            let function = Self.lowpassFilter(cutoff: 2600000.0, rate: NTSC.rate * bandwidthScale, filterType: filterType)
             iFilter = try! IIRFilter(numerators: function.numerators, denominators: function.denominators, initialCondition: initialCondition, scale: 1, delay: 1)
             qFilter = try! IIRFilter(numerators: function.numerators, denominators: function.denominators, initialCondition: initialCondition, scale: 1, delay: 1)
         }
