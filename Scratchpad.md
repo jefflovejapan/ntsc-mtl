@@ -127,7 +127,7 @@ If we weren't doing any filtering, we'd be replacing data in the current frame
 
 ### Stuff to look into
 
-- MetalKit view (to be sure)
+- MetalKit view (to be sure) ✅
 - testing against Rust values
 - better understanding of what the lowpass filters are/should be doing
 - What happens if we use SDR video as the input?
