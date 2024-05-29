@@ -192,7 +192,12 @@ class NTSCFilter: CIFilter {
 //         step0
         let yiq = toYIQ(inputImage: inputImage)
         // step1
-        let lumaed = inputLuma(inputImage: yiq)
+//        let lumaed = inputLuma(inputImage: yiq)
+        let lumaed = {
+            filters.lumaNotchBlur.inputImage = yiq
+            return filters.lumaNotchBlur.outputImage
+        }()
+        
 //        // step2
 //        // TODO: looks super grayscale, check math
 //        let chromaLowpassed = chromaLowpass(inputImage: yiq)
