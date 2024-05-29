@@ -208,7 +208,7 @@ class IIRFilter: CIFilter {
 
 extension IIRFilter {
     static func lumaNotch() -> IIRFilter {
-        let notchFunction = IIRTransferFunction.hardCodedLumaNotch()
+        let notchFunction = IIRTransferFunction.lumaNotch
         return try! IIRFilter(
             numerators: notchFunction.numerators,
             denominators: notchFunction.denominators, 
