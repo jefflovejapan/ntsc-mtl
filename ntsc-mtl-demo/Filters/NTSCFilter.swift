@@ -198,15 +198,15 @@ class NTSCFilter: CIFilter {
 //        // TODO: looks super grayscale, check math
 //        let chromaLowpassed = chromaLowpass(inputImage: yiq)
 //        // step3
-//        let chromaedIntoLuma = chromaIntoLuma(inputImage: lumaed)
+        let chromaedIntoLuma = chromaIntoLuma(inputImage: lumaed)
 //        // step4
-//        let composited = compositePreemphasis(inputImage: chromaedIntoLuma)
+        let composited = compositePreemphasis(inputImage: chromaedIntoLuma)
 ////        // step5
-//        let compositeNoised = compositeNoise(inputImage: composited)
+        let compositeNoised = compositeNoise(inputImage: composited)
 //        let qOnly = qOnly(inputImage: yiq)
 //        let mixed = channelMix(inputImage: yiq, channel: .i)
         // stepFinal
-        let rgb = toRGB(inputImage: lumaed)
+        let rgb = toRGB(inputImage: compositeNoised)
         return rgb
     }
 }
