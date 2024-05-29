@@ -132,3 +132,28 @@ If we weren't doing any filtering, we'd be replacing data in the current frame
 - better understanding of what the lowpass filters are/should be doing
 - What happens if we use SDR video as the input?
 
+- It doesn't matter how many times we feed the same color through the filter, the effect is the same
+- We shouldn't see that initial bump in luma though -- what is happening?
+
+- the transfer function is:
+    - the arguments for frequency and quality are 0.5 and 2 (same in Rust code)
+    - initial condition is firstSample (same in Rust code)
+    -   
+
+        let numerators: [Float] = [gain, middleParam, gain]
+        let denominators: [Float] = [1, middleParam, (2 * gain) - 1]
+- To check floating point error stuff you can just 
+
+Breakthrough!!
+
+- The initial state of the buffers in Rust is *not* equal to the input color. There's something else happening here.
+- There's a z[i] for every sample. That means that z needs to be the size of the image. It also means that we should be able to initialize it to some value f(initialCondition, firstSample)
+- The size of z is equal to the number of nums/dens (so 4 in this case)
+- The `value` argument to `initial_condition` is (I think) the sample/pixel value. 
+- `first_nonzero_coeff` is 1 (verified since we know that 1 is the first denominator for our transfer function)
+- is `initial_condition` only called sometimes? Why do we have .none, .initialSample, and .constant?
+- z[i] just needs to store a value. There are as many zs are there are numerators and denominators. I don't think I need a texture, I just need n zs.
+- To set up the initial condition I just fill z up using a function of initialCondition, initialSample, and numerators and denominators
+    - It might be possible to parallelize this into a single texture, but that's mega-optimizing. For now we can perform the iteration in initialCondition using CIImages and the initial image
+    
+    

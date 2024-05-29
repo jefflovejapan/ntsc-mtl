@@ -10,6 +10,8 @@ import Metal
 
 class IIRFilter: CIFilter {
     struct Kernels {
+        var initialCondition: CIColorKernel
+        var multiply: CIColorKernel
         var filterSample: CIColorKernel
         var sideEffect: CIColorKernel
         var finalImage: CIColorKernel
@@ -22,7 +24,7 @@ class IIRFilter: CIFilter {
     }
     
     private(set) var previousImages: [MTLTexture] = []
-    private static let kernels: Kernels = loadKernels()
+    static let kernels: Kernels = loadKernels()
     private let numerators: [Float]
     private let denominators: [Float]
     private let device: MTLDevice
@@ -33,6 +35,7 @@ class IIRFilter: CIFilter {
     
     enum Error: Swift.Error {
         case noMetalDevice
+        case noNonZeroDenominators
     }
     
     init(numerators: [Float], denominators: [Float], initialCondition: InitialCondition, scale: Float, delay: UInt) throws {
@@ -77,43 +80,92 @@ class IIRFilter: CIFilter {
         let url = Bundle.main.url(forResource: "default", withExtension: "metallib")!
         let data = try! Data(contentsOf: url)
         return Kernels(
+            initialCondition: try! CIColorKernel(functionName: "IIRInitialCondition", fromMetalLibraryData: data),
+            multiply: try! CIColorKernel(functionName: "Multiply", fromMetalLibraryData: data),
             filterSample: try! CIColorKernel(functionName: "IIRFilterSample", fromMetalLibraryData: data),
             sideEffect: try! CIColorKernel(functionName: "IIRSideEffect", fromMetalLibraryData: data),
             finalImage: try! CIColorKernel(functionName: "IIRFinalImage", fromMetalLibraryData: data)
         )
     }
     
-    private func fillTextures(withColor color: CIColor, bounds: CGRect) {
-        let colorImage = CIImage(color: color)
-        for texture in previousImages {
-            ciContext.render(colorImage, to: texture, commandBuffer: nil, bounds: bounds, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
+    private func fillTextures(firstImage: CIImage, initialCondition: InitialCondition, numerators: [Float], denominators: [Float], textures: [MTLTexture]) throws {
+        let image: CIImage
+        switch initialCondition {
+        case .firstSample:
+            image = firstImage
+        case let .constant(color):
+            image = CIImage(color: color).cropped(to: firstImage.extent)
+        case .zero:
+            image = CIImage(color: .black).cropped(to: firstImage.extent)
         }
+        
+        guard let firstNonZeroDenominator = denominators.first(where: { !$0.isZero }) else {
+            throw Error.noNonZeroDenominators
+        }
+        
+        let normalizedNumerators = numerators.map { num in
+            num / firstNonZeroDenominator
+        }
+        let normalizedDenominators = denominators.map { den in
+            den / firstNonZeroDenominator
+        }
+        
+        var bSum: Float = 0
+        for i in numerators.indices {
+            let numI = normalizedNumerators[i]
+            let denI = normalizedDenominators[i]
+            bSum += numI - (denI * normalizedNumerators[0])
+        }
+        let z0Fill = bSum / normalizedDenominators.reduce(0, +)
+        let z0FillColor = CIColor(
+            red: CGFloat(z0Fill),
+            green: CGFloat(z0Fill), 
+            blue: CGFloat(z0Fill),
+            alpha: 1
+        )
+        
+        let initialZ0Image = CIImage(color: z0FillColor).cropped(to: image.extent)
+        render(image: initialZ0Image, toTexture: textures[0])
+        
+        var aSum: Float = 1
+        var cSum: Float = 0
+        for i in 1 ..< numerators.count {
+            let num = normalizedNumerators[i]
+            let den = normalizedNumerators[i]
+            aSum += den
+            cSum += num - (den * normalizedNumerators[0])
+            let image = Self.kernels.initialCondition.apply(
+                extent: image.extent,
+                arguments: [image, initialZ0Image, aSum, cSum])!
+            render(image: image, toTexture: textures[i])
+        }
+        let finalZ0Image = Self.kernels.multiply.apply(extent: image.extent, arguments: [image, initialZ0Image])!
+        render(image: finalZ0Image, toTexture: textures[0])
     }
     
-    private func fillTextures(withImage image: CIImage) {
-        firstColumnFilter.inputImage = image
-        guard let outputImage = firstColumnFilter.outputImage else { return }
-        for texture in previousImages {
-            ciContext.render(outputImage, to: texture, commandBuffer: nil, bounds: image.extent, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
-        }
+    private func render(image: CIImage, toTexture texture: any MTLTexture) {
+        ciContext.render(image, to: texture, commandBuffer: nil, bounds: image.extent, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
     }
-    
-    private let firstColumnFilter = FirstColumnFilter()
-    
+        
     override var outputImage: CIImage? {
         guard let inputImage else {
             return nil
         }
         
         if previousImages.isEmpty {
-            previousImages = Array(Self.textures(size: inputImage.extent.size, device: device).prefix(numerators.count))
-            switch initialCondition {
-            case let .constant(color):
-                fillTextures(withColor: color, bounds: inputImage.extent)
-            case .firstSample:
-                fillTextures(withImage: inputImage)
-            case .zero:
-                break
+            let images = Array(Self.textures(size: inputImage.extent.size, device: device).prefix(numerators.count))
+            do {
+                try fillTextures(
+                    firstImage: inputImage,
+                    initialCondition: initialCondition,
+                    numerators: numerators,
+                    denominators: denominators,
+                    textures: images
+                )
+                self.previousImages = images
+            } catch {
+                print("Couldn't set up IIR initial state: \(error)")
+                return nil
             }
         }
 
@@ -156,7 +208,7 @@ class IIRFilter: CIFilter {
 
 extension IIRFilter {
     static func lumaNotch() -> IIRFilter {
-        let notchFunction = IIRTransferFunction.lumaNotch
+        let notchFunction = IIRTransferFunction.hardCodedLumaNotch()
         return try! IIRFilter(
             numerators: notchFunction.numerators,
             denominators: notchFunction.denominators, 
