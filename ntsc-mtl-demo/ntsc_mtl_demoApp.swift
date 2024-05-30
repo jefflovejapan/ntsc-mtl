@@ -7,6 +7,17 @@
 
 import SwiftUI
 
+#if TESTING
+@main
+struct TestApp: App {
+    var body: some Scene {
+        WindowGroup {
+            Text("Testing...")
+        }
+    }
+}
+
+#else
 @main
 struct ntsc_mtl_demoApp: App {
     var body: some Scene {
@@ -15,3 +26,5 @@ struct ntsc_mtl_demoApp: App {
         }
     }
 }
+#endif
+

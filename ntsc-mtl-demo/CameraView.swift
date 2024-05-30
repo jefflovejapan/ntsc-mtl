@@ -20,6 +20,7 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     private var filter: NTSCFilter!
     
     var isFilterEnabled: Bool
+    var lastImage: CIImage?
     
     init(isFilterEnabled: Bool) {
         let device = MTLCreateSystemDefaultDevice()!
@@ -81,6 +82,7 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         let ciImage = CIImage(cvImageBuffer: pixelBuffer)
         if filter == nil {
             var effect = NTSCEffect.default
+            effect.inputLumaFilter = .notch
             effect.chromaLowpassIn = .light
 //            effect.inputLumaFilter = .box
 //            effect.chromaLowpassIn = .light
@@ -105,8 +107,6 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             self.mtkView.setNeedsDisplay()
         }
     }
-    
-    var lastImage: CIImage?
 }
 
 struct CameraView: UIViewRepresentable {

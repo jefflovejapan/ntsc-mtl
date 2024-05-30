@@ -48,7 +48,7 @@ final class MetalConversionTests: XCTestCase {
         
     func testConverstionToYIQ() throws {
         let inputImage = createTestImage(color: CIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1))
-        filter = NTSCFilter(size: inputImage.extent.size)
+        filter = NTSCFilter(size: inputImage.extent.size, effect: .default)
         let toYIQFilter = filter.filters.toYIQ
         
         toYIQFilter.inputImage = inputImage
@@ -64,7 +64,7 @@ final class MetalConversionTests: XCTestCase {
     
     func testConverstionFromYIQ() throws {
         let inputImage = createTestImage(color: CIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1))
-        filter = NTSCFilter(size: inputImage.extent.size)
+        filter = NTSCFilter(size: inputImage.extent.size, effect: .default)
         let toRGBFilter = filter.filters.toRGB
         
         toRGBFilter.inputImage = inputImage
@@ -81,7 +81,7 @@ final class MetalConversionTests: XCTestCase {
     func testRoundTrip() throws {
         let inputColor = CIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1)
         let inputImage = createTestImage(color: inputColor)
-        filter = NTSCFilter(size: inputImage.extent.size)
+        filter = NTSCFilter(size: inputImage.extent.size, effect: .default)
         let toYIQFilter = filter.filters.toYIQ
         let toRGBFilter = filter.filters.toRGB
         
@@ -104,7 +104,7 @@ final class MetalConversionTests: XCTestCase {
     func testRoundTripHDR() throws {
         let inputColor = CIColor(red: 1.2, green: 1.2, blue: 1.2, alpha: 1)
         let inputImage = createTestImage(color: inputColor)
-        filter = NTSCFilter(size: inputImage.extent.size)
+        filter = NTSCFilter(size: inputImage.extent.size, effect: .default)
         
         let toYIQFilter = filter.filters.toYIQ
         let toRGBFilter = filter.filters.toRGB
@@ -122,5 +122,45 @@ final class MetalConversionTests: XCTestCase {
         XCTAssertEqual(leftB, rightB, accuracy: 0.01)
         let (leftA, rightA) = (channels.0.3, channels.1.3)
         XCTAssertEqual(leftA, rightA, accuracy: 0.01)
+    }
+    
+    func testLumaNotchBlur() throws {
+        let inputColor = CIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1)
+        let inputImage = createTestImage(color: inputColor)
+        filter = NTSCFilter(size: inputImage.extent.size, effect: .default)
+        filter.filters.toYIQ.inputImage = inputImage
+        let yiqImage = try XCTUnwrap(filter.filters.toYIQ.outputImage)
+        
+        var lumaNotched = yiqImage
+        for _ in 0 ..< 100 {
+            filter.filters.lumaNotchBlur.inputImage = yiqImage
+            lumaNotched = try XCTUnwrap(filter.filters.lumaNotchBlur.outputImage)
+        }
+        
+        let yiqColor = try color(from: yiqImage)    // data stored in Y, I, and Q
+        let yiqChannels = yiqColor.channelValues
+        
+        let lumaNotchedColor = try color(from: lumaNotched) // data stored in Y, I, and Q
+        let lumaNotchedChannels = lumaNotchedColor.channelValues
+        
+        XCTAssertEqual(yiqChannels.0, lumaNotchedChannels.0, "Luma shouldn't grow just from running through filter")
+    }
+    
+    func testLumaNotchIIR() throws {
+        let inputColor = CIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1)
+        let inputImage = createTestImage(color: inputColor)
+        let transferFunction = IIRTransferFunction.lumaNotch
+        XCTAssertEqual(transferFunction.numerators, [0.70710677, 6.181724e-8, 0.70710677, 0.0])
+        XCTAssertEqual(transferFunction.denominators, [1.0, 6.181724e-8, 0.41421354, 0.0])
+        let firstNumerator = try XCTUnwrap(transferFunction.numerators.first)
+        let filteredImage = try XCTUnwrap(IIRFilter.kernels.filterSample.apply(extent: inputImage.extent, arguments: [inputImage, inputImage, firstNumerator]))
+        let filteredImageColor = try color(from: filteredImage)
+        let expectedFilteredImageRedChannel = inputColor.channelValues.0 + (CGFloat(firstNumerator) * inputColor.channelValues.0)
+        
+        XCTAssertEqual(expectedFilteredImageRedChannel, filteredImageColor.channelValues.0, accuracy: 0.01)
+        
+        let outputImage = try XCTUnwrap(IIRFilter.kernels.finalImage.apply(extent: inputImage.extent, arguments: [inputImage, filteredImage, IIRFilter.lumaNotch().scale]))
+        let outputColor = try color(from: outputImage)
+        XCTAssertEqual(inputColor.red, outputColor.red)
     }
 }

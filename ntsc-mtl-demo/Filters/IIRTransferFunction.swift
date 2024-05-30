@@ -22,16 +22,23 @@ struct IIRTransferFunction {
             throw Error.notchFrequencyOutOfBounds
         }
         
-        let bandwidth = (frequency / quality) * Float.pi
-        let newFreq = frequency * Float.pi
-        let beta = tan(bandwidth * 0.5)
+        let normalizedBandwidth = (frequency / quality) * .pi
+        let normalizedFrequency = frequency * .pi
+        let gb: Float = 1 / (sqrt(2))
+        
+        
+        let beta = (sqrt(1 - (pow(gb, 2)))/gb) * tan(normalizedBandwidth / 2)
         let gain = 1.0 / (1.0 + beta)
-        let middleParam = -2.0 * cos(newFreq) * gain
+        let middleParam = -2.0 * cos(normalizedFrequency) * gain
         //     let num = vec![gain, -2.0 * freq.cos() * gain, gain];
         let numerators: [Float] = [gain, middleParam, gain]
 //        let den = vec![1.0, -2.0 * freq.cos() * gain, 2.0 * gain - 1.0];
         let denominators: [Float] = [1, middleParam, (2 * gain) - 1]
         return IIRTransferFunction(numerators: numerators, denominators: denominators)
+    }
+    
+    static func hardCodedLumaNotch() -> IIRTransferFunction {
+        return IIRTransferFunction(numerators: [0.70710677, 6.181724e-08, 0.70710677, 0.0], denominators: [1.0, 6.181724e-8, 0.41421354, 0.0])
     }
     
     static func compositePreemphasis(bandwidthScale: Float) -> IIRTransferFunction {
