@@ -1,5 +1,5 @@
 //
-//  ChannelMixerFilter.swift
+//  YIQMixerFilter.swift
 //  ntsc-mtl-demo
 //
 //  Created by Jeffrey Blagdon on 2024-05-28.
@@ -7,14 +7,6 @@
 
 import Foundation
 import CoreImage
-
-/*
- Let's say that we want to take two images, A and B
- 
- We want to mix them according to the yiqChannelMix
- 
- Let's say A is blurred and B is not
- */
 
 class YIQMixerFilter: CIFilter {
     var mixImage: CIImage?

@@ -28,7 +28,7 @@
 		1F5B6CDC2C0558140051A9ED /* MultiplyLumaFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CDB2C0558140051A9ED /* MultiplyLumaFilter.swift */; };
 		1F5B6CDE2C05585B0051A9ED /* MultiplyLuma.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CDD2C05585B0051A9ED /* MultiplyLuma.ci.metal */; };
 		1F5B6CE62C065D330051A9ED /* ChannelMixer.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CE52C065D330051A9ED /* ChannelMixer.ci.metal */; };
-		1F5B6CEA2C065DCE0051A9ED /* ChannelMixerFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CE92C065DCE0051A9ED /* ChannelMixerFilter.swift */; };
+		1F5B6CEA2C065DCE0051A9ED /* YIQMixerFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CE92C065DCE0051A9ED /* YIQMixerFilter.swift */; };
 		1F6BFDEB2BFF799F00883169 /* ntsc_mtl_demoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */; };
 		1F6BFDED2BFF799F00883169 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEC2BFF799F00883169 /* ContentView.swift */; };
 		1F6BFDEF2BFF79A000883169 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEE2BFF79A000883169 /* Assets.xcassets */; };
@@ -79,7 +79,7 @@
 		1F5B6CDB2C0558140051A9ED /* MultiplyLumaFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplyLumaFilter.swift; sourceTree = "<group>"; };
 		1F5B6CDD2C05585B0051A9ED /* MultiplyLuma.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = MultiplyLuma.ci.metal; sourceTree = "<group>"; };
 		1F5B6CE52C065D330051A9ED /* ChannelMixer.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ChannelMixer.ci.metal; sourceTree = "<group>"; };
-		1F5B6CE92C065DCE0051A9ED /* ChannelMixerFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelMixerFilter.swift; sourceTree = "<group>"; };
+		1F5B6CE92C065DCE0051A9ED /* YIQMixerFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YIQMixerFilter.swift; sourceTree = "<group>"; };
 		1F6BFDE72BFF799F00883169 /* ntsc-mtl-demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ntsc-mtl-demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ntsc_mtl_demoApp.swift; sourceTree = "<group>"; };
 		1F6BFDEC2BFF799F00883169 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -206,7 +206,7 @@
 				1F6BFE262BFFADB700883169 /* NTSCFilter.swift */,
 				1FCC1D2E2C0A0BB400943847 /* BoxBlurFilter.swift */,
 				1FCC1D302C0A0C2700943847 /* YIQChannels.swift */,
-				1F5B6CE92C065DCE0051A9ED /* ChannelMixerFilter.swift */,
+				1F5B6CE92C065DCE0051A9ED /* YIQMixerFilter.swift */,
 				1F1F9B682C03C3980085048F /* IIRTransferFunction.swift */,
 				1F5B6CC12C04D4010051A9ED /* NTSC.swift */,
 				1F259EDB2C022F7500937D0A /* NTSCEffect.swift */,
@@ -365,7 +365,7 @@
 				1F259EDE2C02399C00937D0A /* NTSCEffect+Defaults.swift in Sources */,
 				1FF726542C07EB8F0011669D /* IIRInitialCondition.ci.metal in Sources */,
 				1FB400B22C096D8800B95733 /* RoundTrip.ci.metal in Sources */,
-				1F5B6CEA2C065DCE0051A9ED /* ChannelMixerFilter.swift in Sources */,
+				1F5B6CEA2C065DCE0051A9ED /* YIQMixerFilter.swift in Sources */,
 				1F5B6CBE2C04BB970051A9ED /* ChromaIntoLumaFilter.swift in Sources */,
 				1F5B6CD02C0536600051A9ED /* Clamped.swift in Sources */,
 				1F1F9B692C03C3980085048F /* IIRTransferFunction.swift in Sources */,

@@ -8,6 +8,10 @@
 import CoreImage
 import Metal
 
+/*
+ I don't need to apply factors every step of the way -- that only needs to happen ****AT THE END***
+ */
+
 class IIRFilter: CIFilter {
     struct Kernels {
         var initialCondition: CIColorKernel
@@ -26,6 +30,7 @@ class IIRFilter: CIFilter {
     private(set) var zTextures: [MTLTexture] = []
     static let kernels: Kernels = loadKernels()
     var channelMix: YIQChannels = .all
+    private let channelMixer = YIQMixerFilter()
     private let numerators: [Float]
     private let denominators: [Float]
     private let device: MTLDevice
@@ -160,10 +165,10 @@ class IIRFilter: CIFilter {
             cSum += (num - (den * normalizedNumerators[0]))
             let zImage = Self.kernels.initialCondition.apply(
                 extent: image.extent,
-                arguments: [image, initialZ0Image, aSum, cSum, channelMix.channelMix])!
+                arguments: [image, initialZ0Image, aSum, cSum])!
             render(image: zImage, toTexture: textures[i])
         }
-        let finalZ0Image = Self.kernels.multiply.apply(extent: image.extent, arguments: [image, initialZ0Image, channelMix.channelMix])!
+        let finalZ0Image = Self.kernels.multiply.apply(extent: image.extent, arguments: [image, initialZ0Image, ])!
         render(image: finalZ0Image, toTexture: textures[0])
     }
     
@@ -200,7 +205,7 @@ class IIRFilter: CIFilter {
         guard let num = numerators.first else {
             return nil
         }
-        guard let filteredImage = Self.kernels.filterSample.apply(extent: inputImage.extent, arguments: [inputImage, tex0, num, channelMix.channelMix]) else {
+        guard let filteredImage = Self.kernels.filterSample.apply(extent: inputImage.extent, arguments: [inputImage, tex0, num]) else {
             return nil
         }
         for i in numerators.indices {
@@ -218,8 +223,7 @@ class IIRFilter: CIFilter {
                     sideEffectIPlus1,
                     filteredImage,
                     numerators[nextIdx],
-                    denominators[nextIdx],
-                    channelMix.channelMix
+                    denominators[nextIdx]
                 ]
             ) {
                 render(image: sideEffected, toTexture: zTextures[i])
@@ -227,7 +231,11 @@ class IIRFilter: CIFilter {
                 break
             }
         }
-        return Self.kernels.finalImage.apply(extent: inputImage.extent, arguments: [inputImage, filteredImage, scale, channelMix.channelMix])
+        let finalImage = Self.kernels.finalImage.apply(extent: inputImage.extent, arguments: [inputImage, filteredImage, scale])
+        channelMixer.mixImage = finalImage
+        channelMixer.yiqMix = channelMix
+        channelMixer.inverseMixImage = inputImage
+        return channelMixer.outputImage
     }
 }
 
