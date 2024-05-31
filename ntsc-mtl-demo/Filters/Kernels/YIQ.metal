@@ -18,5 +18,5 @@ float3(0.299, 0.587, 0.114),\
 float3(0.595716, -0.274453, -0.321263),\
 float3(0.211456, -0.522591, 0.311135))
 
-#define ToYIQ(rgb) (RGB_TO_YIQ_MATRIX * (rgb))
-#define ToRGB(yiq) (YIQ_TO_RGB_MATRIX * (yiq))
+#define ToYIQ(rgba) float4(RGB_TO_YIQ_MATRIX * (rgba.xyz), rgba.w)
+#define ToRGB(yiqa) float4(YIQ_TO_RGB_MATRIX * (yiqa.xyz), yiqa.w)

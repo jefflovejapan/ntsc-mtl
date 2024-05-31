@@ -27,8 +27,7 @@ class NTSCFilter: CIFilter {
     }
     
     class Filters {
-        let composeLuma: ComposeLumaFilter
-        let lumaBoxBlur: CIFilter
+        let lumaBoxBlur: BoxBlurFilter
         let lumaNotchBlur: IIRFilter
         let chromaLowpassLight: ChromaLowpassFilter
         let chromaLowpassFull: ChromaLowpassFilter
@@ -37,8 +36,7 @@ class NTSCFilter: CIFilter {
         let compositeNoise: CompositeNoiseFilter
         
         init(
-            composeLuma: ComposeLumaFilter,
-            lumaBoxBlur: CIFilter,
+            lumaBoxBlur: BoxBlurFilter,
             lumaNotchBlur: IIRFilter,
             chromaLowpassLight: ChromaLowpassFilter,
             chromaLowpassFull: ChromaLowpassFilter,
@@ -46,7 +44,6 @@ class NTSCFilter: CIFilter {
             compositePreemphasis: IIRFilter,
             compositeNoise: CompositeNoiseFilter
         ) {
-            self.composeLuma = composeLuma
             self.lumaBoxBlur = lumaBoxBlur
             self.lumaNotchBlur = lumaNotchBlur
             self.chromaLowpassLight = chromaLowpassLight
@@ -59,8 +56,7 @@ class NTSCFilter: CIFilter {
     
     private func newFilters() -> Filters {
         return Filters(
-            composeLuma: ComposeLumaFilter(),
-            lumaBoxBlur: newBoxBlurFilter(),
+            lumaBoxBlur: BoxBlurFilter(),
             lumaNotchBlur: IIRFilter.lumaNotch(),
             chromaLowpassLight: ChromaLowpassFilter(
                 intensity: .light,
@@ -82,33 +78,19 @@ class NTSCFilter: CIFilter {
         )
     }
     
-    private func newBoxBlurFilter() -> CIFilter {
-        let boxBlur = CIFilter.boxBlur()
-        boxBlur.radius = 4
-        return boxBlur
-    }
-    
     // Step 0
     private func inputLuma(inputImage: CIImage?) -> CIImage? {
         guard let inputImage else { return nil }
-        let lumaed: CIImage?
         switch effect.inputLumaFilter {
         case .box:
-            self.filters.lumaBoxBlur.setValue(inputImage, forKey: kCIInputImageKey)
-            lumaed = self.filters.lumaBoxBlur.outputImage
+            self.filters.lumaBoxBlur.inputImage = inputImage
+            return self.filters.lumaBoxBlur.outputImage
         case .notch:
             self.filters.lumaNotchBlur.inputImage = inputImage
-            lumaed = self.filters.lumaNotchBlur.outputImage
+            return self.filters.lumaNotchBlur.outputImage
         case .none:
-            lumaed = inputImage
+            return inputImage
         }
-        guard let lumaed else {
-            return nil
-        }
-        
-        self.filters.composeLuma.yImage = lumaed
-        self.filters.composeLuma.iqImage = inputImage
-        return self.filters.composeLuma.outputImage
     }
     
     // Step 1
@@ -150,17 +132,18 @@ class NTSCFilter: CIFilter {
     override var outputImage: CIImage? {
         // step 0
         let lumaed = inputLuma(inputImage: inputImage)
+        return lumaed
         
-        // step 1
-        // TODO: looks super grayscale, check math
-        let chromaLowpassed = chromaLowpass(inputImage: lumaed)
-        // step 2
-        let chromaedIntoLuma = chromaIntoLuma(inputImage: chromaLowpassed)
-        // step 3
-        let composited = compositePreemphasis(inputImage: chromaedIntoLuma)
-        // step 4
-        let compositeNoised = compositeNoise(inputImage: composited)
-        return compositeNoised
+//        // step 1
+//        // TODO: looks super grayscale, check math
+//        let chromaLowpassed = chromaLowpass(inputImage: lumaed)
+//        // step 2
+//        let chromaedIntoLuma = chromaIntoLuma(inputImage: chromaLowpassed)
+//        // step 3
+//        let composited = compositePreemphasis(inputImage: chromaedIntoLuma)
+//        // step 4
+//        let compositeNoised = compositeNoise(inputImage: composited)
+//        return compositeNoised
     }
 }
 

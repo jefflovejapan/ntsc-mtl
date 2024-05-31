@@ -8,13 +8,18 @@
 import Foundation
 import CoreImage
 
-class ChannelMixerFilter: CIFilter {
-    @objc dynamic var inputImage: CIImage?
-    var factors: CIVector?
-    
-    static let yOnlyFactors = CIVector(x: 1, y: 0, z: 0, w: 1)
-    static let iOnlyFactors = CIVector(x: 0, y: 1, z: 0, w: 1)
-    static let qOnlyFactors = CIVector(x: 0, y: 0, z: 1, w: 1)
+/*
+ Let's say that we want to take two images, A and B
+ 
+ We want to mix them according to the yiqChannelMix
+ 
+ Let's say A is blurred and B is not
+ */
+
+class YIQMixerFilter: CIFilter {
+    var mixImage: CIImage?
+    var inverseMixImage: CIImage?
+    var yiqMix: YIQChannels = .all
     
     private static let kernel = loadKernel()
     private static func loadKernel() -> CIColorKernel {
@@ -25,7 +30,7 @@ class ChannelMixerFilter: CIFilter {
     }
     
     override var outputImage: CIImage? {
-        guard let inputImage, let factors else { return nil }
-        return Self.kernel.apply(extent: inputImage.extent, roiCallback: { $1 }, arguments: [inputImage, factors])
+        guard let mixImage, let inverseMixImage else { return nil }
+        return Self.kernel.apply(extent: mixImage.extent, roiCallback: { $1 }, arguments: [mixImage, inverseMixImage, yiqMix.channelMix])
     }
 }
