@@ -255,12 +255,14 @@ extension IIRFilter {
     
     static func compositePreemphasis(_ compositePreemphasis: Float, bandwidthScale: Float) -> IIRFilter {
         let preemphasisFunction = IIRTransferFunction.compositePreemphasis(bandwidthScale: bandwidthScale)
-        return try! IIRFilter(
+        let filter = try! IIRFilter(
             numerators: preemphasisFunction.numerators,
             denominators: preemphasisFunction.denominators, 
             initialCondition: .zero,
             scale: -compositePreemphasis,
             delay: 0
         )
+        filter.channelMix = .y
+        return filter
     }
 }

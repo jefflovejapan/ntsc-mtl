@@ -141,11 +141,11 @@ class NTSCFilter: CIFilter {
         // step 2
         let chromaedIntoLuma = chromaIntoLuma(inputImage: lumaed)
 //        // step 3
-//        let composited = compositePreemphasis(inputImage: chromaedIntoLuma)
+        let composited = compositePreemphasis(inputImage: chromaedIntoLuma)
 //        // step 4
 //        let compositeNoised = compositeNoise(inputImage: composited)
 //        return compositeNoised
-        return chromaedIntoLuma
+        return composited
     }
 }
 
