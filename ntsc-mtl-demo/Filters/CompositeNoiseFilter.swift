@@ -27,24 +27,21 @@ class CompositeNoiseFilter: CIFilter {
     required init?(coder: NSCoder) {
         fatalError("Not implemented")
     }
-     
-//    private let lumaComposeFilter = ComposeLumaFilter()
-    
+         
     override var outputImage: CIImage? {
-        return inputImage
-//        let nextX: UInt8 = rng.next(upperBound: 100)
-//        let nextY: UInt8 = rng.next(upperBound: 100)
-//        simplexNoise.offsetX = Float(nextX)
-//        simplexNoise.offsetY = Float(nextY)
-//        
-//        guard let inputImage else {
-//            return nil
-//        }
-//        
-//        guard let noise = simplexNoise.outputImage else { return nil }
-//        multiplyLuma.intensity = self.noise?.intensity ?? MultiplyLumaFilter.defaultIntensity
-//        multiplyLuma.mainImage = inputImage
-//        multiplyLuma.otherImage = noise
-//        return multiplyLuma.outputImage
+        let nextX: UInt8 = rng.next(upperBound: 100)
+        let nextY: UInt8 = rng.next(upperBound: 100)
+        simplexNoise.offsetX = Float(nextX)
+        simplexNoise.offsetY = Float(nextY)
+        
+        guard let inputImage else {
+            return nil
+        }
+        
+        guard let noise = simplexNoise.outputImage else { return nil }
+        multiplyLuma.intensity = self.noise?.intensity ?? MultiplyLumaFilter.defaultIntensity
+        multiplyLuma.mainImage = inputImage
+        multiplyLuma.otherImage = noise
+        return multiplyLuma.outputImage
     }
 }

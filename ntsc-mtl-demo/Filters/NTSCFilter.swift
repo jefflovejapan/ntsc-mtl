@@ -132,7 +132,6 @@ class NTSCFilter: CIFilter {
     override var outputImage: CIImage? {
         // step 0
         let lumaed = inputLuma(inputImage: inputImage)
-//        return lumaed
         
 //        // step 1
 //        // TODO: looks super grayscale, check math
@@ -143,9 +142,8 @@ class NTSCFilter: CIFilter {
 //        // step 3
         let composited = compositePreemphasis(inputImage: chromaedIntoLuma)
 //        // step 4
-//        let compositeNoised = compositeNoise(inputImage: composited)
-//        return compositeNoised
-        return composited
+        let compositeNoised = compositeNoise(inputImage: composited)
+        return compositeNoised
     }
 }
 
