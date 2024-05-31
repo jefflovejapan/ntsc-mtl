@@ -9,7 +9,7 @@
 #include <CoreImage/CoreImage.h>
 using namespace metal;
 
-extern "C" float4 ChannelMixer(coreimage::sample_t mixImage, coreimage::sample_t inverseMixImage, float4 factors)
+extern "C" float4 YIQMix(coreimage::sample_t mixImage, coreimage::sample_t inverseMixImage, float4 factors)
 {
     float4 mixedImage = factors * ToYIQ(mixImage);
     float4 unmixedImage = (1 - factors) * ToYIQ(inverseMixImage);

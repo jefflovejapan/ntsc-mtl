@@ -18,7 +18,7 @@ class YIQMixerFilter: CIFilter {
         let url = Bundle.main.url(forResource: "default", withExtension: "metallib")!
         let data = try! Data(contentsOf: url)
 
-        return try! CIColorKernel(functionName: "ChannelMixer", fromMetalLibraryData: data)
+        return try! CIColorKernel(functionName: "YIQMix", fromMetalLibraryData: data)
     }
     
     override var outputImage: CIImage? {

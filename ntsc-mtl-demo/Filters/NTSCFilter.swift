@@ -29,8 +29,8 @@ class NTSCFilter: CIFilter {
     class Filters {
         let lumaBoxBlur: BoxBlurFilter
         let lumaNotchBlur: IIRFilter
-//        let chromaLowpassLight: ChromaLowpassFilter
-//        let chromaLowpassFull: ChromaLowpassFilter
+        let chromaLowpassLight: ChromaLowpassFilter
+        let chromaLowpassFull: ChromaLowpassFilter
         let chromaIntoLuma: ChromaIntoLumaFilter
         let compositePreemphasis: IIRFilter
         let compositeNoise: CompositeNoiseFilter
@@ -38,16 +38,16 @@ class NTSCFilter: CIFilter {
         init(
             lumaBoxBlur: BoxBlurFilter,
             lumaNotchBlur: IIRFilter,
-//            chromaLowpassLight: ChromaLowpassFilter,
-//            chromaLowpassFull: ChromaLowpassFilter,
+            chromaLowpassLight: ChromaLowpassFilter,
+            chromaLowpassFull: ChromaLowpassFilter,
             chromaIntoLuma: ChromaIntoLumaFilter,
             compositePreemphasis: IIRFilter,
             compositeNoise: CompositeNoiseFilter
         ) {
             self.lumaBoxBlur = lumaBoxBlur
             self.lumaNotchBlur = lumaNotchBlur
-//            self.chromaLowpassLight = chromaLowpassLight
-//            self.chromaLowpassFull = chromaLowpassFull
+            self.chromaLowpassLight = chromaLowpassLight
+            self.chromaLowpassFull = chromaLowpassFull
             self.chromaIntoLuma = chromaIntoLuma
             self.compositePreemphasis = compositePreemphasis
             self.compositeNoise = compositeNoise
@@ -58,16 +58,16 @@ class NTSCFilter: CIFilter {
         return Filters(
             lumaBoxBlur: BoxBlurFilter(),
             lumaNotchBlur: IIRFilter.lumaNotch(),
-//            chromaLowpassLight: ChromaLowpassFilter(
-//                intensity: .light,
-//                bandwidthScale: effect.bandwidthScale,
-//                filterType: effect.filterType
-//            ),
-//            chromaLowpassFull: ChromaLowpassFilter(
-//                intensity: .full,
-//                bandwidthScale: effect.bandwidthScale,
-//                filterType: effect.filterType
-//            ),
+            chromaLowpassLight: ChromaLowpassFilter(
+                intensity: .light,
+                bandwidthScale: effect.bandwidthScale,
+                filterType: effect.filterType
+            ),
+            chromaLowpassFull: ChromaLowpassFilter(
+                intensity: .full,
+                bandwidthScale: effect.bandwidthScale,
+                filterType: effect.filterType
+            ),
             chromaIntoLuma: ChromaIntoLumaFilter(),
             // TODO: Is this going to break when compositePreemphasis and bandwidthScale dynamically change?
             compositePreemphasis: IIRFilter.compositePreemphasis(
@@ -95,18 +95,17 @@ class NTSCFilter: CIFilter {
     
     // Step 1
     private func chromaLowpass(inputImage: CIImage?) -> CIImage? {
-        return inputImage
-//        guard let inputImage else { return nil }
-//        switch effect.chromaLowpassIn {
-//        case .none:
-//            return inputImage
-//        case .light:
-//            filters.chromaLowpassLight.inputImage = inputImage
-//            return filters.chromaLowpassLight.outputImage
-//        case .full:
-//            filters.chromaLowpassFull.inputImage = inputImage
-//            return filters.chromaLowpassFull.outputImage
-//        }
+        guard let inputImage else { return nil }
+        switch effect.chromaLowpassIn {
+        case .none:
+            return inputImage
+        case .light:
+            filters.chromaLowpassLight.inputImage = inputImage
+            return filters.chromaLowpassLight.outputImage
+        case .full:
+            filters.chromaLowpassFull.inputImage = inputImage
+            return filters.chromaLowpassFull.outputImage
+        }
     }
     
     // Step 2
@@ -132,12 +131,13 @@ class NTSCFilter: CIFilter {
     
     override var outputImage: CIImage? {
         // step 0
-        let lumaed = inputLuma(inputImage: inputImage)
-        return lumaed
+//        let lumaed = inputLuma(inputImage: inputImage)
+//        return lumaed
         
 //        // step 1
 //        // TODO: looks super grayscale, check math
-//        let chromaLowpassed = chromaLowpass(inputImage: lumaed)
+        let chromaLowpassed = chromaLowpass(inputImage: inputImage)
+        return chromaLowpassed
 //        // step 2
 //        let chromaedIntoLuma = chromaIntoLuma(inputImage: chromaLowpassed)
 //        // step 3

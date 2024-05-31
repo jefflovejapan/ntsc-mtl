@@ -83,9 +83,7 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         if filter == nil {
             var effect = NTSCEffect.default
             effect.inputLumaFilter = .notch
-//            effect.chromaLowpassIn = .light
-//            effect.inputLumaFilter = .box
-//            effect.chromaLowpassIn = .light
+            effect.chromaLowpassIn = .full
             self.filter = NTSCFilter(size: ciImage.extent.size, effect: effect)
         }
         
