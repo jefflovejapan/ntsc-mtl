@@ -8,5 +8,5 @@
 import Foundation
 
 enum NTSC {
-    static let rate: Float = (315000000.00 / 88.0) * 4.0
+    static let rate: Float = (315_000_000.00 / 88.0) * 4.0
 }

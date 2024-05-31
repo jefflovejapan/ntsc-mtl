@@ -8,6 +8,10 @@
 import CoreImage
 import Metal
 
+/*
+ I don't need to apply factors every step of the way -- that only needs to happen ****AT THE END***
+ */
+
 class IIRFilter: CIFilter {
     struct Kernels {
         var initialCondition: CIColorKernel
@@ -23,19 +27,40 @@ class IIRFilter: CIFilter {
         case constant(CIColor)
     }
     
-    private(set) var previousImages: [MTLTexture] = []
+    private(set) var zTextures: [MTLTexture] = []
     static let kernels: Kernels = loadKernels()
+    var channelMix: YIQChannels = .all
+    private let channelMixer = YIQMixerFilter()
     private let numerators: [Float]
     private let denominators: [Float]
     private let device: MTLDevice
     private let ciContext: CIContext
     private let initialCondition: InitialCondition
-    var inputImage: CIImage?
+    var inputImage: CIImage? {
+        didSet {
+            if let inputImage, zTextures.isEmpty {
+                try! setupInitialCondition(inputImage: inputImage)
+            }
+        }
+    }
     var scale: Float
     
     enum Error: Swift.Error {
         case noMetalDevice
         case noNonZeroDenominators
+        case couldntFillTextures
+    }
+    
+    private func setupInitialCondition(inputImage: CIImage) throws {
+        let images = Array(Self.textures(size: inputImage.extent.size, device: device).prefix(numerators.count))
+        try fillTextures(
+            firstImage: inputImage,
+            initialCondition: initialCondition,
+            numerators: numerators,
+            denominators: denominators,
+            textures: images
+        )
+        self.zTextures = images
     }
     
     init(numerators: [Float], denominators: [Float], initialCondition: InitialCondition, scale: Float, delay: UInt) throws {
@@ -97,24 +122,28 @@ class IIRFilter: CIFilter {
             image = CIImage(color: color).cropped(to: firstImage.extent)
         case .zero:
             image = CIImage(color: .black).cropped(to: firstImage.extent)
+            for texture in textures {
+                render(image: image, toTexture: texture)
+            }
+            return
         }
         
-        guard let firstNonZeroDenominator = denominators.first(where: { !$0.isZero }) else {
+        guard let firstNonZeroCoeff = denominators.first(where: { !$0.isZero }) else {
             throw Error.noNonZeroDenominators
         }
         
         let normalizedNumerators = numerators.map { num in
-            num / firstNonZeroDenominator
+            num / firstNonZeroCoeff
         }
         let normalizedDenominators = denominators.map { den in
-            den / firstNonZeroDenominator
+            den / firstNonZeroCoeff
         }
         
         var bSum: Float = 0
-        for i in numerators.indices {
-            let numI = normalizedNumerators[i]
-            let denI = normalizedDenominators[i]
-            bSum += numI - (denI * normalizedNumerators[0])
+        for i in 1 ..< numerators.count {
+            let num = normalizedNumerators[i]
+            let den = normalizedDenominators[i]
+            bSum += num - (den * normalizedNumerators[0])
         }
         let z0Fill = bSum / normalizedDenominators.reduce(0, +)
         let z0FillColor = CIColor(
@@ -131,15 +160,15 @@ class IIRFilter: CIFilter {
         var cSum: Float = 0
         for i in 1 ..< numerators.count {
             let num = normalizedNumerators[i]
-            let den = normalizedNumerators[i]
+            let den = normalizedDenominators[i]
             aSum += den
-            cSum += num - (den * normalizedNumerators[0])
-            let image = Self.kernels.initialCondition.apply(
+            cSum += (num - (den * normalizedNumerators[0]))
+            let zImage = Self.kernels.initialCondition.apply(
                 extent: image.extent,
                 arguments: [image, initialZ0Image, aSum, cSum])!
-            render(image: image, toTexture: textures[i])
+            render(image: zImage, toTexture: textures[i])
         }
-        let finalZ0Image = Self.kernels.multiply.apply(extent: image.extent, arguments: [image, initialZ0Image])!
+        let finalZ0Image = Self.kernels.multiply.apply(extent: image.extent, arguments: [image, initialZ0Image, ])!
         render(image: finalZ0Image, toTexture: textures[0])
     }
     
@@ -152,7 +181,7 @@ class IIRFilter: CIFilter {
             return nil
         }
         
-        if previousImages.isEmpty {
+        if zTextures.isEmpty {
             let images = Array(Self.textures(size: inputImage.extent.size, device: device).prefix(numerators.count))
             do {
                 try fillTextures(
@@ -162,21 +191,21 @@ class IIRFilter: CIFilter {
                     denominators: denominators,
                     textures: images
                 )
-                self.previousImages = images
+                self.zTextures = images
             } catch {
                 print("Couldn't set up IIR initial state: \(error)")
                 return nil
             }
         }
 
-        guard let firstImage = CIImage(mtlTexture: previousImages[0]) else {
+        guard let tex0 = CIImage(mtlTexture: zTextures[0]) else {
             return nil
         }
         
         guard let num = numerators.first else {
             return nil
         }
-        guard let filteredImage = Self.kernels.filterSample.apply(extent: inputImage.extent, arguments: [inputImage, firstImage, num]) else {
+        guard let filteredImage = Self.kernels.filterSample.apply(extent: inputImage.extent, arguments: [inputImage, tex0, num]) else {
             return nil
         }
         for i in numerators.indices {
@@ -184,10 +213,10 @@ class IIRFilter: CIFilter {
             guard nextIdx < numerators.count else {
                 break
             }
-            guard let sideEffectIPlus1 = CIImage(mtlTexture: previousImages[nextIdx]) else {
+            guard let sideEffectIPlus1 = CIImage(mtlTexture: zTextures[nextIdx]) else {
                 break
             }
-            if let sideEffectI = Self.kernels.sideEffect.apply(
+            if let sideEffected = Self.kernels.sideEffect.apply(
                 extent: inputImage.extent,
                 arguments: [
                     inputImage,
@@ -197,35 +226,43 @@ class IIRFilter: CIFilter {
                     denominators[nextIdx]
                 ]
             ) {
-                ciContext.render(sideEffectI, to: previousImages[i], commandBuffer: nil, bounds: sideEffectI.extent, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
+                render(image: sideEffected, toTexture: zTextures[i])
             } else {
                 break
             }
         }
-        return Self.kernels.finalImage.apply(extent: inputImage.extent, arguments: [inputImage, filteredImage, scale])
+        let finalImage = Self.kernels.finalImage.apply(extent: inputImage.extent, arguments: [inputImage, filteredImage, scale])
+        channelMixer.mixImage = finalImage
+        channelMixer.yiqMix = channelMix
+        channelMixer.inverseMixImage = inputImage
+        return channelMixer.outputImage
     }
 }
 
 extension IIRFilter {
     static func lumaNotch() -> IIRFilter {
         let notchFunction = IIRTransferFunction.lumaNotch
-        return try! IIRFilter(
+        let filter = try! IIRFilter(
             numerators: notchFunction.numerators,
             denominators: notchFunction.denominators, 
             initialCondition: .firstSample,
             scale: 1.0,
             delay: 0
         )
+        filter.channelMix = .y
+        return filter
     }
     
     static func compositePreemphasis(_ compositePreemphasis: Float, bandwidthScale: Float) -> IIRFilter {
         let preemphasisFunction = IIRTransferFunction.compositePreemphasis(bandwidthScale: bandwidthScale)
-        return try! IIRFilter(
+        let filter = try! IIRFilter(
             numerators: preemphasisFunction.numerators,
             denominators: preemphasisFunction.denominators, 
             initialCondition: .zero,
             scale: -compositePreemphasis,
             delay: 0
         )
+        filter.channelMix = .y
+        return filter
     }
 }

@@ -22,14 +22,15 @@ class ChromaLowpassFilter: CIFilter {
     init(intensity: Intensity, bandwidthScale: Float, filterType: FilterType) {
         self.intensity = intensity
         let initialCondition: IIRFilter.InitialCondition = .zero
+        let rate = NTSC.rate * bandwidthScale
         switch intensity {
         case .full:
-            let iFunction = Self.lowpassFilter(cutoff: 1300000.0, rate: NTSC.rate * bandwidthScale, filterType: filterType)
+            let iFunction = Self.lowpassFilter(cutoff: 1_300_000.0, rate: rate, filterType: filterType)
             iFilter = try! IIRFilter(numerators: iFunction.numerators, denominators: iFunction.denominators, initialCondition: initialCondition, scale: 1, delay: 2)
-            let qFunction = Self.lowpassFilter(cutoff: 600000.0, rate: NTSC.rate * bandwidthScale, filterType: filterType)
+            let qFunction = Self.lowpassFilter(cutoff: 600_000.0, rate: rate, filterType: filterType)
             qFilter = try! IIRFilter(numerators: qFunction.numerators, denominators: qFunction.denominators, initialCondition: initialCondition, scale: 1, delay: 4)
         case .light:
-            let function = Self.lowpassFilter(cutoff: 2600000.0, rate: NTSC.rate * bandwidthScale, filterType: filterType)
+            let function = Self.lowpassFilter(cutoff: 2_600_000.0, rate: rate, filterType: filterType)
             iFilter = try! IIRFilter(numerators: function.numerators, denominators: function.denominators, initialCondition: initialCondition, scale: 1, delay: 1)
             qFilter = try! IIRFilter(numerators: function.numerators, denominators: function.denominators, initialCondition: initialCondition, scale: 1, delay: 1)
         }
@@ -40,7 +41,7 @@ class ChromaLowpassFilter: CIFilter {
         fatalError("Not implemented")
     }
     
-    private static func lowpassFilter(cutoff: Float, rate: Float, filterType: FilterType) -> IIRTransferFunction {
+    static func lowpassFilter(cutoff: Float, rate: Float, filterType: FilterType) -> IIRTransferFunction {
         switch filterType {
         case .constantK:
             let lowpass = IIRTransferFunction.lowpassFilter(cutoff: cutoff, rate: rate)

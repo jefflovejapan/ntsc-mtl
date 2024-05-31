@@ -27,9 +27,7 @@ class CompositeNoiseFilter: CIFilter {
     required init?(coder: NSCoder) {
         fatalError("Not implemented")
     }
-     
-    private let lumaComposeFilter = ComposeLumaFilter()
-    
+         
     override var outputImage: CIImage? {
         let nextX: UInt8 = rng.next(upperBound: 100)
         let nextY: UInt8 = rng.next(upperBound: 100)

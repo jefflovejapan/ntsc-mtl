@@ -5,6 +5,7 @@
 //  Created by Jeffrey Blagdon on 2024-05-27.
 //
 
+#include "YIQ.metal"
 #include <CoreImage/CoreImage.h>
 using namespace metal;
 
@@ -77,17 +78,18 @@ static uint32_t ChromaPhaseShift(PhaseShift phaseShift, int phaseShiftOffset, ui
     }
 }
 
-static float4 ProcessPhase(coreimage::sample_t sample, uint32_t chromaPhaseShift, int2 coord) {
+static float4 ProcessPhase(float4 yiqSample, uint32_t chromaPhaseShift, int2 coord) {
     int phase = (coord.y + (chromaPhaseShift & 3)) &3;
-    float newY = sample.r + (sample.g * I_MULT[phase]) + sample.b * Q_MULT[phase];
-    return float4(newY, sample.g, sample.b, sample.a);
+    float newY = yiqSample.x + (yiqSample.y * I_MULT[phase]) + yiqSample.z * Q_MULT[phase];
+    return float4(newY, yiqSample.y, yiqSample.z, yiqSample.w);
 }
 
 extern "C" float4 ChromaIntoLuma(coreimage::sample_t sample, uint32_t frameNum, PhaseShift phaseShift, int phaseShiftOffset, coreimage::destination dest) {
+    float4 yiqSample = ToYIQ(sample);
     int2 intCoord = int2(dest.coord());
     uint32_t chromaPhaseShift = ChromaPhaseShift(phaseShift, phaseShiftOffset, frameNum, intCoord * 2);
-    
-    return ProcessPhase(sample, chromaPhaseShift, intCoord);
+    float4 yiqFinal = ProcessPhase(yiqSample, chromaPhaseShift, intCoord);
+    return ToRGB(yiqFinal);
 }
 
 

@@ -16,6 +16,7 @@ struct IIRTransferFunction {
     }
     
     static let lumaNotch = try! notchFilter(frequency: 0.5, quality: 2)
+    static let rustLumaNotch = try! rustNotchFilter(frequency: 0.5, quality: 2)
     
     static func notchFilter(frequency: Float, quality: Float) throws -> IIRTransferFunction {
         guard (0...1).contains(frequency) else {
@@ -25,16 +26,27 @@ struct IIRTransferFunction {
         let normalizedBandwidth = (frequency / quality) * .pi
         let normalizedFrequency = frequency * .pi
         let gb: Float = 1 / (sqrt(2))
-        
-        
         let beta = (sqrt(1 - (pow(gb, 2)))/gb) * tan(normalizedBandwidth / 2)
         let gain = 1.0 / (1.0 + beta)
         let middleParam = -2.0 * cos(normalizedFrequency) * gain
-        //     let num = vec![gain, -2.0 * freq.cos() * gain, gain];
         let numerators: [Float] = [gain, middleParam, gain]
-//        let den = vec![1.0, -2.0 * freq.cos() * gain, 2.0 * gain - 1.0];
         let denominators: [Float] = [1, middleParam, (2 * gain) - 1]
         return IIRTransferFunction(numerators: numerators, denominators: denominators)
+    }
+    
+    static func rustNotchFilter(frequency: Float, quality: Float) throws -> IIRTransferFunction {
+        guard (0...1).contains(frequency) else {
+            throw Error.notchFrequencyOutOfBounds
+        }
+        
+        let bandwidth: Float = (frequency / quality) * .pi
+        let normalizedFrequency = frequency * .pi
+        let beta = tan(bandwidth * 0.5)
+        let gain: Float = pow(1 + beta, -1)
+        let middleTerm = -2 * cos(normalizedFrequency) * gain
+        let num: [Float] = [gain, middleTerm, gain]
+        let den: [Float] = [1, middleTerm, (2 * gain) - 1]
+        return IIRTransferFunction(numerators: num, denominators: den)
     }
     
     static func hardCodedLumaNotch() -> IIRTransferFunction {
@@ -78,21 +90,76 @@ struct IIRTransferFunction {
     }
     
     static func butterworth(cutoff: Float, rate: Float) -> IIRTransferFunction {
+        /*
+         let coeffs = biquad::Coefficients::<f32>::from_params(
+                 biquad::Type::LowPass,
+                 biquad::Hertz::<f32>::from_hz(rate).unwrap(),
+                 biquad::Hertz::<f32>::from_hz(cutoff.min(rate * 0.5)).unwrap(),
+                 biquad::Q_BUTTERWORTH_F32, // constant
+             )
+             .unwrap();
+         
+         pub fn from_params(
+             filter: Type<f32>, (lowpass)
+             fs: Hertz<f32>, (from_hz(rate))
+             f0: Hertz<f32>, (from_hz(cutoff.min(rate * 0.5))
+             q_value: f32,
+         ) -> Result<Coefficients<f32>, Errors> {
+             if 2.0 * f0.hz() > fs.hz() {
+                 return Err(Errors::OutsideNyquist);
+             }
+
+             if q_value < 0.0 {
+                 return Err(Errors::NegativeQ);
+             }
+
+             let omega = 2.0 * core::f32::consts::PI * f0.hz() / fs.hz();
+
+                 Type::LowPass => {
+                     // The code for omega_s/c and alpha is currently duplicated due to the single pole
+                     // low pass filter not needing it and when creating coefficients are commonly
+                     // assumed to be of low computational complexity.
+                     let omega_s = omega.sin();
+                     let omega_c = omega.cos();
+                     let alpha = omega_s / (2.0 * q_value);
+
+                     let b0 = (1.0 - omega_c) * 0.5;
+                     let b1 = 1.0 - omega_c;
+                     let b2 = (1.0 - omega_c) * 0.5;
+                     let a0 = 1.0 + alpha;
+                     let a1 = -2.0 * omega_c;
+                     let a2 = 1.0 - alpha;
+
+                     Ok(Coefficients {
+                         a1: a1 / a0,
+                         a2: a2 / a0,
+                         b0: b0 / a0,
+                         b1: b1 / a0,
+                         b2: b2 / a0,
+                     })
+                 }
+             }
+         }
+     }
+
+         */
+        
         let newCutoff = min(cutoff, rate * 0.5)
         
         // Calculate normalized frequency
         let omega = 2.0 * .pi * newCutoff / rate
         let cosOmega = cos(omega)
         let sinOmega = sin(omega)
-        let alpha = sinOmega / 2.0
+        let q: Float = sqrt(2) / 2
+        let alpha = (sinOmega / (2.0 * q))
         
         // Butterworth filter (Q factor is sqrt(2)/2 for a Butterworth filter)
+        let b0 = (1.0 - cosOmega) * 0.5
+        let b1 = 1.0 - cosOmega
+        let b2 = (1.0 - cosOmega) * 0.5
         let a0 = 1.0 + alpha
         let a1 = -2.0 * cosOmega
         let a2 = 1.0 - alpha
-        let b0 = (1.0 - cosOmega) / 2.0
-        let b1 = 1.0 - cosOmega
-        let b2 = (1.0 - cosOmega) / 2.0
         
         // Normalize coefficients
         let nums = [b0 / a0, b1 / a0, b2 / a0]
