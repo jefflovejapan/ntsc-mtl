@@ -27,7 +27,6 @@ class NTSCFilter: CIFilter {
     }
     
     class Filters {
-        let toYIQ: ToYIQFilter
         let composeLuma: ComposeLumaFilter
         let lumaBoxBlur: CIFilter
         let lumaNotchBlur: IIRFilter
@@ -36,10 +35,8 @@ class NTSCFilter: CIFilter {
         let chromaIntoLuma: ChromaIntoLumaFilter
         let compositePreemphasis: IIRFilter
         let compositeNoise: CompositeNoiseFilter
-        let toRGB: ToRGBFilter
         
         init(
-            toYIQ: ToYIQFilter,
             composeLuma: ComposeLumaFilter,
             lumaBoxBlur: CIFilter,
             lumaNotchBlur: IIRFilter,
@@ -47,10 +44,8 @@ class NTSCFilter: CIFilter {
             chromaLowpassFull: ChromaLowpassFilter,
             chromaIntoLuma: ChromaIntoLumaFilter,
             compositePreemphasis: IIRFilter,
-            compositeNoise: CompositeNoiseFilter,
-            toRGB: ToRGBFilter
+            compositeNoise: CompositeNoiseFilter
         ) {
-            self.toYIQ = toYIQ
             self.composeLuma = composeLuma
             self.lumaBoxBlur = lumaBoxBlur
             self.lumaNotchBlur = lumaNotchBlur
@@ -59,13 +54,11 @@ class NTSCFilter: CIFilter {
             self.chromaIntoLuma = chromaIntoLuma
             self.compositePreemphasis = compositePreemphasis
             self.compositeNoise = compositeNoise
-            self.toRGB = toRGB
         }
     }
     
     private func newFilters() -> Filters {
         return Filters(
-            toYIQ: ToYIQFilter(),
             composeLuma: ComposeLumaFilter(),
             lumaBoxBlur: newBoxBlurFilter(),
             lumaNotchBlur: IIRFilter.lumaNotch(),
@@ -85,8 +78,7 @@ class NTSCFilter: CIFilter {
                 effect.compositePreemphasis,
                 bandwidthScale: effect.bandwidthScale
             ), 
-            compositeNoise: CompositeNoiseFilter(noise: effect.compositeNoise),
-            toRGB: ToRGBFilter()
+            compositeNoise: CompositeNoiseFilter(noise: effect.compositeNoise)
         )
     }
     
@@ -97,13 +89,6 @@ class NTSCFilter: CIFilter {
     }
     
     // Step 0
-    private func toYIQ(inputImage: CIImage?) -> CIImage? {
-        guard let inputImage else { return nil }
-        self.filters.toYIQ.inputImage = inputImage
-        return self.filters.toYIQ.outputImage
-    }
-    
-    // Step 1
     private func inputLuma(inputImage: CIImage?) -> CIImage? {
         guard let inputImage else { return nil }
         let lumaed: CIImage?
@@ -126,7 +111,7 @@ class NTSCFilter: CIFilter {
         return self.filters.composeLuma.outputImage
     }
     
-    // Step2
+    // Step 1
     private func chromaLowpass(inputImage: CIImage?) -> CIImage? {
         guard let inputImage else { return nil }
         switch effect.chromaLowpassIn {
@@ -141,71 +126,41 @@ class NTSCFilter: CIFilter {
         }
     }
     
-    // Step3
+    // Step 2
     private func chromaIntoLuma(inputImage: CIImage?) -> CIImage? {
         guard let inputImage else { return nil }
         self.filters.chromaIntoLuma.inputImage = inputImage
         return self.filters.chromaIntoLuma.outputImage
     }
     
-    // Step4
+    // Step 3
     private func compositePreemphasis(inputImage: CIImage?) -> CIImage? {
         guard let inputImage else { return nil }
         self.filters.compositePreemphasis.inputImage = inputImage
         return self.filters.compositePreemphasis.outputImage
     }
     
-    // Step5
+    // Step 4
     private func compositeNoise(inputImage: CIImage?) -> CIImage? {
         guard let inputImage else { return nil }
         self.filters.compositeNoise.inputImage = inputImage
         return self.filters.compositeNoise.outputImage
     }
     
-    // StepFinal
-    private func toRGB(inputImage: CIImage?) -> CIImage? {
-        guard let inputImage else { return nil }
-        self.filters.toRGB.inputImage = inputImage
-        return self.filters.toRGB.outputImage
-    }
-    private let channelMixerFilter = ChannelMixerFilter()
-    private enum Channel {
-        case y, i, q
-    }
-    
-    private func channelMix(inputImage: CIImage?, channel: Channel) -> CIImage? {
-        guard let inputImage else { return nil }
-        channelMixerFilter.inputImage = inputImage
-        
-        switch channel {
-        case .y:
-            channelMixerFilter.factors = ChannelMixerFilter.yOnlyFactors
-        case .i:
-            channelMixerFilter.factors = ChannelMixerFilter.iOnlyFactors
-        case .q:
-            channelMixerFilter.factors = ChannelMixerFilter.qOnlyFactors
-        }
-        return channelMixerFilter.outputImage
-    }
-    
     override var outputImage: CIImage? {
-//         step0
-        let yiq = toYIQ(inputImage: inputImage)
-        // step1
-        let lumaed = inputLuma(inputImage: yiq)
+        // step 0
+        let lumaed = inputLuma(inputImage: inputImage)
         
-        // step2
+        // step 1
         // TODO: looks super grayscale, check math
         let chromaLowpassed = chromaLowpass(inputImage: lumaed)
-        // step3
+        // step 2
         let chromaedIntoLuma = chromaIntoLuma(inputImage: chromaLowpassed)
-        // step4
+        // step 3
         let composited = compositePreemphasis(inputImage: chromaedIntoLuma)
-////        // step5
+        // step 4
         let compositeNoised = compositeNoise(inputImage: composited)
-        // stepFinal
-        let rgb = toRGB(inputImage: compositeNoised)
-        return rgb
+        return compositeNoised
     }
 }
 
