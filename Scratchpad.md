@@ -219,6 +219,8 @@ Breakthrough!!
 - numerators and denominators to the i function:
     - numerators are [b0 = 0.0572976321, b1 = 0.114595264, b2 = 0.0572976321]
     - denominators are (1, a1 = -1.218135, a2 = 0.447325468)
+- numerators and denominators to the q function:
+    - numerators are b0 = 0.0145529797, b1 = 0.0291059595, b2 = 0.0145529797
 
 ### Swift
 

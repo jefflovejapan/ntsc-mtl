@@ -233,25 +233,28 @@ final class MetalConversionTests: XCTestCase {
         return CIColor(red: floatRed, green: floatGreen, blue: floatBlue, alpha: 1)
     }
     
-    func assertEqual(colorA: CIColor, colorB: CIColor, line: UInt = #line) {
-        XCTAssertEqual(colorA.red, colorB.red, accuracy: 0.01, line: line)
-        XCTAssertEqual(colorA.green, colorB.green, accuracy: 0.01, line: line)
-        XCTAssertEqual(colorA.blue, colorB.blue, accuracy: 0.01, line: line)
+    func assertEqual(got: CIColor, want: CIColor, line: UInt = #line) {
+        XCTAssertEqual(got.red, want.red, accuracy: 0.01, "Wanted \(want.red), got \(got.red) for red", line: line)
+        XCTAssertEqual(got.green, want.green, accuracy: 0.01, "Wanted \(want.green), got \(got.green) for green", line: line)
+        XCTAssertEqual(got.blue, want.blue, accuracy: 0.01, "Wanted \(want.blue), got \(got.blue) for blue", line: line)
     }
     
     func testChromaLowpassBrightGreen() throws {
         let inputColor = Self.colorFromRGB(20, 230, 20)
         let inputImage = createTestImage(color: inputColor, size: CGSize(width: 1, height: 1))
         var effect = NTSCEffect.default
+        effect.filterType = .butterworth
         filter = NTSCFilter(size: inputImage.extent.size, effect: effect)
         filter.filters.chromaLowpassFull.inputImage = inputImage
         let outputImage = try XCTUnwrap(filter.filters.chromaLowpassFull.outputImage)
-        let outputColor = try color(from: outputImage)
-        assertEqual(colorA: inputColor, colorB: outputColor)
+        let got = try color(from: outputImage)
+        let want = Self.colorFromRGB(89, 178, 102)
+        assertEqual(got: got, want: want)
     }
     
-    func testChromaLowpassTransferFunctionHigh() throws {
-        let fullIFunction = ChromaLowpassFilter.lowpassFilter(cutoff: 1_300_000, rate: NTSC.rate * NTSCEffect.default.bandwidthScale, filterType: .butterworth)
+    func testChromaLowpassTransferFunctionHighI() throws {
+        let effect = NTSCEffect.default
+        let fullIFunction = ChromaLowpassFilter.lowpassFilter(cutoff: 1_300_000, rate: NTSC.rate * effect.bandwidthScale, filterType: .butterworth)
         let rustNums: [Float] = [0.0572976321, 0.11459526, 0.0572976321]
         let ourNums = fullIFunction.numerators
         for (idx, (got, want)) in zip(ourNums, rustNums).enumerated() {
@@ -259,6 +262,21 @@ final class MetalConversionTests: XCTestCase {
         }
         let rustDens: [Float] = [1, -1.218135, 0.447325468]
         let ourDens = fullIFunction.denominators
+        for (idx, (got, want)) in zip(ourDens, rustDens).enumerated() {
+            XCTAssertEqual(got, want, accuracy: 0.01, "Got \(got), wanted \(want), at index \(idx)")
+        }
+    }
+    
+    func testChromaLowpassTransferFunctionHighQ() throws {
+        let effect = NTSCEffect.default
+        let fullQFunction = ChromaLowpassFilter.lowpassFilter(cutoff: 600_000, rate: NTSC.rate * effect.bandwidthScale, filterType: .butterworth)
+        let rustNums: [Float] = [0.0145529797, 0.0291059595, 0.0145529797]
+        let ourNums = fullQFunction.numerators
+        for (idx, (got, want)) in zip(ourNums, rustNums).enumerated() {
+            XCTAssertEqual(got, want, accuracy: 0.01, "Got \(got), wanted \(want), at index \(idx)")
+        }
+        let rustDens: [Float] = [1, -1.6309284, 0.68914032]
+        let ourDens = fullQFunction.denominators
         for (idx, (got, want)) in zip(ourDens, rustDens).enumerated() {
             XCTAssertEqual(got, want, accuracy: 0.01, "Got \(got), wanted \(want), at index \(idx)")
         }
