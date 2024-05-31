@@ -42,6 +42,8 @@
 		1F6BFE272BFFADB700883169 /* NTSCFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE262BFFADB700883169 /* NTSCFilter.swift */; };
 		1F6BFE2A2BFFBFC200883169 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE292BFFBFC200883169 /* CameraView.swift */; };
 		1FAFEAEE2C00DBA7000D906A /* ToRGB.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FAFEAED2C00DBA7000D906A /* ToRGB.ci.metal */; };
+		1FB400AE2C09680000B95733 /* RGBtoYIQ.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FB400AD2C09680000B95733 /* RGBtoYIQ.metal */; };
+		1FB400B02C0969F900B95733 /* RoundTrip.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FB400AF2C0969F900B95733 /* RoundTrip.ci.metal */; };
 		1FEEA8572C00C47200101141 /* ToYIQ.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FEEA8562C00C47200101141 /* ToYIQ.ci.metal */; };
 		1FEEA8592C00C6B000101141 /* MetalConversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FEEA8582C00C6B000101141 /* MetalConversionTests.swift */; };
 		1FF726542C07EB8F0011669D /* IIRInitialCondition.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FF726532C07EB8F0011669D /* IIRInitialCondition.ci.metal */; };
@@ -98,6 +100,8 @@
 		1F6BFE282BFFBCF000883169 /* Scratchpad.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Scratchpad.md; sourceTree = "<group>"; };
 		1F6BFE292BFFBFC200883169 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		1FAFEAED2C00DBA7000D906A /* ToRGB.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ToRGB.ci.metal; sourceTree = "<group>"; };
+		1FB400AD2C09680000B95733 /* RGBtoYIQ.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = RGBtoYIQ.metal; sourceTree = "<group>"; };
+		1FB400AF2C0969F900B95733 /* RoundTrip.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = RoundTrip.ci.metal; sourceTree = "<group>"; };
 		1FEEA8562C00C47200101141 /* ToYIQ.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ToYIQ.ci.metal; sourceTree = "<group>"; };
 		1FEEA8582C00C6B000101141 /* MetalConversionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalConversionTests.swift; sourceTree = "<group>"; };
 		1FF726522C07D78D0011669D /* InitialCondition.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = InitialCondition.md; sourceTree = "<group>"; };
@@ -129,7 +133,9 @@
 			children = (
 				1F6BFE242BFFADA200883169 /* Blue.ci.metal */,
 				1F259EDF2C026A6700937D0A /* Fun.ci.metal */,
+				1FB400AF2C0969F900B95733 /* RoundTrip.ci.metal */,
 				1FEEA8562C00C47200101141 /* ToYIQ.ci.metal */,
+				1FB400AD2C09680000B95733 /* RGBtoYIQ.metal */,
 				1FAFEAED2C00DBA7000D906A /* ToRGB.ci.metal */,
 				1FF726532C07EB8F0011669D /* IIRInitialCondition.ci.metal */,
 				1FF726572C07EC340011669D /* Multiply.ci.metal */,
@@ -366,12 +372,14 @@
 				1F259EE02C026A6700937D0A /* Fun.ci.metal in Sources */,
 				1F5B6CC42C04F5770051A9ED /* ChromaLowpassFilter.swift in Sources */,
 				1F5B6CC02C04BBF10051A9ED /* ChromaIntoLuma.ci.metal in Sources */,
+				1FB400AE2C09680000B95733 /* RGBtoYIQ.metal in Sources */,
 				1F1F9B5F2C03AFAD0085048F /* IIRSideEffect.metal in Sources */,
 				1F5B6CCC2C05244F0051A9ED /* CompositeNoiseFilter.swift in Sources */,
 				1F1F9B652C03C0D60085048F /* ToYIQFilter.swift in Sources */,
 				1F259EE62C027D0800937D0A /* IIRFilter.swift in Sources */,
 				1F259EDE2C02399C00937D0A /* NTSCEffect+Defaults.swift in Sources */,
 				1FF726542C07EB8F0011669D /* IIRInitialCondition.ci.metal in Sources */,
+				1FB400B02C0969F900B95733 /* RoundTrip.ci.metal in Sources */,
 				1F5B6CEA2C065DCE0051A9ED /* ChannelMixerFilter.swift in Sources */,
 				1F5B6CBE2C04BB970051A9ED /* ChromaIntoLumaFilter.swift in Sources */,
 				1F5B6CD02C0536600051A9ED /* Clamped.swift in Sources */,

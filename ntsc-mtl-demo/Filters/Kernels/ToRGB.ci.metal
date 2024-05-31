@@ -6,11 +6,8 @@
 //
 
 #include <CoreImage/CoreImage.h>
+#include "RGBtoYIQ.metal"
 using namespace metal;
-
-constant float3x3 YIQ_TO_RGB_MATRIX = float3x3(float3(1.0, 0.9563, 0.6210),
-                                               float3(1.0, -0.2721, -0.6474),
-                                               float3(1.0, -1.1070, 1.7046));
 
 extern "C" float4 ToRGB (coreimage::sample_t s)
 {

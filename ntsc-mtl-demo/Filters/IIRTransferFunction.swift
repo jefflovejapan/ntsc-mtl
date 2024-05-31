@@ -16,6 +16,7 @@ struct IIRTransferFunction {
     }
     
     static let lumaNotch = try! notchFilter(frequency: 0.5, quality: 2)
+    static let rustLumaNotch = try! rustNotchFilter(frequency: 0.5, quality: 2)
     
     static func notchFilter(frequency: Float, quality: Float) throws -> IIRTransferFunction {
         guard (0...1).contains(frequency) else {
@@ -25,16 +26,27 @@ struct IIRTransferFunction {
         let normalizedBandwidth = (frequency / quality) * .pi
         let normalizedFrequency = frequency * .pi
         let gb: Float = 1 / (sqrt(2))
-        
-        
         let beta = (sqrt(1 - (pow(gb, 2)))/gb) * tan(normalizedBandwidth / 2)
         let gain = 1.0 / (1.0 + beta)
         let middleParam = -2.0 * cos(normalizedFrequency) * gain
-        //     let num = vec![gain, -2.0 * freq.cos() * gain, gain];
         let numerators: [Float] = [gain, middleParam, gain]
-//        let den = vec![1.0, -2.0 * freq.cos() * gain, 2.0 * gain - 1.0];
         let denominators: [Float] = [1, middleParam, (2 * gain) - 1]
         return IIRTransferFunction(numerators: numerators, denominators: denominators)
+    }
+    
+    static func rustNotchFilter(frequency: Float, quality: Float) throws -> IIRTransferFunction {
+        guard (0...1).contains(frequency) else {
+            throw Error.notchFrequencyOutOfBounds
+        }
+        
+        let bandwidth: Float = (frequency / quality) * .pi
+        let normalizedFrequency = frequency * .pi
+        let beta = tan(bandwidth * 0.5)
+        let gain: Float = pow(1 + beta, -1)
+        let middleTerm = -2 * cos(normalizedFrequency) * gain
+        let num: [Float] = [gain, middleTerm, gain]
+        let den: [Float] = [1, middleTerm, (2 * gain) - 1]
+        return IIRTransferFunction(numerators: num, denominators: den)
     }
     
     static func hardCodedLumaNotch() -> IIRTransferFunction {

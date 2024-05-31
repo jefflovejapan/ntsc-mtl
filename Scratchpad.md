@@ -156,4 +156,58 @@ Breakthrough!!
 - To set up the initial condition I just fill z up using a function of initialCondition, initialSample, and numerators and denominators
     - It might be possible to parallelize this into a single texture, but that's mega-optimizing. For now we can perform the iteration in initialCondition using CIImages and the initial image
     
+## More Rust debugging
+
+- The values I'm getting out of luma blur in Rust still don't match what I'm seeing in Swift -- why?
+    - What are the values of z after running the setup for a 0.5 in Rust?
+    - What about in Swift?
+- The chroma lowpass looks crazy
+    - If the initial value is 0/black am I short-circuiting appropriately?
+    - What are the values of z after running the setup for a 0.5 in Rust?
+    - What about in Swift?
     
+    
+### Rust
+- Before entering the loop
+    - zi[0] is 0.292893231
+- At the bottom of i = 1
+    - `a_sum` is just over 1 (1.00000012)
+    - `b_sum` is 0.414213598
+    - `c_sum` is 1.8105851E-8
+    - `zi[0]` is 0.292893231
+    - `norm_num` is [0.707106769, 6.18172393E-8, 0.707106769, ...] (I think the last one is a 0)
+    - `norm_den` is [1, 6.18172393E-8, 0.414213538, 0]
+    - z is [0.292893231, 0.146446615, 0, 0]
+- At the end of it all:
+    - `a_sum` is 1.41421366
+    - `b_sum` is 0.414213598
+    - `c_sum` is 0.414213598
+    - `zi` is [0.292893231, 0.146446615, 0, 0]
+
+
+### Swift
+- Before entering the loop
+    - z0Fill is 0.29289323 ✅
+- At the bottom of i = 1
+    - `aSum` is 0.9999999 🟡
+    - `bSum` is 0.41421354 ✅
+    - `cSum` is -3.1272258e-08 🟡
+    - `z0` is 0.29289323 ✅
+    - normalizedNumerators is [0.70710677, -1.0677015e-07, 0.70710677] ✅
+    - normalizedDenominators is [1.0, -1.0677015e-07, 0.41421354] 🟡 (the subtle sign error in that second term is bothering me)
+    - z1 is inputImage (0.5), sideEffected(0.292893), aSum = 1, cSum is nearly 0. Calling IIRInitialCondition gives us **0.1464465**, which is what the Rust code gives us ✅
+- At the bottom of i = 2
+    - z2 is inputImage (0.5), sideEffected(0.292893), aSum = 1.41421, cSum is 0.414214. Calling IIRInitialCondition gives us **0.1464465**, which is what the Rust code gives us ✅
+- At the end of it all:
+    - aSum is 1.4142134 ✅
+    - bSum is 0.41421354 ✅
+    - cSum is 0.41421354 ✅
+
+### Is the bug in the initialCondition kernel?
+
+- 
+- Swift
+    - We call it with image (the input image), initialZ0Image (the z0-filled image), aSum, and cSum
+- Rust
+    - We call `zi[i] = (a_sum * zi[0] - c_sum) * value;`
+    - `value` is 0.5 (our input value / red channel)

@@ -14,7 +14,7 @@ class NTSCFilter: CIFilter {
     var inputImage: CIImage?
     var effect: NTSCEffect
     let size: CGSize
-    private lazy var filters = newFilters()
+    lazy var filters = newFilters()
     
     init(size: CGSize, effect: NTSCEffect) {
         self.size = size
@@ -194,19 +194,18 @@ class NTSCFilter: CIFilter {
         // step1
         let lumaed = inputLuma(inputImage: yiq)
         
-//        // step2
-//        // TODO: looks super grayscale, check math
-//        let chromaLowpassed = chromaLowpass(inputImage: yiq)
-//        // step3
-        let chromaedIntoLuma = chromaIntoLuma(inputImage: lumaed)
-//        // step4
+        // step2
+        // TODO: looks super grayscale, check math
+        let chromaLowpassed = chromaLowpass(inputImage: lumaed)
+        // step3
+        let chromaedIntoLuma = chromaIntoLuma(inputImage: chromaLowpassed)
+        // step4
         let composited = compositePreemphasis(inputImage: chromaedIntoLuma)
 ////        // step5
         let compositeNoised = compositeNoise(inputImage: composited)
-//        let qOnly = qOnly(inputImage: yiq)
-//        let mixed = channelMix(inputImage: yiq, channel: .i)
         // stepFinal
         let rgb = toRGB(inputImage: compositeNoised)
         return rgb
     }
 }
+
