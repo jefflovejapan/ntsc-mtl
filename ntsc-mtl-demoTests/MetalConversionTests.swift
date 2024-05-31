@@ -11,8 +11,8 @@ import Metal
 import CoreImage.CIFilterBuiltins
 
 // Create a 100x100 pixel CIImage with a specific color
-private func createTestImage(color: CIColor) -> CIImage {
-    let img = CIImage(color: color).cropped(to: CGRect(origin: .zero, size: CGSize(width: 100, height: 100)))
+private func createTestImage(color: CIColor, size: CGSize = CGSize(width: 100, height: 100)) -> CIImage {
+    let img = CIImage(color: color).cropped(to: CGRect(origin: .zero, size: size))
     return img
 }
 
@@ -210,5 +210,57 @@ final class MetalConversionTests: XCTestCase {
         let outputImage = try XCTUnwrap(filter.outputImage)
         let outputColor = try color(from: outputImage)
         XCTAssertEqual(outputColor.red, 0.6, accuracy: 0.01)    // Why are we ramping luma up to 0.6? What is Rust doing?
+    }
+    
+    func testChromaLowpassFullMediumGrey() throws {
+        let inputColor = CIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1)
+        let inputImage = createTestImage(color: inputColor, size: CGSize(width: 1, height: 1))
+        var effect = NTSCEffect.default
+        filter = NTSCFilter(size: inputImage.extent.size, effect: effect)
+        filter.filters.chromaLowpassFull.inputImage = inputImage
+        let outputImage = try XCTUnwrap(filter.filters.chromaLowpassFull.outputImage)
+        let outputColor = try color(from: outputImage)
+        XCTAssertEqual(inputColor.red, outputColor.red, accuracy: 0.01)
+        XCTAssertEqual(inputColor.green, outputColor.green, accuracy: 0.01)
+        XCTAssertEqual(inputColor.blue, outputColor.blue, accuracy: 0.01)
+        XCTAssertEqual(inputColor.alpha, outputColor.alpha, accuracy: 0.01)
+    }
+    
+    private static func colorFromRGB(_ red: Int, _ green: Int, _ blue: Int) -> CIColor {
+        let floatRed = CGFloat(red) / 255
+        let floatGreen = CGFloat(green) / 255
+        let floatBlue = CGFloat(blue) / 255
+        return CIColor(red: floatRed, green: floatGreen, blue: floatBlue, alpha: 1)
+    }
+    
+    func assertEqual(colorA: CIColor, colorB: CIColor, line: UInt = #line) {
+        XCTAssertEqual(colorA.red, colorB.red, accuracy: 0.01, line: line)
+        XCTAssertEqual(colorA.green, colorB.green, accuracy: 0.01, line: line)
+        XCTAssertEqual(colorA.blue, colorB.blue, accuracy: 0.01, line: line)
+    }
+    
+    func testChromaLowpassBrightGreen() throws {
+        let inputColor = Self.colorFromRGB(20, 230, 20)
+        let inputImage = createTestImage(color: inputColor, size: CGSize(width: 1, height: 1))
+        var effect = NTSCEffect.default
+        filter = NTSCFilter(size: inputImage.extent.size, effect: effect)
+        filter.filters.chromaLowpassFull.inputImage = inputImage
+        let outputImage = try XCTUnwrap(filter.filters.chromaLowpassFull.outputImage)
+        let outputColor = try color(from: outputImage)
+        assertEqual(colorA: inputColor, colorB: outputColor)
+    }
+    
+    func testChromaLowpassTransferFunctionHigh() throws {
+        let fullIFunction = ChromaLowpassFilter.lowpassFilter(cutoff: 1_300_000, rate: NTSC.rate * NTSCEffect.default.bandwidthScale, filterType: .butterworth)
+        let rustNums: [Float] = [0.0572976321, 0.11459526, 0.0572976321]
+        let ourNums = fullIFunction.numerators
+        for (idx, (got, want)) in zip(ourNums, rustNums).enumerated() {
+            XCTAssertEqual(got, want, accuracy: 0.01, "Got \(got), wanted \(want), at index \(idx)")
+        }
+        let rustDens: [Float] = [1, -1.218135, 0.447325468]
+        let ourDens = fullIFunction.denominators
+        for (idx, (got, want)) in zip(ourDens, rustDens).enumerated() {
+            XCTAssertEqual(got, want, accuracy: 0.01, "Got \(got), wanted \(want), at index \(idx)")
+        }
     }
 }

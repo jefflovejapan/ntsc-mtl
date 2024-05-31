@@ -211,3 +211,17 @@ Breakthrough!!
 - Rust
     - We call `zi[i] = (a_sum * zi[0] - c_sum) * value;`
     - `value` is 0.5 (our input value / red channel)
+
+## Chroma Lowpass debugging
+
+### Rust
+
+- numerators and denominators to the i function:
+    - numerators are [b0 = 0.0572976321, b1 = 0.114595264, b2 = 0.0572976321]
+    - denominators are (1, a1 = -1.218135, a2 = 0.447325468)
+
+### Swift
+
+- numerators and denominators to the i function:
+    - 
+- Hypothesis: different numerical formats but we're far enough away from the bounds
