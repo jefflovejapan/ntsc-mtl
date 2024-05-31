@@ -17,7 +17,7 @@ class BoxBlurFilter: CIFilter {
     private let boxBlurFilter = BoxBlurFilter.newBoxBlurFilter()
     private static func newBoxBlurFilter() -> CIFilter {
         let filter = CIFilter.boxBlur()
-        filter.radius = 100
+        filter.radius = 4
         return filter
     }
     

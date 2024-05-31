@@ -25,6 +25,7 @@ class IIRFilter: CIFilter {
     
     private(set) var zTextures: [MTLTexture] = []
     static let kernels: Kernels = loadKernels()
+    var channelMix: YIQChannels = .all
     private let numerators: [Float]
     private let denominators: [Float]
     private let device: MTLDevice
@@ -159,10 +160,10 @@ class IIRFilter: CIFilter {
             cSum += (num - (den * normalizedNumerators[0]))
             let zImage = Self.kernels.initialCondition.apply(
                 extent: image.extent,
-                arguments: [image, initialZ0Image, aSum, cSum])!
+                arguments: [image, initialZ0Image, aSum, cSum, channelMix.channelMix])!
             render(image: zImage, toTexture: textures[i])
         }
-        let finalZ0Image = Self.kernels.multiply.apply(extent: image.extent, arguments: [image, initialZ0Image])!
+        let finalZ0Image = Self.kernels.multiply.apply(extent: image.extent, arguments: [image, initialZ0Image, channelMix.channelMix])!
         render(image: finalZ0Image, toTexture: textures[0])
     }
     
@@ -199,7 +200,7 @@ class IIRFilter: CIFilter {
         guard let num = numerators.first else {
             return nil
         }
-        guard let filteredImage = Self.kernels.filterSample.apply(extent: inputImage.extent, arguments: [inputImage, tex0, num]) else {
+        guard let filteredImage = Self.kernels.filterSample.apply(extent: inputImage.extent, arguments: [inputImage, tex0, num, channelMix.channelMix]) else {
             return nil
         }
         for i in numerators.indices {
@@ -217,7 +218,8 @@ class IIRFilter: CIFilter {
                     sideEffectIPlus1,
                     filteredImage,
                     numerators[nextIdx],
-                    denominators[nextIdx]
+                    denominators[nextIdx],
+                    channelMix.channelMix
                 ]
             ) {
                 render(image: sideEffected, toTexture: zTextures[i])
@@ -225,20 +227,22 @@ class IIRFilter: CIFilter {
                 break
             }
         }
-        return Self.kernels.finalImage.apply(extent: inputImage.extent, arguments: [inputImage, filteredImage, scale])
+        return Self.kernels.finalImage.apply(extent: inputImage.extent, arguments: [inputImage, filteredImage, scale, channelMix.channelMix])
     }
 }
 
 extension IIRFilter {
     static func lumaNotch() -> IIRFilter {
         let notchFunction = IIRTransferFunction.lumaNotch
-        return try! IIRFilter(
+        let filter = try! IIRFilter(
             numerators: notchFunction.numerators,
             denominators: notchFunction.denominators, 
             initialCondition: .firstSample,
             scale: 1.0,
             delay: 0
         )
+        filter.channelMix = .y
+        return filter
     }
     
     static func compositePreemphasis(_ compositePreemphasis: Float, bandwidthScale: Float) -> IIRFilter {
