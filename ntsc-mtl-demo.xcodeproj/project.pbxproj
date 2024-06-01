@@ -43,6 +43,8 @@
 		1FCC1D312C0A0C2700943847 /* YIQChannels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FCC1D302C0A0C2700943847 /* YIQChannels.swift */; };
 		1FEE323C2C0A23BB009F09BA /* Multiply.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FEE323B2C0A23BB009F09BA /* Multiply.ci.metal */; };
 		1FEE323E2C0A3FCC009F09BA /* YIQ.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FEE323D2C0A3FCC009F09BA /* YIQ.swift */; };
+		1FEE32422C0A9BD4009F09BA /* Snow.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FEE32412C0A9BD4009F09BA /* Snow.ci.metal */; };
+		1FEE32442C0A9FC3009F09BA /* SnowFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FEE32432C0A9FC3009F09BA /* SnowFilter.swift */; };
 		1FEEA8592C00C6B000101141 /* MetalConversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FEEA8582C00C6B000101141 /* MetalConversionTests.swift */; };
 		1FF726542C07EB8F0011669D /* IIRInitialCondition.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FF726532C07EB8F0011669D /* IIRInitialCondition.ci.metal */; };
 /* End PBXBuildFile section */
@@ -98,6 +100,8 @@
 		1FCC1D302C0A0C2700943847 /* YIQChannels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YIQChannels.swift; sourceTree = "<group>"; };
 		1FEE323B2C0A23BB009F09BA /* Multiply.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Multiply.ci.metal; sourceTree = "<group>"; };
 		1FEE323D2C0A3FCC009F09BA /* YIQ.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YIQ.swift; sourceTree = "<group>"; };
+		1FEE32412C0A9BD4009F09BA /* Snow.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Snow.ci.metal; sourceTree = "<group>"; };
+		1FEE32432C0A9FC3009F09BA /* SnowFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnowFilter.swift; sourceTree = "<group>"; };
 		1FEEA8582C00C6B000101141 /* MetalConversionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalConversionTests.swift; sourceTree = "<group>"; };
 		1FF726522C07D78D0011669D /* InitialCondition.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = InitialCondition.md; sourceTree = "<group>"; };
 		1FF726532C07EB8F0011669D /* IIRInitialCondition.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = IIRInitialCondition.ci.metal; sourceTree = "<group>"; };
@@ -132,6 +136,7 @@
 				1FF726532C07EB8F0011669D /* IIRInitialCondition.ci.metal */,
 				1F5B6CBF2C04BBF10051A9ED /* ChromaIntoLuma.ci.metal */,
 				1F5B6CC92C050A8E0051A9ED /* YIQCompose.ci.metal */,
+				1FEE32412C0A9BD4009F09BA /* Snow.ci.metal */,
 				1F259EEB2C02A2C300937D0A /* IIRFilterSample.ci.metal */,
 				1F5B6CDD2C05585B0051A9ED /* MultiplyLuma.ci.metal */,
 				1FEE323B2C0A23BB009F09BA /* Multiply.ci.metal */,
@@ -207,6 +212,7 @@
 				1F5B6CC32C04F5770051A9ED /* ChromaLowpassFilter.swift */,
 				1F5B6CC72C0509F00051A9ED /* YIQComposeFilter.swift */,
 				1F6BFE262BFFADB700883169 /* NTSCFilter.swift */,
+				1FEE32432C0A9FC3009F09BA /* SnowFilter.swift */,
 				1FCC1D2E2C0A0BB400943847 /* BoxBlurFilter.swift */,
 				1FCC1D302C0A0C2700943847 /* YIQChannels.swift */,
 				1F5B6CE92C065DCE0051A9ED /* YIQMixerFilter.swift */,
@@ -349,6 +355,7 @@
 				1F5B6CE62C065D330051A9ED /* YIQMix.ci.metal in Sources */,
 				1F1F9B612C03B03B0085048F /* IIRFinalImage.metal in Sources */,
 				1F259EEC2C02A2C300937D0A /* IIRFilterSample.ci.metal in Sources */,
+				1FEE32442C0A9FC3009F09BA /* SnowFilter.swift in Sources */,
 				1F259EDC2C022F7500937D0A /* NTSCEffect.swift in Sources */,
 				1F5B6CCA2C050A8E0051A9ED /* YIQCompose.ci.metal in Sources */,
 				1F5B6CDC2C0558140051A9ED /* MultiplyLumaFilter.swift in Sources */,
@@ -375,6 +382,7 @@
 				1F1F9B692C03C3980085048F /* IIRTransferFunction.swift in Sources */,
 				1F5B6CC22C04D4010051A9ED /* NTSC.swift in Sources */,
 				1F5B6CDE2C05585B0051A9ED /* MultiplyLuma.ci.metal in Sources */,
+				1FEE32422C0A9BD4009F09BA /* Snow.ci.metal in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
