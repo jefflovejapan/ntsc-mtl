@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreImage
+import CoreImage.CIFilterBuiltins
 
 class SnowFilter: CIFilter {
     var inputImage: CIImage?
@@ -14,6 +15,7 @@ class SnowFilter: CIFilter {
     var anisotropy: Float = 0.5
     var bandwidthScale: Float = 1.0
     private var rng = SystemRandomNumberGenerator()
+    private let randomFilter = CIFilter.randomGenerator()
     
     private let mixer = YIQMixerFilter()
     
@@ -37,16 +39,18 @@ class SnowFilter: CIFilter {
     
     override var outputImage: CIImage? {
         guard let inputImage else { return nil }
-        let random = Float(rng.next())
+        guard let randomImage = self.randomFilter.outputImage else { return nil }
+        let randomSeed = Float(rng.next())
+        let transformedRandomImage = randomImage.transformed(by: CGAffineTransform(translationX: CGFloat(randomSeed), y: CGFloat(randomSeed)))
         let yImage = Self.kernel.apply(
             extent: inputImage.extent,
             arguments: [
                 inputImage,
+                transformedRandomImage,
                 intensity,
                 anisotropy,
                 bandwidthScale,
                 Int(inputImage.extent.width),
-                random
             ]
         )
         self.mixer.yiqMix = .y
