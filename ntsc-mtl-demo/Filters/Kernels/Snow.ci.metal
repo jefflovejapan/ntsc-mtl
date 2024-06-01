@@ -39,8 +39,6 @@ extern "C" float4 Snow(coreimage::sample_t inputImage, float intensity, float an
     // Apply "snow" effect
     float transientLen = rand(coord, 1.0) * (64.0 - 8.0) + 8.0 * bandwidthScale;
     float transientFreq = rand(coord, 2.0) * (transientLen * 5.0 - transientLen * 3.0) + transientLen * 3.0;
-    
-    float2 offsetCoord = float2(1.0 / width, 0.0);
     float x = coord.x;
     
     float t = float(x) / transientLen;

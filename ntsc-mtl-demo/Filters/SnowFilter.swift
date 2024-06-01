@@ -14,6 +14,8 @@ class SnowFilter: CIFilter {
     var anisotropy: Float = 0.5
     var bandwidthScale: Float = 1.0
     
+    private let mixer = YIQMixerFilter()
+    
     init(intensity: Float, anisotropy: Float, bandwidthScale: Float) {
         self.intensity = intensity
         self.anisotropy = anisotropy
@@ -34,8 +36,8 @@ class SnowFilter: CIFilter {
     
     override var outputImage: CIImage? {
         guard let inputImage else { return nil }
-        return Self.kernel.apply(
-            extent: inputImage.extent, 
+        let yImage = Self.kernel.apply(
+            extent: inputImage.extent,
             arguments: [
                 inputImage,
                 intensity,
@@ -44,5 +46,9 @@ class SnowFilter: CIFilter {
                 Int(inputImage.extent.width)
             ]
         )
+        self.mixer.yiqMix = .y
+        self.mixer.mixImage = yImage
+        self.mixer.inverseMixImage = inputImage
+        return self.mixer.outputImage
     }
 }
