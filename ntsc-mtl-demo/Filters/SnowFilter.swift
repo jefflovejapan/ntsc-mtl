@@ -13,6 +13,7 @@ class SnowFilter: CIFilter {
     var intensity: Float = 0.5
     var anisotropy: Float = 0.5
     var bandwidthScale: Float = 1.0
+    private var rng = SystemRandomNumberGenerator()
     
     private let mixer = YIQMixerFilter()
     
@@ -36,6 +37,7 @@ class SnowFilter: CIFilter {
     
     override var outputImage: CIImage? {
         guard let inputImage else { return nil }
+        let random = Float(rng.next())
         let yImage = Self.kernel.apply(
             extent: inputImage.extent,
             arguments: [
@@ -43,7 +45,8 @@ class SnowFilter: CIFilter {
                 intensity,
                 anisotropy,
                 bandwidthScale,
-                Int(inputImage.extent.width)
+                Int(inputImage.extent.width),
+                random
             ]
         )
         self.mixer.yiqMix = .y

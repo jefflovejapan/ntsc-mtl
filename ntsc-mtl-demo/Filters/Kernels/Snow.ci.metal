@@ -14,7 +14,7 @@ float rand(float2 coord, float seed) {
     return fract(sin(dot(coord + seed, float2(12.9898, 78.233))) * 43758.5453);
 }
 
-extern "C" float4 Snow(coreimage::sample_t inputImage, float intensity, float anisotropy, float bandwidthScale, int width, coreimage::destination dest)
+extern "C" float4 Snow(coreimage::sample_t inputImage, float intensity, float anisotropy, float bandwidthScale, int width, float random, coreimage::destination dest)
 {
     float4 yiqInput = ToYIQ(inputImage);
     float2 coord = dest.coord();
@@ -24,7 +24,7 @@ extern "C" float4 Snow(coreimage::sample_t inputImage, float intensity, float an
     float anisotropyVal = anisotropy;
     
     // Compute logistic factor
-    float logisticFactor = exp((rand(coord, 0.0) - intensityVal) /
+    float logisticFactor = exp((random - intensityVal) /
                                (intensityVal * (1.0 - intensityVal) * (1.0 - anisotropyVal)));
     float lineSnowIntensity = anisotropyVal / (1.0 + logisticFactor) + intensityVal * (1.0 - anisotropyVal);
     
