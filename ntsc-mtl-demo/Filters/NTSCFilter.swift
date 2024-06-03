@@ -144,20 +144,20 @@ class NTSCFilter: CIFilter {
     }
     
     override var outputImage: CIImage? {
-        // step 0
-        let lumaed = inputLuma(inputImage: inputImage)
+//        // step 0
+//        let lumaed = inputLuma(inputImage: inputImage)
+//        
+////        // step 1
+////        // TODO: looks super grayscale, check math
+//        let chromaLowpassed = chromaLowpass(inputImage: lumaed)
+//        // step 2
+//        let chromaedIntoLuma = chromaIntoLuma(inputImage: chromaLowpassed)
+////        // step 3
+//        let composited = compositePreemphasis(inputImage: chromaedIntoLuma)
+////        // step 4
+//        let compositeNoised = compositeNoise(inputImage: composited)
         
-//        // step 1
-//        // TODO: looks super grayscale, check math
-        let chromaLowpassed = chromaLowpass(inputImage: lumaed)
-        // step 2
-        let chromaedIntoLuma = chromaIntoLuma(inputImage: chromaLowpassed)
-//        // step 3
-        let composited = compositePreemphasis(inputImage: chromaedIntoLuma)
-//        // step 4
-        let compositeNoised = compositeNoise(inputImage: composited)
-        
-        let snowed = snow(inputImage: compositeNoised)
+        let snowed = snow(inputImage: inputImage)
         return snowed
     }
 }

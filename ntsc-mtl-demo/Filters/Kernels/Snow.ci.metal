@@ -9,22 +9,26 @@
 #include <CoreImage/CoreImage.h>
 using namespace metal;
 
-// Random number generator using a simple linear congruential generator (LCG)
-float rand(float2 coord, float seed) {
-    return fract(sin(dot(coord + seed, float2(12.9898, 78.233))) * 43758.5453);
-}
-
 extern "C" float4 Snow(coreimage::sample_t inputImage, coreimage::sample_t randomImage, float intensity, float anisotropy, float bandwidthScale, int width, coreimage::destination dest)
 {
     float4 yiqInput = ToYIQ(inputImage);
-    float rand1 = randomImage.r;
-    float rand2 = randomImage.g;
-    float rand3 = randomImage.b;
+    float rand1 = mix(FLT_MIN, FLT_MAX, randomImage.r);
+    float rand2 = mix(FLT_MIN, FLT_MAX, randomImage.g);
+    float rand3 = mix(FLT_MIN, FLT_MAX, randomImage.b);
     float2 coord = dest.coord();
     
-    // Compute logistic factor
+    /*
+     let logistic_factor = ((rng.gen::<f64>() - intensity)
+             / (intensity * (1.0 - intensity) * (1.0 - anisotropy)))
+             .exp();
+     */
     float logisticFactor = exp((rand1 - intensity) / (intensity * (1.0 - intensity) * (1.0 - anisotropy)));
-    float lineSnowIntensity = anisotropy / (1.0 + logisticFactor) + intensity * (1.0 - anisotropy);
+    
+    /*
+     let mut line_snow_intensity: f64 =
+          anisotropy / (1.0 + logistic_factor) + intensity * (1.0 - anisotropy);
+     */
+    float lineSnowIntensity = (anisotropy / (1.0 + logisticFactor)) + (intensity * (1.0 - anisotropy));
 
     // Adjust intensity
     lineSnowIntensity *= 0.125;
@@ -35,19 +39,22 @@ extern "C" float4 Snow(coreimage::sample_t inputImage, coreimage::sample_t rando
     }
     
     // Apply "snow" effec
-    float transientLen = rand2 * (64.0 - 8.0) + 8.0 * bandwidthScale;
-    float transientFreq = rand3 * (transientLen * 5.0 - transientLen * 3.0) + transientLen * 3.0;
+    float transientLen = mix(8.0, 64.0, rand2) * bandwidthScale;
+    float transientFreqFloor = transientLen * 3.0;
+    float transientFreqCeil = transientLen * 5.0;
+    float transientFreq = mix(transientFreqFloor, transientFreqCeil, rand3);
     float x = coord.x;
     float mod = 0.0;
     
-    for (int i = 0; i < int(transientLen) && x + i < width; i++) {
+    for (int i = 0; i < int(transientLen) && (x + i) < width; i++) {
         float t = float(i) / transientLen;
         float cosValue = cos(M_PI_F * t * transientFreq);
         float intensityMod = (1.0 - t) * (1.0 - t) * (rand3 * 3.0 - 1.0);
         mod += cosValue * intensityMod;
     }
     
-    float4 modPixel = yiqInput + float4(mod, mod, mod, 0.0);
-    return clamp(modPixel, 0.0, 1.0);
+    float4 modPixel = yiqInput;
+    modPixel.x += mod;
+    modPixel.x = clamp(modPixel.x, 0.0, 1.0);
     return ToRGB(modPixel);
 }

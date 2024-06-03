@@ -10,15 +10,15 @@ import simd
 
 // Define the matrices using SIMD types
 let yiqToRgbMatrix = float3x3([
-    SIMD3<Float>(1.0, 0.9563, 0.6210),
-    SIMD3<Float>(1.0, -0.2721, -0.6474),
-    SIMD3<Float>(1.0, -1.1070, 1.7046)
+    SIMD3<Float>(1.0, 1.0, 1.0),
+    SIMD3<Float>(0.956, -0.272, -1.106),
+    SIMD3<Float>(0.619, -0.647, 1.703)
 ])
 
 let rgbToYiqMatrix = float3x3([
-    SIMD3<Float>(0.299, 0.587, 0.114),
-    SIMD3<Float>(0.595716, -0.274453, -0.321263),
-    SIMD3<Float>(0.211456, -0.522591, 0.311135)
+    SIMD3<Float>(0.299, 0.5959, 0.2115),
+    SIMD3<Float>(0.587, -0.2746, -0.5227),
+    SIMD3<Float>(0.114, -0.3213, 0.3112)
 ])
 
 // Convert RGB to YIQ
