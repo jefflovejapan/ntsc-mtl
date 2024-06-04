@@ -55,6 +55,9 @@ final class MetalTextureConversionTests: XCTestCase {
     
     func testYIQConversion() throws {
         let texture = try XCTUnwrap(texture)
+        let commandBuffer = try XCTUnwrap(commandQueue?.makeCommandBuffer())
+        let device = try XCTUnwrap(device)
+        let library = try XCTUnwrap(library)
         let input: [Float] = [0.5, 0.5, 0.5, 1]
         var rgba = input
         let region = MTLRegionMake2D(0, 0, 1, 1)
@@ -62,10 +65,12 @@ final class MetalTextureConversionTests: XCTestCase {
         texture.replace(region: region, mipmapLevel: 0, withBytes: &rgba, bytesPerRow: bytesPerRow)
         try NTSCTextureFilter.convertToYIQ(
             texture,
-            commandQueue: try XCTUnwrap(commandQueue),
-            library: try XCTUnwrap(library),
-            device: try XCTUnwrap(device)
+            library: library,
+            commandBuffer: commandBuffer,
+            device: device
         )
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
         // from Rust
         let want: [Float] = [0.5, 0, -1.4901161e-8, 1]
         var got: [Float] = [0, 0, 0, 0]
@@ -75,6 +80,9 @@ final class MetalTextureConversionTests: XCTestCase {
     
     func testRGBConversion() throws {
         let texture = try XCTUnwrap(texture)
+        let commandBuffer = try XCTUnwrap(commandQueue?.makeCommandBuffer())
+        let library = try XCTUnwrap(library)
+        let device = try XCTUnwrap(device)
         let input: [Float] = [0.5, 0.5, 0.5, 1]
         var yiqa = input
         let region = MTLRegionMake2D(0, 0, 1, 1)
@@ -82,9 +90,9 @@ final class MetalTextureConversionTests: XCTestCase {
         texture.replace(region: region, mipmapLevel: 0, withBytes: &yiqa, bytesPerRow: bytesPerRow)
         try NTSCTextureFilter.convertToRGB(
             texture,
-            commandQueue: try XCTUnwrap(commandQueue),
-            library: try XCTUnwrap(library),
-            device: try XCTUnwrap(device)
+            commandBuffer: commandBuffer,
+            library: library,
+            device: device
         )
         // from Rust
         let want: [Float] = [1.2875, 0.040499985, 0.7985, 1]
@@ -95,23 +103,16 @@ final class MetalTextureConversionTests: XCTestCase {
     
     func testRGBRoundTrip() throws {
         let texture = try XCTUnwrap(texture)
+        let library = try XCTUnwrap(library)
+        let device = try XCTUnwrap(device)
+        let commandBuffer = try XCTUnwrap(commandQueue?.makeCommandBuffer())
         let input: [Float] = [0.5, 0.5, 0.5, 1]
         var rgba = input
         let region = MTLRegionMake2D(0, 0, 1, 1)
         let bytesPerRow: Int = MemoryLayout<Float>.size * 4 * 1
         texture.replace(region: region, mipmapLevel: 0, withBytes: &rgba, bytesPerRow: bytesPerRow)
-        try NTSCTextureFilter.convertToYIQ(
-            texture,
-            commandQueue: try XCTUnwrap(commandQueue),
-            library: try XCTUnwrap(library),
-            device: try XCTUnwrap(device)
-        )
-        try NTSCTextureFilter.convertToRGB(
-            texture,
-            commandQueue: try XCTUnwrap(commandQueue),
-            library: try XCTUnwrap(library),
-            device: try XCTUnwrap(device)
-        )
+        try NTSCTextureFilter.convertToYIQ(texture, library: library, commandBuffer: commandBuffer, device: device)
+        try NTSCTextureFilter.convertToRGB(texture, commandBuffer: commandBuffer, library: library, device: device)
         // Expecting not to lose any precision when moving back and forth
         let want: [Float] = input
         var got: [Float] = [0, 0, 0, 0]
@@ -135,23 +136,25 @@ final class MetalTextureConversionTests: XCTestCase {
     }
     
     private func assertRoundTripWorks(_ color: [Float], line: UInt = #line, message: @autoclosure () -> String = "") throws {
+        let device = try XCTUnwrap(device)
         let texture = try XCTUnwrap(texture)
+        let commandQueue = try XCTUnwrap(commandQueue)
+        let library = try XCTUnwrap(library)
+        let commandBuffer = try XCTUnwrap(commandQueue.makeCommandBuffer())
         var rgba = color
         let region = MTLRegionMake2D(0, 0, 1, 1)
         let bytesPerRow: Int = MemoryLayout<Float>.size * 4 * 1
         texture.replace(region: region, mipmapLevel: 0, withBytes: &rgba, bytesPerRow: bytesPerRow)
         try NTSCTextureFilter.convertToYIQ(
             texture,
-            commandQueue: try XCTUnwrap(commandQueue),
             library: try XCTUnwrap(library),
-            device: try XCTUnwrap(device)
+            commandBuffer: commandBuffer,
+            device: device
         )
-        try NTSCTextureFilter.convertToRGB(
-            texture,
-            commandQueue: try XCTUnwrap(commandQueue),
-            library: try XCTUnwrap(library),
-            device: try XCTUnwrap(device)
-        )
+        try NTSCTextureFilter.convertToRGB(texture, commandBuffer: commandBuffer, library: library, device: device)
+        
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
         // Expecting not to lose any precision when moving back and forth
         let want: [Float] = color
         var got: [Float] = [0, 0, 0, 0]

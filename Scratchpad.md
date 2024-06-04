@@ -245,3 +245,14 @@ NTSCTextureFilter implementation. What I need:
     - We'll need to hold onto an instance of an IIRTextureFilter with multiple textures each for all of the IIR steps
 - Do I instantiate / set up NTSCTextureFilter with a single pixel? Or do I call the kernel functions directly?
     - I think calling the kernel functions directly is better than trying to make the filter testable from the outside. Too much juggling -- use unit tests instead.
+- Wow, finally got a handle on Metal a little bit. Cool learnings:
+    - The commandBuffer is just what it sounds like -- a buffer of commands. You encode one or more commands to it, then commit it, and optionally wait for it to complete
+    - This means that we can chain arbitrary Metal commands together and run them all at once, every frame. Just for right now, I'm:
+        - writing a CIImage to a texture
+        - converting those rgb values to YIQ values in place
+        - blurring them using a scratch texture and blit encoder (finally figured out what blitting is!)
+            - blit the work-in-progress texture to the scratch texture
+            - blur the scratch texture
+            - compose the luma value from the scratch texture with the chroma ones from the work-in-progess texture
+            - write the composition back to the WIP
+- Excited to try the IIR filter next

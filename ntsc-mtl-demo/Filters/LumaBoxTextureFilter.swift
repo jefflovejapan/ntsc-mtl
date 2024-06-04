@@ -21,7 +21,7 @@ class LumaBoxTextureFilter {
     init(device: MTLDevice, commandQueue: MTLCommandQueue, library: MTLLibrary) {
         self.device = device
         self.commandQueue = commandQueue
-        self.blurKernel = MPSImageBox(device: device, kernelWidth: 5, kernelHeight: 5)
+        self.blurKernel = MPSImageBox(device: device, kernelWidth: 99, kernelHeight: 99)
         self.library = library
     }
     
