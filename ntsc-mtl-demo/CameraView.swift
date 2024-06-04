@@ -80,6 +80,7 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             return
         }
         let ciImage = CIImage(cvImageBuffer: pixelBuffer)
+        self.lastImage = ciImage
         if filter == nil {
             var effect = NTSCEffect.default
             effect.inputLumaFilter = .notch
@@ -87,21 +88,6 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             effect.filterType = .butterworth
             self.filter = try! NTSCTextureFilter(device: device, context: ciContext)
         }
-        
-        // Apply CIFilter
-        let outputImage: CIImage?
-        if isFilterEnabled {
-            filter.inputImage = ciImage
-            outputImage = filter.outputImage
-        } else {
-            outputImage = ciImage
-        }
-        
-        guard let outputImage else {
-            return
-        }
-        let orientedImage = outputImage.oriented(forExifOrientation: Int32(CGImagePropertyOrientation.right.rawValue))
-        self.lastImage = orientedImage
         DispatchQueue.main.async {
             self.mtkView.setNeedsDisplay()
         }
@@ -144,8 +130,23 @@ extension CameraUIView: MTKViewDelegate {
             mtlTextureProvider: {
                 drawable.texture
             })
+        
+        // Apply CIFilter
+        let outputImage: CIImage?
+        if isFilterEnabled {
+            filter.inputImage = lastImage
+            outputImage = filter.outputImage
+        } else {
+            outputImage = lastImage
+        }
+        
+        guard let outputImage else {
+            return
+        }
+        let orientedImage = outputImage.oriented(forExifOrientation: Int32(CGImagePropertyOrientation.right.rawValue))
+        
         do {
-            try ciContext.startTask(toRender: lastImage, to: destination)
+            try ciContext.startTask(toRender: orientedImage, to: destination)
             commandBuffer.present(drawable)
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()
