@@ -13,7 +13,7 @@ enum TextureFilterError: Swift.Error {
     case cantInstantiateTexture
     case cantMakeCommandQueue
     case cantMakeCommandBuffer
-    case cantMakeCommandEncoder
+    case cantMakeComputeEncoder
     case cantMakeLibrary
     case cantMakeFunction(String)
     case cantMakeBlitEncoder
@@ -51,7 +51,7 @@ class NTSCTextureFilter {
     static func convertToYIQ(_ texture: (any MTLTexture), library: MTLLibrary, commandBuffer: MTLCommandBuffer, device: MTLDevice) throws {
         // Create a command buffer and encoder
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
-            throw Error.cantMakeCommandEncoder
+            throw Error.cantMakeComputeEncoder
         }
         
         // Set up the compute pipeline
@@ -94,7 +94,7 @@ class NTSCTextureFilter {
     static func convertToRGB(_ texture: (any MTLTexture), commandBuffer: MTLCommandBuffer, library: MTLLibrary, device: MTLDevice) throws {
         // Create a command buffer and encoder
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
-            throw Error.cantMakeCommandEncoder
+            throw Error.cantMakeComputeEncoder
         }
         
         // Set up the compute pipeline

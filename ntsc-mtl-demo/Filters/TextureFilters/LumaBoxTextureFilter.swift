@@ -86,7 +86,7 @@ class LumaBoxTextureFilter {
         
         let pipelineState = try device.makeComputePipelineState(function: function)
         guard let composeCommandEncoder = commandBuffer.makeComputeCommandEncoder() else {
-            throw Error.cantMakeCommandEncoder
+            throw Error.cantMakeComputeEncoder
         }
         composeCommandEncoder.setComputePipelineState(pipelineState)
         composeCommandEncoder.setTexture(scratchTexture, index: 0)

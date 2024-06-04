@@ -30,6 +30,9 @@
 		1F5F93C62C0F910300EC29A2 /* LumaBoxTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93C52C0F910300EC29A2 /* LumaBoxTextureFilter.swift */; };
 		1F5F93C82C0F9D7900EC29A2 /* YIQChannel.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93C72C0F9D7900EC29A2 /* YIQChannel.metal */; };
 		1F5F93CA2C0F9DCA00EC29A2 /* YIQCompose.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93C92C0F9DCA00EC29A2 /* YIQCompose.metal */; };
+		1F5F93CD2C0FA96C00EC29A2 /* IIRTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93CC2C0FA96C00EC29A2 /* IIRTextureFilter.swift */; };
+		1F5F93CF2C0FC53E00EC29A2 /* IIRInitialCondition.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93CE2C0FC53E00EC29A2 /* IIRInitialCondition.metal */; };
+		1F5F93D12C0FC84500EC29A2 /* IIRMultiply.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93D02C0FC84500EC29A2 /* IIRMultiply.metal */; };
 		1F6BFDEB2BFF799F00883169 /* ntsc_mtl_demoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */; };
 		1F6BFDED2BFF799F00883169 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEC2BFF799F00883169 /* ContentView.swift */; };
 		1F6BFDEF2BFF79A000883169 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEE2BFF79A000883169 /* Assets.xcassets */; };
@@ -87,6 +90,9 @@
 		1F5F93C52C0F910300EC29A2 /* LumaBoxTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumaBoxTextureFilter.swift; sourceTree = "<group>"; };
 		1F5F93C72C0F9D7900EC29A2 /* YIQChannel.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = YIQChannel.metal; sourceTree = "<group>"; };
 		1F5F93C92C0F9DCA00EC29A2 /* YIQCompose.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = YIQCompose.metal; sourceTree = "<group>"; };
+		1F5F93CC2C0FA96C00EC29A2 /* IIRTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IIRTextureFilter.swift; sourceTree = "<group>"; };
+		1F5F93CE2C0FC53E00EC29A2 /* IIRInitialCondition.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = IIRInitialCondition.metal; sourceTree = "<group>"; };
+		1F5F93D02C0FC84500EC29A2 /* IIRMultiply.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = IIRMultiply.metal; sourceTree = "<group>"; };
 		1F6BFDE72BFF799F00883169 /* ntsc-mtl-demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ntsc-mtl-demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ntsc_mtl_demoApp.swift; sourceTree = "<group>"; };
 		1F6BFDEC2BFF799F00883169 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -158,6 +164,8 @@
 				1F5F93C02C0F585C00EC29A2 /* RGB.metal */,
 				1F5F93C72C0F9D7900EC29A2 /* YIQChannel.metal */,
 				1F5F93C92C0F9DCA00EC29A2 /* YIQCompose.metal */,
+				1F5F93CE2C0FC53E00EC29A2 /* IIRInitialCondition.metal */,
+				1F5F93D02C0FC84500EC29A2 /* IIRMultiply.metal */,
 			);
 			path = MetalKernels;
 			sourceTree = "<group>";
@@ -177,6 +185,16 @@
 				1F5B6CBD2C04BB970051A9ED /* ChromaIntoLumaFilter.swift */,
 			);
 			path = CIFilters;
+			sourceTree = "<group>";
+		};
+		1F5F93CB2C0FA95A00EC29A2 /* TextureFilters */ = {
+			isa = PBXGroup;
+			children = (
+				1F5F93BB2C0E83EC00EC29A2 /* NTSCTextureFilter.swift */,
+				1F5F93C52C0F910300EC29A2 /* LumaBoxTextureFilter.swift */,
+				1F5F93CC2C0FA96C00EC29A2 /* IIRTextureFilter.swift */,
+			);
+			path = TextureFilters;
 			sourceTree = "<group>";
 		};
 		1F6BFDDE2BFF799F00883169 = {
@@ -242,8 +260,7 @@
 			children = (
 				1F1F9B6A2C03CF690085048F /* CIKernels */,
 				1F5F93C42C0F8BF400EC29A2 /* CIFilters */,
-				1F5F93BB2C0E83EC00EC29A2 /* NTSCTextureFilter.swift */,
-				1F5F93C52C0F910300EC29A2 /* LumaBoxTextureFilter.swift */,
+				1F5F93CB2C0FA95A00EC29A2 /* TextureFilters */,
 				1FEE323D2C0A3FCC009F09BA /* YIQ.swift */,
 				1FCC1D302C0A0C2700943847 /* YIQChannels.swift */,
 				1F1F9B682C03C3980085048F /* IIRTransferFunction.swift */,
@@ -385,6 +402,7 @@
 				1F5B6CC62C04FCA50051A9ED /* PolynomialMultiply.swift in Sources */,
 				1FCC1D2F2C0A0BB400943847 /* BoxBlurFilter.swift in Sources */,
 				1FEE32442C0A9FC3009F09BA /* SnowFilter.swift in Sources */,
+				1F5F93CD2C0FA96C00EC29A2 /* IIRTextureFilter.swift in Sources */,
 				1F259EDC2C022F7500937D0A /* NTSCEffect.swift in Sources */,
 				1F5B6CDC2C0558140051A9ED /* MultiplyLumaFilter.swift in Sources */,
 				1F5F93C12C0F585C00EC29A2 /* RGB.metal in Sources */,
@@ -392,6 +410,8 @@
 				1F5B6CC82C0509F00051A9ED /* YIQComposeFilter.swift in Sources */,
 				1FEE323E2C0A3FCC009F09BA /* YIQ.swift in Sources */,
 				1F6BFE272BFFADB700883169 /* NTSCFilter.swift in Sources */,
+				1F5F93D12C0FC84500EC29A2 /* IIRMultiply.metal in Sources */,
+				1F5F93CF2C0FC53E00EC29A2 /* IIRInitialCondition.metal in Sources */,
 				1F5B6CC42C04F5770051A9ED /* ChromaLowpassFilter.swift in Sources */,
 				1F5F93BE2C0F54F000EC29A2 /* YIQ.metal in Sources */,
 				1F5B6CCC2C05244F0051A9ED /* CompositeNoiseFilter.swift in Sources */,
