@@ -78,7 +78,7 @@ class IIRTextureFilter {
         commandBuffer: MTLCommandBuffer
     ) throws {
         let region = MTLRegionMake2D(0, 0, outputTexture.width, outputTexture.height)
-        let bytesPerRow: Int = MemoryLayout<Float>.size * outputTexture.width * 1
+        let bytesPerRow: Int = MemoryLayout<Float>.size * 4 * outputTexture.width
         switch initialCondition {
         case .zero:
             let input: [Float] = [0, 0, 0, 1]   // black/zero
@@ -96,9 +96,6 @@ class IIRTextureFilter {
         case .constant(let color):
             var yiqa = color
             initialConditionTexture.replace(region: region, mipmapLevel: 0, withBytes: &yiqa, bytesPerRow: bytesPerRow)
-        }
-        guard let firstNonZeroCoeff = denominators.first(where: { !$0.isZero }) else {
-            throw Error.noNonZeroDenominators
         }
         
         guard let firstNonZeroCoeff = denominators.first(where: { !$0.isZero }) else {
@@ -129,9 +126,6 @@ class IIRTextureFilter {
             let den = normalizedDenominators[i]
             aSum += den
             cSum += (num - (den * normalizedNumerators[0]))
-            guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
-                throw Error.cantMakeComputeEncoder
-            }
             try initialConditionFill(
                 textureToFill: textures[i],
                 initialConditionTexture: initialConditionTexture,

@@ -31,6 +31,7 @@ class NTSCTextureFilter {
     
     // MARK: -Filters
     private let lumaBoxFilter: LumaBoxTextureFilter
+    private let lumaNotchFilter: IIRTextureFilter
     
     init(device: MTLDevice, context: CIContext) throws {
         self.device = device
@@ -44,6 +45,16 @@ class NTSCTextureFilter {
         }
         self.library = library
         self.lumaBoxFilter = LumaBoxTextureFilter(device: device, commandQueue: commandQueue, library: library)
+        let lumaNotchTransferFunction = IIRTransferFunction.lumaNotch
+        self.lumaNotchFilter = IIRTextureFilter(
+            device: device,
+            library: library,
+            numerators: lumaNotchTransferFunction.numerators,
+            denominators: lumaNotchTransferFunction.denominators,
+            initialCondition: .firstSample,
+            scale: 1,
+            delay: 0
+        )
     }
     
     var inputImage: CIImage?
@@ -76,19 +87,21 @@ class NTSCTextureFilter {
         commandEncoder.endEncoding()
     }
     
-    static func inputLuma(_ texture: (any MTLTexture), commandBuffer: MTLCommandBuffer, lumaLowpass: LumaLowpass, lumaBoxFilter: LumaBoxTextureFilter) throws {
+    static func inputLuma(
+        _ texture: (any MTLTexture),
+        commandBuffer: MTLCommandBuffer,
+        lumaLowpass: LumaLowpass,
+        lumaBoxFilter: LumaBoxTextureFilter,
+        lumaNotchFilter: IIRTextureFilter
+    ) throws {
         switch lumaLowpass {
         case .none:
             return
         case .box:
             try lumaBoxFilter.run(outputTexture: texture, commandBuffer: commandBuffer)
         case .notch:
-            try Self.inputLumaNotch()
+            try lumaNotchFilter.run(outputTexture: texture, commandBuffer: commandBuffer)
         }
-    }
-    
-    static func inputLumaNotch() throws {
-        fatalError("Not implemented")
     }
     
     static func convertToRGB(_ texture: (any MTLTexture), commandBuffer: MTLCommandBuffer, library: MTLLibrary, device: MTLDevice) throws {
@@ -160,7 +173,7 @@ class NTSCTextureFilter {
         }
         do {
             try Self.convertToYIQ(texture, library: library, commandBuffer: commandBuffer, device: device)
-            try Self.inputLuma(texture, commandBuffer: commandBuffer, lumaLowpass: effect.inputLumaFilter, lumaBoxFilter: lumaBoxFilter)
+            try Self.inputLuma(texture, commandBuffer: commandBuffer, lumaLowpass: effect.inputLumaFilter, lumaBoxFilter: lumaBoxFilter, lumaNotchFilter: lumaNotchFilter)
             try Self.convertToRGB(texture, commandBuffer: commandBuffer, library: library, device: device)
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()

@@ -83,7 +83,7 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         self.lastImage = ciImage
         if filter == nil {
             self.filter = try! NTSCTextureFilter(device: device, context: ciContext)
-            self.filter.effect.inputLumaFilter = .box
+            self.filter.effect.inputLumaFilter = .notch
         }
         DispatchQueue.main.async {
             self.mtkView.setNeedsDisplay()
