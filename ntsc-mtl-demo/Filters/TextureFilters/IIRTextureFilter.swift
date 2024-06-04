@@ -31,7 +31,7 @@ class IIRTextureFilter {
     private let initialCondition: InitialCondition
     private let scale: Float
     private(set) var zTextures: [MTLTexture] = []
-    private var initialConditionTexture: MTLTexture?
+    private var scratchTexture: MTLTexture?
     
     init(device: MTLDevice, library: MTLLibrary, numerators: [Float], denominators: [Float], initialCondition: InitialCondition, scale: Float, delay: UInt) {
         self.device = device
@@ -150,7 +150,6 @@ class IIRTextureFilter {
         guard let function = library.makeFunction(name: functionName) else {
             throw Error.cantMakeFunction(functionName)
         }
-        let pipelineState = try device.makeComputePipelineState(function: function)
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
@@ -168,7 +167,6 @@ class IIRTextureFilter {
         guard let function = library.makeFunction(name: functionName) else {
             throw Error.cantMakeFunction(functionName)
         }
-        let pipelineState = try device.makeComputePipelineState(function: function)
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
@@ -217,6 +215,34 @@ class IIRTextureFilter {
                 commandBuffer: commandBuffer
             )
             self.zTextures = textures
+            self.scratchTexture = initialConditionTexture
         }
+        
+        let zTex0 = zTextures[0]
+        let num0 = numerators[0]
+        try Self.filterSample(
+            outputTexture,
+            zTex0: zTex0,
+            filteredSampleTexture: scratchTexture!,
+            num0: num0,
+            library: library,
+            commandBuffer: commandBuffer
+        )
+    }
+    
+    static func filterSample(_ inputTexture: MTLTexture, zTex0: MTLTexture, filteredSampleTexture: MTLTexture, num0: Float, library: MTLLibrary, commandBuffer: MTLCommandBuffer) throws {
+        let functionName = "iirFilterSample"
+        guard let function = library.makeFunction(name: functionName) else {
+            throw Error.cantMakeFunction(functionName)
+        }
+        guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
+            throw Error.cantMakeComputeEncoder
+        }
+        encoder.setTexture(inputTexture, index: 0)
+        encoder.setTexture(zTex0, index: 1)
+        encoder.setTexture(filteredSampleTexture, index: 2)
+        var num0 = num0
+        encoder.setBytes(&num0, length: MemoryLayout<Float>.size, index: 0)
+        encoder.endEncoding()
     }
 }
