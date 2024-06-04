@@ -48,11 +48,8 @@ class NTSCTextureFilter {
     
     var inputImage: CIImage?
     
-    static func convertToYIQ(_ texture: (any MTLTexture), commandQueue: MTLCommandQueue, library: MTLLibrary, device: MTLDevice) throws {
+    static func convertToYIQ(_ texture: (any MTLTexture), library: MTLLibrary, commandBuffer: MTLCommandBuffer, device: MTLDevice) throws {
         // Create a command buffer and encoder
-        guard let commandBuffer = commandQueue.makeCommandBuffer() else {
-            throw Error.cantMakeCommandBuffer
-        }
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeCommandEncoder
         }
@@ -77,30 +74,25 @@ class NTSCTextureFilter {
         
         // Finalize encoding
         commandEncoder.endEncoding()
-        commandBuffer.commit()
-        commandBuffer.waitUntilCompleted()
     }
     
-    static func inputLuma(_ texture: (any MTLTexture), commandQueue: MTLCommandQueue, library: MTLLibrary, device: MTLDevice, lumaLowpass: LumaLowpass, lumaBoxFilter: LumaBoxTextureFilter) throws {
+    static func inputLuma(_ texture: (any MTLTexture), commandBuffer: MTLCommandBuffer, lumaLowpass: LumaLowpass, lumaBoxFilter: LumaBoxTextureFilter) throws {
         switch lumaLowpass {
         case .none:
             return
         case .box:
-            try lumaBoxFilter.run(outputTexture: texture)
+            try lumaBoxFilter.run(outputTexture: texture, commandBuffer: commandBuffer)
         case .notch:
-            try Self.inputLumaNotch(texture, commandQueue: commandQueue, library: library, device: device)
+            try Self.inputLumaNotch()
         }
     }
     
-    static func inputLumaNotch(_ texture: (any MTLTexture), commandQueue: MTLCommandQueue, library: MTLLibrary, device: MTLDevice) throws {
+    static func inputLumaNotch() throws {
         fatalError("Not implemented")
     }
     
-    static func convertToRGB(_ texture: (any MTLTexture), commandQueue: MTLCommandQueue, library: MTLLibrary, device: MTLDevice) throws {
+    static func convertToRGB(_ texture: (any MTLTexture), commandBuffer: MTLCommandBuffer, library: MTLLibrary, device: MTLDevice) throws {
         // Create a command buffer and encoder
-        guard let commandBuffer = commandQueue.makeCommandBuffer() else {
-            throw Error.cantMakeCommandBuffer
-        }
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeCommandEncoder
         }
@@ -123,10 +115,7 @@ class NTSCTextureFilter {
         )
         commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
         
-        // Finalize encoding
         commandEncoder.endEncoding()
-        commandBuffer.commit()
-        commandBuffer.waitUntilCompleted()
     }
     
     private func setup(with inputImage: CIImage) throws {
@@ -165,10 +154,16 @@ class NTSCTextureFilter {
             print("Error setting up texture with input image: \(error)")
             return nil
         }
+        guard let commandBuffer = commandQueue.makeCommandBuffer() else {
+            print("Couldn't make command buffer")
+            return nil
+        }
         do {
-            try Self.convertToYIQ(texture, commandQueue: commandQueue, library: library, device: device)
-            try Self.inputLuma(texture, commandQueue: commandQueue, library: library, device: device, lumaLowpass: effect.inputLumaFilter, lumaBoxFilter: lumaBoxFilter)
-            try Self.convertToRGB(texture, commandQueue: commandQueue, library: library, device: device)
+            try Self.convertToYIQ(texture, library: library, commandBuffer: commandBuffer, device: device)
+            try Self.inputLuma(texture, commandBuffer: commandBuffer, lumaLowpass: effect.inputLumaFilter, lumaBoxFilter: lumaBoxFilter)
+            try Self.convertToRGB(texture, commandBuffer: commandBuffer, library: library, device: device)
+            commandBuffer.commit()
+            commandBuffer.waitUntilCompleted()
         } catch {
             print("Error converting to YIQ: \(error)")
             return nil

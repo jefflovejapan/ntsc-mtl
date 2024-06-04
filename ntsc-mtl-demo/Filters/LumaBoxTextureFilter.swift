@@ -25,10 +25,7 @@ class LumaBoxTextureFilter {
         self.library = library
     }
     
-    func run(outputTexture: MTLTexture) throws {
-        guard let commandBuffer = commandQueue.makeCommandBuffer() else {
-            throw Error.cantMakeCommandBuffer
-        }
+    func run(outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         let needsUpdate: Bool
         if let scratchTexture {
             needsUpdate = !(scratchTexture.width == outputTexture.width && scratchTexture.height == outputTexture.height)
@@ -104,8 +101,5 @@ class LumaBoxTextureFilter {
         )
         composeCommandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
         composeCommandEncoder.endEncoding()
-        
-        commandBuffer.commit()
-        commandBuffer.waitUntilCompleted()
     }
 }
