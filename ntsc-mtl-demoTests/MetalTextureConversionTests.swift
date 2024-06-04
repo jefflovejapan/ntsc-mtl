@@ -120,4 +120,50 @@ final class MetalTextureConversionTests: XCTestCase {
             XCTAssertEqual(want[idx], got[idx], accuracy: 0.00001, "Mismatch at index \(idx) -- want \(want[idx]), got \(got[idx])")
         }
     }
+    
+    static var randomColors: AnySequence<[Float]> {
+        return AnySequence {
+            return AnyIterator {
+                [
+                    Float.random(in: 0 ... 1),
+                    Float.random(in: 0 ... 1),
+                    Float.random(in: 0 ... 1),
+                    1
+                ]
+            }
+        }
+    }
+    
+    private func assertRoundTripWorks(_ color: [Float], line: UInt = #line, message: @autoclosure () -> String = "") throws {
+        let texture = try XCTUnwrap(texture)
+        var rgba = color
+        let region = MTLRegionMake2D(0, 0, 1, 1)
+        let bytesPerRow: Int = MemoryLayout<Float>.size * 4 * 1
+        texture.replace(region: region, mipmapLevel: 0, withBytes: &rgba, bytesPerRow: bytesPerRow)
+        try NTSCTextureFilter.convertToYIQ(
+            texture,
+            commandQueue: try XCTUnwrap(commandQueue),
+            library: try XCTUnwrap(library),
+            device: try XCTUnwrap(device)
+        )
+        try NTSCTextureFilter.convertToRGB(
+            texture,
+            commandQueue: try XCTUnwrap(commandQueue),
+            library: try XCTUnwrap(library),
+            device: try XCTUnwrap(device)
+        )
+        // Expecting not to lose any precision when moving back and forth
+        let want: [Float] = color
+        var got: [Float] = [0, 0, 0, 0]
+        texture.getBytes(&got, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
+        for idx in color.indices {
+            XCTAssertEqual(want[idx], got[idx], accuracy: 0.001, message(), line: line)
+        }
+    }
+    
+    func testRGBRoundTripInGeneral() throws {
+        for color in Self.randomColors.prefix(1_000) {
+            try assertRoundTripWorks(color, message: "Mixmatch for color \(color)")
+        }
+    }
 }
