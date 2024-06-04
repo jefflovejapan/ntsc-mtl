@@ -26,3 +26,9 @@ struct YIQChannels: OptionSet {
         return CIVector(x: y, y: i, z: q, w: a)
     }
 }
+
+enum YIQChannel: UInt {
+    case y = 0
+    case i = 1
+    case q = 2
+}

@@ -9,22 +9,28 @@ import Foundation
 import CoreImage
 import Metal
 
+enum TextureFilterError: Swift.Error {
+    case cantInstantiateTexture
+    case cantMakeCommandQueue
+    case cantMakeCommandBuffer
+    case cantMakeCommandEncoder
+    case cantMakeLibrary
+    case cantMakeFunction(String)
+    case cantMakeBlitEncoder
+    case logicHole(String)
+}
+
 class NTSCTextureFilter {
-    enum Error: Swift.Error {
-        case cantInstantiateTexture
-        case cantMakeCommandQueue
-        case cantMakeCommandBuffer
-        case cantMakeCommandEncoder
-        case cantMakeLibrary
-        case cantMakeFunction(String)
-    }
-    
+    typealias Error = TextureFilterError
     private var texture: MTLTexture!
     private let device: MTLDevice
     private let context: CIContext
     private let commandQueue: MTLCommandQueue
     private let library: MTLLibrary
     var effect: NTSCEffect = .default
+    
+    // MARK: -Filters
+    private let lumaBoxFilter: LumaBoxTextureFilter
     
     init(device: MTLDevice, context: CIContext) throws {
         self.device = device
@@ -37,6 +43,7 @@ class NTSCTextureFilter {
             throw Error.cantMakeLibrary
         }
         self.library = library
+        self.lumaBoxFilter = LumaBoxTextureFilter(device: device, commandQueue: commandQueue, library: library)
     }
     
     var inputImage: CIImage?
@@ -72,6 +79,21 @@ class NTSCTextureFilter {
         commandEncoder.endEncoding()
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
+    }
+    
+    static func inputLuma(_ texture: (any MTLTexture), commandQueue: MTLCommandQueue, library: MTLLibrary, device: MTLDevice, lumaLowpass: LumaLowpass, lumaBoxFilter: LumaBoxTextureFilter) throws {
+        switch lumaLowpass {
+        case .none:
+            return
+        case .box:
+            try lumaBoxFilter.run(outputTexture: texture)
+        case .notch:
+            try Self.inputLumaNotch(texture, commandQueue: commandQueue, library: library, device: device)
+        }
+    }
+    
+    static func inputLumaNotch(_ texture: (any MTLTexture), commandQueue: MTLCommandQueue, library: MTLLibrary, device: MTLDevice) throws {
+        fatalError("Not implemented")
     }
     
     static func convertToRGB(_ texture: (any MTLTexture), commandQueue: MTLCommandQueue, library: MTLLibrary, device: MTLDevice) throws {
@@ -143,10 +165,9 @@ class NTSCTextureFilter {
             print("Error setting up texture with input image: \(error)")
             return nil
         }
-//        Self.convertToYIQ(texture, device: self.device)
-//        Self.convertToRGB(texture, device: self.device)
         do {
             try Self.convertToYIQ(texture, commandQueue: commandQueue, library: library, device: device)
+            try Self.inputLuma(texture, commandQueue: commandQueue, library: library, device: device, lumaLowpass: effect.inputLumaFilter, lumaBoxFilter: lumaBoxFilter)
             try Self.convertToRGB(texture, commandQueue: commandQueue, library: library, device: device)
         } catch {
             print("Error converting to YIQ: \(error)")
