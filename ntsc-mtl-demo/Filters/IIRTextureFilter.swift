@@ -12,77 +12,117 @@ import Metal
 class NTSCTextureFilter {
     enum Error: Swift.Error {
         case cantInstantiateTexture
+        case cantMakeCommandQueue
+        case cantMakeCommandBuffer
+        case cantMakeCommandEncoder
+        case cantMakeLibrary
+        case cantMakeFunction(String)
     }
     
     private var texture: MTLTexture!
     private let device: MTLDevice
     private let context: CIContext
+    private let commandQueue: MTLCommandQueue
+    private let library: MTLLibrary
     var effect: NTSCEffect = .default
     
-    init(device: MTLDevice, context: CIContext) {
+    init(device: MTLDevice, context: CIContext) throws {
         self.device = device
         self.context = context
+        guard let commandQueue = device.makeCommandQueue() else {
+            throw Error.cantInstantiateTexture
+        }
+        self.commandQueue = commandQueue
+        guard let library = device.makeDefaultLibrary() else {
+            throw Error.cantMakeLibrary
+        }
+        self.library = library
     }
     
     var inputImage: CIImage?
     
-    static func convertToYIQ(_ texture: (any MTLTexture), device: MTLDevice) {
+    static func convertToYIQ(_ texture: (any MTLTexture), commandQueue: MTLCommandQueue, library: MTLLibrary, device: MTLDevice) throws {
         // Create a command buffer and encoder
-          let commandQueue = device.makeCommandQueue()!
-          let commandBuffer = commandQueue.makeCommandBuffer()!
-          let commandEncoder = commandBuffer.makeComputeCommandEncoder()!
-          
-          // Set up the compute pipeline
-          let defaultLibrary = device.makeDefaultLibrary()!
-          let function = defaultLibrary.makeFunction(name: "convertToYIQ")!
-          let pipelineState = try! device.makeComputePipelineState(function: function)
-          commandEncoder.setComputePipelineState(pipelineState)
-          
-          // Set the texture and dispatch threads
-          commandEncoder.setTexture(texture, index: 0)
-          let threadGroupSize = MTLSize(width: 8, height: 8, depth: 1)
-          let threadGroups = MTLSize(width: (texture.width + threadGroupSize.width - 1) / threadGroupSize.width,
-                                     height: (texture.height + threadGroupSize.height - 1) / threadGroupSize.height,
-                                     depth: 1)
-          commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
-          
-          // Finalize encoding
-          commandEncoder.endEncoding()
-          commandBuffer.commit()
+        guard let commandBuffer = commandQueue.makeCommandBuffer() else {
+            throw Error.cantMakeCommandBuffer
+        }
+        guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
+            throw Error.cantMakeCommandEncoder
+        }
+        
+        // Set up the compute pipeline
+        let functionName = "convertToYIQ"
+        guard let function = library.makeFunction(name: functionName) else {
+            throw Error.cantMakeFunction(functionName)
+        }
+        let pipelineState = try device.makeComputePipelineState(function: function)
+        commandEncoder.setComputePipelineState(pipelineState)
+        
+        // Set the texture and dispatch threads
+        commandEncoder.setTexture(texture, index: 0)
+        let threadGroupSize = MTLSize(width: 8, height: 8, depth: 1)
+        let threadGroups = MTLSize(
+            width: (texture.width + threadGroupSize.width - 1) / threadGroupSize.width,
+            height: (texture.height + threadGroupSize.height - 1) / threadGroupSize.height,
+            depth: 1
+        )
+        commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
+        
+        // Finalize encoding
+        commandEncoder.endEncoding()
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
     }
     
-    static func convertToRGB(_ texture: (any MTLTexture), device: MTLDevice) {
+    static func convertToRGB(_ texture: (any MTLTexture), commandQueue: MTLCommandQueue, library: MTLLibrary, device: MTLDevice) throws {
         // Create a command buffer and encoder
-          let commandQueue = device.makeCommandQueue()!
-          let commandBuffer = commandQueue.makeCommandBuffer()!
-          let commandEncoder = commandBuffer.makeComputeCommandEncoder()!
-          
-          // Set up the compute pipeline
-          let defaultLibrary = device.makeDefaultLibrary()!
-          let function = defaultLibrary.makeFunction(name: "convertToRGB")!
-          let pipelineState = try! device.makeComputePipelineState(function: function)
-          commandEncoder.setComputePipelineState(pipelineState)
-          
-          // Set the texture and dispatch threads
-          commandEncoder.setTexture(texture, index: 0)
-          let threadGroupSize = MTLSize(width: 8, height: 8, depth: 1)
-          let threadGroups = MTLSize(width: (texture.width + threadGroupSize.width - 1) / threadGroupSize.width,
-                                     height: (texture.height + threadGroupSize.height - 1) / threadGroupSize.height,
-                                     depth: 1)
-          commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
-          
-          // Finalize encoding
-          commandEncoder.endEncoding()
-          commandBuffer.commit()
+        guard let commandBuffer = commandQueue.makeCommandBuffer() else {
+            throw Error.cantMakeCommandBuffer
+        }
+        guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
+            throw Error.cantMakeCommandEncoder
+        }
+        
+        // Set up the compute pipeline
+        let functionName = "convertToRGB"
+        guard let function = library.makeFunction(name: functionName) else {
+            throw Error.cantMakeFunction(functionName)
+        }
+        let pipelineState = try device.makeComputePipelineState(function: function)
+        commandEncoder.setComputePipelineState(pipelineState)
+        
+        // Set the texture and dispatch threads
+        commandEncoder.setTexture(texture, index: 0)
+        let threadGroupSize = MTLSize(width: 8, height: 8, depth: 1)
+        let threadGroups = MTLSize(
+            width: (texture.width + threadGroupSize.width - 1) / threadGroupSize.width,
+            height: (texture.height + threadGroupSize.height - 1) / threadGroupSize.height,
+            depth: 1
+        )
+        commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
+        
+        // Finalize encoding
+        commandEncoder.endEncoding()
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
     }
     
     private func setup(with inputImage: CIImage) throws {
+        guard let commandBuffer = commandQueue.makeCommandBuffer() else {
+            throw Error.cantMakeCommandBuffer
+        }
+        
+        defer {
+            commandBuffer.commit()
+            commandBuffer.waitUntilCompleted()
+        }
+
         if let texture, texture.width == Int(inputImage.extent.width), texture.height == Int(inputImage.extent.height) {
-            self.context.render(inputImage, to: texture, commandBuffer: nil, bounds: inputImage.extent, colorSpace: self.context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
+            self.context.render(inputImage, to: texture, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: self.context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
             return
         }
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(
-            pixelFormat: .rgba8Unorm,
+            pixelFormat: .rgba32Float,
             width: Int(inputImage.extent.size.width),
             height: Int(inputImage.extent.size.height),
             mipmapped: false
@@ -91,7 +131,7 @@ class NTSCTextureFilter {
         guard let texture = device.makeTexture(descriptor: descriptor) else {
             throw Error.cantInstantiateTexture
         }
-        context.render(inputImage, to: texture, commandBuffer: nil, bounds: inputImage.extent, colorSpace: context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
+        context.render(inputImage, to: texture, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
         self.texture = texture
     }
     
@@ -103,8 +143,16 @@ class NTSCTextureFilter {
             print("Error setting up texture with input image: \(error)")
             return nil
         }
-        Self.convertToYIQ(texture, device: self.device)
+//        Self.convertToYIQ(texture, device: self.device)
 //        Self.convertToRGB(texture, device: self.device)
-        return CIImage(mtlTexture: texture)
+        do {
+            try Self.convertToYIQ(texture, commandQueue: commandQueue, library: library, device: device)
+            try Self.convertToRGB(texture, commandQueue: commandQueue, library: library, device: device)
+        } catch {
+            print("Error converting to YIQ: \(error)")
+            return nil
+        }
+        let outImage = CIImage(mtlTexture: texture)
+        return outImage
     }
 }

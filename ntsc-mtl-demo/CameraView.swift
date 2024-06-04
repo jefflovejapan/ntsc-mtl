@@ -85,8 +85,7 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             effect.inputLumaFilter = .notch
             effect.chromaLowpassIn = .full
             effect.filterType = .butterworth
-//            self.filter = NTSCFilter(size: ciImage.extent.size, effect: effect)
-            self.filter = NTSCTextureFilter(device: device, context: ciContext)
+            self.filter = try! NTSCTextureFilter(device: device, context: ciContext)
         }
         
         // Apply CIFilter
@@ -149,6 +148,7 @@ extension CameraUIView: MTKViewDelegate {
             try ciContext.startTask(toRender: lastImage, to: destination)
             commandBuffer.present(drawable)
             commandBuffer.commit()
+            commandBuffer.waitUntilCompleted()
         } catch {
             print("Error starting render task: \(error)")
         }
