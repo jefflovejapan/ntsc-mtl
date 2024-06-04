@@ -34,6 +34,8 @@
 		1F5F93CF2C0FC53E00EC29A2 /* IIRInitialCondition.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93CE2C0FC53E00EC29A2 /* IIRInitialCondition.metal */; };
 		1F5F93D12C0FC84500EC29A2 /* IIRMultiply.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93D02C0FC84500EC29A2 /* IIRMultiply.metal */; };
 		1F5F93D32C0FD03400EC29A2 /* IIRFilterSample.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93D22C0FD03400EC29A2 /* IIRFilterSample.metal */; };
+		1F5F93D52C0FD58E00EC29A2 /* IIRSideEffect.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93D42C0FD58E00EC29A2 /* IIRSideEffect.metal */; };
+		1F5F93D72C0FDB8700EC29A2 /* IIRFinalImage.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93D62C0FDB8700EC29A2 /* IIRFinalImage.metal */; };
 		1F6BFDEB2BFF799F00883169 /* ntsc_mtl_demoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */; };
 		1F6BFDED2BFF799F00883169 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEC2BFF799F00883169 /* ContentView.swift */; };
 		1F6BFDEF2BFF79A000883169 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEE2BFF79A000883169 /* Assets.xcassets */; };
@@ -95,6 +97,8 @@
 		1F5F93CE2C0FC53E00EC29A2 /* IIRInitialCondition.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = IIRInitialCondition.metal; sourceTree = "<group>"; };
 		1F5F93D02C0FC84500EC29A2 /* IIRMultiply.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = IIRMultiply.metal; sourceTree = "<group>"; };
 		1F5F93D22C0FD03400EC29A2 /* IIRFilterSample.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = IIRFilterSample.metal; sourceTree = "<group>"; };
+		1F5F93D42C0FD58E00EC29A2 /* IIRSideEffect.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = IIRSideEffect.metal; sourceTree = "<group>"; };
+		1F5F93D62C0FDB8700EC29A2 /* IIRFinalImage.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = IIRFinalImage.metal; sourceTree = "<group>"; };
 		1F6BFDE72BFF799F00883169 /* ntsc-mtl-demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ntsc-mtl-demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ntsc_mtl_demoApp.swift; sourceTree = "<group>"; };
 		1F6BFDEC2BFF799F00883169 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -168,7 +172,9 @@
 				1F5F93C92C0F9DCA00EC29A2 /* YIQCompose.metal */,
 				1F5F93CE2C0FC53E00EC29A2 /* IIRInitialCondition.metal */,
 				1F5F93D22C0FD03400EC29A2 /* IIRFilterSample.metal */,
+				1F5F93D42C0FD58E00EC29A2 /* IIRSideEffect.metal */,
 				1F5F93D02C0FC84500EC29A2 /* IIRMultiply.metal */,
+				1F5F93D62C0FDB8700EC29A2 /* IIRFinalImage.metal */,
 			);
 			path = MetalKernels;
 			sourceTree = "<group>";
@@ -406,7 +412,9 @@
 				1F5B6CC62C04FCA50051A9ED /* PolynomialMultiply.swift in Sources */,
 				1FCC1D2F2C0A0BB400943847 /* BoxBlurFilter.swift in Sources */,
 				1FEE32442C0A9FC3009F09BA /* SnowFilter.swift in Sources */,
+				1F5F93D72C0FDB8700EC29A2 /* IIRFinalImage.metal in Sources */,
 				1F5F93CD2C0FA96C00EC29A2 /* IIRTextureFilter.swift in Sources */,
+				1F5F93D52C0FD58E00EC29A2 /* IIRSideEffect.metal in Sources */,
 				1F259EDC2C022F7500937D0A /* NTSCEffect.swift in Sources */,
 				1F5B6CDC2C0558140051A9ED /* MultiplyLumaFilter.swift in Sources */,
 				1F5F93C12C0F585C00EC29A2 /* RGB.metal in Sources */,

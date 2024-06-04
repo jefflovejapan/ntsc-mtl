@@ -9,7 +9,13 @@
 #include <metal_stdlib>
 using namespace metal;
 
-kernel void yiqCompose(texture2d<float, access::read_write> sampleTexture [[texture(0)]], texture2d<float, access::read_write> outputTexture [[texture(1)]], constant YIQChannel& channel [[buffer(0)]], uint2 gid [[thread_position_in_grid]]) {
+kernel void yiqCompose
+(
+ texture2d<float, access::read> sampleTexture [[texture(0)]],
+ texture2d<float, access::read_write> outputTexture [[texture(1)]],
+ constant YIQChannel& channel [[buffer(0)]],
+ uint2 gid [[thread_position_in_grid]]
+ ) {
     float minWidth = min(sampleTexture.get_width(), outputTexture.get_width());
     float minHeight = min(sampleTexture.get_height(), outputTexture.get_height());
     if (gid.x >= minWidth || gid.y >= minHeight) {

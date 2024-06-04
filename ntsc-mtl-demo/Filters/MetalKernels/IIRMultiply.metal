@@ -8,7 +8,7 @@
 #include <metal_stdlib>
 using namespace metal;
 
-kernel void iirMultiply(texture2d<float, access::read_write> textureToFill [[texture(0)]], texture2d<float, access::read_write> initialConditionTexture [[texture(1)]], uint2 gid [[thread_position_in_grid]]) {
+kernel void iirMultiply(texture2d<float, access::read_write> textureToFill [[texture(0)]], texture2d<float, access::read> initialConditionTexture [[texture(1)]], uint2 gid [[thread_position_in_grid]]) {
     float minWidth = min(textureToFill.get_width(), initialConditionTexture.get_width());
     float minHeight = min(textureToFill.get_height(), initialConditionTexture.get_height());
     if (gid.x >= minWidth || gid.y >= minHeight) {
