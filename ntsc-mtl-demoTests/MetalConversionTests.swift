@@ -48,9 +48,36 @@ extension CIColor {
 
 final class MetalConversionTests: XCTestCase {
     var filter: NTSCFilter!
+    var texture: MTLTexture?
+    var device: MTLDevice?
+    var ciContext: CIContext?
+    
+    enum Error: Swift.Error {
+        case noDevice
+    }
+    
+    override func setUpWithError() throws {
+        guard let device = MTLCreateSystemDefaultDevice() else {
+            throw Error.noDevice
+        }
+        self.device = device
+        self.ciContext = CIContext(mtlDevice: device)
+        let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Float, width: 1, height: 1, mipmapped: false)
+        self.texture = device.makeTexture(descriptor: textureDescriptor)
+    }
     
     override func tearDownWithError() throws {
         filter = nil
+    }
+    
+    func testMetalRoundTrip() throws {
+        let context = try XCTUnwrap(self.ciContext)
+        let texture = try XCTUnwrap(self.texture)
+        let inputColor = CIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1)
+        let inputImage = createTestImage(color: inputColor, size: CGSize(width: 1, height: 1))
+        context.render(inputImage, to: texture, commandBuffer: nil, bounds: inputImage.extent, colorSpace: context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
+        
+//        let commandQueue = device.makeCommand
     }
     
     func testRoundTrip() throws {

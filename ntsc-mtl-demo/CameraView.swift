@@ -17,7 +17,7 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     private let device: MTLDevice
     private let mtkView: MTKView
     private let commandQueue: MTLCommandQueue
-    private var filter: NTSCFilter!
+    private var filter: NTSCTextureFilter!
     
     var isFilterEnabled: Bool
     var lastImage: CIImage?
@@ -83,9 +83,10 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         if filter == nil {
             var effect = NTSCEffect.default
             effect.inputLumaFilter = .notch
-            effect.chromaLowpassIn = .light
+            effect.chromaLowpassIn = .full
             effect.filterType = .butterworth
-            self.filter = NTSCFilter(size: ciImage.extent.size, effect: effect)
+//            self.filter = NTSCFilter(size: ciImage.extent.size, effect: effect)
+            self.filter = NTSCTextureFilter(device: device, context: ciContext)
         }
         
         // Apply CIFilter

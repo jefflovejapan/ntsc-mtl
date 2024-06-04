@@ -149,7 +149,8 @@ class NTSCFilter: CIFilter {
 //        
 ////        // step 1
 ////        // TODO: looks super grayscale, check math
-//        let chromaLowpassed = chromaLowpass(inputImage: lumaed)
+        let chromaLowpassed = chromaLowpass(inputImage: inputImage)
+        return chromaLowpassed
 //        // step 2
 //        let chromaedIntoLuma = chromaIntoLuma(inputImage: chromaLowpassed)
 ////        // step 3
@@ -157,8 +158,8 @@ class NTSCFilter: CIFilter {
 ////        // step 4
 //        let compositeNoised = compositeNoise(inputImage: composited)
         
-        let snowed = snow(inputImage: inputImage)
-        return snowed
+//        let snowed = snow(inputImage: inputImage)
+//        return snowed
     }
 }
 

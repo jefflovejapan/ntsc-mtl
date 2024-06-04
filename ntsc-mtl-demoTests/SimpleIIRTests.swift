@@ -37,7 +37,37 @@ final class SimpleIIRTests: XCTestCase {
         XCTAssertEqual(wantB, yiq.z)
     }
     
-    func testChromaLowpassScalarFullButterworth() throws {
+    func testChromaLowpassScalarFullButterworthI() throws {
+        let r: Float = Float(20) / Float(255)
+        let g: Float = Float(230) / Float(255)
+        let b: Float = Float(20) / Float(255)
+        
+        let yiq = toYIQ(rgba: SIMD4<Float>.init(r, g, b, 1))
+        
+        let bandwidthScale = NTSCEffect.default.bandwidthScale
+        
+        let iFunction = ChromaLowpassFilter.lowpassFilter(cutoff: 1_300_000.0, rate: NTSC.rate * bandwidthScale, filterType: .butterworth)
+        let initialCondition: IIRTester.InitialCondition = .zero
+        let scale: Float = 1
+        let delay: UInt = 2
+        let floatTester: IIRTester = IIRTester(numerators: iFunction.numerators, denominators: iFunction.denominators, initialCondition: initialCondition, scale: scale, delay: delay)
+        let gotI = try floatTester.value(for: yiq[1]) // y[i]q
+        
+        let gotYIQA = SIMD4<Float>.init(yiq[0], gotI, yiq[2], 1)
+        let gotRGB = toRGB(yiqa: gotYIQA)
+        let gotRGBInt = SIMD4<Int>.init(gotRGB * 255, rounding: .toNearestOrAwayFromZero)
+        XCTAssertEqual(gotRGBInt, SIMD4<Int>(x: 72, y: 215, z: 0, w: 255))
+    }
+    
+    func testNegativeRGBIsEquivalent() {
+        let rgbWithZero = SIMD4<Float>(72, 215, 0, 255) / 255
+        let yiqWithZero = toYIQ(rgba: rgbWithZero)
+        let rgbWithNegative = SIMD4<Float>(72, 215, -40, 255) / 255
+        let yiqWithNegative = toYIQ(rgba: rgbWithNegative)
+        XCTAssertEqual(yiqWithZero, yiqWithNegative)
+    }
+    
+    func testChromaLowpassScalarFullButterworthQ() throws {
         let r: Float = 0.5
         let g: Float = 0.5
         let b: Float = 0.5
@@ -45,13 +75,14 @@ final class SimpleIIRTests: XCTestCase {
         let yiq = toYIQ(rgba: SIMD4<Float>.init(r, g, b, 1))
         
         let bandwidthScale = NTSCEffect.default.bandwidthScale
-        let iFunction = ChromaLowpassFilter.lowpassFilter(cutoff: 1_300_000.0, rate: NTSC.rate * bandwidthScale, filterType: .butterworth)
+        
+        let iFunction = ChromaLowpassFilter.lowpassFilter(cutoff: 600_000.0, rate: NTSC.rate * bandwidthScale, filterType: .butterworth)
         let initialCondition: IIRTester.InitialCondition = .zero
         let scale: Float = 1
-        let delay: UInt = 2
+        let delay: UInt = 4
         let floatTester: IIRTester = IIRTester(numerators: iFunction.numerators, denominators: iFunction.denominators, initialCondition: initialCondition, scale: scale, delay: delay)
-        let got = try floatTester.value(for: yiq.y) // i
-        let want: Float = -0.112611488
+        let got = try floatTester.value(for: yiq.z) // yi[q]
+        let want: Float = 0.0
         XCTAssertEqual(want, got)
     }
 
