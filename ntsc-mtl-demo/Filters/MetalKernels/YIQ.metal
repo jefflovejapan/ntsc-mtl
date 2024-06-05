@@ -32,4 +32,3 @@ kernel void convertToYIQ
     // Write the converted YIQ values back to the texture
     outputTexture.write(half4(yiq, 1.0), gid);
 }
-
