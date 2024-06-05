@@ -16,9 +16,6 @@ constant float3x3 yiqToRGBMatrix = float3x3
  );
 
 kernel void convertToRGB(texture2d<float, access::read_write> texture [[texture(0)]], uint2 gid [[thread_position_in_grid]]) {
-    if (gid.x >= texture.get_width() || gid.y >= texture.get_height()) {
-        return;
-    }
     float4 yiqa = texture.read(gid);
     float3 yiq = yiqa.xyz;
     float3 rgb = yiqToRGBMatrix * yiq;

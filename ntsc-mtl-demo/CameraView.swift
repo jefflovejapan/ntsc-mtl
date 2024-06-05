@@ -82,8 +82,8 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         let ciImage = CIImage(cvImageBuffer: pixelBuffer)
         self.lastImage = ciImage
         if filter == nil {
-            self.filter = try! NTSCTextureFilter(device: device, context: ciContext)
-            self.filter.effect.inputLumaFilter = .notch
+            var effect: NTSCEffect = .default
+            self.filter = try! NTSCTextureFilter(effect: effect, device: device, context: ciContext)
         }
         DispatchQueue.main.async {
             self.mtkView.setNeedsDisplay()

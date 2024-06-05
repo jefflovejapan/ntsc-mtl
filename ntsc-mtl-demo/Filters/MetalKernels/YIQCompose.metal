@@ -12,25 +12,18 @@ using namespace metal;
 kernel void yiqCompose
 (
  texture2d<float, access::read> sampleTexture [[texture(0)]],
- texture2d<float, access::read_write> outputTexture [[texture(1)]],
- constant YIQChannel& channel [[buffer(0)]],
+ texture2d<float, access::read> fallbackTexture [[texture(1)]],
+ texture2d<float, access::read_write> outputTexture [[texture(2)]],
+ constant float4& channelMix [[buffer(0)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
-    float minWidth = min(sampleTexture.get_width(), outputTexture.get_width());
-    float minHeight = min(sampleTexture.get_height(), outputTexture.get_height());
-    if (gid.x >= minWidth || gid.y >= minHeight) {
-        return;
-    }
-    
     float4 samplePixel = sampleTexture.read(gid);
-    float4 outputPixel = outputTexture.read(gid);
-    switch (channel) {
-        case YIQChannelY:
-            outputPixel.x = samplePixel.x;
-        case YIQChannelI:
-            outputPixel.y = samplePixel.y;
-        case YIQChannelQ:
-            outputPixel.z = samplePixel.z;
-    }
-    outputTexture.write(outputPixel, gid);
+    float4 fallbackPixel = fallbackTexture.read(gid);
+    
+    float y = mix(fallbackPixel.x, samplePixel.x, channelMix.x);
+    float i = mix(fallbackPixel.y, samplePixel.y, channelMix.y);
+    float q = mix(fallbackPixel.z, samplePixel.z, channelMix.z);
+    float a = mix(fallbackPixel.w, samplePixel.w, channelMix.w);
+    float4 result = float4(y, i, q, a);
+    outputTexture.write(result, gid);
 }

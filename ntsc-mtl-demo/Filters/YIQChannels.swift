@@ -25,6 +25,14 @@ struct YIQChannels: OptionSet {
         let a: CGFloat = self.contains(.a) ? 1 : 0
         return CIVector(x: y, y: i, z: q, w: a)
     }
+    
+    var floatMix: [Float] {
+        let y: Float = self.contains(.y) ? 1 : 0
+        let i: Float = self.contains(.i) ? 1 : 0
+        let q: Float = self.contains(.q) ? 1 : 0
+        let a: Float = self.contains(.a) ? 1 : 0
+        return [y, i, q, a]
+    }
 }
 
 enum YIQChannel: UInt {

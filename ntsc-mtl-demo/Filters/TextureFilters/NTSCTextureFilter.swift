@@ -22,18 +22,22 @@ enum TextureFilterError: Swift.Error {
 
 class NTSCTextureFilter {
     typealias Error = TextureFilterError
-    private var texture: MTLTexture!
+    private var textureA: MTLTexture!
+    private var textureB: MTLTexture!
     private let device: MTLDevice
     private let context: CIContext
     private let commandQueue: MTLCommandQueue
     private let library: MTLLibrary
-    var effect: NTSCEffect = .default
+    var effect: NTSCEffect
     
     // MARK: -Filters
     private let lumaBoxFilter: LumaBoxTextureFilter
     private let lumaNotchFilter: IIRTextureFilter
+    private let lightChromaLowpassFilter: ChromaLowpassTextureFilter
+    private let fullChromaLowpassFilter: ChromaLowpassTextureFilter
     
-    init(device: MTLDevice, context: CIContext) throws {
+    init(effect: NTSCEffect, device: MTLDevice, context: CIContext) throws {
+        self.effect = effect
         self.device = device
         self.context = context
         guard let commandQueue = device.makeCommandQueue() else {
@@ -52,10 +56,12 @@ class NTSCTextureFilter {
             numerators: lumaNotchTransferFunction.numerators,
             denominators: lumaNotchTransferFunction.denominators,
             initialCondition: .firstSample, 
-            channel: .y,
+            channels: .y,
             scale: 1,
             delay: 0
         )
+        self.lightChromaLowpassFilter = ChromaLowpassTextureFilter(device: device, library: library, intensity: .light, bandwidthScale: effect.bandwidthScale, filterType: effect.filterType)
+        self.fullChromaLowpassFilter = ChromaLowpassTextureFilter(device: device, library: library, intensity: .full, bandwidthScale: effect.bandwidthScale, filterType: effect.filterType)
     }
     
     var inputImage: CIImage?
@@ -76,13 +82,10 @@ class NTSCTextureFilter {
         
         // Set the texture and dispatch threads
         commandEncoder.setTexture(texture, index: 0)
-        let threadGroupSize = MTLSize(width: 8, height: 8, depth: 1)
-        let threadGroups = MTLSize(
-            width: (texture.width + threadGroupSize.width - 1) / threadGroupSize.width,
-            height: (texture.height + threadGroupSize.height - 1) / threadGroupSize.height,
-            depth: 1
+        commandEncoder.dispatchThreads(
+            MTLSize(width: texture.width, height: texture.height, depth: 1),
+            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1)
         )
-        commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
         
         // Finalize encoding
         commandEncoder.endEncoding()
@@ -90,6 +93,7 @@ class NTSCTextureFilter {
     
     static func inputLuma(
         _ texture: (any MTLTexture),
+        output: (any MTLTexture),
         commandBuffer: MTLCommandBuffer,
         lumaLowpass: LumaLowpass,
         lumaBoxFilter: LumaBoxTextureFilter,
@@ -99,9 +103,27 @@ class NTSCTextureFilter {
         case .none:
             return
         case .box:
-            try lumaBoxFilter.run(outputTexture: texture, commandBuffer: commandBuffer)
+            try lumaBoxFilter.run(inputTexture: texture, outputTexture: output, commandBuffer: commandBuffer)
         case .notch:
-            try lumaNotchFilter.run(outputTexture: texture, commandBuffer: commandBuffer)
+            try lumaNotchFilter.run(inputTexture: texture, outputTexture: output, commandBuffer: commandBuffer)
+        }
+    }
+    
+    static func chromaLowpass(
+        _ texture: (any MTLTexture),
+        output: (any MTLTexture),
+        commandBuffer: MTLCommandBuffer,
+        chromaLowpass: ChromaLowpass,
+        lightFilter: ChromaLowpassTextureFilter,
+        fullFilter: ChromaLowpassTextureFilter
+    ) throws {
+        switch chromaLowpass {
+        case .none:
+            return
+        case .light:
+            try lightFilter.run(inputTexture: texture, outputTexture: output, commandBuffer: commandBuffer)
+        case .full:
+            try fullFilter.run(inputTexture: texture, outputTexture: output, commandBuffer: commandBuffer)
         }
     }
     
@@ -121,13 +143,9 @@ class NTSCTextureFilter {
         
         // Set the texture and dispatch threads
         commandEncoder.setTexture(texture, index: 0)
-        let threadGroupSize = MTLSize(width: 8, height: 8, depth: 1)
-        let threadGroups = MTLSize(
-            width: (texture.width + threadGroupSize.width - 1) / threadGroupSize.width,
-            height: (texture.height + threadGroupSize.height - 1) / threadGroupSize.height,
-            depth: 1
-        )
-        commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
+        commandEncoder.dispatchThreads(
+            MTLSize(width: texture.width, height: texture.height, depth: 1),
+            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
         
         commandEncoder.endEncoding()
     }
@@ -139,11 +157,10 @@ class NTSCTextureFilter {
         
         defer {
             commandBuffer.commit()
-            commandBuffer.waitUntilCompleted()
         }
 
-        if let texture, texture.width == Int(inputImage.extent.width), texture.height == Int(inputImage.extent.height) {
-            self.context.render(inputImage, to: texture, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: self.context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
+        if let textureA, textureA.width == Int(inputImage.extent.width), textureA.height == Int(inputImage.extent.height) {
+            self.context.render(inputImage, to: textureA, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: self.context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
             return
         }
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(
@@ -153,11 +170,15 @@ class NTSCTextureFilter {
             mipmapped: false
         )
         descriptor.usage = [.shaderRead, .shaderWrite, .renderTarget]
-        guard let texture = device.makeTexture(descriptor: descriptor) else {
+        guard let textureA = device.makeTexture(descriptor: descriptor) else {
             throw Error.cantInstantiateTexture
         }
-        context.render(inputImage, to: texture, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
-        self.texture = texture
+        context.render(inputImage, to: textureA, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
+        self.textureA = textureA
+        guard let textureB = device.makeTexture(descriptor: descriptor) else {
+            throw Error.cantInstantiateTexture
+        }
+        self.textureB = textureB
     }
     
     var outputImage: CIImage? {
@@ -173,16 +194,23 @@ class NTSCTextureFilter {
             return nil
         }
         do {
-            try Self.convertToYIQ(texture, library: library, commandBuffer: commandBuffer, device: device)
-            try Self.inputLuma(texture, commandBuffer: commandBuffer, lumaLowpass: effect.inputLumaFilter, lumaBoxFilter: lumaBoxFilter, lumaNotchFilter: lumaNotchFilter)
-            try Self.convertToRGB(texture, commandBuffer: commandBuffer, library: library, device: device)
+            try Self.convertToYIQ(textureA, library: library, commandBuffer: commandBuffer, device: device)
+            try Self.chromaLowpass(
+                textureA,
+                output: textureB,
+                commandBuffer: commandBuffer,
+                chromaLowpass: effect.chromaLowpassIn,
+                lightFilter: lightChromaLowpassFilter,
+                fullFilter: fullChromaLowpassFilter
+            )
+            try Self.convertToRGB(textureB, commandBuffer: commandBuffer, library: library, device: device)
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()
         } catch {
             print("Error converting to YIQ: \(error)")
             return nil
         }
-        let outImage = CIImage(mtlTexture: texture)
+        let outImage = CIImage(mtlTexture: textureB)
         return outImage
     }
 }

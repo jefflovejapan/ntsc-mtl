@@ -29,12 +29,12 @@ class IIRTextureFilter {
     private let numerators: [Float]
     private let denominators: [Float]
     private let initialCondition: InitialCondition
-    private let channel: YIQChannel
+    private let channelMix: YIQChannels
     private let scale: Float
     private(set) var zTextures: [MTLTexture] = []
     private var scratchTexture: MTLTexture?
     
-    init(device: MTLDevice, library: MTLLibrary, numerators: [Float], denominators: [Float], initialCondition: InitialCondition, channel: YIQChannel, scale: Float, delay: UInt) {
+    init(device: MTLDevice, library: MTLLibrary, numerators: [Float], denominators: [Float], initialCondition: InitialCondition, channels: YIQChannels, scale: Float, delay: UInt) {
         self.device = device
         self.library = library
         let maxLength = max(numerators.count, denominators.count)
@@ -45,11 +45,11 @@ class IIRTextureFilter {
         self.numerators = paddedNumerators
         self.denominators = paddedDenominators
         self.initialCondition = initialCondition
-        self.channel = channel
+        self.channelMix = channels
         self.scale = scale
     }
     
-    private static func texture(width: Int, height: Int, pixelFormat: MTLPixelFormat, device: MTLDevice) -> MTLTexture? {
+    static func texture(width: Int, height: Int, pixelFormat: MTLPixelFormat, device: MTLDevice) -> MTLTexture? {
         let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(
             pixelFormat: pixelFormat,
             width: width,
@@ -60,7 +60,7 @@ class IIRTextureFilter {
         return device.makeTexture(descriptor: textureDescriptor)
     }
     
-    private static func textures(width: Int, height: Int, pixelFormat: MTLPixelFormat, device: MTLDevice) -> AnySequence<MTLTexture> {
+    static func textures(width: Int, height: Int, pixelFormat: MTLPixelFormat, device: MTLDevice) -> AnySequence<MTLTexture> {
         return AnySequence {
             return AnyIterator {
                 return Self.texture(width: width, height: height, pixelFormat: pixelFormat, device: device)
@@ -68,7 +68,7 @@ class IIRTextureFilter {
         }
     }
     
-    static func fillTextures(
+    static func fillTexturesForInitialCondition(
         outputTexture: MTLTexture,
         initialCondition: InitialCondition,
         initialConditionTexture: MTLTexture,
@@ -147,7 +147,7 @@ class IIRTextureFilter {
         )
     }
     
-    static func initialConditionFill(textureToFill: MTLTexture, initialConditionTexture: MTLTexture, aSum: Float, cSum: Float, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
+    private static func initialConditionFill(textureToFill: MTLTexture, initialConditionTexture: MTLTexture, aSum: Float, cSum: Float, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
         let functionName = "iirInitialCondition"
         guard let function = library.makeFunction(name: functionName) else {
             throw Error.cantMakeFunction(functionName)
@@ -163,13 +163,9 @@ class IIRTextureFilter {
         commandEncoder.setBytes(&aSum, length: MemoryLayout<Float>.size, index: 0)
         var cSum = cSum
         commandEncoder.setBytes(&cSum, length: MemoryLayout<Float>.size, index: 1)
-        let threadGroupSize = MTLSize(width: 8, height: 8, depth: 1)
-        let threadGroups = MTLSize(
-            width: (textureToFill.width + threadGroupSize.width - 1) / threadGroupSize.width,
-            height: (textureToFill.height + threadGroupSize.height - 1) / threadGroupSize.height,
-            depth: 1
-        )
-        commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
+        commandEncoder.dispatchThreads(
+            MTLSize(width: textureToFill.width, height: textureToFill.height, depth: 1),
+            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
         commandEncoder.endEncoding()
     }
     
@@ -185,46 +181,42 @@ class IIRTextureFilter {
         commandEncoder.setComputePipelineState(pipelineState)
         commandEncoder.setTexture(textureToFill, index: 0)
         commandEncoder.setTexture(initialConditionTexture, index: 1)
-        let threadGroupSize = MTLSize(width: 8, height: 8, depth: 1)
-        let threadGroups = MTLSize(
-            width: (textureToFill.width + threadGroupSize.width - 1) / threadGroupSize.width,
-            height: (textureToFill.height + threadGroupSize.height - 1) / threadGroupSize.height,
-            depth: 1
-        )
-        commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
+        commandEncoder.dispatchThreads(
+            MTLSize(width: textureToFill.width, height: textureToFill.height, depth: 1),
+            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
         commandEncoder.endEncoding()
     }
     
-    func run(outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+    func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         let needsUpdate: Bool
         if !(zTextures.count == numerators.count) {
             needsUpdate = true
         } else {
             needsUpdate = !zTextures.allSatisfy({ tex in
-                tex.width == outputTexture.width && tex.height == outputTexture.height
+                tex.width == inputTexture.width && tex.height == inputTexture.height
             })
         }
         
         if needsUpdate {
             guard let initialConditionTexture = Self.texture(
-                width: outputTexture.width,
-                height: outputTexture.height,
-                pixelFormat: outputTexture.pixelFormat,
+                width: inputTexture.width,
+                height: inputTexture.height,
+                pixelFormat: inputTexture.pixelFormat,
                 device: device
             ) else {
                 throw Error.cantInstantiateTexture
             }
             let textures = Array(
                 Self.textures(
-                    width: outputTexture.width,
-                    height: outputTexture.height,
-                    pixelFormat: outputTexture.pixelFormat,
+                    width: inputTexture.width,
+                    height: inputTexture.height,
+                    pixelFormat: inputTexture.pixelFormat,
                     device: device
                 )
                 .prefix(numerators.count)
             )
-            try Self.fillTextures(
-                outputTexture: outputTexture,
+            try Self.fillTexturesForInitialCondition(
+                outputTexture: inputTexture,
                 initialCondition: initialCondition,
                 initialConditionTexture: initialConditionTexture,
                 textures: textures,
@@ -241,7 +233,7 @@ class IIRTextureFilter {
         let zTex0 = zTextures[0]
         let num0 = numerators[0]
         try Self.filterSample(
-            outputTexture,
+            inputTexture,
             zTex0: zTex0,
             filteredSampleTexture: scratchTexture!,
             num0: num0,
@@ -258,7 +250,7 @@ class IIRTextureFilter {
             let z = zTextures[i]
             let zPlusOne = zTextures[nextIdx]
             try Self.sideEffect(
-                inputImage: outputTexture,
+                inputImage: inputTexture,
                 z: z,
                 zPlusOne: zPlusOne,
                 filteredSample: scratchTexture!,
@@ -270,17 +262,18 @@ class IIRTextureFilter {
             )
         }
         try Self.finalImage(
-            inputImage: outputTexture,
-            scratchTexture: scratchTexture!,
+            inputImage: inputTexture,
+            filteredImage: scratchTexture!,
             scale: scale,
             library: library,
             device: device,
             commandBuffer: commandBuffer
         )
         try Self.compose(
-            inputImage: outputTexture,
-            filteredImage: scratchTexture!,
-            channel: self.channel,
+            inputImage: inputTexture,
+            filteredImage: scratchTexture!, 
+            writingTo: outputTexture,
+            channels: self.channelMix,
             library: library,
             device: device,
             commandBuffer: commandBuffer
@@ -289,7 +282,7 @@ class IIRTextureFilter {
     
     static func finalImage(
         inputImage: MTLTexture,
-        scratchTexture: MTLTexture,
+        filteredImage: MTLTexture,
         scale: Float,
         library: MTLLibrary,
         device: MTLDevice,
@@ -305,20 +298,16 @@ class IIRTextureFilter {
         }
         commandEncoder.setComputePipelineState(pipelineState)
         commandEncoder.setTexture(inputImage, index: 0)
-        commandEncoder.setTexture(scratchTexture, index: 1)
+        commandEncoder.setTexture(filteredImage, index: 1)
         var scale = scale
         commandEncoder.setBytes(&scale, length: MemoryLayout<Float>.size, index: 0)
-        let threadGroupSize = MTLSize(width: 8, height: 8, depth: 1)
-        let threadGroups = MTLSize(
-            width: (inputImage.width + threadGroupSize.width - 1) / threadGroupSize.width,
-            height: (inputImage.height + threadGroupSize.height - 1) / threadGroupSize.height,
-            depth: 1
-        )
-        commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
+        commandEncoder.dispatchThreads(
+            MTLSize(width: inputImage.width, height: inputImage.height, depth: 1),
+            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
         commandEncoder.endEncoding()
     }
     
-    static func compose(inputImage: MTLTexture, filteredImage: MTLTexture, channel: YIQChannel, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
+    static func compose(inputImage: MTLTexture, filteredImage: MTLTexture, writingTo outputTexture: MTLTexture, channels: YIQChannels, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
         let functionName = "yiqCompose"
         guard let function = library.makeFunction(name: functionName) else {
             throw Error.cantMakeFunction(functionName)
@@ -330,15 +319,18 @@ class IIRTextureFilter {
         commandEncoder.setComputePipelineState(pipelineState)
         commandEncoder.setTexture(filteredImage, index: 0)
         commandEncoder.setTexture(inputImage, index: 1)
-        var channel = channel.rawValue
-        commandEncoder.setBytes(&channel, length: MemoryLayout.size(ofValue: channel), index: 0)
-        let threadGroupSize = MTLSize(width: 8, height: 8, depth: 1)
-        let threadGroups = MTLSize(
-            width: (inputImage.width + threadGroupSize.width - 1) / threadGroupSize.width,
-            height: (inputImage.height + threadGroupSize.height - 1) / threadGroupSize.height,
-            depth: 1
-        )
-        commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
+        commandEncoder.setTexture(outputTexture, index: 2)
+        
+        /*
+         The second texture that we pass in is the one we're writing back to. We want this to be "input image"
+         */
+        
+        
+        var channelMix = channels.floatMix
+        commandEncoder.setBytes(&channelMix, length: MemoryLayout.size(ofValue: channelMix), index: 0)
+        commandEncoder.dispatchThreads(
+            MTLSize(width: inputImage.width, height: inputImage.height, depth: 1),
+            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
         commandEncoder.endEncoding()
     }
     
@@ -360,13 +352,9 @@ class IIRTextureFilter {
         var denom = denominator
         commandEncoder.setBytes(&num, length: MemoryLayout<Float>.size, index: 0)
         commandEncoder.setBytes(&denom, length: MemoryLayout<Float>.size, index: 1)
-        let threadGroupSize = MTLSize(width: 8, height: 8, depth: 1)
-        let threadGroups = MTLSize(
-            width: (inputImage.width + threadGroupSize.width - 1) / threadGroupSize.width,
-            height: (inputImage.height + threadGroupSize.height - 1) / threadGroupSize.height,
-            depth: 1
-        )
-        commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
+        commandEncoder.dispatchThreads(
+            MTLSize(width: inputImage.width, height: inputImage.height, depth: 1),
+            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
         commandEncoder.endEncoding()
     }
     
@@ -379,19 +367,16 @@ class IIRTextureFilter {
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
+
         encoder.setComputePipelineState(pipelineState)
         encoder.setTexture(inputTexture, index: 0)
         encoder.setTexture(zTex0, index: 1)
         encoder.setTexture(filteredSampleTexture, index: 2)
         var num0 = num0
         encoder.setBytes(&num0, length: MemoryLayout<Float>.size, index: 0)
-        let threadGroupSize = MTLSize(width: 8, height: 8, depth: 1)
-        let threadGroups = MTLSize(
-            width: (inputTexture.width + threadGroupSize.width - 1) / threadGroupSize.width,
-            height: (inputTexture.height + threadGroupSize.height - 1) / threadGroupSize.height,
-            depth: 1
-        )
-        encoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
+        encoder.dispatchThreads(
+            MTLSize(width: inputTexture.width, height: inputTexture.height, depth: 1),
+            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
         encoder.endEncoding()
     }
 }

@@ -25,7 +25,7 @@ class LumaBoxTextureFilter {
         self.library = library
     }
     
-    func run(outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+    func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         let needsUpdate: Bool
         if let scratchTexture {
             needsUpdate = !(scratchTexture.width == outputTexture.width && scratchTexture.height == outputTexture.height)
@@ -73,12 +73,6 @@ class LumaBoxTextureFilter {
         // We've blurred the YIQ "image" in scratchTexture
         self.blurKernel.encode(commandBuffer: commandBuffer, inPlaceTexture: &scratchTexture)
         
-        /*
-         - load compose kernel
-         - compose y from scratch texture with iq from outputTexture
-         - write out to output texture
-         */
-        
         let composeFunctionName = "yiqCompose"
         guard let function = library.makeFunction(name: composeFunctionName) else {
             throw Error.cantMakeFunction(composeFunctionName    )
@@ -90,16 +84,14 @@ class LumaBoxTextureFilter {
         }
         composeCommandEncoder.setComputePipelineState(pipelineState)
         composeCommandEncoder.setTexture(scratchTexture, index: 0)
-        composeCommandEncoder.setTexture(outputTexture, index: 1)
-        var yChannel: UInt = YIQChannel.y.rawValue
-        composeCommandEncoder.setBytes(&yChannel, length: MemoryLayout<UInt>.size, index: 0)
-        let threadGroupSize = MTLSize(width: 8, height: 8, depth: 1)
-        let threadGroups = MTLSize(
-            width: (outputTexture.width + threadGroupSize.width - 1) / threadGroupSize.width,
-            height: (outputTexture.height + threadGroupSize.height - 1) / threadGroupSize.height,
-            depth: 1
-        )
-        composeCommandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
+        composeCommandEncoder.setTexture(inputTexture, index: 1)
+        composeCommandEncoder.setTexture(outputTexture, index: 2)
+        let yChannel: YIQChannels = .y
+        var channelMix = yChannel.floatMix
+        composeCommandEncoder.setBytes(&channelMix, length: MemoryLayout.size(ofValue: channelMix), index: 0)
+        composeCommandEncoder.dispatchThreads(
+            MTLSize(width: outputTexture.width, height: outputTexture.height, depth: 1),
+            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
         composeCommandEncoder.endEncoding()
     }
 }
