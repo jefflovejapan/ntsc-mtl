@@ -17,10 +17,6 @@ constant float3x3 rgbToYIQMatrix = float3x3
 
 kernel void convertToYIQ(texture2d<float, access::read_write> texture [[texture(0)]],
                                uint2 gid [[thread_position_in_grid]]) {
-    // Ensure the thread is within the texture bounds
-    if (gid.x >= texture.get_width() || gid.y >= texture.get_height()) {
-        return;
-    }
     
     // Read the pixel at the current thread position
     float4 color = texture.read(gid);

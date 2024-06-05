@@ -15,12 +15,6 @@ kernel void yiqCompose3
  texture2d<float, access::read> qTexture [[texture(2)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
-    float minWidth = min(min(yTexture.get_width(), iTexture.get_width()), qTexture.get_width());
-    float minHeight = min(min(yTexture.get_height(), iTexture.get_height()), qTexture.get_height());
-    if (gid.x >= minWidth || gid.y >= minHeight) {
-        return;
-    }
-    
     float y = yTexture.read(gid).x;
     float i = iTexture.read(gid).y;
     float q = qTexture.read(gid).z;

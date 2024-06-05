@@ -49,7 +49,7 @@ class IIRTextureFilter {
         self.scale = scale
     }
     
-    private static func texture(width: Int, height: Int, pixelFormat: MTLPixelFormat, device: MTLDevice) -> MTLTexture? {
+    static func texture(width: Int, height: Int, pixelFormat: MTLPixelFormat, device: MTLDevice) -> MTLTexture? {
         let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(
             pixelFormat: pixelFormat,
             width: width,
@@ -60,7 +60,7 @@ class IIRTextureFilter {
         return device.makeTexture(descriptor: textureDescriptor)
     }
     
-    private static func textures(width: Int, height: Int, pixelFormat: MTLPixelFormat, device: MTLDevice) -> AnySequence<MTLTexture> {
+    static func textures(width: Int, height: Int, pixelFormat: MTLPixelFormat, device: MTLDevice) -> AnySequence<MTLTexture> {
         return AnySequence {
             return AnyIterator {
                 return Self.texture(width: width, height: height, pixelFormat: pixelFormat, device: device)
@@ -68,7 +68,7 @@ class IIRTextureFilter {
         }
     }
     
-    static func fillTextures(
+    static func fillTexturesForInitialCondition(
         outputTexture: MTLTexture,
         initialCondition: InitialCondition,
         initialConditionTexture: MTLTexture,
@@ -147,7 +147,7 @@ class IIRTextureFilter {
         )
     }
     
-    static func initialConditionFill(textureToFill: MTLTexture, initialConditionTexture: MTLTexture, aSum: Float, cSum: Float, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
+    private static func initialConditionFill(textureToFill: MTLTexture, initialConditionTexture: MTLTexture, aSum: Float, cSum: Float, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
         let functionName = "iirInitialCondition"
         guard let function = library.makeFunction(name: functionName) else {
             throw Error.cantMakeFunction(functionName)
@@ -215,7 +215,7 @@ class IIRTextureFilter {
                 )
                 .prefix(numerators.count)
             )
-            try Self.fillTextures(
+            try Self.fillTexturesForInitialCondition(
                 outputTexture: outputTexture,
                 initialCondition: initialCondition,
                 initialConditionTexture: initialConditionTexture,
@@ -359,6 +359,17 @@ class IIRTextureFilter {
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
+        
+        /*
+         OK, in Rust, filtersample looks like:
+         
+         filt_sample = z[0] + (num[0] * sample)
+         
+         "sample" here is the input value, like you'd expect
+         
+         The problem with my test might be that I'm not setting up `texture` properly to reflect the input value
+         */
+        
         encoder.setComputePipelineState(pipelineState)
         encoder.setTexture(inputTexture, index: 0)
         encoder.setTexture(zTex0, index: 1)

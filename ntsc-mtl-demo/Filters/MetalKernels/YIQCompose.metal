@@ -16,12 +16,6 @@ kernel void yiqCompose
  constant YIQChannel& channel [[buffer(0)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
-    float minWidth = min(sampleTexture.get_width(), outputTexture.get_width());
-    float minHeight = min(sampleTexture.get_height(), outputTexture.get_height());
-    if (gid.x >= minWidth || gid.y >= minHeight) {
-        return;
-    }
-    
     float4 samplePixel = sampleTexture.read(gid);
     float4 outputPixel = outputTexture.read(gid);
     switch (channel) {

@@ -15,12 +15,6 @@ kernel void iirFinalImage
  constant float &scale [[buffer(0)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
-    float minWidth = min(inputTexture.get_width(), scratchTexture.get_width());
-    float minHeight = min(inputTexture.get_height(), scratchTexture.get_height());
-    if (gid.x >= minWidth || gid.y >= minHeight) {
-        return;
-    }
-    
     float4 currentSample = inputTexture.read(gid);
     float4 filteredSample = scratchTexture.read(gid);
     float4 combined = ((filteredSample - currentSample) * scale) + currentSample;

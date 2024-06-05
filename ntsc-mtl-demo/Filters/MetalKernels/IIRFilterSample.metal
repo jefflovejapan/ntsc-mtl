@@ -16,11 +16,6 @@ kernel void iirFilterSample
  constant float &num0 [[buffer(0)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
-    float minWidth = min(min(inputTexture.get_width(), zTex0.get_width()), filteredSampleTexture.get_width());
-    float minHeight = min(min(inputTexture.get_height(), zTex0.get_height()), filteredSampleTexture.get_height());
-    if (gid.x >= minWidth || gid.y >= minHeight) {
-        return;
-    }
     float4 result = zTex0.read(gid) + (num0 * inputTexture.read(gid));
     filteredSampleTexture.write(result, gid);
 }

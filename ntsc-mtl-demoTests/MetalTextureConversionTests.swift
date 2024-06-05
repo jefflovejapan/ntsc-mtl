@@ -201,4 +201,63 @@ final class MetalTextureConversionTests: XCTestCase {
         let expectedIValuesInZ: [Float] = [2.74764766E-9, 4.71874206E-10, 0]
         XCTAssertEqual(iValuesInZ, expectedIValuesInZ)
     }
+    
+    func testIFullButterworthSetup() throws {
+        let device = try XCTUnwrap(device)
+        let texture = try XCTUnwrap(texture)
+        let commandQueue = try XCTUnwrap(commandQueue)
+        let library = try XCTUnwrap(library)
+        let commandBuffer = try XCTUnwrap(commandQueue.makeCommandBuffer())
+        texture.paint(with: [0.498039246, 1.49011612E-8, 1.49011612E-8])
+        let initialConditionTexture = try XCTUnwrap(IIRTextureFilter.texture(
+            width: texture.width,
+            height: texture.height,
+            pixelFormat: texture.pixelFormat,
+            device: device)
+        )
+        let zTextures = Array(IIRTextureFilter.textures(
+            width: texture.width,
+            height: texture.height,
+            pixelFormat: texture.pixelFormat,
+            device: device)
+            .prefix(3)
+        )
+        let iirFunction = IIRTransferFunction.butterworth(cutoff: 1_300_000, rate: NTSC.rate * 1)
+        try IIRTextureFilter.fillTexturesForInitialCondition(
+            outputTexture: texture,
+            initialCondition: .zero,
+            initialConditionTexture: initialConditionTexture,
+            textures: zTextures,
+            numerators: iirFunction.numerators,
+            denominators: iirFunction.denominators,
+            library: library,
+            device: device,
+            commandBuffer: commandBuffer
+        )
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
+        let z0 = zTextures[0].pixelValue(x: 0, y: 0)
+        XCTAssertEqual(z0, [0, 0, 0, 1])
+        let z1 = zTextures[1].pixelValue(x: 0, y: 0)
+        XCTAssertEqual(z1, [0, 0, 0, 1])
+        let z2 = zTextures[2].pixelValue(x: 0, y: 0)
+        XCTAssertEqual(z2, [0, 0, 0, 1])
+        
+        let newCommandBuffer = try XCTUnwrap(commandQueue.makeCommandBuffer())
+        
+        try IIRTextureFilter.filterSample(
+            texture,
+            zTex0: zTextures[0], 
+            filteredSampleTexture: initialConditionTexture,
+            num0: iirFunction.numerators[0],
+            library: library,
+            device: device, commandBuffer: newCommandBuffer
+        )
+        newCommandBuffer.commit()
+        newCommandBuffer.waitUntilCompleted()
+        let filteredSample = initialConditionTexture.pixelValue(x: 0, y: 0)
+        
+        // From Rust
+        XCTAssertEqual(filteredSample[1], 8.53801251E-10)
+    }
 }
