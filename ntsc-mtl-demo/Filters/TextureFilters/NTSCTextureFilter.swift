@@ -24,6 +24,7 @@ class NTSCTextureFilter {
     typealias Error = TextureFilterError
     private var textureA: MTLTexture!
     private var textureB: MTLTexture!
+    private var textureC: MTLTexture!
     private let device: MTLDevice
     private let context: CIContext
     private let commandQueue: MTLCommandQueue
@@ -68,7 +69,7 @@ class NTSCTextureFilter {
     
     private static var convertToYIQPipelineState: MTLComputePipelineState?
     
-    static func convertToYIQ(_ texture: (any MTLTexture), library: MTLLibrary, commandBuffer: MTLCommandBuffer, device: MTLDevice) throws {
+    static func convertToYIQ(_ texture: (any MTLTexture), output: (any MTLTexture), library: MTLLibrary, commandBuffer: MTLCommandBuffer, device: MTLDevice) throws {
         // Create a command buffer and encoder
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
@@ -90,6 +91,7 @@ class NTSCTextureFilter {
         
         // Set the texture and dispatch threads
         commandEncoder.setTexture(texture, index: 0)
+        commandEncoder.setTexture(output, index: 1)
         commandEncoder.dispatchThreads(
             MTLSize(width: texture.width, height: texture.height, depth: 1),
             threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1)
@@ -137,7 +139,7 @@ class NTSCTextureFilter {
     
     private static var convertToRGBPipelineState: MTLComputePipelineState?
     
-    static func convertToRGB(_ texture: (any MTLTexture), commandBuffer: MTLCommandBuffer, library: MTLLibrary, device: MTLDevice) throws {
+    static func convertToRGB(_ texture: (any MTLTexture), output: (any MTLTexture), commandBuffer: MTLCommandBuffer, library: MTLLibrary, device: MTLDevice) throws {
         // Create a command buffer and encoder
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
@@ -160,6 +162,7 @@ class NTSCTextureFilter {
         
         // Set the texture and dispatch threads
         commandEncoder.setTexture(texture, index: 0)
+        commandEncoder.setTexture(output, index: 1)
         commandEncoder.dispatchThreads(
             MTLSize(width: texture.width, height: texture.height, depth: 1),
             threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
@@ -196,6 +199,10 @@ class NTSCTextureFilter {
             throw Error.cantInstantiateTexture
         }
         self.textureB = textureB
+        guard let textureC = device.makeTexture(descriptor: descriptor) else {
+            throw Error.cantInstantiateTexture
+        }
+        self.textureC = textureC
     }
     
     var outputImage: CIImage? {
@@ -211,24 +218,24 @@ class NTSCTextureFilter {
             return nil
         }
         do {
-            try Self.convertToYIQ(textureA, library: library, commandBuffer: commandBuffer, device: device)
-            try Self.inputLuma(textureA, output: textureB, commandBuffer: commandBuffer, lumaLowpass: effect.inputLumaFilter, lumaBoxFilter: lumaBoxFilter, lumaNotchFilter: lumaNotchFilter)
+            try Self.convertToYIQ(textureA, output: textureB, library: library, commandBuffer: commandBuffer, device: device)
+            try Self.inputLuma(textureB, output: textureC, commandBuffer: commandBuffer, lumaLowpass: effect.inputLumaFilter, lumaBoxFilter: lumaBoxFilter, lumaNotchFilter: lumaNotchFilter)
             try Self.chromaLowpass(
-                textureB,
+                textureC,
                 output: textureA,
                 commandBuffer: commandBuffer,
                 chromaLowpass: effect.chromaLowpassIn,
                 lightFilter: lightChromaLowpassFilter,
                 fullFilter: fullChromaLowpassFilter
             )
-            try Self.convertToRGB(textureA, commandBuffer: commandBuffer, library: library, device: device)
+            try Self.convertToRGB(textureA, output: textureB, commandBuffer: commandBuffer, library: library, device: device)
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()
         } catch {
             print("Error converting to YIQ: \(error)")
             return nil
         }
-        let outImage = CIImage(mtlTexture: textureA)
+        let outImage = CIImage(mtlTexture: textureB)
         return outImage
     }
 }

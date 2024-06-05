@@ -15,9 +15,14 @@ constant half3x3 yiqToRGBMatrix = half3x3
  half3(0.619, -0.647, 1.703)
  );
 
-kernel void convertToRGB(texture2d<half, access::read_write> texture [[texture(0)]], uint2 gid [[thread_position_in_grid]]) {
-    half4 yiqa = texture.read(gid);
+kernel void convertToRGB
+(
+ texture2d<half, access::read> inputTexture [[texture(0)]],
+ texture2d<half, access::write> outputTexture [[texture(1)]],
+ 
+ uint2 gid [[thread_position_in_grid]]) {
+    half4 yiqa = inputTexture.read(gid);
     half3 yiq = yiqa.xyz;
     half3 rgb = yiqToRGBMatrix * yiq;
-    texture.write(half4(rgb, 1.0), gid);
+    outputTexture.write(half4(rgb, 1.0), gid);
 }
