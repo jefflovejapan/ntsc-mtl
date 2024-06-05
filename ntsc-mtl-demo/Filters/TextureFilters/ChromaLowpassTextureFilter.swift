@@ -55,7 +55,9 @@ class ChromaLowpassTextureFilter {
     }
     
     var iTexture: MTLTexture?
+    var outputITexture: MTLTexture?
     var qTexture: MTLTexture?
+    var outputQTexture: MTLTexture?
     
     func run(outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         let needsUpdate: Bool
@@ -72,12 +74,11 @@ class ChromaLowpassTextureFilter {
         }
         
         if needsUpdate {
-            let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: outputTexture.pixelFormat, width: outputTexture.width, height: outputTexture.height, mipmapped: false)
-            guard let iTexture = device.makeTexture(descriptor: textureDescriptor), let qTexture = device.makeTexture(descriptor: textureDescriptor) else {
-                throw Error.cantInstantiateTexture
-            }
-            self.iTexture = iTexture
-            self.qTexture = qTexture
+            let textures = Array(IIRTextureFilter.textures(width: outputTexture.width, height: outputTexture.height, pixelFormat: outputTexture.pixelFormat, device: device).prefix(4))
+            self.iTexture = textures[0]
+            self.qTexture = textures[1]
+            self.outputITexture = textures[2]
+            self.outputQTexture = textures[3]
         }
         
         guard let blitEncoder = commandBuffer.makeBlitCommandEncoder() else {
@@ -88,8 +89,8 @@ class ChromaLowpassTextureFilter {
         blitEncoder.copy(from: outputTexture, to: qTexture!)
         blitEncoder.endEncoding()
         
-        try iFilter.run(outputTexture: iTexture!, commandBuffer: commandBuffer)
-        try qFilter.run(outputTexture: qTexture!, commandBuffer: commandBuffer)
+        try iFilter.run(inputTexture: iTexture!, outputTexture: outputITexture!, commandBuffer: commandBuffer)
+        try qFilter.run(inputTexture: qTexture!, outputTexture: outputQTexture!, commandBuffer: commandBuffer)
         
         let functionName = "yiqCompose3"
         guard let function = library.makeFunction(name: functionName) else {

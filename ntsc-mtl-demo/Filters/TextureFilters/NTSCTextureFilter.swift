@@ -91,6 +91,7 @@ class NTSCTextureFilter {
     
     static func inputLuma(
         _ texture: (any MTLTexture),
+        output: (any MTLTexture),
         commandBuffer: MTLCommandBuffer,
         lumaLowpass: LumaLowpass,
         lumaBoxFilter: LumaBoxTextureFilter,
@@ -100,9 +101,9 @@ class NTSCTextureFilter {
         case .none:
             return
         case .box:
-            try lumaBoxFilter.run(outputTexture: texture, commandBuffer: commandBuffer)
+            try lumaBoxFilter.run(inputTexture: texture, outputTexture: output, commandBuffer: commandBuffer)
         case .notch:
-            try lumaNotchFilter.run(outputTexture: texture, commandBuffer: commandBuffer)
+            try lumaNotchFilter.run(inputTexture: texture, outputTexture: output, commandBuffer: commandBuffer)
         }
     }
     

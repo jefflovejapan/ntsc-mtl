@@ -200,7 +200,8 @@ final class MetalTextureConversionTests: XCTestCase {
             scale: 1,
             delay: 2
         )
-        try iFilter.run(outputTexture: texture, commandBuffer: commandBuffer)
+        let outputTexture = try XCTUnwrap(IIRTextureFilter.texture(width: texture.width, height: texture.height, pixelFormat: texture.pixelFormat, device: device))
+        try iFilter.run(inputTexture: texture, outputTexture: outputTexture, commandBuffer: commandBuffer)
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
         
@@ -219,7 +220,8 @@ final class MetalTextureConversionTests: XCTestCase {
         let commandQueue = try XCTUnwrap(commandQueue)
         let library = try XCTUnwrap(library)
         let buf0 = try XCTUnwrap(commandQueue.makeCommandBuffer())
-        texture.paint(with: [0.498039246, 1.49011612E-8, 1.49011612E-8, 1])
+        let initialFill: [Float] = [0.498039246, 1.49011612E-8, 1.49011612E-8, 1]
+        texture.paint(with: initialFill)
         let initialConditionTexture = try XCTUnwrap(IIRTextureFilter.texture(
             width: texture.width,
             height: texture.height,
@@ -249,6 +251,8 @@ final class MetalTextureConversionTests: XCTestCase {
         )
         buf0.commit()
         buf0.waitUntilCompleted()
+        var tex = texture.pixelValue(x: 0, y: 0)
+        XCTAssertEqual(tex, initialFill)
         var z0 = zTextures[0].pixelValue(x: 0, y: 0)
         XCTAssertEqual(z0, [0, 0, 0, 1])
         var z1 = zTextures[1].pixelValue(x: 0, y: 0)
@@ -269,7 +273,9 @@ final class MetalTextureConversionTests: XCTestCase {
         )
         buf1.commit()
         buf1.waitUntilCompleted()
-        let filteredSample = initialConditionTexture.pixelValue(x: 0, y: 0)
+        tex = texture.pixelValue(x: 0, y: 0)
+        XCTAssertEqual(tex, initialFill)
+//        let filteredSample = initialConditionTexture.pixelValue(x: 0, y: 0)
         
         // From Rust
 //        XCTAssertEqual(filteredSample, [0.028536469, 8.53801251E-10, 8.53801251E-10, 1])
@@ -297,7 +303,8 @@ final class MetalTextureConversionTests: XCTestCase {
         }
         buf2.commit()
         buf2.waitUntilCompleted()
-        
+        tex = texture.pixelValue(x: 0, y: 0)
+        XCTAssertEqual(tex, initialFill)
         z0 = zTextures[0].pixelValue(x: 0, y: 0)
         XCTAssertEqual(z0, [0.09183421, 2.7476477e-09, 2.7476477e-09, 1.0])
         z1 = zTextures[1].pixelValue(x: 0, y: 0)
@@ -316,6 +323,8 @@ final class MetalTextureConversionTests: XCTestCase {
         )
         buf3.commit()
         buf3.waitUntilCompleted()
+        tex = texture.pixelValue(x: 0, y: 0)
+        XCTAssertEqual(tex, initialFill)
         
         let filtered = initialConditionTexture.pixelValue(x: 0, y: 0)
         // from Rust
@@ -326,9 +335,11 @@ final class MetalTextureConversionTests: XCTestCase {
         XCTAssertEqual(input, [0.49803925, 1.4901161e-08, 1.4901161e-08, 1.0])
         
         let buf4 = try XCTUnwrap(commandQueue.makeCommandBuffer())
+        let outputTexture = try XCTUnwrap(IIRTextureFilter.texture(width: texture.width, height: texture.height, pixelFormat: texture.pixelFormat, device: device))
         try IIRTextureFilter.compose(
             inputImage: texture,
             filteredImage: initialConditionTexture,
+            writingTo: outputTexture,
             channels: .i,
             library: library,
             device: device,
@@ -337,10 +348,14 @@ final class MetalTextureConversionTests: XCTestCase {
         
         buf4.commit()
         buf4.waitUntilCompleted()
-        let got = initialConditionTexture.pixelValue(x: 0, y: 0)
+        tex = texture.pixelValue(x: 0, y: 0)
+        XCTAssertEqual(tex, initialFill)
+        let got = outputTexture.pixelValue(x: 0, y: 0)
+        // From Rust
         let want: [Float] = [0.498039246, 7.42032923E-9, 1.49011612E-8, 1]
-        let currentGarbage: [Float] = [0.028536469, 8.538015e-10, 8.538015e-10, 1.0]
-        XCTAssertEqual(got, currentGarbage)
+        for idx in got.indices {
+            XCTAssertEqual(want[idx], got[idx], accuracy: 0.00001, "Wanted \(want[idx]), got \(got[idx]) at index \(idx)")
+        }
     }
     
     func testYIQCompose() throws {
@@ -355,6 +370,12 @@ final class MetalTextureConversionTests: XCTestCase {
             device: device
         )
         )
+        let outputTexture = try XCTUnwrap(IIRTextureFilter.texture(
+            width: texture.width,
+            height: texture.height,
+            pixelFormat: texture.pixelFormat,
+            device: device)
+        )
         
         let commandBuffer = try XCTUnwrap(commandQueue.makeCommandBuffer())
         
@@ -362,7 +383,8 @@ final class MetalTextureConversionTests: XCTestCase {
         anotherTexture.paint(with: [4, 5, 6, 7])
         try IIRTextureFilter.compose(
             inputImage: texture,
-            filteredImage: anotherTexture,
+            filteredImage: anotherTexture, 
+            writingTo: outputTexture,
             channels: .i,
             library: library,
             device: device,
@@ -370,7 +392,7 @@ final class MetalTextureConversionTests: XCTestCase {
         )
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
-        let composed = texture.pixelValue(x: 0, y: 0)
+        let composed = outputTexture.pixelValue(x: 0, y: 0)
         XCTAssertEqual(composed, [0, 5, 2, 3])
     }
 }

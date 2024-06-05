@@ -12,17 +12,18 @@ using namespace metal;
 kernel void yiqCompose
 (
  texture2d<float, access::read> sampleTexture [[texture(0)]],
- texture2d<float, access::read_write> outputTexture [[texture(1)]],
+ texture2d<float, access::read> fallbackTexture [[texture(1)]],
+ texture2d<float, access::read_write> outputTexture [[texture(2)]],
  constant float4& channelMix [[buffer(0)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
     float4 samplePixel = sampleTexture.read(gid);
-    float4 outputPixel = outputTexture.read(gid);
+    float4 fallbackPixel = fallbackTexture.read(gid);
     
-    float y = mix(outputPixel.x, samplePixel.x, channelMix.x);
-    float i = mix(outputPixel.y, samplePixel.y, channelMix.y);
-    float q = mix(outputPixel.z, samplePixel.z, channelMix.z);
-    float a = mix(outputPixel.w, samplePixel.w, channelMix.w);
+    float y = mix(fallbackPixel.x, samplePixel.x, channelMix.x);
+    float i = mix(fallbackPixel.y, samplePixel.y, channelMix.y);
+    float q = mix(fallbackPixel.z, samplePixel.z, channelMix.z);
+    float a = mix(fallbackPixel.w, samplePixel.w, channelMix.w);
     float4 result = float4(y, i, q, a);
     outputTexture.write(result, gid);
 }

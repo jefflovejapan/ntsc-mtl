@@ -25,7 +25,7 @@ class LumaBoxTextureFilter {
         self.library = library
     }
     
-    func run(outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+    func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         let needsUpdate: Bool
         if let scratchTexture {
             needsUpdate = !(scratchTexture.width == outputTexture.width && scratchTexture.height == outputTexture.height)
@@ -84,9 +84,11 @@ class LumaBoxTextureFilter {
         }
         composeCommandEncoder.setComputePipelineState(pipelineState)
         composeCommandEncoder.setTexture(scratchTexture, index: 0)
-        composeCommandEncoder.setTexture(outputTexture, index: 1)
-        var yChannel: UInt = YIQChannel.y.rawValue
-        composeCommandEncoder.setBytes(&yChannel, length: MemoryLayout<UInt>.size, index: 0)
+        composeCommandEncoder.setTexture(inputTexture, index: 1)
+        composeCommandEncoder.setTexture(outputTexture, index: 2)
+        let yChannel: YIQChannels = .y
+        var channelMix = yChannel.floatMix
+        composeCommandEncoder.setBytes(&channelMix, length: MemoryLayout.size(ofValue: channelMix), index: 0)
         composeCommandEncoder.dispatchThreads(
             MTLSize(width: outputTexture.width, height: outputTexture.height, depth: 1),
             threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
