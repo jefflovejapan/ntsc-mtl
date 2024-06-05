@@ -29,12 +29,12 @@ class IIRTextureFilter {
     private let numerators: [Float]
     private let denominators: [Float]
     private let initialCondition: InitialCondition
-    private let channel: YIQChannel
+    private let channelMix: YIQChannels
     private let scale: Float
     private(set) var zTextures: [MTLTexture] = []
     private var scratchTexture: MTLTexture?
     
-    init(device: MTLDevice, library: MTLLibrary, numerators: [Float], denominators: [Float], initialCondition: InitialCondition, channel: YIQChannel, scale: Float, delay: UInt) {
+    init(device: MTLDevice, library: MTLLibrary, numerators: [Float], denominators: [Float], initialCondition: InitialCondition, channels: YIQChannels, scale: Float, delay: UInt) {
         self.device = device
         self.library = library
         let maxLength = max(numerators.count, denominators.count)
@@ -45,7 +45,7 @@ class IIRTextureFilter {
         self.numerators = paddedNumerators
         self.denominators = paddedDenominators
         self.initialCondition = initialCondition
-        self.channel = channel
+        self.channelMix = channels
         self.scale = scale
     }
     
@@ -272,7 +272,7 @@ class IIRTextureFilter {
         try Self.compose(
             inputImage: outputTexture,
             filteredImage: scratchTexture!,
-            channel: self.channel,
+            channels: self.channelMix,
             library: library,
             device: device,
             commandBuffer: commandBuffer
@@ -306,7 +306,7 @@ class IIRTextureFilter {
         commandEncoder.endEncoding()
     }
     
-    static func compose(inputImage: MTLTexture, filteredImage: MTLTexture, channel: YIQChannel, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
+    static func compose(inputImage: MTLTexture, filteredImage: MTLTexture, channels: YIQChannels, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
         let functionName = "yiqCompose"
         guard let function = library.makeFunction(name: functionName) else {
             throw Error.cantMakeFunction(functionName)
@@ -318,8 +318,8 @@ class IIRTextureFilter {
         commandEncoder.setComputePipelineState(pipelineState)
         commandEncoder.setTexture(filteredImage, index: 0)
         commandEncoder.setTexture(inputImage, index: 1)
-        var channel = channel.rawValue
-        commandEncoder.setBytes(&channel, length: MemoryLayout.size(ofValue: channel), index: 0)
+        var channelMix = channels.floatMix
+        commandEncoder.setBytes(&channelMix, length: MemoryLayout.size(ofValue: channelMix), index: 0)
         commandEncoder.dispatchThreads(
             MTLSize(width: inputImage.width, height: inputImage.height, depth: 1),
             threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))

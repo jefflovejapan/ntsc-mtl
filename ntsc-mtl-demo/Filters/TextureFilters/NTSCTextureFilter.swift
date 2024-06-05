@@ -54,7 +54,7 @@ class NTSCTextureFilter {
             numerators: lumaNotchTransferFunction.numerators,
             denominators: lumaNotchTransferFunction.denominators,
             initialCondition: .firstSample, 
-            channel: .y,
+            channels: .y,
             scale: 1,
             delay: 0
         )

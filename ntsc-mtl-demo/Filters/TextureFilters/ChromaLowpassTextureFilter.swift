@@ -30,13 +30,13 @@ class ChromaLowpassTextureFilter {
         switch intensity {
         case .full:
             let iFunction = Self.lowpassFilter(cutoff: 1_300_000.0, rate: rate, filterType: filterType)
-            iFilter = IIRTextureFilter(device: device, library: library, numerators: iFunction.numerators, denominators: iFunction.denominators, initialCondition: initialCondition, channel: .i, scale: 1, delay: 2)
+            iFilter = IIRTextureFilter(device: device, library: library, numerators: iFunction.numerators, denominators: iFunction.denominators, initialCondition: initialCondition, channels: .i, scale: 1, delay: 2)
             let qFunction = Self.lowpassFilter(cutoff: 600_000.0, rate: rate, filterType: filterType)
-            qFilter = IIRTextureFilter(device: device, library: library, numerators: qFunction.numerators, denominators: qFunction.denominators, initialCondition: initialCondition, channel: .q, scale: 1, delay: 4)
+            qFilter = IIRTextureFilter(device: device, library: library, numerators: qFunction.numerators, denominators: qFunction.denominators, initialCondition: initialCondition, channels: .q, scale: 1, delay: 4)
         case .light:
             let function = Self.lowpassFilter(cutoff: 2_600_000.0, rate: rate, filterType: filterType)
-            iFilter = IIRTextureFilter(device: device, library: library, numerators: function.numerators, denominators: function.denominators, initialCondition: initialCondition, channel: .i, scale: 1, delay: 1)
-            qFilter = IIRTextureFilter(device: device, library: library, numerators: function.numerators, denominators: function.denominators, initialCondition: initialCondition, channel: .q, scale: 1, delay: 1)
+            iFilter = IIRTextureFilter(device: device, library: library, numerators: function.numerators, denominators: function.denominators, initialCondition: initialCondition, channels: .i, scale: 1, delay: 1)
+            qFilter = IIRTextureFilter(device: device, library: library, numerators: function.numerators, denominators: function.denominators, initialCondition: initialCondition, channels: .q, scale: 1, delay: 1)
         }
     }
     

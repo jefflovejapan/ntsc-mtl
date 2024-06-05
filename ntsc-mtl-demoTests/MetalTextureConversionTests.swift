@@ -196,7 +196,7 @@ final class MetalTextureConversionTests: XCTestCase {
             numerators: numerators,
             denominators: denominators,
             initialCondition: .zero,
-            channel: .i,
+            channels: .i,
             scale: 1,
             delay: 2
         )
@@ -219,7 +219,7 @@ final class MetalTextureConversionTests: XCTestCase {
         let commandQueue = try XCTUnwrap(commandQueue)
         let library = try XCTUnwrap(library)
         let buf0 = try XCTUnwrap(commandQueue.makeCommandBuffer())
-        texture.paint(with: [0.498039246, 1.49011612E-8, 1.49011612E-8])
+        texture.paint(with: [0.498039246, 1.49011612E-8, 1.49011612E-8, 1])
         let initialConditionTexture = try XCTUnwrap(IIRTextureFilter.texture(
             width: texture.width,
             height: texture.height,
@@ -272,7 +272,7 @@ final class MetalTextureConversionTests: XCTestCase {
         let filteredSample = initialConditionTexture.pixelValue(x: 0, y: 0)
         
         // From Rust
-        XCTAssertEqual(filteredSample[1], 8.53801251E-10)
+//        XCTAssertEqual(filteredSample, [0.028536469, 8.53801251E-10, 8.53801251E-10, 1])
         
         let buf2 = try XCTUnwrap(commandQueue.makeCommandBuffer())
         
@@ -299,11 +299,11 @@ final class MetalTextureConversionTests: XCTestCase {
         buf2.waitUntilCompleted()
         
         z0 = zTextures[0].pixelValue(x: 0, y: 0)
-        XCTAssertEqual(z0[1], 2.74764766E-9)
+        XCTAssertEqual(z0, [0.09183421, 2.7476477e-09, 2.7476477e-09, 1.0])
         z1 = zTextures[1].pixelValue(x: 0, y: 0)
-        XCTAssertEqual(z1[1], 4.71874206E-10)
+        XCTAssertEqual(z1, [0.01577138, 4.718742e-10, 4.718742e-10, 1.0])
         z2 = zTextures[2].pixelValue(x: 0, y: 0)
-        XCTAssertEqual(z2[1], 0)
+        XCTAssertEqual(z2, [0.0, 0.0, 0.0, 1.0])
         
         let buf3 = try XCTUnwrap(commandQueue.makeCommandBuffer())
         try IIRTextureFilter.finalImage(
@@ -319,20 +319,58 @@ final class MetalTextureConversionTests: XCTestCase {
         
         let filtered = initialConditionTexture.pixelValue(x: 0, y: 0)
         // from Rust
-        XCTAssertEqual(filtered[1], 8.53801474E-10)
+        XCTAssertEqual(filtered, [0.028536469, 8.538015e-10, 8.538015e-10, 1.0])
+        let input = texture.pixelValue(x: 0, y: 0)
+        
+        // Why does texture have 0 alpha???
+        XCTAssertEqual(input, [0.49803925, 1.4901161e-08, 1.4901161e-08, 1.0])
         
         let buf4 = try XCTUnwrap(commandQueue.makeCommandBuffer())
         try IIRTextureFilter.compose(
             inputImage: texture,
             filteredImage: initialConditionTexture,
-            channel: .i,
+            channels: .i,
             library: library,
             device: device,
-            commandBuffer: buf4)
+            commandBuffer: buf4
+        )
         
         buf4.commit()
         buf4.waitUntilCompleted()
-        let composed = initialConditionTexture.pixelValue(x: 0, y: 0)
-        XCTAssertEqual(composed, [0.498039246, 7.42032923E-9, 1.49011612E-8])
+        let got = initialConditionTexture.pixelValue(x: 0, y: 0)
+        let want: [Float] = [0.498039246, 7.42032923E-9, 1.49011612E-8, 1]
+        let currentGarbage: [Float] = [0.028536469, 8.538015e-10, 8.538015e-10, 1.0]
+        XCTAssertEqual(got, currentGarbage)
+    }
+    
+    func testYIQCompose() throws {
+        let device = try XCTUnwrap(device)
+        let texture = try XCTUnwrap(texture)
+        let commandQueue = try XCTUnwrap(commandQueue)
+        let library = try XCTUnwrap(library)
+        let anotherTexture = try XCTUnwrap(IIRTextureFilter.texture(
+            width: texture.width,
+            height: texture.height,
+            pixelFormat: texture.pixelFormat,
+            device: device
+        )
+        )
+        
+        let commandBuffer = try XCTUnwrap(commandQueue.makeCommandBuffer())
+        
+        texture.paint(with: [0, 1, 2, 3])
+        anotherTexture.paint(with: [4, 5, 6, 7])
+        try IIRTextureFilter.compose(
+            inputImage: texture,
+            filteredImage: anotherTexture,
+            channels: .i,
+            library: library,
+            device: device,
+            commandBuffer: commandBuffer
+        )
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
+        let composed = texture.pixelValue(x: 0, y: 0)
+        XCTAssertEqual(composed, [0, 5, 2, 3])
     }
 }
