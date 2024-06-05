@@ -22,7 +22,8 @@ enum TextureFilterError: Swift.Error {
 
 class NTSCTextureFilter {
     typealias Error = TextureFilterError
-    private var texture: MTLTexture!
+    private var textureA: MTLTexture!
+    private var textureB: MTLTexture!
     private let device: MTLDevice
     private let context: CIContext
     private let commandQueue: MTLCommandQueue
@@ -148,8 +149,8 @@ class NTSCTextureFilter {
             commandBuffer.commit()
         }
 
-        if let texture, texture.width == Int(inputImage.extent.width), texture.height == Int(inputImage.extent.height) {
-            self.context.render(inputImage, to: texture, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: self.context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
+        if let textureA, textureA.width == Int(inputImage.extent.width), textureA.height == Int(inputImage.extent.height) {
+            self.context.render(inputImage, to: textureA, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: self.context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
             return
         }
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(
@@ -159,11 +160,15 @@ class NTSCTextureFilter {
             mipmapped: false
         )
         descriptor.usage = [.shaderRead, .shaderWrite, .renderTarget]
-        guard let texture = device.makeTexture(descriptor: descriptor) else {
+        guard let textureA = device.makeTexture(descriptor: descriptor) else {
             throw Error.cantInstantiateTexture
         }
-        context.render(inputImage, to: texture, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
-        self.texture = texture
+        context.render(inputImage, to: textureA, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
+        self.textureA = textureA
+        guard let textureB = device.makeTexture(descriptor: descriptor) else {
+            throw Error.cantInstantiateTexture
+        }
+        self.textureB = textureB
     }
     
     var outputImage: CIImage? {
@@ -179,17 +184,17 @@ class NTSCTextureFilter {
             return nil
         }
         do {
-            try Self.convertToYIQ(texture, library: library, commandBuffer: commandBuffer, device: device)
-//            try Self.inputLuma(texture, commandBuffer: commandBuffer, lumaLowpass: effect.inputLumaFilter, lumaBoxFilter: lumaBoxFilter, lumaNotchFilter: lumaNotchFilter)
-            try Self.chromaLowpass(texture, commandBuffer: commandBuffer, chromaLowpass: effect.chromaLowpassIn, filter: lightChromaLowpassFilter)
-            try Self.convertToRGB(texture, commandBuffer: commandBuffer, library: library, device: device)
+            try Self.convertToYIQ(textureA, library: library, commandBuffer: commandBuffer, device: device)
+            try Self.inputLuma(textureA, output: textureB, commandBuffer: commandBuffer, lumaLowpass: effect.inputLumaFilter, lumaBoxFilter: lumaBoxFilter, lumaNotchFilter: lumaNotchFilter)
+//            try Self.chromaLowpass(textureA, commandBuffer: commandBuffer, chromaLowpass: effect.chromaLowpassIn, filter: lightChromaLowpassFilter)
+            try Self.convertToRGB(textureB, commandBuffer: commandBuffer, library: library, device: device)
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()
         } catch {
             print("Error converting to YIQ: \(error)")
             return nil
         }
-        let outImage = CIImage(mtlTexture: texture)
+        let outImage = CIImage(mtlTexture: textureB)
         return outImage
     }
 }
