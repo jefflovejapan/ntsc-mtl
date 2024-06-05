@@ -181,7 +181,7 @@ class NTSCTextureFilter {
             return
         }
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(
-            pixelFormat: .rgba32Float,
+            pixelFormat: .rgba16Float,
             width: Int(inputImage.extent.size.width),
             height: Int(inputImage.extent.size.height),
             mipmapped: false

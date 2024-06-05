@@ -10,14 +10,14 @@ using namespace metal;
 
 kernel void iirFinalImage
 (
- texture2d<float, access::read> inputTexture [[texture(0)]],
- texture2d<float, access::read_write> filteredImageTexture [[texture(1)]],
- constant float &scale [[buffer(0)]],
+ texture2d<half, access::read> inputTexture [[texture(0)]],
+ texture2d<half, access::read_write> filteredImageTexture [[texture(1)]],
+ constant half &scale [[buffer(0)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
-    float4 currentSample = inputTexture.read(gid);
-    float4 filteredSample = filteredImageTexture.read(gid);
-    float4 combined = ((filteredSample - currentSample) * scale) + currentSample;
+    half4 currentSample = inputTexture.read(gid);
+    half4 filteredSample = filteredImageTexture.read(gid);
+    half4 combined = ((filteredSample - currentSample) * scale) + currentSample;
     combined.w = 1;
     filteredImageTexture.write(combined, gid);
 }

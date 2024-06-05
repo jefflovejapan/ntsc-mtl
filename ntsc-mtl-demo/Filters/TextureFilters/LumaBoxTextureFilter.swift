@@ -95,8 +95,8 @@ class LumaBoxTextureFilter {
         composeCommandEncoder.setTexture(inputTexture, index: 1)
         composeCommandEncoder.setTexture(outputTexture, index: 2)
         let yChannel: YIQChannels = .y
-        var channelMix = yChannel.floatMix
-        composeCommandEncoder.setBytes(&channelMix, length: MemoryLayout.size(ofValue: channelMix), index: 0)
+        var channelMix: [Float16] = yChannel.floatMix
+        composeCommandEncoder.setBytes(&channelMix, length: MemoryLayout<Float16>.size * 4, index: 0)
         composeCommandEncoder.dispatchThreads(
             MTLSize(width: outputTexture.width, height: outputTexture.height, depth: 1),
             threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))

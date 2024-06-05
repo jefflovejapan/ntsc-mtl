@@ -27,7 +27,6 @@
 		1F5F93C12C0F585C00EC29A2 /* RGB.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93C02C0F585C00EC29A2 /* RGB.metal */; };
 		1F5F93C32C0F7F4E00EC29A2 /* MetalTextureConversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93C22C0F7F4E00EC29A2 /* MetalTextureConversionTests.swift */; };
 		1F5F93C62C0F910300EC29A2 /* LumaBoxTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93C52C0F910300EC29A2 /* LumaBoxTextureFilter.swift */; };
-		1F5F93C82C0F9D7900EC29A2 /* YIQChannel.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93C72C0F9D7900EC29A2 /* YIQChannel.metal */; };
 		1F5F93CA2C0F9DCA00EC29A2 /* YIQCompose.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93C92C0F9DCA00EC29A2 /* YIQCompose.metal */; };
 		1F5F93CD2C0FA96C00EC29A2 /* IIRTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93CC2C0FA96C00EC29A2 /* IIRTextureFilter.swift */; };
 		1F5F93CF2C0FC53E00EC29A2 /* IIRInitialCondition.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93CE2C0FC53E00EC29A2 /* IIRInitialCondition.metal */; };
@@ -92,7 +91,6 @@
 		1F5F93C02C0F585C00EC29A2 /* RGB.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = RGB.metal; sourceTree = "<group>"; };
 		1F5F93C22C0F7F4E00EC29A2 /* MetalTextureConversionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalTextureConversionTests.swift; sourceTree = "<group>"; };
 		1F5F93C52C0F910300EC29A2 /* LumaBoxTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumaBoxTextureFilter.swift; sourceTree = "<group>"; };
-		1F5F93C72C0F9D7900EC29A2 /* YIQChannel.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = YIQChannel.metal; sourceTree = "<group>"; };
 		1F5F93C92C0F9DCA00EC29A2 /* YIQCompose.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = YIQCompose.metal; sourceTree = "<group>"; };
 		1F5F93CC2C0FA96C00EC29A2 /* IIRTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IIRTextureFilter.swift; sourceTree = "<group>"; };
 		1F5F93CE2C0FC53E00EC29A2 /* IIRInitialCondition.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = IIRInitialCondition.metal; sourceTree = "<group>"; };
@@ -172,7 +170,6 @@
 			children = (
 				1F5F93BD2C0F54F000EC29A2 /* YIQ.metal */,
 				1F5F93C02C0F585C00EC29A2 /* RGB.metal */,
-				1F5F93C72C0F9D7900EC29A2 /* YIQChannel.metal */,
 				1F5F93C92C0F9DCA00EC29A2 /* YIQCompose.metal */,
 				1F5F93DA2C0FEC3000EC29A2 /* YIQCompose3.metal */,
 				1F5F93CE2C0FC53E00EC29A2 /* IIRInitialCondition.metal */,
@@ -410,7 +407,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1F5F93BC2C0E83EC00EC29A2 /* NTSCTextureFilter.swift in Sources */,
-				1F5F93C82C0F9D7900EC29A2 /* YIQChannel.metal in Sources */,
 				1F5F93D32C0FD03400EC29A2 /* IIRFilterSample.metal in Sources */,
 				1F5F93D92C0FE70800EC29A2 /* ChromaLowpassTextureFilter.swift in Sources */,
 				1F5F93C62C0F910300EC29A2 /* LumaBoxTextureFilter.swift in Sources */,

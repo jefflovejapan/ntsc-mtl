@@ -38,24 +38,25 @@ class SnowFilter: CIFilter {
     }
     
     override var outputImage: CIImage? {
-        guard let inputImage else { return nil }
-        guard let randomImage = self.randomFilter.outputImage else { return nil }
-        let randomSeed = Float(rng.next())
-        let transformedRandomImage = randomImage.transformed(by: CGAffineTransform(translationX: CGFloat(randomSeed), y: CGFloat(randomSeed)))
-        let yImage = Self.kernel.apply(
-            extent: inputImage.extent,
-            arguments: [
-                inputImage,
-                transformedRandomImage,
-                intensity,
-                anisotropy,
-                bandwidthScale,
-                Int(inputImage.extent.width),
-            ]
-        )
-        self.mixer.yiqMix = .y
-        self.mixer.mixImage = yImage
-        self.mixer.inverseMixImage = inputImage
-        return self.mixer.outputImage
+        return nil
+//        guard let inputImage else { return nil }
+//        guard let randomImage = self.randomFilter.outputImage else { return nil }
+//        let randomSeed = Float(rng.next())
+//        let transformedRandomImage = randomImage.transformed(by: CGAffineTransform(translationX: CGFloat(randomSeed), y: CGFloat(randomSeed)))
+//        let yImage = Self.kernel.apply(
+//            extent: inputImage.extent,
+//            arguments: [
+//                inputImage,
+//                transformedRandomImage,
+//                intensity,
+//                anisotropy,
+//                bandwidthScale,
+//                Int(inputImage.extent.width),
+//            ]
+//        )
+//        self.mixer.yiqMix = .y
+//        self.mixer.mixImage = yImage
+//        self.mixer.inverseMixImage = inputImage
+//        return self.mixer.outputImage
     }
 }
