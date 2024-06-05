@@ -11,7 +11,7 @@ using namespace metal;
 
 kernel void yiqCompose
 (
- texture2d<float, access::read> sampleTexture [[texture(0)]],
+ texture2d<float, access::read_write> sampleTexture [[texture(0)]],
  texture2d<float, access::read_write> outputTexture [[texture(1)]],
  constant YIQChannel& channel [[buffer(0)]],
  uint2 gid [[thread_position_in_grid]]

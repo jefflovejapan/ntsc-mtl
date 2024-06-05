@@ -32,6 +32,8 @@ class NTSCTextureFilter {
     // MARK: -Filters
     private let lumaBoxFilter: LumaBoxTextureFilter
     private let lumaNotchFilter: IIRTextureFilter
+    private let lightChromaLowpassFilter: ChromaLowpassTextureFilter
+//    private let fullChromaLowpassFilter: ChromaLowpassTextureFilter
     
     init(device: MTLDevice, context: CIContext) throws {
         self.device = device
@@ -56,6 +58,8 @@ class NTSCTextureFilter {
             scale: 1,
             delay: 0
         )
+        self.lightChromaLowpassFilter = ChromaLowpassTextureFilter(device: device, library: library, intensity: .light, bandwidthScale: effect.bandwidthScale, filterType: effect.filterType)
+//        self.fullChromaLowpassFilter = ChromaLowpassTextureFilter(device: device, library: library, intensity: .full, bandwidthScale: effect.bandwidthScale, filterType: effect.filterType)
     }
     
     var inputImage: CIImage?
@@ -76,13 +80,10 @@ class NTSCTextureFilter {
         
         // Set the texture and dispatch threads
         commandEncoder.setTexture(texture, index: 0)
-        let threadGroupSize = MTLSize(width: 8, height: 8, depth: 1)
-        let threadGroups = MTLSize(
-            width: (texture.width + threadGroupSize.width - 1) / threadGroupSize.width,
-            height: (texture.height + threadGroupSize.height - 1) / threadGroupSize.height,
-            depth: 1
+        commandEncoder.dispatchThreads(
+            MTLSize(width: texture.width, height: texture.height, depth: 1),
+            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1)
         )
-        commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
         
         // Finalize encoding
         commandEncoder.endEncoding()
@@ -105,6 +106,15 @@ class NTSCTextureFilter {
         }
     }
     
+    static func chromaLowpass(
+        _ texture: (any MTLTexture),
+        commandBuffer: MTLCommandBuffer,
+        chromaLowpass: ChromaLowpass,
+        filter: ChromaLowpassTextureFilter
+    ) throws {
+        try filter.run(outputTexture: texture, commandBuffer: commandBuffer)
+    }
+    
     static func convertToRGB(_ texture: (any MTLTexture), commandBuffer: MTLCommandBuffer, library: MTLLibrary, device: MTLDevice) throws {
         // Create a command buffer and encoder
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
@@ -121,13 +131,9 @@ class NTSCTextureFilter {
         
         // Set the texture and dispatch threads
         commandEncoder.setTexture(texture, index: 0)
-        let threadGroupSize = MTLSize(width: 8, height: 8, depth: 1)
-        let threadGroups = MTLSize(
-            width: (texture.width + threadGroupSize.width - 1) / threadGroupSize.width,
-            height: (texture.height + threadGroupSize.height - 1) / threadGroupSize.height,
-            depth: 1
-        )
-        commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
+        commandEncoder.dispatchThreads(
+            MTLSize(width: texture.width, height: texture.height, depth: 1),
+            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
         
         commandEncoder.endEncoding()
     }
@@ -139,7 +145,6 @@ class NTSCTextureFilter {
         
         defer {
             commandBuffer.commit()
-            commandBuffer.waitUntilCompleted()
         }
 
         if let texture, texture.width == Int(inputImage.extent.width), texture.height == Int(inputImage.extent.height) {
@@ -174,7 +179,8 @@ class NTSCTextureFilter {
         }
         do {
             try Self.convertToYIQ(texture, library: library, commandBuffer: commandBuffer, device: device)
-            try Self.inputLuma(texture, commandBuffer: commandBuffer, lumaLowpass: effect.inputLumaFilter, lumaBoxFilter: lumaBoxFilter, lumaNotchFilter: lumaNotchFilter)
+//            try Self.inputLuma(texture, commandBuffer: commandBuffer, lumaLowpass: effect.inputLumaFilter, lumaBoxFilter: lumaBoxFilter, lumaNotchFilter: lumaNotchFilter)
+            try Self.chromaLowpass(texture, commandBuffer: commandBuffer, chromaLowpass: effect.chromaLowpassIn, filter: lightChromaLowpassFilter)
             try Self.convertToRGB(texture, commandBuffer: commandBuffer, library: library, device: device)
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()
