@@ -103,68 +103,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "747FF0DE-36B7-48A3-9547-88E588FC7D95"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "ntsc-mtl-demoTests/TestIIR.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "119"
-            endingLineNumber = "119"
-            landmarkName = "value(for:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "747FF0DE-36B7-48A3-9547-88E588FC7D95 - a998b20fe7486d87"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ntsc_mtl_demoTests.IIRTester.value(for: Swift.Float) throws -&gt; Swift.Float"
-                  moduleName = "ntsc-mtl-demoTests"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jeff/Developer/recurse/ntsc-mtl-demo/ntsc-mtl-demoTests/TestIIR.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "119"
-                  endingLineNumber = "119">
-               </Location>
-               <Location
-                  uuid = "747FF0DE-36B7-48A3-9547-88E588FC7D95 - a998b20fe7486d87"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ntsc_mtl_demoTests.IIRTester.value(for: Swift.Float) throws -&gt; Swift.Float"
-                  moduleName = "ntsc-mtl-demoTests"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jeff/Developer/recurse/ntsc-mtl-demo/ntsc-mtl-demoTests/TestIIR.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "119"
-                  endingLineNumber = "119">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "C83C0D0F-0769-4BB1-83CE-28EDC0B47A48"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "ntsc-mtl-demoTests/TestIIR.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "127"
-            endingLineNumber = "127"
-            landmarkName = "value(for:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "3DF5348C-1F00-416B-BBEB-80B8C681EAD8"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"

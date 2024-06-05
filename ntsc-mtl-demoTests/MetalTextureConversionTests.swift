@@ -183,6 +183,8 @@ final class MetalTextureConversionTests: XCTestCase {
         let bytesPerRow: Int = MemoryLayout<Float>.size * 4 * 1
         texture.replace(region: region, mipmapLevel: 0, withBytes: &yiqa, bytesPerRow: bytesPerRow)
         let iFunction = IIRTransferFunction.butterworth(cutoff: 1_300_000, rate: NTSC.rate * 1)
+        
+        // From Rust
         XCTAssertEqual(iFunction.numerators, [0.0572976321, 0.114595264, 0.0572976321])
         XCTAssertEqual(iFunction.denominators, [1, -1.218135, 0.447325468])
                                               
@@ -190,18 +192,12 @@ final class MetalTextureConversionTests: XCTestCase {
         try iFilter.run(outputTexture: texture, commandBuffer: commandBuffer)
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
-        var z0: [Float] = Array(repeating: 0, count: 4)
-        var z1: [Float] = Array(repeating: 0, count: 4)
-        var z2: [Float] = Array(repeating: 0, count: 4)
         
         // Sampled from Swift, no idea if this is right
-        iFilter.zTextures[0].getBytes(&z0, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
-        XCTAssertEqual(z0, [0.0, 0.32268515, 0.0, 1.0])
-        iFilter.zTextures[1].getBytes(&z1, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
-        XCTAssertEqual(z1, [0.0, 0.055417147, 0.0, 1.0])
-        iFilter.zTextures[2].getBytes(&z2, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
-        XCTAssertEqual(z2, [0.0, 0.0, 0.0, 1.0])
-        let iValuesInZ = [z0, z1, z2].map({ $0[1] })
+        let z0 = iFilter.zTextures[0].pixelValue(x: 0, y: 0)
+        let z1 = iFilter.zTextures[1].pixelValue(x: 0, y: 0)
+        let z2 = iFilter.zTextures[2].pixelValue(x: 0, y: 0)
+        let iValuesInZ = [z0, z1, z2].map({ $0[1] })    // y[i]qa
         let expectedIValuesInZ: [Float] = [2.74764766E-9, 4.71874206E-10, 0]
         XCTAssertEqual(iValuesInZ, expectedIValuesInZ)
     }
