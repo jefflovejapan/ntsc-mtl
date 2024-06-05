@@ -256,3 +256,6 @@ NTSCTextureFilter implementation. What I need:
             - compose the luma value from the scratch texture with the chroma ones from the work-in-progess texture
             - write the composition back to the WIP
 - Excited to try the IIR filter next
+- Making good progress on IIR but luma notch doesn't seem to be working. If it's not texture misuse what could it be? It's almost like nothing's happening at all.
+    - There's a real answer to this. It was on the tip of my tongue and then I forgot
+    - Oh right, not allocating threads etc.

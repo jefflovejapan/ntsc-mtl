@@ -294,6 +294,13 @@ class IIRTextureFilter {
         commandEncoder.setTexture(scratchTexture, index: 1)
         var scale = scale
         commandEncoder.setBytes(&scale, length: MemoryLayout<Float>.size, index: 0)
+        let threadGroupSize = MTLSize(width: 8, height: 8, depth: 1)
+        let threadGroups = MTLSize(
+            width: (inputImage.width + threadGroupSize.width - 1) / threadGroupSize.width,
+            height: (inputImage.height + threadGroupSize.height - 1) / threadGroupSize.height,
+            depth: 1
+        )
+        commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
         commandEncoder.endEncoding()
     }
     
@@ -311,6 +318,13 @@ class IIRTextureFilter {
         commandEncoder.setTexture(inputImage, index: 1)
         var channel = channel.rawValue
         commandEncoder.setBytes(&channel, length: MemoryLayout.size(ofValue: channel), index: 0)
+        let threadGroupSize = MTLSize(width: 8, height: 8, depth: 1)
+        let threadGroups = MTLSize(
+            width: (inputImage.width + threadGroupSize.width - 1) / threadGroupSize.width,
+            height: (inputImage.height + threadGroupSize.height - 1) / threadGroupSize.height,
+            depth: 1
+        )
+        commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
         commandEncoder.endEncoding()
     }
     
@@ -332,6 +346,13 @@ class IIRTextureFilter {
         var denom = denominator
         commandEncoder.setBytes(&num, length: MemoryLayout<Float>.size, index: 0)
         commandEncoder.setBytes(&denom, length: MemoryLayout<Float>.size, index: 1)
+        let threadGroupSize = MTLSize(width: 8, height: 8, depth: 1)
+        let threadGroups = MTLSize(
+            width: (inputImage.width + threadGroupSize.width - 1) / threadGroupSize.width,
+            height: (inputImage.height + threadGroupSize.height - 1) / threadGroupSize.height,
+            depth: 1
+        )
+        commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
         commandEncoder.endEncoding()
     }
     
@@ -350,6 +371,13 @@ class IIRTextureFilter {
         encoder.setTexture(filteredSampleTexture, index: 2)
         var num0 = num0
         encoder.setBytes(&num0, length: MemoryLayout<Float>.size, index: 0)
+        let threadGroupSize = MTLSize(width: 8, height: 8, depth: 1)
+        let threadGroups = MTLSize(
+            width: (inputTexture.width + threadGroupSize.width - 1) / threadGroupSize.width,
+            height: (inputTexture.height + threadGroupSize.height - 1) / threadGroupSize.height,
+            depth: 1
+        )
+        encoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
         encoder.endEncoding()
     }
 }
