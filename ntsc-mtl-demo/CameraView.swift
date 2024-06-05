@@ -80,6 +80,8 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             return
         }
         let ciImage = CIImage(cvImageBuffer: pixelBuffer)
+            .oriented(forExifOrientation: Int32(CGImagePropertyOrientation.right.rawValue))
+
         self.lastImage = ciImage
         if filter == nil {
             var effect: NTSCEffect = .default
@@ -140,10 +142,9 @@ extension CameraUIView: MTKViewDelegate {
         guard let outputImage else {
             return
         }
-        let orientedImage = outputImage.oriented(forExifOrientation: Int32(CGImagePropertyOrientation.right.rawValue))
         
         do {
-            try ciContext.startTask(toRender: orientedImage, to: destination)
+            try ciContext.startTask(toRender: outputImage, to: destination)
             commandBuffer.present(drawable)
             commandBuffer.commit()
         } catch {
