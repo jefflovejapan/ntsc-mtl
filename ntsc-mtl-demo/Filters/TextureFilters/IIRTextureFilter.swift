@@ -359,17 +359,7 @@ class IIRTextureFilter {
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
-        
-        /*
-         OK, in Rust, filtersample looks like:
-         
-         filt_sample = z[0] + (num[0] * sample)
-         
-         "sample" here is the input value, like you'd expect
-         
-         The problem with my test might be that I'm not setting up `texture` properly to reflect the input value
-         */
-        
+
         encoder.setComputePipelineState(pipelineState)
         encoder.setTexture(inputTexture, index: 0)
         encoder.setTexture(zTex0, index: 1)

@@ -151,47 +151,17 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "B630826D-64D1-4496-B66C-A3FB4855F743"
+            uuid = "E2D36C88-EDE4-45C1-B00D-761907226D3E"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ntsc-mtl-demo/Filters/TextureFilters/IIRTextureFilter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "245"
-            endingLineNumber = "245"
+            startingLineNumber = "264"
+            endingLineNumber = "264"
             landmarkName = "run(outputTexture:commandBuffer:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "B630826D-64D1-4496-B66C-A3FB4855F743 - bbdce891ce63bcb8"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ntsc_mtl_demo.IIRTextureFilter.run(outputTexture: __C.MTLTexture, commandBuffer: __C.MTLCommandBuffer) throws -&gt; ()"
-                  moduleName = "ntsc-mtl-demo"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jeff/Developer/recurse/ntsc-mtl-demo/ntsc-mtl-demo/Filters/TextureFilters/IIRTextureFilter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "245"
-                  endingLineNumber = "245">
-               </Location>
-               <Location
-                  uuid = "B630826D-64D1-4496-B66C-A3FB4855F743 - bbdce891ce63bcb8"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ntsc_mtl_demo.IIRTextureFilter.run(outputTexture: __C.MTLTexture, commandBuffer: __C.MTLCommandBuffer) throws -&gt; ()"
-                  moduleName = "ntsc-mtl-demo"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jeff/Developer/recurse/ntsc-mtl-demo/ntsc-mtl-demo/Filters/TextureFilters/IIRTextureFilter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "245"
-                  endingLineNumber = "245">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
