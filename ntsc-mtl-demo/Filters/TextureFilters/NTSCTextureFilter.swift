@@ -195,22 +195,23 @@ class NTSCTextureFilter {
         }
         do {
             try Self.convertToYIQ(textureA, library: library, commandBuffer: commandBuffer, device: device)
+            try Self.inputLuma(textureA, output: textureB, commandBuffer: commandBuffer, lumaLowpass: effect.inputLumaFilter, lumaBoxFilter: lumaBoxFilter, lumaNotchFilter: lumaNotchFilter)
             try Self.chromaLowpass(
-                textureA,
-                output: textureB,
+                textureB,
+                output: textureA,
                 commandBuffer: commandBuffer,
                 chromaLowpass: effect.chromaLowpassIn,
                 lightFilter: lightChromaLowpassFilter,
                 fullFilter: fullChromaLowpassFilter
             )
-            try Self.convertToRGB(textureB, commandBuffer: commandBuffer, library: library, device: device)
+            try Self.convertToRGB(textureA, commandBuffer: commandBuffer, library: library, device: device)
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()
         } catch {
             print("Error converting to YIQ: \(error)")
             return nil
         }
-        let outImage = CIImage(mtlTexture: textureB)
+        let outImage = CIImage(mtlTexture: textureA)
         return outImage
     }
 }

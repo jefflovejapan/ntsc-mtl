@@ -327,7 +327,7 @@ class IIRTextureFilter {
         
         
         var channelMix = channels.floatMix
-        commandEncoder.setBytes(&channelMix, length: MemoryLayout.size(ofValue: channelMix), index: 0)
+        commandEncoder.setBytes(&channelMix, length: MemoryLayout<Float>.size * 4, index: 0)
         commandEncoder.dispatchThreads(
             MTLSize(width: inputImage.width, height: inputImage.height, depth: 1),
             threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
