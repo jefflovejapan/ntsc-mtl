@@ -304,5 +304,35 @@ final class MetalTextureConversionTests: XCTestCase {
         XCTAssertEqual(z1[1], 4.71874206E-10)
         z2 = zTextures[2].pixelValue(x: 0, y: 0)
         XCTAssertEqual(z2[1], 0)
+        
+        let buf3 = try XCTUnwrap(commandQueue.makeCommandBuffer())
+        try IIRTextureFilter.finalImage(
+            inputImage: texture,
+            filteredImage: initialConditionTexture,
+            scale: 1,
+            library: library,
+            device: device,
+            commandBuffer: buf3
+        )
+        buf3.commit()
+        buf3.waitUntilCompleted()
+        
+        let filtered = initialConditionTexture.pixelValue(x: 0, y: 0)
+        // from Rust
+        XCTAssertEqual(filtered[1], 8.53801474E-10)
+        
+        let buf4 = try XCTUnwrap(commandQueue.makeCommandBuffer())
+        try IIRTextureFilter.compose(
+            inputImage: texture,
+            filteredImage: initialConditionTexture,
+            channel: .i,
+            library: library,
+            device: device,
+            commandBuffer: buf4)
+        
+        buf4.commit()
+        buf4.waitUntilCompleted()
+        let composed = initialConditionTexture.pixelValue(x: 0, y: 0)
+        XCTAssertEqual(composed, [0.498039246, 7.42032923E-9, 1.49011612E-8])
     }
 }
