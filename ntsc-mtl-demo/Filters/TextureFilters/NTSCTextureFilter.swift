@@ -66,18 +66,26 @@ class NTSCTextureFilter {
     
     var inputImage: CIImage?
     
+    private static var convertToYIQPipelineState: MTLComputePipelineState?
+    
     static func convertToYIQ(_ texture: (any MTLTexture), library: MTLLibrary, commandBuffer: MTLCommandBuffer, device: MTLDevice) throws {
         // Create a command buffer and encoder
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
         
-        // Set up the compute pipeline
-        let functionName = "convertToYIQ"
-        guard let function = library.makeFunction(name: functionName) else {
-            throw Error.cantMakeFunction(functionName)
+        let pipelineState: MTLComputePipelineState
+        if let convertToYIQPipelineState {
+            pipelineState = convertToYIQPipelineState
+        } else {
+            let functionName = "convertToYIQ"
+            guard let function = library.makeFunction(name: functionName) else {
+                throw Error.cantMakeFunction(functionName)
+            }
+            pipelineState = try device.makeComputePipelineState(function: function)
+            Self.convertToYIQPipelineState = pipelineState
         }
-        let pipelineState = try device.makeComputePipelineState(function: function)
+        
         commandEncoder.setComputePipelineState(pipelineState)
         
         // Set the texture and dispatch threads
@@ -127,18 +135,27 @@ class NTSCTextureFilter {
         }
     }
     
+    private static var convertToRGBPipelineState: MTLComputePipelineState?
+    
     static func convertToRGB(_ texture: (any MTLTexture), commandBuffer: MTLCommandBuffer, library: MTLLibrary, device: MTLDevice) throws {
         // Create a command buffer and encoder
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
         
-        // Set up the compute pipeline
-        let functionName = "convertToRGB"
-        guard let function = library.makeFunction(name: functionName) else {
-            throw Error.cantMakeFunction(functionName)
+        let pipelineState: MTLComputePipelineState
+        if let convertToRGBPipelineState {
+            pipelineState = convertToRGBPipelineState
+        } else {
+            let functionName = "convertToRGB"
+            guard let function = library.makeFunction(name: functionName) else {
+                throw Error.cantMakeFunction(functionName)
+            }
+            pipelineState = try device.makeComputePipelineState(function: function)
+            self.convertToRGBPipelineState = pipelineState
         }
-        let pipelineState = try device.makeComputePipelineState(function: function)
+        
+        // Set up the compute pipeline
         commandEncoder.setComputePipelineState(pipelineState)
         
         // Set the texture and dispatch threads

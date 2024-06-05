@@ -25,6 +25,8 @@ class LumaBoxTextureFilter {
         self.library = library
     }
     
+    private var yiqComposepipelineState: MTLComputePipelineState?
+    
     func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         let needsUpdate: Bool
         if let scratchTexture {
@@ -72,13 +74,19 @@ class LumaBoxTextureFilter {
         
         // We've blurred the YIQ "image" in scratchTexture
         self.blurKernel.encode(commandBuffer: commandBuffer, inPlaceTexture: &scratchTexture)
-        
-        let composeFunctionName = "yiqCompose"
-        guard let function = library.makeFunction(name: composeFunctionName) else {
-            throw Error.cantMakeFunction(composeFunctionName    )
+        let pipelineState: MTLComputePipelineState
+        if let yiqComposepipelineState {
+            pipelineState = yiqComposepipelineState
+        } else {
+            let composeFunctionName = "yiqCompose"
+            guard let function = library.makeFunction(name: composeFunctionName) else {
+                throw Error.cantMakeFunction(composeFunctionName    )
+            }
+            
+            pipelineState = try device.makeComputePipelineState(function: function)
+            self.yiqComposepipelineState = pipelineState
         }
         
-        let pipelineState = try device.makeComputePipelineState(function: function)
         guard let composeCommandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }

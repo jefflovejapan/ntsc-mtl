@@ -24,6 +24,13 @@ class IIRTextureFilter {
         case constant([Float])
     }
     
+    private static var iirInitialConditionPipelineState: MTLComputePipelineState?
+    private static var iirMultiplyPipelineState: MTLComputePipelineState?
+    private static var iirFinalImagePipelineState: MTLComputePipelineState?
+    private static var yiqComposePipelineState: MTLComputePipelineState?
+    private static var iirSideEffectPipelineState: MTLComputePipelineState?
+    private static var iirFilterSamplePipelineState: MTLComputePipelineState?
+    
     private let device: MTLDevice
     private let library: MTLLibrary
     private let numerators: [Float]
@@ -148,11 +155,18 @@ class IIRTextureFilter {
     }
     
     private static func initialConditionFill(textureToFill: MTLTexture, initialConditionTexture: MTLTexture, aSum: Float, cSum: Float, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
-        let functionName = "iirInitialCondition"
-        guard let function = library.makeFunction(name: functionName) else {
-            throw Error.cantMakeFunction(functionName)
+        let pipelineState: MTLComputePipelineState
+        if let iirInitialConditionPipelineState {
+            pipelineState = iirInitialConditionPipelineState
+        } else {
+            let functionName = "iirInitialCondition"
+            guard let function = library.makeFunction(name: functionName) else {
+                throw Error.cantMakeFunction(functionName)
+            }
+            pipelineState = try device.makeComputePipelineState(function: function)
+            Self.iirInitialConditionPipelineState = pipelineState
         }
-        let pipelineState = try device.makeComputePipelineState(function: function)
+        
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
@@ -170,11 +184,17 @@ class IIRTextureFilter {
     }
     
     static func finalFill(textureToFill: MTLTexture, initialConditionTexture: MTLTexture, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
-        let functionName = "iirMultiply"
-        guard let function = library.makeFunction(name: functionName) else {
-            throw Error.cantMakeFunction(functionName)
+        let pipelineState: MTLComputePipelineState
+        if let iirMultiplyPipelineState {
+            pipelineState = iirMultiplyPipelineState
+        } else {
+            let functionName = "iirMultiply"
+            guard let function = library.makeFunction(name: functionName) else {
+                throw Error.cantMakeFunction(functionName)
+            }
+            pipelineState = try device.makeComputePipelineState(function: function)
+            Self.iirMultiplyPipelineState = pipelineState
         }
-        let pipelineState = try device.makeComputePipelineState(function: function)
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
@@ -256,7 +276,7 @@ class IIRTextureFilter {
                 filteredSample: scratchTexture!,
                 numerator: numerators[nextIdx],
                 denominator: denominators[nextIdx],
-                library: library, 
+                library: library,
                 device: device,
                 commandBuffer: commandBuffer
             )
@@ -271,7 +291,7 @@ class IIRTextureFilter {
         )
         try Self.compose(
             inputImage: inputTexture,
-            filteredImage: scratchTexture!, 
+            filteredImage: scratchTexture!,
             writingTo: outputTexture,
             channels: self.channelMix,
             library: library,
@@ -279,6 +299,7 @@ class IIRTextureFilter {
             commandBuffer: commandBuffer
         )
     }
+    
     
     static func finalImage(
         inputImage: MTLTexture,
@@ -288,11 +309,17 @@ class IIRTextureFilter {
         device: MTLDevice,
         commandBuffer: MTLCommandBuffer
     ) throws {
-        let functionName = "iirFinalImage"
-        guard let function = library.makeFunction(name: functionName) else {
-            throw Error.cantMakeFunction(functionName)
+        let pipelineState: MTLComputePipelineState
+        if let iirFinalImagePipelineState {
+            pipelineState = iirFinalImagePipelineState
+        } else {
+            let functionName = "iirFinalImage"
+            guard let function = library.makeFunction(name: functionName) else {
+                throw Error.cantMakeFunction(functionName)
+            }
+            pipelineState = try device.makeComputePipelineState(function: function)
+            Self.iirFinalImagePipelineState = pipelineState
         }
-        let pipelineState = try device.makeComputePipelineState(function: function)
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
@@ -307,12 +334,19 @@ class IIRTextureFilter {
         commandEncoder.endEncoding()
     }
     
+    
     static func compose(inputImage: MTLTexture, filteredImage: MTLTexture, writingTo outputTexture: MTLTexture, channels: YIQChannels, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
-        let functionName = "yiqCompose"
-        guard let function = library.makeFunction(name: functionName) else {
-            throw Error.cantMakeFunction(functionName)
+        let pipelineState: MTLComputePipelineState
+        if let yiqComposePipelineState {
+            pipelineState = yiqComposePipelineState
+        } else {
+            let functionName = "yiqCompose"
+            guard let function = library.makeFunction(name: functionName) else {
+                throw Error.cantMakeFunction(functionName)
+            }
+            pipelineState = try device.makeComputePipelineState(function: function)
+            Self.yiqComposePipelineState = pipelineState
         }
-        let pipelineState = try device.makeComputePipelineState(function: function)
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
@@ -334,12 +368,20 @@ class IIRTextureFilter {
         commandEncoder.endEncoding()
     }
     
+
+    
     static func sideEffect(inputImage: MTLTexture, z: MTLTexture, zPlusOne: MTLTexture, filteredSample: MTLTexture, numerator: Float, denominator: Float, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
-        let functionName = "iirSideEffect"
-        guard let function = library.makeFunction(name: functionName) else {
-            throw Error.cantMakeFunction(functionName)
+        let pipelineState: MTLComputePipelineState
+        if let iirSideEffectPipelineState {
+            pipelineState = iirSideEffectPipelineState
+        } else {
+            let functionName = "iirSideEffect"
+            guard let function = library.makeFunction(name: functionName) else {
+                throw Error.cantMakeFunction(functionName)
+            }
+            pipelineState = try device.makeComputePipelineState(function: function)
+            Self.iirSideEffectPipelineState = pipelineState
         }
-        let pipelineState = try device.makeComputePipelineState(function: function)
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
@@ -357,13 +399,19 @@ class IIRTextureFilter {
             threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
         commandEncoder.endEncoding()
     }
-    
+        
     static func filterSample(_ inputTexture: MTLTexture, zTex0: MTLTexture, filteredSampleTexture: MTLTexture, num0: Float, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
-        let functionName = "iirFilterSample"
-        guard let function = library.makeFunction(name: functionName) else {
-            throw Error.cantMakeFunction(functionName)
+        let pipelineState: MTLComputePipelineState
+        if let iirFilterSamplePipelineState {
+            pipelineState = iirFilterSamplePipelineState
+        } else {
+            let functionName = "iirFilterSample"
+            guard let function = library.makeFunction(name: functionName) else {
+                throw Error.cantMakeFunction(functionName)
+            }
+            pipelineState = try device.makeComputePipelineState(function: function)
+            Self.iirFilterSamplePipelineState = pipelineState
         }
-        let pipelineState = try device.makeComputePipelineState(function: function)
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
