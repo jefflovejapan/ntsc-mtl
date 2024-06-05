@@ -23,7 +23,6 @@ kernel void yiqCompose
     float y = mix(fallbackPixel.x, samplePixel.x, channelMix.x);
     float i = mix(fallbackPixel.y, samplePixel.y, channelMix.y);
     float q = mix(fallbackPixel.z, samplePixel.z, channelMix.z);
-    float a = mix(fallbackPixel.w, samplePixel.w, channelMix.w);
-    float4 result = float4(y, i, q, a);
+    float4 result = float4(y, i, q, 1.0);
     outputTexture.write(result, gid);
 }

@@ -12,5 +12,6 @@ kernel void iirInitialCondition(texture2d<float, access::read_write> textureToFi
     float4 initialCondition = textureToFill.read(gid);
     float4 sideEffected = sideEffectedTexture.read(gid);
     float4 output = ((aSum * sideEffected) - cSum) * initialCondition;
+    output.w = 1.0;
     textureToFill.write(output, gid);
 }

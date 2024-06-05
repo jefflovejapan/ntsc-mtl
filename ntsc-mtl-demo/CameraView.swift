@@ -146,7 +146,6 @@ extension CameraUIView: MTKViewDelegate {
             try ciContext.startTask(toRender: orientedImage, to: destination)
             commandBuffer.present(drawable)
             commandBuffer.commit()
-            commandBuffer.waitUntilCompleted()
         } catch {
             print("Error starting render task: \(error)")
         }

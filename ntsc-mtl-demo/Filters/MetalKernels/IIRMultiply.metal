@@ -12,5 +12,6 @@ kernel void iirMultiply(texture2d<float, access::read_write> textureToFill [[tex
     float4 currentState = textureToFill.read(gid);
     float4 initialCondition = initialConditionTexture.read(gid);
     float4 product = currentState * initialCondition;
+    product.w = 1.0;
     textureToFill.write(product, gid);
 }

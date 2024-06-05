@@ -26,6 +26,6 @@ kernel void convertToYIQ(texture2d<float, access::read_write> texture [[texture(
     float3 yiq = rgbToYIQMatrix * rgb;
 
     // Write the converted YIQ values back to the texture
-    texture.write(float4(yiq, color.a), gid);
+    texture.write(float4(yiq, 1.0), gid);
 }
 
