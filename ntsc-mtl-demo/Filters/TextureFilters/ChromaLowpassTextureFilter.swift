@@ -59,12 +59,12 @@ class ChromaLowpassTextureFilter {
     var qTexture: MTLTexture?
     var outputQTexture: MTLTexture?
     
-    func run(outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+    func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         let needsUpdate: Bool
-        if let iTexture, let qTexture {
-            if iTexture.width != outputTexture.width {
+        if let iTexture {
+            if iTexture.width != inputTexture.width {
                 needsUpdate = true
-            } else if iTexture.height != outputTexture.height {
+            } else if iTexture.height != inputTexture.height {
                 needsUpdate = true
             } else {
                 needsUpdate = false
@@ -74,7 +74,7 @@ class ChromaLowpassTextureFilter {
         }
         
         if needsUpdate {
-            let textures = Array(IIRTextureFilter.textures(width: outputTexture.width, height: outputTexture.height, pixelFormat: outputTexture.pixelFormat, device: device).prefix(4))
+            let textures = Array(IIRTextureFilter.textures(width: inputTexture.width, height: inputTexture.height, pixelFormat: inputTexture.pixelFormat, device: device).prefix(4))
             self.iTexture = textures[0]
             self.qTexture = textures[1]
             self.outputITexture = textures[2]
@@ -85,8 +85,8 @@ class ChromaLowpassTextureFilter {
             throw Error.cantMakeBlitEncoder
         }
         
-        blitEncoder.copy(from: outputTexture, to: iTexture!)
-        blitEncoder.copy(from: outputTexture, to: qTexture!)
+        blitEncoder.copy(from: inputTexture, to: iTexture!)
+        blitEncoder.copy(from: inputTexture, to: qTexture!)
         blitEncoder.endEncoding()
         
         try iFilter.run(inputTexture: iTexture!, outputTexture: outputITexture!, commandBuffer: commandBuffer)
@@ -103,12 +103,13 @@ class ChromaLowpassTextureFilter {
             throw Error.cantMakeComputeEncoder
         }
         computeEncoder.setComputePipelineState(pipelineState)
-        computeEncoder.setTexture(outputTexture, index: 0)
-        computeEncoder.setTexture(iTexture!, index: 1)
-        computeEncoder.setTexture(qTexture!, index: 2)
+        computeEncoder.setTexture(inputTexture, index: 0)
+        computeEncoder.setTexture(outputITexture!, index: 1)
+        computeEncoder.setTexture(outputQTexture!, index: 2)
+        computeEncoder.setTexture(outputTexture, index: 3)
         
         computeEncoder.dispatchThreads(
-            MTLSize(width: outputTexture.width, height: outputTexture.height, depth: 1),
+            MTLSize(width: inputTexture.width, height: inputTexture.height, depth: 1),
             threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
         computeEncoder.endEncoding()
     }

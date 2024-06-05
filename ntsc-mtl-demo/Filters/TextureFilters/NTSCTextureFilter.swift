@@ -28,15 +28,16 @@ class NTSCTextureFilter {
     private let context: CIContext
     private let commandQueue: MTLCommandQueue
     private let library: MTLLibrary
-    var effect: NTSCEffect = .default
+    var effect: NTSCEffect
     
     // MARK: -Filters
     private let lumaBoxFilter: LumaBoxTextureFilter
     private let lumaNotchFilter: IIRTextureFilter
     private let lightChromaLowpassFilter: ChromaLowpassTextureFilter
-//    private let fullChromaLowpassFilter: ChromaLowpassTextureFilter
+    private let fullChromaLowpassFilter: ChromaLowpassTextureFilter
     
-    init(device: MTLDevice, context: CIContext) throws {
+    init(effect: NTSCEffect, device: MTLDevice, context: CIContext) throws {
+        self.effect = effect
         self.device = device
         self.context = context
         guard let commandQueue = device.makeCommandQueue() else {
@@ -60,7 +61,7 @@ class NTSCTextureFilter {
             delay: 0
         )
         self.lightChromaLowpassFilter = ChromaLowpassTextureFilter(device: device, library: library, intensity: .light, bandwidthScale: effect.bandwidthScale, filterType: effect.filterType)
-//        self.fullChromaLowpassFilter = ChromaLowpassTextureFilter(device: device, library: library, intensity: .full, bandwidthScale: effect.bandwidthScale, filterType: effect.filterType)
+        self.fullChromaLowpassFilter = ChromaLowpassTextureFilter(device: device, library: library, intensity: .full, bandwidthScale: effect.bandwidthScale, filterType: effect.filterType)
     }
     
     var inputImage: CIImage?
@@ -110,11 +111,20 @@ class NTSCTextureFilter {
     
     static func chromaLowpass(
         _ texture: (any MTLTexture),
+        output: (any MTLTexture),
         commandBuffer: MTLCommandBuffer,
         chromaLowpass: ChromaLowpass,
-        filter: ChromaLowpassTextureFilter
+        lightFilter: ChromaLowpassTextureFilter,
+        fullFilter: ChromaLowpassTextureFilter
     ) throws {
-        try filter.run(outputTexture: texture, commandBuffer: commandBuffer)
+        switch chromaLowpass {
+        case .none:
+            return
+        case .light:
+            try lightFilter.run(inputTexture: texture, outputTexture: output, commandBuffer: commandBuffer)
+        case .full:
+            try fullFilter.run(inputTexture: texture, outputTexture: output, commandBuffer: commandBuffer)
+        }
     }
     
     static func convertToRGB(_ texture: (any MTLTexture), commandBuffer: MTLCommandBuffer, library: MTLLibrary, device: MTLDevice) throws {
@@ -185,8 +195,14 @@ class NTSCTextureFilter {
         }
         do {
             try Self.convertToYIQ(textureA, library: library, commandBuffer: commandBuffer, device: device)
-            try Self.inputLuma(textureA, output: textureB, commandBuffer: commandBuffer, lumaLowpass: effect.inputLumaFilter, lumaBoxFilter: lumaBoxFilter, lumaNotchFilter: lumaNotchFilter)
-//            try Self.chromaLowpass(textureA, commandBuffer: commandBuffer, chromaLowpass: effect.chromaLowpassIn, filter: lightChromaLowpassFilter)
+            try Self.chromaLowpass(
+                textureA,
+                output: textureB,
+                commandBuffer: commandBuffer,
+                chromaLowpass: effect.chromaLowpassIn,
+                lightFilter: lightChromaLowpassFilter,
+                fullFilter: fullChromaLowpassFilter
+            )
             try Self.convertToRGB(textureB, commandBuffer: commandBuffer, library: library, device: device)
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()

@@ -10,15 +10,15 @@
 				<key>location-parameters</key>
 				<dict>
 					<key>EndingColumnNumber</key>
-					<string>16</string>
+					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>84</string>
+					<string>88</string>
 					<key>StartingColumnNumber</key>
-					<string>16</string>
+					<string>56</string>
 					<key>StartingLineNumber</key>
-					<string>84</string>
+					<string>87</string>
 					<key>Timestamp</key>
-					<string>739232736.592147</string>
+					<string>739301850.764655</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -34,15 +34,16 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string></string>
+				<string>
+</string>
 				<key>leading</key>
-				<string>        self.lastImage = ciImage
-        if filter == nil {
-            self</string>
+				<string>            effect.inputLumaFilter = .notch
+            effect.chromaLowpassIn = .light
+            effect.filterType = .butterworth</string>
 				<key>trailing</key>
-				<string>.filter = try! NTSCTextureFilter(device: device, context: ciContext)
-            self.filter.effect.inputLumaFilter = .notch
-            self.filter.effect.chromaLowpassIn = .light
+				<string>            self.filter = try! NTSCTextureFilter(effect: effect, device: device, context: ciContext)
+        }
+        DispatchQueue.main.async {
 </string>
 			</dict>
 			<key>title</key>

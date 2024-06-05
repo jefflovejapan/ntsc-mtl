@@ -13,7 +13,6 @@
 		1F259EE62C027D0800937D0A /* IIRFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EE52C027D0800937D0A /* IIRFilter.swift */; };
 		1F5B6CBE2C04BB970051A9ED /* ChromaIntoLumaFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CBD2C04BB970051A9ED /* ChromaIntoLumaFilter.swift */; };
 		1F5B6CC22C04D4010051A9ED /* NTSC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CC12C04D4010051A9ED /* NTSC.swift */; };
-		1F5B6CC42C04F5770051A9ED /* ChromaLowpassFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CC32C04F5770051A9ED /* ChromaLowpassFilter.swift */; };
 		1F5B6CC62C04FCA50051A9ED /* PolynomialMultiply.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CC52C04FCA50051A9ED /* PolynomialMultiply.swift */; };
 		1F5B6CC82C0509F00051A9ED /* YIQComposeFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CC72C0509F00051A9ED /* YIQComposeFilter.swift */; };
 		1F5B6CCC2C05244F0051A9ED /* CompositeNoiseFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CCB2C05244F0051A9ED /* CompositeNoiseFilter.swift */; };
@@ -76,7 +75,6 @@
 		1F5B6CBD2C04BB970051A9ED /* ChromaIntoLumaFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromaIntoLumaFilter.swift; sourceTree = "<group>"; };
 		1F5B6CBF2C04BBF10051A9ED /* ChromaIntoLuma.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ChromaIntoLuma.ci.metal; sourceTree = "<group>"; };
 		1F5B6CC12C04D4010051A9ED /* NTSC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSC.swift; sourceTree = "<group>"; };
-		1F5B6CC32C04F5770051A9ED /* ChromaLowpassFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromaLowpassFilter.swift; sourceTree = "<group>"; };
 		1F5B6CC52C04FCA50051A9ED /* PolynomialMultiply.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolynomialMultiply.swift; sourceTree = "<group>"; };
 		1F5B6CC72C0509F00051A9ED /* YIQComposeFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YIQComposeFilter.swift; sourceTree = "<group>"; };
 		1F5B6CC92C050A8E0051A9ED /* YIQCompose.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = YIQCompose.ci.metal; sourceTree = "<group>"; };
@@ -192,7 +190,6 @@
 				1F259EE52C027D0800937D0A /* IIRFilter.swift */,
 				1F5B6CCB2C05244F0051A9ED /* CompositeNoiseFilter.swift */,
 				1F5B6CDB2C0558140051A9ED /* MultiplyLumaFilter.swift */,
-				1F5B6CC32C04F5770051A9ED /* ChromaLowpassFilter.swift */,
 				1F5B6CC72C0509F00051A9ED /* YIQComposeFilter.swift */,
 				1F6BFE262BFFADB700883169 /* NTSCFilter.swift */,
 				1FEE32432C0A9FC3009F09BA /* SnowFilter.swift */,
@@ -436,7 +433,6 @@
 				1F6BFE272BFFADB700883169 /* NTSCFilter.swift in Sources */,
 				1F5F93D12C0FC84500EC29A2 /* IIRMultiply.metal in Sources */,
 				1F5F93CF2C0FC53E00EC29A2 /* IIRInitialCondition.metal in Sources */,
-				1F5B6CC42C04F5770051A9ED /* ChromaLowpassFilter.swift in Sources */,
 				1F5F93BE2C0F54F000EC29A2 /* YIQ.metal in Sources */,
 				1F5B6CCC2C05244F0051A9ED /* CompositeNoiseFilter.swift in Sources */,
 				1FCC1D312C0A0C2700943847 /* YIQChannels.swift in Sources */,
