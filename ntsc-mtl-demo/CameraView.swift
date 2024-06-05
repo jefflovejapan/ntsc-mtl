@@ -83,9 +83,6 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         self.lastImage = ciImage
         if filter == nil {
             var effect: NTSCEffect = .default
-            effect.inputLumaFilter = .notch
-            effect.chromaLowpassIn = .light
-            effect.filterType = .butterworth
             self.filter = try! NTSCTextureFilter(effect: effect, device: device, context: ciContext)
         }
         DispatchQueue.main.async {

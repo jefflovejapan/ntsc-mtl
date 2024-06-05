@@ -12,13 +12,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>88</string>
+					<string>85</string>
 					<key>StartingColumnNumber</key>
-					<string>56</string>
+					<string>45</string>
 					<key>StartingLineNumber</key>
-					<string>87</string>
+					<string>84</string>
 					<key>Timestamp</key>
-					<string>739301850.764655</string>
+					<string>739302605.720432</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -37,9 +37,9 @@
 				<string>
 </string>
 				<key>leading</key>
-				<string>            effect.inputLumaFilter = .notch
-            effect.chromaLowpassIn = .light
-            effect.filterType = .butterworth</string>
+				<string>        self.lastImage = ciImage
+        if filter == nil {
+            var effect: NTSCEffect = .default</string>
 				<key>trailing</key>
 				<string>            self.filter = try! NTSCTextureFilter(effect: effect, device: device, context: ciContext)
         }
