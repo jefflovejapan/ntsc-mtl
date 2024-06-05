@@ -19,5 +19,6 @@ kernel void convertToRGB(texture2d<float, access::read_write> texture [[texture(
     float4 yiqa = texture.read(gid);
     float3 yiq = yiqa.xyz;
     float3 rgb = yiqToRGBMatrix * yiq;
+    float3 clamped = clamp(rgb, 0.0, 1.0);
     texture.write(float4(rgb, 1.0), gid);
 }

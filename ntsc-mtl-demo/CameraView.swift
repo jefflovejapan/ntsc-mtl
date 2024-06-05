@@ -41,6 +41,8 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         let hConstraints = NSLayoutConstraint.constraints(withVisualFormat: "H:|[mtk]|", metrics: nil, views: ["mtk": mtkView])
         let vConstraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|[mtk]|", metrics: nil, views: ["mtk": mtkView])
         NSLayoutConstraint.activate(hConstraints + vConstraints)
+        var effect: NTSCEffect = .default
+        self.filter = try! NTSCTextureFilter(effect: effect, device: device, context: ciContext)
         setupCamera()
     }
     
@@ -49,7 +51,6 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     }
     
     private func setupCamera() {
-        
         captureSession.sessionPreset = .hd1920x1080
         guard let captureDevice = AVCaptureDevice.default(for: .video) else {
             return
@@ -83,10 +84,6 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             .oriented(forExifOrientation: Int32(CGImagePropertyOrientation.right.rawValue))
 
         self.lastImage = ciImage
-        if filter == nil {
-            var effect: NTSCEffect = .default
-            self.filter = try! NTSCTextureFilter(effect: effect, device: device, context: ciContext)
-        }
         DispatchQueue.main.async {
             self.mtkView.setNeedsDisplay()
         }

@@ -12,13 +12,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>87</string>
+					<string>86</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>86</string>
+					<string>85</string>
 					<key>Timestamp</key>
-					<string>739305669.127584</string>
+					<string>739305815.180377</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -34,16 +34,16 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string>            var effect: NTSCEffect = .default
+				<string>        self.lastImage = ciImage
 </string>
 				<key>leading</key>
-				<string>        self.lastImage = ciImage
-        if filter == nil {
+				<string>            .oriented(forExifOrientation: Int32(CGImagePropertyOrientation.right.rawValue))
+
 </string>
 				<key>trailing</key>
-				<string>            self.filter = try! NTSCTextureFilter(effect: effect, device: device, context: ciContext)
+				<string>        DispatchQueue.main.async {
+            self.mtkView.setNeedsDisplay()
         }
-        DispatchQueue.main.async {
 </string>
 			</dict>
 			<key>title</key>
