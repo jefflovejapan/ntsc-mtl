@@ -42,7 +42,7 @@
 				<key>trailing</key>
 				<string>.filter = try! NTSCTextureFilter(device: device, context: ciContext)
             self.filter.effect.inputLumaFilter = .notch
-        }
+            self.filter.effect.chromaLowpassIn = .light
 </string>
 			</dict>
 			<key>title</key>
