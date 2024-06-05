@@ -94,6 +94,8 @@ final class MetalTextureConversionTests: XCTestCase {
             library: library,
             device: device
         )
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
         // from Rust
         let want: [Float] = [1.2875, 0.040499985, 0.7985, 1]
         var got: [Float] = [0, 0, 0, 0]
