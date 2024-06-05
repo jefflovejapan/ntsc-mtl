@@ -163,6 +163,13 @@ class IIRTextureFilter {
         commandEncoder.setBytes(&aSum, length: MemoryLayout<Float>.size, index: 0)
         var cSum = cSum
         commandEncoder.setBytes(&cSum, length: MemoryLayout<Float>.size, index: 1)
+        let threadGroupSize = MTLSize(width: 8, height: 8, depth: 1)
+        let threadGroups = MTLSize(
+            width: (textureToFill.width + threadGroupSize.width - 1) / threadGroupSize.width,
+            height: (textureToFill.height + threadGroupSize.height - 1) / threadGroupSize.height,
+            depth: 1
+        )
+        commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
         commandEncoder.endEncoding()
     }
     
@@ -178,6 +185,13 @@ class IIRTextureFilter {
         commandEncoder.setComputePipelineState(pipelineState)
         commandEncoder.setTexture(textureToFill, index: 0)
         commandEncoder.setTexture(initialConditionTexture, index: 1)
+        let threadGroupSize = MTLSize(width: 8, height: 8, depth: 1)
+        let threadGroups = MTLSize(
+            width: (textureToFill.width + threadGroupSize.width - 1) / threadGroupSize.width,
+            height: (textureToFill.height + threadGroupSize.height - 1) / threadGroupSize.height,
+            depth: 1
+        )
+        commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupSize)
         commandEncoder.endEncoding()
     }
     
