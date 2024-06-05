@@ -5,6 +5,7 @@
 //  Created by Jeffrey Blagdon on 2024-06-04.
 //
 
+#include "ClampFunctions.metal"
 #include <metal_stdlib>
 using namespace metal;
 
@@ -19,6 +20,8 @@ kernel void iirInitialCondition
     half4 initialCondition = textureToFill.read(gid);
     half4 sideEffected = sideEffectedTexture.read(gid);
     half4 output = ((aSum * sideEffected) - cSum) * initialCondition;
-    output.w = 1.0;
-    textureToFill.write(output, gid);
+    half3 yiq = output.xyz;
+    yiq = clampYIQ(yiq);
+    half4 final = half4(yiq, 1.0);
+    textureToFill.write(final, gid);
 }

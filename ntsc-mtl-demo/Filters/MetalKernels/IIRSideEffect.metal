@@ -22,6 +22,6 @@ kernel void iirSideEffect
     half4 sideEffected = zPlusOne.read(gid);
     half4 filteredSample = filteredSampleTexture.read(gid);
     half4 result = sideEffected + (num * currentSample) - (denom * filteredSample);
-    result.w = 1;
+    result.w = 1.0;
     z.write(result, gid);
 }

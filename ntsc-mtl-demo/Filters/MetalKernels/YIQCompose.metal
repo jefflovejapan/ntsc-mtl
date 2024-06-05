@@ -5,6 +5,7 @@
 //  Created by Jeffrey Blagdon on 2024-06-04.
 //
 
+#include "ClampFunctions.metal"
 #include <metal_stdlib>
 using namespace metal;
 
@@ -22,6 +23,8 @@ kernel void yiqCompose
     half y = mix(fallbackPixel.x, samplePixel.x, channelMix.x);
     half i = mix(fallbackPixel.y, samplePixel.y, channelMix.y);
     half q = mix(fallbackPixel.z, samplePixel.z, channelMix.z);
-    half4 result = half4(y, i, q, 1.0);
+    half3 yiq = half3(y, i, q);
+    yiq = clampYIQ(yiq);
+    half4 result = half4(yiq, 1.0);
     outputTexture.write(result, gid);
 }

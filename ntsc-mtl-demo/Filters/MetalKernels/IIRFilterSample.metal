@@ -5,6 +5,7 @@
 //  Created by Jeffrey Blagdon on 2024-06-04.
 //
 
+#include "ClampFunctions.metal"
 #include <metal_stdlib>
 using namespace metal;
 
@@ -17,6 +18,8 @@ kernel void iirFilterSample
  uint2 gid [[thread_position_in_grid]]
  ) {
     half4 result = zTex0.read(gid) + (num0 * inputTexture.read(gid));
-    result.w = 1.0;
-    filteredSampleTexture.write(result, gid);
+    half3 yiq = result.xyz;
+    yiq = clampYIQ(yiq);
+    half4 final = half4(yiq, 1.0);
+    filteredSampleTexture.write(final, gid);
 }

@@ -5,6 +5,7 @@
 //  Created by Jeffrey Blagdon on 2024-06-04.
 //
 
+#include "ClampFunctions.metal"
 #include <metal_stdlib>
 using namespace metal;
 
@@ -14,6 +15,8 @@ constant half3x3 rgbToYIQMatrix = half3x3
  half3(0.587, -0.2746, -0.5227),
  half3(0.114, -0.3213, 0.3112)
  );
+
+
 
 kernel void convertToYIQ
 (
@@ -28,6 +31,7 @@ kernel void convertToYIQ
     // Convert RGB to YIQ using the matrix
     half3 rgb = half3(color.r, color.g, color.b);
     half3 yiq = rgbToYIQMatrix * rgb;
+    yiq = clampYIQ(yiq);
 
     // Write the converted YIQ values back to the texture
     outputTexture.write(half4(yiq, 1.0), gid);

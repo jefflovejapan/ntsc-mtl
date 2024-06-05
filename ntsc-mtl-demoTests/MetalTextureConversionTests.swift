@@ -61,8 +61,9 @@ final class MetalTextureConversionTests: XCTestCase {
     
     func testYIQConversion() throws {
         let texture = try XCTUnwrap(texture)
-        let commandBuffer = try XCTUnwrap(commandQueue?.makeCommandBuffer())
         let device = try XCTUnwrap(device)
+        let outputTexture = try XCTUnwrap(IIRTextureFilter.texture(from: texture, device: device))
+        let commandBuffer = try XCTUnwrap(commandQueue?.makeCommandBuffer())
         let library = try XCTUnwrap(library)
         let input: [Float16] = [0.5, 0.5, 0.5, 1]
         var rgba = input
@@ -70,7 +71,8 @@ final class MetalTextureConversionTests: XCTestCase {
         let bytesPerRow: Int = MemoryLayout<Float16>.size * 4 * 1
         texture.replace(region: region, mipmapLevel: 0, withBytes: &rgba, bytesPerRow: bytesPerRow)
         try NTSCTextureFilter.convertToYIQ(
-            texture,
+            texture, 
+            output: outputTexture,
             library: library,
             commandBuffer: commandBuffer,
             device: device
@@ -80,15 +82,16 @@ final class MetalTextureConversionTests: XCTestCase {
         // from Rust
         let want: [Float16] = [0.5, 0, 0, 1]
         var got: [Float16] = [0, 0, 0, 0]
-        texture.getBytes(&got, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
+        outputTexture.getBytes(&got, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
         assertArraysEqual(lhs: want, rhs: got)
     }
     
     func testRGBConversion() throws {
         let texture = try XCTUnwrap(texture)
+        let device = try XCTUnwrap(device)
+        let outputTexture = try XCTUnwrap(IIRTextureFilter.texture(from: texture, device: device))
         let commandBuffer = try XCTUnwrap(commandQueue?.makeCommandBuffer())
         let library = try XCTUnwrap(library)
-        let device = try XCTUnwrap(device)
         let input: [Float16] = [0.5, 0.5, 0.5, 1]
         var yiqa = input
         let region = MTLRegionMake2D(0, 0, 1, 1)
@@ -96,6 +99,7 @@ final class MetalTextureConversionTests: XCTestCase {
         texture.replace(region: region, mipmapLevel: 0, withBytes: &yiqa, bytesPerRow: bytesPerRow)
         try NTSCTextureFilter.convertToRGB(
             texture,
+            output: outputTexture,
             commandBuffer: commandBuffer,
             library: library,
             device: device
@@ -105,26 +109,30 @@ final class MetalTextureConversionTests: XCTestCase {
         // from Rust
         let want: [Float16] = [1.2875, 0.040499985, 0.7985, 1]
         var got: [Float16] = [0, 0, 0, 0]
-        texture.getBytes(&got, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
+        outputTexture.getBytes(&got, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
         assertArraysEqual(lhs: want, rhs: got)
     }
     
     func testRGBRoundTrip() throws {
         let texture = try XCTUnwrap(texture)
-        let library = try XCTUnwrap(library)
         let device = try XCTUnwrap(device)
+        let yiqTexture = try XCTUnwrap(IIRTextureFilter.texture(from: texture, device: device))
+        let rgbTexture = try XCTUnwrap(IIRTextureFilter.texture(from: texture, device: device))
+        let library = try XCTUnwrap(library)
         let commandBuffer = try XCTUnwrap(commandQueue?.makeCommandBuffer())
         let input: [Float16] = [0.5, 0.5, 0.5, 1]
         var rgba = input
         let region = MTLRegionMake2D(0, 0, 1, 1)
         let bytesPerRow: Int = MemoryLayout<Float16>.size * 4 * 1
         texture.replace(region: region, mipmapLevel: 0, withBytes: &rgba, bytesPerRow: bytesPerRow)
-        try NTSCTextureFilter.convertToYIQ(texture, library: library, commandBuffer: commandBuffer, device: device)
-        try NTSCTextureFilter.convertToRGB(texture, commandBuffer: commandBuffer, library: library, device: device)
+        try NTSCTextureFilter.convertToYIQ(texture, output: yiqTexture, library: library, commandBuffer: commandBuffer, device: device)
+        try NTSCTextureFilter.convertToRGB(yiqTexture, output: rgbTexture, commandBuffer: commandBuffer, library: library, device: device)
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
         // Expecting not to lose any precision when moving back and forth
         let want: [Float16] = input
         var got: [Float16] = [0, 0, 0, 0]
-        texture.getBytes(&got, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
+        rgbTexture.getBytes(&got, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
         assertArraysEqual(lhs: want, rhs: got)
     }
     
@@ -144,6 +152,8 @@ final class MetalTextureConversionTests: XCTestCase {
     private func assertRoundTripWorks(_ color: [Float16], line: UInt = #line, message: @autoclosure () -> String = "") throws {
         let device = try XCTUnwrap(device)
         let texture = try XCTUnwrap(texture)
+        let yiqTexture = try XCTUnwrap(IIRTextureFilter.texture(from: texture, device: device))
+        let rgbTexture = try XCTUnwrap(IIRTextureFilter.texture(from: texture, device: device))
         let commandQueue = try XCTUnwrap(commandQueue)
         let library = try XCTUnwrap(library)
         let commandBuffer = try XCTUnwrap(commandQueue.makeCommandBuffer())
@@ -153,24 +163,55 @@ final class MetalTextureConversionTests: XCTestCase {
         texture.replace(region: region, mipmapLevel: 0, withBytes: &rgba, bytesPerRow: bytesPerRow)
         try NTSCTextureFilter.convertToYIQ(
             texture,
+            output: yiqTexture,
             library: try XCTUnwrap(library),
             commandBuffer: commandBuffer,
             device: device
         )
-        try NTSCTextureFilter.convertToRGB(texture, commandBuffer: commandBuffer, library: library, device: device)
+        try NTSCTextureFilter.convertToRGB(yiqTexture, output: rgbTexture, commandBuffer: commandBuffer, library: library, device: device)
         
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
         // Expecting not to lose any precision when moving back and forth
         let want: [Float16] = color
         var got: [Float16] = [0, 0, 0, 0]
-        texture.getBytes(&got, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
+        rgbTexture.getBytes(&got, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
         assertArraysEqual(lhs: want, rhs: got, accuracy: 0.005, message: message())
     }
     
     func testRGBRoundTripInGeneral() throws {
         for color in Self.randomColors.prefix(1_000) {
             try assertRoundTripWorks(color, message: "Mixmatch for color \(color)")
+        }
+    }
+    
+    private func assertInYIQBounds(pixel: [Float16], message: @autoclosure () -> String = "", line: UInt = #line) {
+        let yRange: ClosedRange<Float16> = -1 ... 1
+        let iRange: ClosedRange<Float16> = -0.5957 ... 0.5957
+        let qRange: ClosedRange<Float16> = -0.5226 ... 0.5226
+        XCTAssert(yRange.contains(pixel[0]), message(), line: line)
+        XCTAssert(iRange.contains(pixel[1]), message(), line: line)
+        XCTAssert(qRange.contains(pixel[2]), message(), line: line)
+    }
+    
+    func testYIQIsInBounds() throws {
+        let texture = try XCTUnwrap(texture)
+        let device = try XCTUnwrap(device)
+        let library = try XCTUnwrap(library)
+        
+        let outputTexture = try XCTUnwrap(IIRTextureFilter.texture(width: texture.width, height: texture.height, pixelFormat: texture.pixelFormat, device: device))
+        for color in Self.randomColors.prefix(1_000) {
+            texture.paint(with: color)
+            let commandBuffer = try XCTUnwrap(commandQueue?.makeCommandBuffer())
+            try NTSCTextureFilter.convertToYIQ(
+                texture,
+                output: outputTexture,
+                library: library,
+                commandBuffer: commandBuffer, device: device)
+            commandBuffer.commit()
+            commandBuffer.waitUntilCompleted()
+            let output = outputTexture.pixelValue(x: 0, y: 0)
+            assertInYIQBounds(pixel: output)
         }
     }
     

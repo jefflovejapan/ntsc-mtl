@@ -5,6 +5,7 @@
 //  Created by Jeffrey Blagdon on 2024-06-04.
 //
 
+#include "ClampFunctions.metal"
 #include <metal_stdlib>
 using namespace metal;
 
@@ -18,7 +19,8 @@ kernel void iirFinalImage
     half4 currentSample = inputTexture.read(gid);
     half4 filteredSample = filteredImageTexture.read(gid);
     half4 combined = ((filteredSample - currentSample) * scale) + currentSample;
-    combined.w = 1;
-    filteredImageTexture.write(combined, gid);
+    half3 yiq = combined.xyz;
+    half4 final = half4(yiq, 1.0);
+    filteredImageTexture.write(final, gid);
 }
 

@@ -56,6 +56,10 @@ class IIRTextureFilter {
         self.scale = scale
     }
     
+    static func texture(from texture: (any MTLTexture), device: MTLDevice) -> MTLTexture? {
+        return Self.texture(width: texture.width, height: texture.height, pixelFormat: texture.pixelFormat, device: device)
+    }
+    
     static func texture(width: Int, height: Int, pixelFormat: MTLPixelFormat, device: MTLDevice) -> MTLTexture? {
         let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(
             pixelFormat: pixelFormat,
