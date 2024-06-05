@@ -7,44 +7,47 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1F1F9B5F2C03AFAD0085048F /* IIRSideEffect.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F1F9B5E2C03AFAD0085048F /* IIRSideEffect.metal */; };
-		1F1F9B612C03B03B0085048F /* IIRFinalImage.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F1F9B602C03B03B0085048F /* IIRFinalImage.metal */; };
 		1F1F9B692C03C3980085048F /* IIRTransferFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1F9B682C03C3980085048F /* IIRTransferFunction.swift */; };
 		1F259EDC2C022F7500937D0A /* NTSCEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EDB2C022F7500937D0A /* NTSCEffect.swift */; };
 		1F259EDE2C02399C00937D0A /* NTSCEffect+Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EDD2C02399C00937D0A /* NTSCEffect+Defaults.swift */; };
-		1F259EE02C026A6700937D0A /* Fun.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EDF2C026A6700937D0A /* Fun.ci.metal */; };
 		1F259EE62C027D0800937D0A /* IIRFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EE52C027D0800937D0A /* IIRFilter.swift */; };
-		1F259EEC2C02A2C300937D0A /* IIRFilterSample.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EEB2C02A2C300937D0A /* IIRFilterSample.ci.metal */; };
 		1F5B6CBE2C04BB970051A9ED /* ChromaIntoLumaFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CBD2C04BB970051A9ED /* ChromaIntoLumaFilter.swift */; };
-		1F5B6CC02C04BBF10051A9ED /* ChromaIntoLuma.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CBF2C04BBF10051A9ED /* ChromaIntoLuma.ci.metal */; };
 		1F5B6CC22C04D4010051A9ED /* NTSC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CC12C04D4010051A9ED /* NTSC.swift */; };
 		1F5B6CC42C04F5770051A9ED /* ChromaLowpassFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CC32C04F5770051A9ED /* ChromaLowpassFilter.swift */; };
 		1F5B6CC62C04FCA50051A9ED /* PolynomialMultiply.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CC52C04FCA50051A9ED /* PolynomialMultiply.swift */; };
 		1F5B6CC82C0509F00051A9ED /* YIQComposeFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CC72C0509F00051A9ED /* YIQComposeFilter.swift */; };
-		1F5B6CCA2C050A8E0051A9ED /* YIQCompose.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CC92C050A8E0051A9ED /* YIQCompose.ci.metal */; };
 		1F5B6CCC2C05244F0051A9ED /* CompositeNoiseFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CCB2C05244F0051A9ED /* CompositeNoiseFilter.swift */; };
 		1F5B6CD02C0536600051A9ED /* Clamped.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CCF2C0536600051A9ED /* Clamped.swift */; };
 		1F5B6CD82C05552B0051A9ED /* SimplexNoiseFilter in Frameworks */ = {isa = PBXBuildFile; productRef = 1F5B6CD72C05552B0051A9ED /* SimplexNoiseFilter */; };
 		1F5B6CDC2C0558140051A9ED /* MultiplyLumaFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CDB2C0558140051A9ED /* MultiplyLumaFilter.swift */; };
-		1F5B6CDE2C05585B0051A9ED /* MultiplyLuma.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CDD2C05585B0051A9ED /* MultiplyLuma.ci.metal */; };
-		1F5B6CE62C065D330051A9ED /* YIQMix.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CE52C065D330051A9ED /* YIQMix.ci.metal */; };
 		1F5B6CEA2C065DCE0051A9ED /* YIQMixerFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CE92C065DCE0051A9ED /* YIQMixerFilter.swift */; };
+		1F5F93B82C0E02D400EC29A2 /* TestIIR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93B72C0E02D400EC29A2 /* TestIIR.swift */; };
+		1F5F93BA2C0E04A100EC29A2 /* SimpleIIRTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93B92C0E04A100EC29A2 /* SimpleIIRTests.swift */; };
+		1F5F93BC2C0E83EC00EC29A2 /* NTSCTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93BB2C0E83EC00EC29A2 /* NTSCTextureFilter.swift */; };
+		1F5F93BE2C0F54F000EC29A2 /* YIQ.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93BD2C0F54F000EC29A2 /* YIQ.metal */; };
+		1F5F93C12C0F585C00EC29A2 /* RGB.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93C02C0F585C00EC29A2 /* RGB.metal */; };
+		1F5F93C32C0F7F4E00EC29A2 /* MetalTextureConversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93C22C0F7F4E00EC29A2 /* MetalTextureConversionTests.swift */; };
+		1F5F93C62C0F910300EC29A2 /* LumaBoxTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93C52C0F910300EC29A2 /* LumaBoxTextureFilter.swift */; };
+		1F5F93C82C0F9D7900EC29A2 /* YIQChannel.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93C72C0F9D7900EC29A2 /* YIQChannel.metal */; };
+		1F5F93CA2C0F9DCA00EC29A2 /* YIQCompose.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93C92C0F9DCA00EC29A2 /* YIQCompose.metal */; };
+		1F5F93CD2C0FA96C00EC29A2 /* IIRTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93CC2C0FA96C00EC29A2 /* IIRTextureFilter.swift */; };
+		1F5F93CF2C0FC53E00EC29A2 /* IIRInitialCondition.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93CE2C0FC53E00EC29A2 /* IIRInitialCondition.metal */; };
+		1F5F93D12C0FC84500EC29A2 /* IIRMultiply.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93D02C0FC84500EC29A2 /* IIRMultiply.metal */; };
+		1F5F93D32C0FD03400EC29A2 /* IIRFilterSample.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93D22C0FD03400EC29A2 /* IIRFilterSample.metal */; };
+		1F5F93D52C0FD58E00EC29A2 /* IIRSideEffect.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93D42C0FD58E00EC29A2 /* IIRSideEffect.metal */; };
+		1F5F93D72C0FDB8700EC29A2 /* IIRFinalImage.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93D62C0FDB8700EC29A2 /* IIRFinalImage.metal */; };
 		1F6BFDEB2BFF799F00883169 /* ntsc_mtl_demoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */; };
 		1F6BFDED2BFF799F00883169 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEC2BFF799F00883169 /* ContentView.swift */; };
 		1F6BFDEF2BFF79A000883169 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEE2BFF79A000883169 /* Assets.xcassets */; };
 		1F6BFDF22BFF79A000883169 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F6BFDF12BFF79A000883169 /* Preview Assets.xcassets */; };
 		1F6BFE202BFF9EC500883169 /* michael.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 1F6BFE1F2BFF9EC500883169 /* michael.jpeg */; };
-		1F6BFE252BFFADA200883169 /* Blue.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE242BFFADA200883169 /* Blue.ci.metal */; };
 		1F6BFE272BFFADB700883169 /* NTSCFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE262BFFADB700883169 /* NTSCFilter.swift */; };
 		1F6BFE2A2BFFBFC200883169 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE292BFFBFC200883169 /* CameraView.swift */; };
-		1FB400AE2C09680000B95733 /* YIQ.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FB400AD2C09680000B95733 /* YIQ.metal */; };
-		1FB400B22C096D8800B95733 /* RoundTrip.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FB400AF2C0969F900B95733 /* RoundTrip.ci.metal */; };
 		1FCC1D2F2C0A0BB400943847 /* BoxBlurFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FCC1D2E2C0A0BB400943847 /* BoxBlurFilter.swift */; };
 		1FCC1D312C0A0C2700943847 /* YIQChannels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FCC1D302C0A0C2700943847 /* YIQChannels.swift */; };
-		1FEE323C2C0A23BB009F09BA /* Multiply.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FEE323B2C0A23BB009F09BA /* Multiply.ci.metal */; };
 		1FEE323E2C0A3FCC009F09BA /* YIQ.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FEE323D2C0A3FCC009F09BA /* YIQ.swift */; };
+		1FEE32442C0A9FC3009F09BA /* SnowFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FEE32432C0A9FC3009F09BA /* SnowFilter.swift */; };
 		1FEEA8592C00C6B000101141 /* MetalConversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FEEA8582C00C6B000101141 /* MetalConversionTests.swift */; };
-		1FF726542C07EB8F0011669D /* IIRInitialCondition.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FF726532C07EB8F0011669D /* IIRInitialCondition.ci.metal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,6 +84,21 @@
 		1F5B6CDD2C05585B0051A9ED /* MultiplyLuma.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = MultiplyLuma.ci.metal; sourceTree = "<group>"; };
 		1F5B6CE52C065D330051A9ED /* YIQMix.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = YIQMix.ci.metal; sourceTree = "<group>"; };
 		1F5B6CE92C065DCE0051A9ED /* YIQMixerFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YIQMixerFilter.swift; sourceTree = "<group>"; };
+		1F5F93B72C0E02D400EC29A2 /* TestIIR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestIIR.swift; sourceTree = "<group>"; };
+		1F5F93B92C0E04A100EC29A2 /* SimpleIIRTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleIIRTests.swift; sourceTree = "<group>"; };
+		1F5F93BB2C0E83EC00EC29A2 /* NTSCTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSCTextureFilter.swift; sourceTree = "<group>"; };
+		1F5F93BD2C0F54F000EC29A2 /* YIQ.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = YIQ.metal; sourceTree = "<group>"; };
+		1F5F93C02C0F585C00EC29A2 /* RGB.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = RGB.metal; sourceTree = "<group>"; };
+		1F5F93C22C0F7F4E00EC29A2 /* MetalTextureConversionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalTextureConversionTests.swift; sourceTree = "<group>"; };
+		1F5F93C52C0F910300EC29A2 /* LumaBoxTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumaBoxTextureFilter.swift; sourceTree = "<group>"; };
+		1F5F93C72C0F9D7900EC29A2 /* YIQChannel.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = YIQChannel.metal; sourceTree = "<group>"; };
+		1F5F93C92C0F9DCA00EC29A2 /* YIQCompose.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = YIQCompose.metal; sourceTree = "<group>"; };
+		1F5F93CC2C0FA96C00EC29A2 /* IIRTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IIRTextureFilter.swift; sourceTree = "<group>"; };
+		1F5F93CE2C0FC53E00EC29A2 /* IIRInitialCondition.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = IIRInitialCondition.metal; sourceTree = "<group>"; };
+		1F5F93D02C0FC84500EC29A2 /* IIRMultiply.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = IIRMultiply.metal; sourceTree = "<group>"; };
+		1F5F93D22C0FD03400EC29A2 /* IIRFilterSample.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = IIRFilterSample.metal; sourceTree = "<group>"; };
+		1F5F93D42C0FD58E00EC29A2 /* IIRSideEffect.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = IIRSideEffect.metal; sourceTree = "<group>"; };
+		1F5F93D62C0FDB8700EC29A2 /* IIRFinalImage.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = IIRFinalImage.metal; sourceTree = "<group>"; };
 		1F6BFDE72BFF799F00883169 /* ntsc-mtl-demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ntsc-mtl-demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ntsc_mtl_demoApp.swift; sourceTree = "<group>"; };
 		1F6BFDEC2BFF799F00883169 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -98,6 +116,8 @@
 		1FCC1D302C0A0C2700943847 /* YIQChannels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YIQChannels.swift; sourceTree = "<group>"; };
 		1FEE323B2C0A23BB009F09BA /* Multiply.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Multiply.ci.metal; sourceTree = "<group>"; };
 		1FEE323D2C0A3FCC009F09BA /* YIQ.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YIQ.swift; sourceTree = "<group>"; };
+		1FEE32412C0A9BD4009F09BA /* Snow.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Snow.ci.metal; sourceTree = "<group>"; };
+		1FEE32432C0A9FC3009F09BA /* SnowFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnowFilter.swift; sourceTree = "<group>"; };
 		1FEEA8582C00C6B000101141 /* MetalConversionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalConversionTests.swift; sourceTree = "<group>"; };
 		1FF726522C07D78D0011669D /* InitialCondition.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = InitialCondition.md; sourceTree = "<group>"; };
 		1FF726532C07EB8F0011669D /* IIRInitialCondition.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = IIRInitialCondition.ci.metal; sourceTree = "<group>"; };
@@ -122,7 +142,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1F1F9B6A2C03CF690085048F /* Kernels */ = {
+		1F1F9B6A2C03CF690085048F /* CIKernels */ = {
 			isa = PBXGroup;
 			children = (
 				1F6BFE242BFFADA200883169 /* Blue.ci.metal */,
@@ -132,6 +152,7 @@
 				1FF726532C07EB8F0011669D /* IIRInitialCondition.ci.metal */,
 				1F5B6CBF2C04BBF10051A9ED /* ChromaIntoLuma.ci.metal */,
 				1F5B6CC92C050A8E0051A9ED /* YIQCompose.ci.metal */,
+				1FEE32412C0A9BD4009F09BA /* Snow.ci.metal */,
 				1F259EEB2C02A2C300937D0A /* IIRFilterSample.ci.metal */,
 				1F5B6CDD2C05585B0051A9ED /* MultiplyLuma.ci.metal */,
 				1FEE323B2C0A23BB009F09BA /* Multiply.ci.metal */,
@@ -139,7 +160,50 @@
 				1F5B6CE52C065D330051A9ED /* YIQMix.ci.metal */,
 				1F1F9B602C03B03B0085048F /* IIRFinalImage.metal */,
 			);
-			path = Kernels;
+			path = CIKernels;
+			sourceTree = "<group>";
+		};
+		1F5F93BF2C0F584E00EC29A2 /* MetalKernels */ = {
+			isa = PBXGroup;
+			children = (
+				1F5F93BD2C0F54F000EC29A2 /* YIQ.metal */,
+				1F5F93C02C0F585C00EC29A2 /* RGB.metal */,
+				1F5F93C72C0F9D7900EC29A2 /* YIQChannel.metal */,
+				1F5F93C92C0F9DCA00EC29A2 /* YIQCompose.metal */,
+				1F5F93CE2C0FC53E00EC29A2 /* IIRInitialCondition.metal */,
+				1F5F93D22C0FD03400EC29A2 /* IIRFilterSample.metal */,
+				1F5F93D42C0FD58E00EC29A2 /* IIRSideEffect.metal */,
+				1F5F93D02C0FC84500EC29A2 /* IIRMultiply.metal */,
+				1F5F93D62C0FDB8700EC29A2 /* IIRFinalImage.metal */,
+			);
+			path = MetalKernels;
+			sourceTree = "<group>";
+		};
+		1F5F93C42C0F8BF400EC29A2 /* CIFilters */ = {
+			isa = PBXGroup;
+			children = (
+				1F259EE52C027D0800937D0A /* IIRFilter.swift */,
+				1F5B6CCB2C05244F0051A9ED /* CompositeNoiseFilter.swift */,
+				1F5B6CDB2C0558140051A9ED /* MultiplyLumaFilter.swift */,
+				1F5B6CC32C04F5770051A9ED /* ChromaLowpassFilter.swift */,
+				1F5B6CC72C0509F00051A9ED /* YIQComposeFilter.swift */,
+				1F6BFE262BFFADB700883169 /* NTSCFilter.swift */,
+				1FEE32432C0A9FC3009F09BA /* SnowFilter.swift */,
+				1FCC1D2E2C0A0BB400943847 /* BoxBlurFilter.swift */,
+				1F5B6CE92C065DCE0051A9ED /* YIQMixerFilter.swift */,
+				1F5B6CBD2C04BB970051A9ED /* ChromaIntoLumaFilter.swift */,
+			);
+			path = CIFilters;
+			sourceTree = "<group>";
+		};
+		1F5F93CB2C0FA95A00EC29A2 /* TextureFilters */ = {
+			isa = PBXGroup;
+			children = (
+				1F5F93BB2C0E83EC00EC29A2 /* NTSCTextureFilter.swift */,
+				1F5F93C52C0F910300EC29A2 /* LumaBoxTextureFilter.swift */,
+				1F5F93CC2C0FA96C00EC29A2 /* IIRTextureFilter.swift */,
+			);
+			path = TextureFilters;
 			sourceTree = "<group>";
 		};
 		1F6BFDDE2BFF799F00883169 = {
@@ -172,6 +236,7 @@
 				1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */,
 				1F6BFDEC2BFF799F00883169 /* ContentView.swift */,
 				1F5B6CCF2C0536600051A9ED /* Clamped.swift */,
+				1F5B6CC52C04FCA50051A9ED /* PolynomialMultiply.swift */,
 				1F6BFE1A2BFF7E9600883169 /* Filters */,
 				1F6BFDEE2BFF79A000883169 /* Assets.xcassets */,
 				1F6BFDF02BFF79A000883169 /* Preview Content */,
@@ -192,6 +257,9 @@
 			isa = PBXGroup;
 			children = (
 				1FEEA8582C00C6B000101141 /* MetalConversionTests.swift */,
+				1F5F93C22C0F7F4E00EC29A2 /* MetalTextureConversionTests.swift */,
+				1F5F93B72C0E02D400EC29A2 /* TestIIR.swift */,
+				1F5F93B92C0E04A100EC29A2 /* SimpleIIRTests.swift */,
 			);
 			path = "ntsc-mtl-demoTests";
 			sourceTree = "<group>";
@@ -199,23 +267,16 @@
 		1F6BFE1A2BFF7E9600883169 /* Filters */ = {
 			isa = PBXGroup;
 			children = (
-				1F1F9B6A2C03CF690085048F /* Kernels */,
-				1F259EE52C027D0800937D0A /* IIRFilter.swift */,
+				1F1F9B6A2C03CF690085048F /* CIKernels */,
+				1F5F93C42C0F8BF400EC29A2 /* CIFilters */,
+				1F5F93CB2C0FA95A00EC29A2 /* TextureFilters */,
 				1FEE323D2C0A3FCC009F09BA /* YIQ.swift */,
-				1F5B6CCB2C05244F0051A9ED /* CompositeNoiseFilter.swift */,
-				1F5B6CDB2C0558140051A9ED /* MultiplyLumaFilter.swift */,
-				1F5B6CC32C04F5770051A9ED /* ChromaLowpassFilter.swift */,
-				1F5B6CC72C0509F00051A9ED /* YIQComposeFilter.swift */,
-				1F6BFE262BFFADB700883169 /* NTSCFilter.swift */,
-				1FCC1D2E2C0A0BB400943847 /* BoxBlurFilter.swift */,
 				1FCC1D302C0A0C2700943847 /* YIQChannels.swift */,
-				1F5B6CE92C065DCE0051A9ED /* YIQMixerFilter.swift */,
 				1F1F9B682C03C3980085048F /* IIRTransferFunction.swift */,
 				1F5B6CC12C04D4010051A9ED /* NTSC.swift */,
 				1F259EDB2C022F7500937D0A /* NTSCEffect.swift */,
 				1F259EDD2C02399C00937D0A /* NTSCEffect+Defaults.swift */,
-				1F5B6CBD2C04BB970051A9ED /* ChromaIntoLumaFilter.swift */,
-				1F5B6CC52C04FCA50051A9ED /* PolynomialMultiply.swift */,
+				1F5F93BF2C0F584E00EC29A2 /* MetalKernels */,
 			);
 			path = Filters;
 			sourceTree = "<group>";
@@ -342,39 +403,39 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F5F93BC2C0E83EC00EC29A2 /* NTSCTextureFilter.swift in Sources */,
+				1F5F93C82C0F9D7900EC29A2 /* YIQChannel.metal in Sources */,
+				1F5F93D32C0FD03400EC29A2 /* IIRFilterSample.metal in Sources */,
+				1F5F93C62C0F910300EC29A2 /* LumaBoxTextureFilter.swift in Sources */,
 				1F6BFDED2BFF799F00883169 /* ContentView.swift in Sources */,
 				1F6BFDEB2BFF799F00883169 /* ntsc_mtl_demoApp.swift in Sources */,
 				1F5B6CC62C04FCA50051A9ED /* PolynomialMultiply.swift in Sources */,
 				1FCC1D2F2C0A0BB400943847 /* BoxBlurFilter.swift in Sources */,
-				1F5B6CE62C065D330051A9ED /* YIQMix.ci.metal in Sources */,
-				1F1F9B612C03B03B0085048F /* IIRFinalImage.metal in Sources */,
-				1F259EEC2C02A2C300937D0A /* IIRFilterSample.ci.metal in Sources */,
+				1FEE32442C0A9FC3009F09BA /* SnowFilter.swift in Sources */,
+				1F5F93D72C0FDB8700EC29A2 /* IIRFinalImage.metal in Sources */,
+				1F5F93CD2C0FA96C00EC29A2 /* IIRTextureFilter.swift in Sources */,
+				1F5F93D52C0FD58E00EC29A2 /* IIRSideEffect.metal in Sources */,
 				1F259EDC2C022F7500937D0A /* NTSCEffect.swift in Sources */,
-				1F5B6CCA2C050A8E0051A9ED /* YIQCompose.ci.metal in Sources */,
 				1F5B6CDC2C0558140051A9ED /* MultiplyLumaFilter.swift in Sources */,
-				1F6BFE252BFFADA200883169 /* Blue.ci.metal in Sources */,
+				1F5F93C12C0F585C00EC29A2 /* RGB.metal in Sources */,
 				1F6BFE2A2BFFBFC200883169 /* CameraView.swift in Sources */,
-				1FEE323C2C0A23BB009F09BA /* Multiply.ci.metal in Sources */,
 				1F5B6CC82C0509F00051A9ED /* YIQComposeFilter.swift in Sources */,
 				1FEE323E2C0A3FCC009F09BA /* YIQ.swift in Sources */,
 				1F6BFE272BFFADB700883169 /* NTSCFilter.swift in Sources */,
-				1F259EE02C026A6700937D0A /* Fun.ci.metal in Sources */,
+				1F5F93D12C0FC84500EC29A2 /* IIRMultiply.metal in Sources */,
+				1F5F93CF2C0FC53E00EC29A2 /* IIRInitialCondition.metal in Sources */,
 				1F5B6CC42C04F5770051A9ED /* ChromaLowpassFilter.swift in Sources */,
-				1F5B6CC02C04BBF10051A9ED /* ChromaIntoLuma.ci.metal in Sources */,
-				1FB400AE2C09680000B95733 /* YIQ.metal in Sources */,
-				1F1F9B5F2C03AFAD0085048F /* IIRSideEffect.metal in Sources */,
+				1F5F93BE2C0F54F000EC29A2 /* YIQ.metal in Sources */,
 				1F5B6CCC2C05244F0051A9ED /* CompositeNoiseFilter.swift in Sources */,
 				1FCC1D312C0A0C2700943847 /* YIQChannels.swift in Sources */,
 				1F259EE62C027D0800937D0A /* IIRFilter.swift in Sources */,
 				1F259EDE2C02399C00937D0A /* NTSCEffect+Defaults.swift in Sources */,
-				1FF726542C07EB8F0011669D /* IIRInitialCondition.ci.metal in Sources */,
-				1FB400B22C096D8800B95733 /* RoundTrip.ci.metal in Sources */,
 				1F5B6CEA2C065DCE0051A9ED /* YIQMixerFilter.swift in Sources */,
 				1F5B6CBE2C04BB970051A9ED /* ChromaIntoLumaFilter.swift in Sources */,
 				1F5B6CD02C0536600051A9ED /* Clamped.swift in Sources */,
+				1F5F93CA2C0F9DCA00EC29A2 /* YIQCompose.metal in Sources */,
 				1F1F9B692C03C3980085048F /* IIRTransferFunction.swift in Sources */,
 				1F5B6CC22C04D4010051A9ED /* NTSC.swift in Sources */,
-				1F5B6CDE2C05585B0051A9ED /* MultiplyLuma.ci.metal in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -382,7 +443,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F5F93BA2C0E04A100EC29A2 /* SimpleIIRTests.swift in Sources */,
+				1F5F93B82C0E02D400EC29A2 /* TestIIR.swift in Sources */,
 				1FEEA8592C00C6B000101141 /* MetalConversionTests.swift in Sources */,
+				1F5F93C32C0F7F4E00EC29A2 /* MetalTextureConversionTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -451,8 +515,6 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MTLLINKER_FLAGS = "-fcikernel";
-				MTL_COMPILER_FLAGS = "-fcikernel";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -567,8 +629,6 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MTLLINKER_FLAGS = "-fcikernel";
-				MTL_COMPILER_FLAGS = "-fcikernel";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -626,8 +686,6 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MTLLINKER_FLAGS = "-fcikernel";
-				MTL_COMPILER_FLAGS = "-fcikernel";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;

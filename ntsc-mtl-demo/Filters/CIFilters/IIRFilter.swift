@@ -168,7 +168,7 @@ class IIRFilter: CIFilter {
                 arguments: [image, initialZ0Image, aSum, cSum])!
             render(image: zImage, toTexture: textures[i])
         }
-        let finalZ0Image = Self.kernels.multiply.apply(extent: image.extent, arguments: [image, initialZ0Image, ])!
+        let finalZ0Image = Self.kernels.multiply.apply(extent: image.extent, arguments: [image, initialZ0Image])!
         render(image: finalZ0Image, toTexture: textures[0])
     }
     

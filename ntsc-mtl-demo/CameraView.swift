@@ -17,7 +17,7 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     private let device: MTLDevice
     private let mtkView: MTKView
     private let commandQueue: MTLCommandQueue
-    private var filter: NTSCFilter!
+    private var filter: NTSCTextureFilter!
     
     var isFilterEnabled: Bool
     var lastImage: CIImage?
@@ -80,28 +80,11 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             return
         }
         let ciImage = CIImage(cvImageBuffer: pixelBuffer)
+        self.lastImage = ciImage
         if filter == nil {
-            var effect = NTSCEffect.default
-            effect.inputLumaFilter = .notch
-            effect.chromaLowpassIn = .light
-            effect.filterType = .butterworth
-            self.filter = NTSCFilter(size: ciImage.extent.size, effect: effect)
+            self.filter = try! NTSCTextureFilter(device: device, context: ciContext)
+            self.filter.effect.inputLumaFilter = .notch
         }
-        
-        // Apply CIFilter
-        let outputImage: CIImage?
-        if isFilterEnabled {
-            filter.inputImage = ciImage
-            outputImage = filter.outputImage
-        } else {
-            outputImage = ciImage
-        }
-        
-        guard let outputImage else {
-            return
-        }
-        let orientedImage = outputImage.oriented(forExifOrientation: Int32(CGImagePropertyOrientation.right.rawValue))
-        self.lastImage = orientedImage
         DispatchQueue.main.async {
             self.mtkView.setNeedsDisplay()
         }
@@ -144,10 +127,26 @@ extension CameraUIView: MTKViewDelegate {
             mtlTextureProvider: {
                 drawable.texture
             })
+        
+        // Apply CIFilter
+        let outputImage: CIImage?
+        if isFilterEnabled {
+            filter.inputImage = lastImage
+            outputImage = filter.outputImage
+        } else {
+            outputImage = lastImage
+        }
+        
+        guard let outputImage else {
+            return
+        }
+        let orientedImage = outputImage.oriented(forExifOrientation: Int32(CGImagePropertyOrientation.right.rawValue))
+        
         do {
-            try ciContext.startTask(toRender: lastImage, to: destination)
+            try ciContext.startTask(toRender: orientedImage, to: destination)
             commandBuffer.present(drawable)
             commandBuffer.commit()
+            commandBuffer.waitUntilCompleted()
         } catch {
             print("Error starting render task: \(error)")
         }

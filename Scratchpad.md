@@ -227,3 +227,35 @@ Breakthrough!!
 - numerators and denominators to the i function:
     - 
 - Hypothesis: different numerical formats but we're far enough away from the bounds
+
+### Jun 3
+
+- I think I'm so close to getting this to work. I have reliable tests that can convert to/from RGB/YIQ. Everything looks more or less right for reach phase of the filter. I just need to run it one more time, comparing with Rust, then looking at the composite result. I also need to investigate what we get for the RGB output on both sides to make sure the return conversion works correctly.
+- I've pinpointed an issue and it's bad for the project. The issue is that moving from YIQ back to RGB is lossy -- we're dropping negative values somewhere along the way. This can be verified in the test `test_i_lowpass_butterworth` in the Rust code -- we're getting back some values that don't correspond to a simple to_rgb conversion on the plane data. It's hard to pinpoint exactly where this is getting adjusted, but my suspicion is that it's somewhere in the `RgbImage::from` path.
+    - This is pretty much a dead end for the current strategy, because the expectation was that we'd always be able to move losslessly back and forth between RGB and YIQ. The only real way to solve this at this point is to rely on textures that can hold YIQ data. This means another big rewrite. Do I really want to do this?
+
+### Jun 4
+
+NTSCTextureFilter implementation. What I need:
+
+- A single filter that represents the stateful, cumulative effect of applying a number of sub-filters
+- Setting inputImage should wipe the current texture, rebuilding it if necessary, and replacing its contents with the input image
+- Call a number of shader functions that all replace the content of the texture in-place
+    - Need to double-check that our ToYIQ and ToRGB functions work
+    - We'll need to hold onto an instance of an IIRTextureFilter with multiple textures each for all of the IIR steps
+- Do I instantiate / set up NTSCTextureFilter with a single pixel? Or do I call the kernel functions directly?
+    - I think calling the kernel functions directly is better than trying to make the filter testable from the outside. Too much juggling -- use unit tests instead.
+- Wow, finally got a handle on Metal a little bit. Cool learnings:
+    - The commandBuffer is just what it sounds like -- a buffer of commands. You encode one or more commands to it, then commit it, and optionally wait for it to complete
+    - This means that we can chain arbitrary Metal commands together and run them all at once, every frame. Just for right now, I'm:
+        - writing a CIImage to a texture
+        - converting those rgb values to YIQ values in place
+        - blurring them using a scratch texture and blit encoder (finally figured out what blitting is!)
+            - blit the work-in-progress texture to the scratch texture
+            - blur the scratch texture
+            - compose the luma value from the scratch texture with the chroma ones from the work-in-progess texture
+            - write the composition back to the WIP
+- Excited to try the IIR filter next
+- Making good progress on IIR but luma notch doesn't seem to be working. If it's not texture misuse what could it be? It's almost like nothing's happening at all.
+    - There's a real answer to this. It was on the tip of my tongue and then I forgot
+    - Oh right, not allocating threads etc.

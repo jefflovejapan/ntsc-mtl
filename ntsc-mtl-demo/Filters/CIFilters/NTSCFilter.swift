@@ -34,6 +34,7 @@ class NTSCFilter: CIFilter {
         let chromaIntoLuma: ChromaIntoLumaFilter
         let compositePreemphasis: IIRFilter
         let compositeNoise: CompositeNoiseFilter
+        let snow: SnowFilter
         
         init(
             lumaBoxBlur: BoxBlurFilter,
@@ -42,7 +43,8 @@ class NTSCFilter: CIFilter {
             chromaLowpassFull: ChromaLowpassFilter,
             chromaIntoLuma: ChromaIntoLumaFilter,
             compositePreemphasis: IIRFilter,
-            compositeNoise: CompositeNoiseFilter
+            compositeNoise: CompositeNoiseFilter,
+            snow: SnowFilter
         ) {
             self.lumaBoxBlur = lumaBoxBlur
             self.lumaNotchBlur = lumaNotchBlur
@@ -51,6 +53,7 @@ class NTSCFilter: CIFilter {
             self.chromaIntoLuma = chromaIntoLuma
             self.compositePreemphasis = compositePreemphasis
             self.compositeNoise = compositeNoise
+            self.snow = snow
         }
     }
     
@@ -74,7 +77,12 @@ class NTSCFilter: CIFilter {
                 effect.compositePreemphasis,
                 bandwidthScale: effect.bandwidthScale
             ), 
-            compositeNoise: CompositeNoiseFilter(noise: effect.compositeNoise)
+            compositeNoise: CompositeNoiseFilter(noise: effect.compositeNoise),
+            snow: SnowFilter(
+                intensity: effect.snowIntensity,
+                anisotropy: effect.snowAnisotropy,
+                bandwidthScale: effect.bandwidthScale
+            )
         )
     }
     
@@ -129,20 +137,29 @@ class NTSCFilter: CIFilter {
         return self.filters.compositeNoise.outputImage
     }
     
+    private func snow(inputImage: CIImage?) -> CIImage? {
+        guard let inputImage else { return nil }
+        self.filters.snow.inputImage = inputImage
+        return self.filters.snow.outputImage
+    }
+    
     override var outputImage: CIImage? {
-        // step 0
-        let lumaed = inputLuma(inputImage: inputImage)
+//        // step 0
+//        let lumaed = inputLuma(inputImage: inputImage)
+//        
+////        // step 1
+////        // TODO: looks super grayscale, check math
+        let chromaLowpassed = chromaLowpass(inputImage: inputImage)
+        return chromaLowpassed
+//        // step 2
+//        let chromaedIntoLuma = chromaIntoLuma(inputImage: chromaLowpassed)
+////        // step 3
+//        let composited = compositePreemphasis(inputImage: chromaedIntoLuma)
+////        // step 4
+//        let compositeNoised = compositeNoise(inputImage: composited)
         
-//        // step 1
-//        // TODO: looks super grayscale, check math
-        let chromaLowpassed = chromaLowpass(inputImage: lumaed)
-        // step 2
-        let chromaedIntoLuma = chromaIntoLuma(inputImage: chromaLowpassed)
-//        // step 3
-        let composited = compositePreemphasis(inputImage: chromaedIntoLuma)
-//        // step 4
-        let compositeNoised = compositeNoise(inputImage: composited)
-        return compositeNoised
+//        let snowed = snow(inputImage: inputImage)
+//        return snowed
     }
 }
 

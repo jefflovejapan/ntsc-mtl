@@ -48,7 +48,7 @@ extension CIColor {
 
 final class MetalConversionTests: XCTestCase {
     var filter: NTSCFilter!
-    
+        
     override func tearDownWithError() throws {
         filter = nil
     }
