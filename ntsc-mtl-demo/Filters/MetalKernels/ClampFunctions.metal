@@ -14,3 +14,10 @@ inline half3 clampYIQ(half3 yiq) {
     yiq.z = clamp(yiq.z, half(-0.5226), half(0.5226));
     return yiq;
 }
+
+inline half3 clampRGB(half3 rgb) {
+    rgb.x = clamp(rgb.x, half(0.0), half(1.0));
+    rgb.y = clamp(rgb.y, half(0.0), half(1.0));
+    rgb.z = clamp(rgb.z, half(0.0), half(1.0));
+    return rgb;
+}

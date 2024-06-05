@@ -20,6 +20,7 @@ kernel void iirFinalImage
     half4 filteredSample = filteredImageTexture.read(gid);
     half4 combined = ((filteredSample - currentSample) * scale) + currentSample;
     half3 yiq = combined.xyz;
+    yiq = clampYIQ(yiq);
     half4 final = half4(yiq, 1.0);
     filteredImageTexture.write(final, gid);
 }

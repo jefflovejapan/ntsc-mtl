@@ -5,6 +5,7 @@
 //  Created by Jeffrey Blagdon on 2024-06-04.
 //
 
+#include "ClampFunctions.metal"
 #include <metal_stdlib>
 using namespace metal;
 
@@ -19,6 +20,8 @@ kernel void yiqCompose3
     half y = yTexture.read(gid).x;
     half i = iTexture.read(gid).y;
     half q = qTexture.read(gid).z;
-    half4 result = half4(y, i, q, 1.0);
+    half3 yiq = half3(y, i, q);
+    yiq = clampYIQ(yiq);
+    half4 result = half4(yiq, 1.0);
     outputTexture.write(result, gid);
 }

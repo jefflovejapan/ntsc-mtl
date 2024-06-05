@@ -5,6 +5,7 @@
 //  Created by Jeffrey Blagdon on 2024-06-04.
 //
 
+#include "ClampFunctions.metal"
 #include <metal_stdlib>
 using namespace metal;
 
@@ -24,5 +25,6 @@ kernel void convertToRGB
     half4 yiqa = inputTexture.read(gid);
     half3 yiq = yiqa.xyz;
     half3 rgb = yiqToRGBMatrix * yiq;
+    rgb = clampRGB(rgb);
     outputTexture.write(half4(rgb, 1.0), gid);
 }

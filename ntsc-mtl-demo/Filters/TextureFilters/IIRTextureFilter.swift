@@ -80,7 +80,7 @@ class IIRTextureFilter {
     }
     
     static func fillTexturesForInitialCondition(
-        outputTexture: MTLTexture,
+        inputTexture: MTLTexture,
         initialCondition: InitialCondition,
         initialConditionTexture: MTLTexture,
         textures: [MTLTexture],
@@ -90,8 +90,8 @@ class IIRTextureFilter {
         device: MTLDevice,
         commandBuffer: MTLCommandBuffer
     ) throws {
-        let region = MTLRegionMake2D(0, 0, outputTexture.width, outputTexture.height)
-        let bytesPerRow: Int = MemoryLayout<Float16>.size * 4 * outputTexture.width
+        let region = MTLRegionMake2D(0, 0, inputTexture.width, inputTexture.height)
+        let bytesPerRow: Int = MemoryLayout<Float16>.size * 4 * inputTexture.width
         switch initialCondition {
         case .zero:
             let input: [Float16] = [0, 0, 0, 1]   // black/zero
@@ -104,7 +104,7 @@ class IIRTextureFilter {
             guard let blitEncoder = commandBuffer.makeBlitCommandEncoder() else {
                 throw Error.cantMakeBlitEncoder
             }
-            blitEncoder.copy(from: outputTexture, to: initialConditionTexture)
+            blitEncoder.copy(from: inputTexture, to: initialConditionTexture)
             blitEncoder.endEncoding()
         case .constant(let color):
             var yiqa = color
@@ -240,7 +240,7 @@ class IIRTextureFilter {
                 .prefix(numerators.count)
             )
             try Self.fillTexturesForInitialCondition(
-                outputTexture: inputTexture,
+                inputTexture: inputTexture,
                 initialCondition: initialCondition,
                 initialConditionTexture: initialConditionTexture,
                 textures: textures,
