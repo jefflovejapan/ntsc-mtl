@@ -37,6 +37,7 @@ class NTSCTextureFilter {
     private let lightChromaLowpassFilter: ChromaLowpassTextureFilter
     private let fullChromaLowpassFilter: ChromaLowpassTextureFilter
     private let chromaIntoLumaFilter: ChromaIntoLumaTextureFilter
+    private let compositePreemphasisFilter: IIRTextureFilter
     
     init(effect: NTSCEffect, device: MTLDevice, context: CIContext) throws {
         self.effect = effect
@@ -65,6 +66,17 @@ class NTSCTextureFilter {
         self.lightChromaLowpassFilter = ChromaLowpassTextureFilter(device: device, library: library, intensity: .light, bandwidthScale: effect.bandwidthScale, filterType: effect.filterType)
         self.fullChromaLowpassFilter = ChromaLowpassTextureFilter(device: device, library: library, intensity: .full, bandwidthScale: effect.bandwidthScale, filterType: effect.filterType)
         self.chromaIntoLumaFilter = ChromaIntoLumaTextureFilter()
+        let compositePreemphasisFunction = IIRTransferFunction.compositePreemphasis(bandwidthScale: effect.bandwidthScale)
+        self.compositePreemphasisFilter = IIRTextureFilter(
+            device: device,
+            library: library,
+            numerators: compositePreemphasisFunction.numerators,
+            denominators: compositePreemphasisFunction.denominators,
+            initialCondition: .zero,
+            channels: .y,
+            scale: -effect.compositePreemphasis,
+            delay: 0
+        )
     }
     
     var inputImage: CIImage?
@@ -150,6 +162,10 @@ class NTSCTextureFilter {
             device: device,
             commandBuffer: commandBuffer
         )
+    }
+    
+    static func compositePreemphasis(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: IIRTextureFilter, commandBuffer: MTLCommandBuffer) throws {
+        try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
     private static var convertToRGBPipelineState: MTLComputePipelineState?
@@ -261,8 +277,8 @@ class NTSCTextureFilter {
                 fullFilter: fullChromaLowpassFilter
             )
             try Self.chromaIntoLuma(
-                inputTexture: textureC,
-                outputTexture: textureA,
+                inputTexture: textureA,
+                outputTexture: textureB,
                 timestamp: frameNum,
                 phaseShift: effect.videoScanlinePhaseShift,
                 phaseShiftOffset: effect.videoScanlinePhaseShiftOffset,
@@ -271,14 +287,26 @@ class NTSCTextureFilter {
                 device: device,
                 commandBuffer: commandBuffer
             )
-            try Self.convertToRGB(textureA, output: textureB, commandBuffer: commandBuffer, library: library, device: device)
+            try Self.compositePreemphasis(
+                inputTexture: textureB,
+                outputTexture: textureC,
+                filter: compositePreemphasisFilter,
+                commandBuffer: commandBuffer
+            )
+            try Self.convertToRGB(
+                textureC,
+                output: textureA,
+                commandBuffer: commandBuffer,
+                library: library,
+                device: device
+            )
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()
         } catch {
             print("Error converting to YIQ: \(error)")
             return nil
         }
-        let outImage = CIImage(mtlTexture: textureB)
+        let outImage = CIImage(mtlTexture: textureA)
         return outImage
     }
 }

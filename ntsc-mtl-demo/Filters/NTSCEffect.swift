@@ -15,7 +15,7 @@ struct NTSCEffect {
     var chromaLowpassIn: ChromaLowpass
     var chromaDemodulation: ChromaDemodulationFilter
     var lumaSmear: Float
-    var compositePreemphasis: Float
+    var compositePreemphasis: Float16
     var videoScanlinePhaseShift: PhaseShift
     var videoScanlinePhaseShiftOffset: Int
     
