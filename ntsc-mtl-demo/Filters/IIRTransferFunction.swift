@@ -8,15 +8,14 @@
 import Foundation
 
 struct IIRTransferFunction {
-    var numerators: [Float]
-    var denominators: [Float]
+    var numerators: [Float16]
+    var denominators: [Float16]
     
     enum Error: Swift.Error {
         case notchFrequencyOutOfBounds
     }
     
     static let lumaNotch = try! notchFilter(frequency: 0.5, quality: 2)
-    static let rustLumaNotch = try! rustNotchFilter(frequency: 0.5, quality: 2)
     
     static func notchFilter(frequency: Float, quality: Float) throws -> IIRTransferFunction {
         guard (0...1).contains(frequency) else {
@@ -26,31 +25,12 @@ struct IIRTransferFunction {
         let normalizedBandwidth = (frequency / quality) * .pi
         let normalizedFrequency = frequency * .pi
         let gb: Float = 1 / (sqrt(2))
-        let beta = (sqrt(1 - (pow(gb, 2)))/gb) * tan(normalizedBandwidth / 2)
+        let beta: Float = (sqrt(1 - (pow(gb, 2)))/gb) * tan(normalizedBandwidth / 2)
         let gain = 1.0 / (1.0 + beta)
         let middleParam = -2.0 * cos(normalizedFrequency) * gain
-        let numerators: [Float] = [gain, middleParam, gain]
-        let denominators: [Float] = [1, middleParam, (2 * gain) - 1]
+        let numerators: [Float16] = [gain, middleParam, gain].map { Float16($0) }
+        let denominators: [Float16] = [1, middleParam, (2 * gain) - 1].map { Float16($0) }
         return IIRTransferFunction(numerators: numerators, denominators: denominators)
-    }
-    
-    static func rustNotchFilter(frequency: Float, quality: Float) throws -> IIRTransferFunction {
-        guard (0...1).contains(frequency) else {
-            throw Error.notchFrequencyOutOfBounds
-        }
-        
-        let bandwidth: Float = (frequency / quality) * .pi
-        let normalizedFrequency = frequency * .pi
-        let beta = tan(bandwidth * 0.5)
-        let gain: Float = pow(1 + beta, -1)
-        let middleTerm = -2 * cos(normalizedFrequency) * gain
-        let num: [Float] = [gain, middleTerm, gain]
-        let den: [Float] = [1, middleTerm, (2 * gain) - 1]
-        return IIRTransferFunction(numerators: num, denominators: den)
-    }
-    
-    static func hardCodedLumaNotch() -> IIRTransferFunction {
-        return IIRTransferFunction(numerators: [0.70710677, 6.181724e-08, 0.70710677, 0.0], denominators: [1.0, 6.181724e-8, 0.41421354, 0.0])
     }
     
     static func compositePreemphasis(bandwidthScale: Float) -> IIRTransferFunction {
@@ -81,8 +61,8 @@ struct IIRTransferFunction {
         let tau = 1.0 / (cutoff * 2.0 * .pi)
         let alpha = timeInterval / (tau + timeInterval)
         
-        let numerators: [Float] = [alpha]
-        let denominators: [Float] = [1, -(1 - alpha)]
+        let numerators: [Float16] = [alpha].map { Float16($0) }
+        let denominators: [Float16] = [1, -(1 - alpha)].map { Float16($0) }
         return IIRTransferFunction(
             numerators: numerators,
             denominators: denominators
@@ -162,8 +142,8 @@ struct IIRTransferFunction {
         let a2 = 1.0 - alpha
         
         // Normalize coefficients
-        let nums = [b0 / a0, b1 / a0, b2 / a0]
-        let denoms = [1.0, a1 / a0, a2 / a0]
+        let nums = [b0 / a0, b1 / a0, b2 / a0].map { Float16($0) }
+        let denoms = [1.0, a1 / a0, a2 / a0].map { Float16($0) }
         
         return IIRTransferFunction(numerators: nums, denominators: denoms)
     }

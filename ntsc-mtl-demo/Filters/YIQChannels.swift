@@ -18,25 +18,11 @@ struct YIQChannels: OptionSet {
     static let all: YIQChannels = [.y, .i, .q, .a]
     static let yiq: YIQChannels = [.y, .i, .q]
     
-    var channelMix: CIVector {
-        let y: CGFloat = self.contains(.y) ? 1 : 0
-        let i: CGFloat = self.contains(.i) ? 1 : 0
-        let q: CGFloat = self.contains(.q) ? 1 : 0
-        let a: CGFloat = self.contains(.a) ? 1 : 0
-        return CIVector(x: y, y: i, z: q, w: a)
-    }
-    
-    var floatMix: [Float] {
-        let y: Float = self.contains(.y) ? 1 : 0
-        let i: Float = self.contains(.i) ? 1 : 0
-        let q: Float = self.contains(.q) ? 1 : 0
-        let a: Float = self.contains(.a) ? 1 : 0
+    var floatMix: [Float16] {
+        let y: Float16 = self.contains(.y) ? 1 : 0
+        let i: Float16 = self.contains(.i) ? 1 : 0
+        let q: Float16 = self.contains(.q) ? 1 : 0
+        let a: Float16 = self.contains(.a) ? 1 : 0
         return [y, i, q, a]
     }
-}
-
-enum YIQChannel: UInt {
-    case y = 0
-    case i = 1
-    case q = 2
 }

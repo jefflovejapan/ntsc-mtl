@@ -24,6 +24,7 @@ class NTSCTextureFilter {
     typealias Error = TextureFilterError
     private var textureA: MTLTexture!
     private var textureB: MTLTexture!
+    private var textureC: MTLTexture!
     private let device: MTLDevice
     private let context: CIContext
     private let commandQueue: MTLCommandQueue
@@ -35,6 +36,7 @@ class NTSCTextureFilter {
     private let lumaNotchFilter: IIRTextureFilter
     private let lightChromaLowpassFilter: ChromaLowpassTextureFilter
     private let fullChromaLowpassFilter: ChromaLowpassTextureFilter
+    private let chromaIntoLumaFilter: ChromaIntoLumaTextureFilter
     
     init(effect: NTSCEffect, device: MTLDevice, context: CIContext) throws {
         self.effect = effect
@@ -62,26 +64,36 @@ class NTSCTextureFilter {
         )
         self.lightChromaLowpassFilter = ChromaLowpassTextureFilter(device: device, library: library, intensity: .light, bandwidthScale: effect.bandwidthScale, filterType: effect.filterType)
         self.fullChromaLowpassFilter = ChromaLowpassTextureFilter(device: device, library: library, intensity: .full, bandwidthScale: effect.bandwidthScale, filterType: effect.filterType)
+        self.chromaIntoLumaFilter = ChromaIntoLumaTextureFilter()
     }
     
     var inputImage: CIImage?
     
-    static func convertToYIQ(_ texture: (any MTLTexture), library: MTLLibrary, commandBuffer: MTLCommandBuffer, device: MTLDevice) throws {
+    private static var convertToYIQPipelineState: MTLComputePipelineState?
+    
+    static func convertToYIQ(_ texture: (any MTLTexture), output: (any MTLTexture), library: MTLLibrary, commandBuffer: MTLCommandBuffer, device: MTLDevice) throws {
         // Create a command buffer and encoder
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
         
-        // Set up the compute pipeline
-        let functionName = "convertToYIQ"
-        guard let function = library.makeFunction(name: functionName) else {
-            throw Error.cantMakeFunction(functionName)
+        let pipelineState: MTLComputePipelineState
+        if let convertToYIQPipelineState {
+            pipelineState = convertToYIQPipelineState
+        } else {
+            let functionName = "convertToYIQ"
+            guard let function = library.makeFunction(name: functionName) else {
+                throw Error.cantMakeFunction(functionName)
+            }
+            pipelineState = try device.makeComputePipelineState(function: function)
+            Self.convertToYIQPipelineState = pipelineState
         }
-        let pipelineState = try device.makeComputePipelineState(function: function)
+        
         commandEncoder.setComputePipelineState(pipelineState)
         
         // Set the texture and dispatch threads
         commandEncoder.setTexture(texture, index: 0)
+        commandEncoder.setTexture(output, index: 1)
         commandEncoder.dispatchThreads(
             MTLSize(width: texture.width, height: texture.height, depth: 1),
             threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1)
@@ -127,22 +139,45 @@ class NTSCTextureFilter {
         }
     }
     
-    static func convertToRGB(_ texture: (any MTLTexture), commandBuffer: MTLCommandBuffer, library: MTLLibrary, device: MTLDevice) throws {
+    static func chromaIntoLuma(inputTexture: MTLTexture, outputTexture: MTLTexture, timestamp: UInt32, phaseShift: PhaseShift, phaseShiftOffset: Int, filter: ChromaIntoLumaTextureFilter, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
+        try filter.run(
+            inputTexture: inputTexture,
+            outputTexture: outputTexture,
+            timestamp: timestamp,
+            phaseShift: phaseShift,
+            phaseShiftOffset: phaseShiftOffset,
+            library: library,
+            device: device,
+            commandBuffer: commandBuffer
+        )
+    }
+    
+    private static var convertToRGBPipelineState: MTLComputePipelineState?
+    
+    static func convertToRGB(_ texture: (any MTLTexture), output: (any MTLTexture), commandBuffer: MTLCommandBuffer, library: MTLLibrary, device: MTLDevice) throws {
         // Create a command buffer and encoder
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
         
-        // Set up the compute pipeline
-        let functionName = "convertToRGB"
-        guard let function = library.makeFunction(name: functionName) else {
-            throw Error.cantMakeFunction(functionName)
+        let pipelineState: MTLComputePipelineState
+        if let convertToRGBPipelineState {
+            pipelineState = convertToRGBPipelineState
+        } else {
+            let functionName = "convertToRGB"
+            guard let function = library.makeFunction(name: functionName) else {
+                throw Error.cantMakeFunction(functionName)
+            }
+            pipelineState = try device.makeComputePipelineState(function: function)
+            self.convertToRGBPipelineState = pipelineState
         }
-        let pipelineState = try device.makeComputePipelineState(function: function)
+        
+        // Set up the compute pipeline
         commandEncoder.setComputePipelineState(pipelineState)
         
         // Set the texture and dispatch threads
         commandEncoder.setTexture(texture, index: 0)
+        commandEncoder.setTexture(output, index: 1)
         commandEncoder.dispatchThreads(
             MTLSize(width: texture.width, height: texture.height, depth: 1),
             threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
@@ -164,7 +199,7 @@ class NTSCTextureFilter {
             return
         }
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(
-            pixelFormat: .rgba32Float,
+            pixelFormat: .rgba16Float,
             width: Int(inputImage.extent.size.width),
             height: Int(inputImage.extent.size.height),
             mipmapped: false
@@ -179,9 +214,17 @@ class NTSCTextureFilter {
             throw Error.cantInstantiateTexture
         }
         self.textureB = textureB
+        guard let textureC = device.makeTexture(descriptor: descriptor) else {
+            throw Error.cantInstantiateTexture
+        }
+        self.textureC = textureC
     }
     
+    private var frameNum: UInt32 = 0
+    
     var outputImage: CIImage? {
+        let frameNum = self.frameNum
+        defer { self.frameNum += 1 }
         guard let inputImage else { return nil }
         do {
             try setup(with: inputImage)
@@ -194,16 +237,41 @@ class NTSCTextureFilter {
             return nil
         }
         do {
-            try Self.convertToYIQ(textureA, library: library, commandBuffer: commandBuffer, device: device)
-            try Self.chromaLowpass(
+            try Self.convertToYIQ(
                 textureA,
                 output: textureB,
+                library: library,
+                commandBuffer: commandBuffer,
+                device: device
+            )
+            try Self.inputLuma(
+                textureB,
+                output: textureC,
+                commandBuffer: commandBuffer,
+                lumaLowpass: effect.inputLumaFilter, 
+                lumaBoxFilter: lumaBoxFilter,
+                lumaNotchFilter: lumaNotchFilter
+            )
+            try Self.chromaLowpass(
+                textureC,
+                output: textureA,
                 commandBuffer: commandBuffer,
                 chromaLowpass: effect.chromaLowpassIn,
                 lightFilter: lightChromaLowpassFilter,
                 fullFilter: fullChromaLowpassFilter
             )
-            try Self.convertToRGB(textureB, commandBuffer: commandBuffer, library: library, device: device)
+            try Self.chromaIntoLuma(
+                inputTexture: textureC,
+                outputTexture: textureA,
+                timestamp: frameNum,
+                phaseShift: effect.videoScanlinePhaseShift,
+                phaseShiftOffset: effect.videoScanlinePhaseShiftOffset,
+                filter: self.chromaIntoLumaFilter,
+                library: library,
+                device: device,
+                commandBuffer: commandBuffer
+            )
+            try Self.convertToRGB(textureA, output: textureB, commandBuffer: commandBuffer, library: library, device: device)
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()
         } catch {

@@ -41,6 +41,10 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         let hConstraints = NSLayoutConstraint.constraints(withVisualFormat: "H:|[mtk]|", metrics: nil, views: ["mtk": mtkView])
         let vConstraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|[mtk]|", metrics: nil, views: ["mtk": mtkView])
         NSLayoutConstraint.activate(hConstraints + vConstraints)
+        var effect: NTSCEffect = .default
+        effect.filterType = .butterworth
+        effect.chromaLowpassIn = .light
+        self.filter = try! NTSCTextureFilter(effect: effect, device: device, context: ciContext)
         setupCamera()
     }
     
@@ -49,7 +53,6 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     }
     
     private func setupCamera() {
-        
         captureSession.sessionPreset = .hd1920x1080
         guard let captureDevice = AVCaptureDevice.default(for: .video) else {
             return
@@ -80,11 +83,9 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             return
         }
         let ciImage = CIImage(cvImageBuffer: pixelBuffer)
+            .oriented(forExifOrientation: Int32(CGImagePropertyOrientation.right.rawValue))
+
         self.lastImage = ciImage
-        if filter == nil {
-            var effect: NTSCEffect = .default
-            self.filter = try! NTSCTextureFilter(effect: effect, device: device, context: ciContext)
-        }
         DispatchQueue.main.async {
             self.mtkView.setNeedsDisplay()
         }
@@ -140,13 +141,11 @@ extension CameraUIView: MTKViewDelegate {
         guard let outputImage else {
             return
         }
-        let orientedImage = outputImage.oriented(forExifOrientation: Int32(CGImagePropertyOrientation.right.rawValue))
         
         do {
-            try ciContext.startTask(toRender: orientedImage, to: destination)
+            try ciContext.startTask(toRender: outputImage, to: destination)
             commandBuffer.present(drawable)
             commandBuffer.commit()
-            commandBuffer.waitUntilCompleted()
         } catch {
             print("Error starting render task: \(error)")
         }

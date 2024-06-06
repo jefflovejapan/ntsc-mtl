@@ -84,7 +84,7 @@ class IIRFilter: CIFilter {
     
     private static func textures(size: CGSize, device: MTLDevice) -> AnySequence<MTLTexture> {
         let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(
-            pixelFormat: .rgba8Unorm,
+            pixelFormat: .rgba16Float,
             width: Int(size.width),
             height: Int(size.height),
             mipmapped: false
@@ -177,92 +177,93 @@ class IIRFilter: CIFilter {
     }
         
     override var outputImage: CIImage? {
-        guard let inputImage else {
-            return nil
-        }
-        
-        if zTextures.isEmpty {
-            let images = Array(Self.textures(size: inputImage.extent.size, device: device).prefix(numerators.count))
-            do {
-                try fillTextures(
-                    firstImage: inputImage,
-                    initialCondition: initialCondition,
-                    numerators: numerators,
-                    denominators: denominators,
-                    textures: images
-                )
-                self.zTextures = images
-            } catch {
-                print("Couldn't set up IIR initial state: \(error)")
-                return nil
-            }
-        }
-
-        guard let tex0 = CIImage(mtlTexture: zTextures[0]) else {
-            return nil
-        }
-        
-        guard let num = numerators.first else {
-            return nil
-        }
-        guard let filteredImage = Self.kernels.filterSample.apply(extent: inputImage.extent, arguments: [inputImage, tex0, num]) else {
-            return nil
-        }
-        for i in numerators.indices {
-            let nextIdx = i + 1
-            guard nextIdx < numerators.count else {
-                break
-            }
-            guard let sideEffectIPlus1 = CIImage(mtlTexture: zTextures[nextIdx]) else {
-                break
-            }
-            if let sideEffected = Self.kernels.sideEffect.apply(
-                extent: inputImage.extent,
-                arguments: [
-                    inputImage,
-                    sideEffectIPlus1,
-                    filteredImage,
-                    numerators[nextIdx],
-                    denominators[nextIdx]
-                ]
-            ) {
-                render(image: sideEffected, toTexture: zTextures[i])
-            } else {
-                break
-            }
-        }
-        let finalImage = Self.kernels.finalImage.apply(extent: inputImage.extent, arguments: [inputImage, filteredImage, scale])
-        channelMixer.mixImage = finalImage
-        channelMixer.yiqMix = channelMix
-        channelMixer.inverseMixImage = inputImage
-        return channelMixer.outputImage
+        return nil
+//        guard let inputImage else {
+//            return nil
+//        }
+//        
+//        if zTextures.isEmpty {
+//            let images = Array(Self.textures(size: inputImage.extent.size, device: device).prefix(numerators.count))
+//            do {
+//                try fillTextures(
+//                    firstImage: inputImage,
+//                    initialCondition: initialCondition,
+//                    numerators: numerators,
+//                    denominators: denominators,
+//                    textures: images
+//                )
+//                self.zTextures = images
+//            } catch {
+//                print("Couldn't set up IIR initial state: \(error)")
+//                return nil
+//            }
+//        }
+//
+//        guard let tex0 = CIImage(mtlTexture: zTextures[0]) else {
+//            return nil
+//        }
+//        
+//        guard let num = numerators.first else {
+//            return nil
+//        }
+//        guard let filteredImage = Self.kernels.filterSample.apply(extent: inputImage.extent, arguments: [inputImage, tex0, num]) else {
+//            return nil
+//        }
+//        for i in numerators.indices {
+//            let nextIdx = i + 1
+//            guard nextIdx < numerators.count else {
+//                break
+//            }
+//            guard let sideEffectIPlus1 = CIImage(mtlTexture: zTextures[nextIdx]) else {
+//                break
+//            }
+//            if let sideEffected = Self.kernels.sideEffect.apply(
+//                extent: inputImage.extent,
+//                arguments: [
+//                    inputImage,
+//                    sideEffectIPlus1,
+//                    filteredImage,
+//                    numerators[nextIdx],
+//                    denominators[nextIdx]
+//                ]
+//            ) {
+//                render(image: sideEffected, toTexture: zTextures[i])
+//            } else {
+//                break
+//            }
+//        }
+//        let finalImage = Self.kernels.finalImage.apply(extent: inputImage.extent, arguments: [inputImage, filteredImage, scale])
+//        channelMixer.mixImage = finalImage
+//        channelMixer.yiqMix = channelMix
+//        channelMixer.inverseMixImage = inputImage
+//        return channelMixer.outputImage
     }
 }
 
 extension IIRFilter {
-    static func lumaNotch() -> IIRFilter {
-        let notchFunction = IIRTransferFunction.lumaNotch
-        let filter = try! IIRFilter(
-            numerators: notchFunction.numerators,
-            denominators: notchFunction.denominators, 
-            initialCondition: .firstSample,
-            scale: 1.0,
-            delay: 0
-        )
-        filter.channelMix = .y
-        return filter
-    }
-    
-    static func compositePreemphasis(_ compositePreemphasis: Float, bandwidthScale: Float) -> IIRFilter {
-        let preemphasisFunction = IIRTransferFunction.compositePreemphasis(bandwidthScale: bandwidthScale)
-        let filter = try! IIRFilter(
-            numerators: preemphasisFunction.numerators,
-            denominators: preemphasisFunction.denominators, 
-            initialCondition: .zero,
-            scale: -compositePreemphasis,
-            delay: 0
-        )
-        filter.channelMix = .y
-        return filter
-    }
+//    static func lumaNotch() -> IIRFilter {
+//        let notchFunction = IIRTransferFunction.lumaNotch
+//        let filter = try! IIRFilter(
+//            numerators: notchFunction.numerators,
+//            denominators: notchFunction.denominators, 
+//            initialCondition: .firstSample,
+//            scale: 1.0,
+//            delay: 0
+//        )
+//        filter.channelMix = .y
+//        return filter
+//    }
+//    
+//    static func compositePreemphasis(_ compositePreemphasis: Float, bandwidthScale: Float) -> IIRFilter {
+//        let preemphasisFunction = IIRTransferFunction.compositePreemphasis(bandwidthScale: bandwidthScale)
+//        let filter = try! IIRFilter(
+//            numerators: preemphasisFunction.numerators,
+//            denominators: preemphasisFunction.denominators, 
+//            initialCondition: .zero,
+//            scale: -compositePreemphasis,
+//            delay: 0
+//        )
+//        filter.channelMix = .y
+//        return filter
+//    }
 }
