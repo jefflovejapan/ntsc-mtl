@@ -36,6 +36,7 @@ class NTSCTextureFilter {
     private let lumaNotchFilter: IIRTextureFilter
     private let lightChromaLowpassFilter: ChromaLowpassTextureFilter
     private let fullChromaLowpassFilter: ChromaLowpassTextureFilter
+    private let chromaIntoLumaFilter: ChromaIntoLumaTextureFilter
     
     init(effect: NTSCEffect, device: MTLDevice, context: CIContext) throws {
         self.effect = effect
@@ -63,6 +64,7 @@ class NTSCTextureFilter {
         )
         self.lightChromaLowpassFilter = ChromaLowpassTextureFilter(device: device, library: library, intensity: .light, bandwidthScale: effect.bandwidthScale, filterType: effect.filterType)
         self.fullChromaLowpassFilter = ChromaLowpassTextureFilter(device: device, library: library, intensity: .full, bandwidthScale: effect.bandwidthScale, filterType: effect.filterType)
+        self.chromaIntoLumaFilter = ChromaIntoLumaTextureFilter()
     }
     
     var inputImage: CIImage?
@@ -137,6 +139,19 @@ class NTSCTextureFilter {
         }
     }
     
+    static func chromaIntoLuma(inputTexture: MTLTexture, outputTexture: MTLTexture, timestamp: UInt32, phaseShift: PhaseShift, phaseShiftOffset: Int, filter: ChromaIntoLumaTextureFilter, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
+        try filter.run(
+            inputTexture: inputTexture,
+            outputTexture: outputTexture,
+            timestamp: timestamp,
+            phaseShift: phaseShift,
+            phaseShiftOffset: phaseShiftOffset,
+            library: library,
+            device: device,
+            commandBuffer: commandBuffer
+        )
+    }
+    
     private static var convertToRGBPipelineState: MTLComputePipelineState?
     
     static func convertToRGB(_ texture: (any MTLTexture), output: (any MTLTexture), commandBuffer: MTLCommandBuffer, library: MTLLibrary, device: MTLDevice) throws {
@@ -205,7 +220,11 @@ class NTSCTextureFilter {
         self.textureC = textureC
     }
     
+    private var frameNum: UInt32 = 0
+    
     var outputImage: CIImage? {
+        let frameNum = self.frameNum
+        defer { self.frameNum += 1 }
         guard let inputImage else { return nil }
         do {
             try setup(with: inputImage)
@@ -219,23 +238,34 @@ class NTSCTextureFilter {
         }
         do {
             try Self.convertToYIQ(textureA, output: textureB, library: library, commandBuffer: commandBuffer, device: device)
-            try Self.inputLuma(textureB, output: textureC, commandBuffer: commandBuffer, lumaLowpass: effect.inputLumaFilter, lumaBoxFilter: lumaBoxFilter, lumaNotchFilter: lumaNotchFilter)
-            try Self.chromaLowpass(
-                textureC,
-                output: textureA,
-                commandBuffer: commandBuffer,
-                chromaLowpass: effect.chromaLowpassIn,
-                lightFilter: lightChromaLowpassFilter,
-                fullFilter: fullChromaLowpassFilter
+//            try Self.inputLuma(textureB, output: textureC, commandBuffer: commandBuffer, lumaLowpass: effect.inputLumaFilter, lumaBoxFilter: lumaBoxFilter, lumaNotchFilter: lumaNotchFilter)
+//            try Self.chromaLowpass(
+//                textureC,
+//                output: textureA,
+//                commandBuffer: commandBuffer,
+//                chromaLowpass: effect.chromaLowpassIn,
+//                lightFilter: lightChromaLowpassFilter,
+//                fullFilter: fullChromaLowpassFilter
+//            )
+            try Self.chromaIntoLuma(
+                inputTexture: textureB,
+                outputTexture: textureC,
+                timestamp: frameNum,
+                phaseShift: effect.videoScanlinePhaseShift,
+                phaseShiftOffset: effect.videoScanlinePhaseShiftOffset,
+                filter: self.chromaIntoLumaFilter,
+                library: library,
+                device: device,
+                commandBuffer: commandBuffer
             )
-            try Self.convertToRGB(textureA, output: textureB, commandBuffer: commandBuffer, library: library, device: device)
+            try Self.convertToRGB(textureC, output: textureA, commandBuffer: commandBuffer, library: library, device: device)
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()
         } catch {
             print("Error converting to YIQ: \(error)")
             return nil
         }
-        let outImage = CIImage(mtlTexture: textureB)
+        let outImage = CIImage(mtlTexture: textureA)
         return outImage
     }
 }

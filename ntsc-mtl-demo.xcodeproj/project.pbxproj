@@ -44,6 +44,8 @@
 		1F6BFE272BFFADB700883169 /* NTSCFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE262BFFADB700883169 /* NTSCFilter.swift */; };
 		1F6BFE2A2BFFBFC200883169 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE292BFFBFC200883169 /* CameraView.swift */; };
 		1FA29A8B2C111B6000070F03 /* ClampFunctions.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FA29A8A2C111B6000070F03 /* ClampFunctions.metal */; };
+		1FA29A8D2C112DBC00070F03 /* ChromaIntoLuma.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FA29A8C2C112DBC00070F03 /* ChromaIntoLuma.metal */; };
+		1FA29A8F2C112E3E00070F03 /* ChromaIntoLumaTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA29A8E2C112E3E00070F03 /* ChromaIntoLumaTextureFilter.swift */; };
 		1FC887372C10A62400EE14A7 /* MTLTexture+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FC887362C10A62400EE14A7 /* MTLTexture+Extensions.swift */; };
 		1FCC1D2F2C0A0BB400943847 /* BoxBlurFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FCC1D2E2C0A0BB400943847 /* BoxBlurFilter.swift */; };
 		1FCC1D312C0A0C2700943847 /* YIQChannels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FCC1D302C0A0C2700943847 /* YIQChannels.swift */; };
@@ -113,6 +115,8 @@
 		1F6BFE282BFFBCF000883169 /* Scratchpad.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Scratchpad.md; sourceTree = "<group>"; };
 		1F6BFE292BFFBFC200883169 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		1FA29A8A2C111B6000070F03 /* ClampFunctions.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ClampFunctions.metal; sourceTree = "<group>"; };
+		1FA29A8C2C112DBC00070F03 /* ChromaIntoLuma.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ChromaIntoLuma.metal; sourceTree = "<group>"; };
+		1FA29A8E2C112E3E00070F03 /* ChromaIntoLumaTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromaIntoLumaTextureFilter.swift; sourceTree = "<group>"; };
 		1FB400AD2C09680000B95733 /* YIQ.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = YIQ.metal; sourceTree = "<group>"; };
 		1FB400AF2C0969F900B95733 /* RoundTrip.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = RoundTrip.ci.metal; sourceTree = "<group>"; };
 		1FC887362C10A62400EE14A7 /* MTLTexture+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MTLTexture+Extensions.swift"; sourceTree = "<group>"; };
@@ -173,6 +177,7 @@
 				1F5F93BD2C0F54F000EC29A2 /* YIQ.metal */,
 				1FA29A8A2C111B6000070F03 /* ClampFunctions.metal */,
 				1F5F93C02C0F585C00EC29A2 /* RGB.metal */,
+				1FA29A8C2C112DBC00070F03 /* ChromaIntoLuma.metal */,
 				1F5F93C92C0F9DCA00EC29A2 /* YIQCompose.metal */,
 				1F5F93DA2C0FEC3000EC29A2 /* YIQCompose3.metal */,
 				1F5F93CE2C0FC53E00EC29A2 /* IIRInitialCondition.metal */,
@@ -205,6 +210,7 @@
 			children = (
 				1F5F93BB2C0E83EC00EC29A2 /* NTSCTextureFilter.swift */,
 				1F5F93C52C0F910300EC29A2 /* LumaBoxTextureFilter.swift */,
+				1FA29A8E2C112E3E00070F03 /* ChromaIntoLumaTextureFilter.swift */,
 				1F5F93CC2C0FA96C00EC29A2 /* IIRTextureFilter.swift */,
 				1F5F93D82C0FE70800EC29A2 /* ChromaLowpassTextureFilter.swift */,
 			);
@@ -433,10 +439,12 @@
 				1F6BFE272BFFADB700883169 /* NTSCFilter.swift in Sources */,
 				1F5F93D12C0FC84500EC29A2 /* IIRMultiply.metal in Sources */,
 				1F5F93CF2C0FC53E00EC29A2 /* IIRInitialCondition.metal in Sources */,
+				1FA29A8F2C112E3E00070F03 /* ChromaIntoLumaTextureFilter.swift in Sources */,
 				1F5F93BE2C0F54F000EC29A2 /* YIQ.metal in Sources */,
 				1F5B6CCC2C05244F0051A9ED /* CompositeNoiseFilter.swift in Sources */,
 				1FCC1D312C0A0C2700943847 /* YIQChannels.swift in Sources */,
 				1F259EE62C027D0800937D0A /* IIRFilter.swift in Sources */,
+				1FA29A8D2C112DBC00070F03 /* ChromaIntoLuma.metal in Sources */,
 				1F259EDE2C02399C00937D0A /* NTSCEffect+Defaults.swift in Sources */,
 				1F5B6CEA2C065DCE0051A9ED /* YIQMixerFilter.swift in Sources */,
 				1F5B6CBE2C04BB970051A9ED /* ChromaIntoLumaFilter.swift in Sources */,
