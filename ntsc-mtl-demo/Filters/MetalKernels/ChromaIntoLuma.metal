@@ -19,7 +19,7 @@ typedef enum PhaseShift: uint32_t {
     Degrees270 = 3
 } PhaseShift;
 
-static uint32_t ChromaPhaseShift(PhaseShift phaseShift, int phaseShiftOffset, uint32_t timestamp, uint2 coord) {
+static uint32_t ChromaPhaseShift(PhaseShift phaseShift, int phaseShiftOffset, uint32_t timestamp, int2 coord) {
     switch (phaseShift) {
         case Degrees90:
         case Degrees270:
@@ -49,7 +49,8 @@ kernel void chromaIntoLuma
  uint2 gid [[thread_position_in_grid]]
  ) {
     half4 yiqSample = inputTexture.read(gid);
-    uint32_t chromaPhaseShift = ChromaPhaseShift(phaseShift, phaseShiftOffset, timestamp, gid);
+    int2 intCoord = int2(gid);
+    uint32_t chromaPhaseShift = ChromaPhaseShift(phaseShift, phaseShiftOffset, timestamp, intCoord * 2);
     half4 yiqResult = ProcessPhase(yiqSample, chromaPhaseShift, gid);
     half3 yiq = yiqResult.xyz;
     yiq = clampYIQ(yiq);
