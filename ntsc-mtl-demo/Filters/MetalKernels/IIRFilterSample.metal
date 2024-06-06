@@ -14,7 +14,7 @@ kernel void iirFilterSample
  texture2d<half, access::read> inputTexture [[texture(0)]],
  texture2d<half, access::read> zTex0 [[texture(1)]],
  texture2d<half, access::read_write> filteredSampleTexture [[texture(2)]],
- constant half &num0 [[buffer(0)]],
+ constant float &num0 [[buffer(0)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
     half4 result = zTex0.read(gid) + (num0 * inputTexture.read(gid));

@@ -33,21 +33,21 @@ class IIRTextureFilter {
     
     private let device: MTLDevice
     private let library: MTLLibrary
-    private let numerators: [Float16]
-    private let denominators: [Float16]
+    private let numerators: [Float]
+    private let denominators: [Float]
     private let initialCondition: InitialCondition
     private let channelMix: YIQChannels
     private let scale: Float16
     private(set) var zTextures: [MTLTexture] = []
     private var scratchTexture: MTLTexture?
     
-    init(device: MTLDevice, library: MTLLibrary, numerators: [Float16], denominators: [Float16], initialCondition: InitialCondition, channels: YIQChannels, scale: Float16, delay: UInt) {
+    init(device: MTLDevice, library: MTLLibrary, numerators: [Float], denominators: [Float], initialCondition: InitialCondition, channels: YIQChannels, scale: Float16, delay: UInt) {
         self.device = device
         self.library = library
         let maxLength = max(numerators.count, denominators.count)
-        var paddedNumerators: [Float16] = Array(repeating: 0, count: maxLength)
+        var paddedNumerators: [Float] = Array(repeating: 0, count: maxLength)
         paddedNumerators[0..<numerators.count] = numerators[0...]
-        var paddedDenominators: [Float16] = Array(repeating: 0, count: maxLength)
+        var paddedDenominators: [Float] = Array(repeating: 0, count: maxLength)
         paddedDenominators[0..<denominators.count] = denominators[0...]
         self.numerators = paddedNumerators
         self.denominators = paddedDenominators
@@ -84,8 +84,8 @@ class IIRTextureFilter {
         initialCondition: InitialCondition,
         initialConditionTexture: MTLTexture,
         textures: [MTLTexture],
-        numerators: [Float16],
-        denominators: [Float16],
+        numerators: [Float],
+        denominators: [Float],
         library: MTLLibrary,
         device: MTLDevice,
         commandBuffer: MTLCommandBuffer
@@ -122,18 +122,18 @@ class IIRTextureFilter {
             den / firstNonZeroCoeff
         }
         
-        var bSum: Float16 = 0
+        var bSum: Float = 0
         for i in 1 ..< numerators.count {
             let num = normalizedNumerators[i]
             let den = normalizedDenominators[i]
             bSum += num - (den * normalizedNumerators[0])
         }
         let z0Fill = bSum / normalizedDenominators.reduce(0, +)
-        let z0FillValues: [Float16] = [z0Fill, z0Fill, z0Fill, 1]
+        let z0FillValues: [Float16] = [z0Fill, z0Fill, z0Fill, 1].map(Float16.init)
         var z0FillMutable = z0FillValues
         textures[0].replace(region: region, mipmapLevel: 0, withBytes: &z0FillMutable, bytesPerRow: bytesPerRow)
-        var aSum: Float16 = 1
-        var cSum: Float16 = 0
+        var aSum: Float = 1
+        var cSum: Float = 0
         for i in 1 ..< numerators.count {
             let num = normalizedNumerators[i]
             let den = normalizedDenominators[i]
@@ -158,7 +158,7 @@ class IIRTextureFilter {
         )
     }
     
-    private static func initialConditionFill(textureToFill: MTLTexture, initialConditionTexture: MTLTexture, aSum: Float16, cSum: Float16, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
+    private static func initialConditionFill(textureToFill: MTLTexture, initialConditionTexture: MTLTexture, aSum: Float, cSum: Float, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
         let pipelineState: MTLComputePipelineState
         if let iirInitialConditionPipelineState {
             pipelineState = iirInitialConditionPipelineState
@@ -178,9 +178,9 @@ class IIRTextureFilter {
         commandEncoder.setTexture(textureToFill, index: 0)
         commandEncoder.setTexture(initialConditionTexture, index: 1)
         var aSum = aSum
-        commandEncoder.setBytes(&aSum, length: MemoryLayout<Float16>.size, index: 0)
+        commandEncoder.setBytes(&aSum, length: MemoryLayout<Float>.size, index: 0)
         var cSum = cSum
-        commandEncoder.setBytes(&cSum, length: MemoryLayout<Float16>.size, index: 1)
+        commandEncoder.setBytes(&cSum, length: MemoryLayout<Float>.size, index: 1)
         commandEncoder.dispatchThreads(
             MTLSize(width: textureToFill.width, height: textureToFill.height, depth: 1),
             threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
@@ -374,7 +374,7 @@ class IIRTextureFilter {
     
 
     
-    static func sideEffect(inputImage: MTLTexture, z: MTLTexture, zPlusOne: MTLTexture, filteredSample: MTLTexture, numerator: Float16, denominator: Float16, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
+    static func sideEffect(inputImage: MTLTexture, z: MTLTexture, zPlusOne: MTLTexture, filteredSample: MTLTexture, numerator: Float, denominator: Float, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
         let pipelineState: MTLComputePipelineState
         if let iirSideEffectPipelineState {
             pipelineState = iirSideEffectPipelineState
@@ -396,15 +396,15 @@ class IIRTextureFilter {
         commandEncoder.setTexture(filteredSample, index: 3)
         var num = numerator
         var denom = denominator
-        commandEncoder.setBytes(&num, length: MemoryLayout<Float16>.size, index: 0)
-        commandEncoder.setBytes(&denom, length: MemoryLayout<Float16>.size, index: 1)
+        commandEncoder.setBytes(&num, length: MemoryLayout<Float>.size, index: 0)
+        commandEncoder.setBytes(&denom, length: MemoryLayout<Float>.size, index: 1)
         commandEncoder.dispatchThreads(
             MTLSize(width: inputImage.width, height: inputImage.height, depth: 1),
             threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
         commandEncoder.endEncoding()
     }
         
-    static func filterSample(_ inputTexture: MTLTexture, zTex0: MTLTexture, filteredSampleTexture: MTLTexture, num0: Float16, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
+    static func filterSample(_ inputTexture: MTLTexture, zTex0: MTLTexture, filteredSampleTexture: MTLTexture, num0: Float, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
         let pipelineState: MTLComputePipelineState
         if let iirFilterSamplePipelineState {
             pipelineState = iirFilterSamplePipelineState
@@ -425,7 +425,7 @@ class IIRTextureFilter {
         encoder.setTexture(zTex0, index: 1)
         encoder.setTexture(filteredSampleTexture, index: 2)
         var num0 = num0
-        encoder.setBytes(&num0, length: MemoryLayout<Float16>.size, index: 0)
+        encoder.setBytes(&num0, length: MemoryLayout<Float>.size, index: 0)
         encoder.dispatchThreads(
             MTLSize(width: inputTexture.width, height: inputTexture.height, depth: 1),
             threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))

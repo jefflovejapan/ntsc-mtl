@@ -33,8 +33,8 @@ class ChromaLowpassTextureFilter {
             iFilter = IIRTextureFilter(
                 device: device,
                 library: library,
-                numerators: iFunction.numerators.map(Float16.init),
-                denominators: iFunction.denominators.map(Float16.init),
+                numerators: iFunction.numerators,
+                denominators: iFunction.denominators,
                 initialCondition: initialCondition,
                 channels: .i,
                 scale: 1,
@@ -44,8 +44,8 @@ class ChromaLowpassTextureFilter {
             qFilter = IIRTextureFilter(
                 device: device,
                 library: library,
-                numerators: qFunction.numerators.map(Float16.init),
-                denominators: qFunction.denominators.map(Float16.init),
+                numerators: qFunction.numerators,
+                denominators: qFunction.denominators,
                 initialCondition: initialCondition,
                 channels: .q,
                 scale: 1,
@@ -56,8 +56,8 @@ class ChromaLowpassTextureFilter {
             iFilter = IIRTextureFilter(
                 device: device,
                 library: library,
-                numerators: function.numerators.map(Float16.init),
-                denominators: function.denominators.map(Float16.init),
+                numerators: function.numerators,
+                denominators: function.denominators,
                 initialCondition: initialCondition,
                 channels: .i, 
                 scale: 1,
@@ -66,8 +66,8 @@ class ChromaLowpassTextureFilter {
             qFilter = IIRTextureFilter(
                 device: device,
                 library: library,
-                numerators: function.numerators.map(Float16.init),
-                denominators: function.denominators.map(Float16.init),
+                numerators: function.numerators,
+                denominators: function.denominators,
                 initialCondition: initialCondition,
                 channels: .q,
                 scale: 1,

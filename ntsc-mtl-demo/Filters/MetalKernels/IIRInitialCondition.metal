@@ -13,8 +13,8 @@ kernel void iirInitialCondition
 (
  texture2d<half, access::read_write> textureToFill [[texture(0)]],
  texture2d<half, access::read> sideEffectedTexture [[texture(1)]], 
- constant half &aSum [[buffer(0)]],
- constant half &cSum [[buffer(1)]], 
+ constant float &aSum [[buffer(0)]],
+ constant float &cSum [[buffer(1)]], 
  uint2 gid [[thread_position_in_grid]]
  ) {
     half4 initialCondition = textureToFill.read(gid);

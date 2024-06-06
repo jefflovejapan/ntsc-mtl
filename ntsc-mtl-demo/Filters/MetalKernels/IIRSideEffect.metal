@@ -15,8 +15,8 @@ kernel void iirSideEffect
  texture2d<half, access::read_write> z [[texture(1)]],
  texture2d<half, access::read> zPlusOne [[texture(2)]],
  texture2d<half, access::read> filteredSampleTexture [[texture(3)]],
- constant half &num [[buffer(0)]],
- constant half &denom [[buffer(1)]],
+ constant float &num [[buffer(0)]],
+ constant float &denom [[buffer(1)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
     half4 currentSample = inputTexture.read(gid);
