@@ -58,9 +58,9 @@ class NTSCTextureFilter {
         self.lumaNotchFilter = IIRTextureFilter(
             device: device,
             library: library,
-            numerators: lumaNotchTransferFunction.numerators,
-            denominators: lumaNotchTransferFunction.denominators,
-            initialCondition: .firstSample, 
+            numerators: lumaNotchTransferFunction.numerators.map(Float16.init),
+            denominators: lumaNotchTransferFunction.denominators.map(Float16.init),
+            initialCondition: .firstSample,
             channels: .y,
             scale: 1,
             delay: 0
@@ -72,8 +72,8 @@ class NTSCTextureFilter {
         self.compositePreemphasisFilter = IIRTextureFilter(
             device: device,
             library: library,
-            numerators: compositePreemphasisFunction.numerators,
-            denominators: compositePreemphasisFunction.denominators,
+            numerators: compositePreemphasisFunction.numerators.map(Float16.init),
+            denominators: compositePreemphasisFunction.denominators.map(Float16.init),
             initialCondition: .zero,
             channels: .y,
             scale: -effect.compositePreemphasis,

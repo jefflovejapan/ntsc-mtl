@@ -259,3 +259,33 @@ NTSCTextureFilter implementation. What I need:
 - Making good progress on IIR but luma notch doesn't seem to be working. If it's not texture misuse what could it be? It's almost like nothing's happening at all.
     - There's a real answer to this. It was on the tip of my tongue and then I forgot
     - Oh right, not allocating threads etc.
+
+## Debugging Overflow
+
+- Can the numerators and denominators for our transfer function be constrained within Float16 range?
+    - Test all possible code paths
+    
+- IIRTransferFunction
+    - notchFilter
+        - called with frequency 0.5, quality 2
+    - lowpassFilter
+        - called by ChromaLowpassTextureFilter.lowpassFilter
+            - called by ChromaLowpassTextureFilter.init with cutoffs of 1_300_000, 600_000 and 2_600_000 and rates equal to NTSC.rate * bandwidthScale where bandwidthScale is 1.0
+    - butterworth
+        - called by ChromaLowpassTextureFilter.lowpassFilter
+        - called by ChromaLowpassTextureFilter.init with the same cutoffs and rates as above
+
+OK, realized in first test that numerators and denominators can overflow float16. That means we'll have to pass Floats to the textures and hopefully the shader operations result in values that are within float16 range
+  
+## Office Hours
+            
+- Whimsical, goofy stuff is cool
+- Synth is some kidn of analog filter -- is there some way that you can run the same signal through a video?
+- Audio hang is on Tuesdays
+- Portfolio approach is also cool -- do a bunch of smaller things and blog about them
+    - Pair with folks on doing an audio-to-video filter 
+- Blogging makes however you've been spending your time interesting and worthwhile
+- Pairing with people can be cool
+    - Ask for help with your thing!
+- 
+

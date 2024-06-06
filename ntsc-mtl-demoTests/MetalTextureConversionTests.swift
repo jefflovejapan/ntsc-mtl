@@ -236,8 +236,8 @@ final class MetalTextureConversionTests: XCTestCase {
         let iFilter = IIRTextureFilter(
             device: device,
             library: library,
-            numerators: numerators,
-            denominators: denominators,
+            numerators: numerators.map(Float16.init),
+            denominators: denominators.map(Float16.init),
             initialCondition: .zero,
             channels: .i,
             scale: 1,
@@ -282,12 +282,12 @@ final class MetalTextureConversionTests: XCTestCase {
         let numerators = transferFunction.numerators
         let denominators = transferFunction.denominators
         try IIRTextureFilter.fillTexturesForInitialCondition(
-            outputTexture: texture,
+            inputTexture: texture,
             initialCondition: .zero,
             initialConditionTexture: initialConditionTexture,
             textures: zTextures,
-            numerators: numerators,
-            denominators: denominators,
+            numerators: numerators.map(Float16.init),
+            denominators: denominators.map(Float16.init),
             library: library,
             device: device,
             commandBuffer: buf0
@@ -307,9 +307,9 @@ final class MetalTextureConversionTests: XCTestCase {
         
         try IIRTextureFilter.filterSample(
             texture,
-            zTex0: zTextures[0], 
+            zTex0: zTextures[0],
             filteredSampleTexture: initialConditionTexture,
-            num0: numerators[0],
+            num0: Float16(numerators[0]),
             library: library,
             device: device, 
             commandBuffer: buf1
@@ -337,8 +337,8 @@ final class MetalTextureConversionTests: XCTestCase {
                 z: z,
                 zPlusOne: zPlusOne,
                 filteredSample: initialConditionTexture,
-                numerator: numerators[nextIdx],
-                denominator: denominators[nextIdx],
+                numerator: Float16(numerators[nextIdx]),
+                denominator: Float16(denominators[nextIdx]),
                 library: library,
                 device: device,
                 commandBuffer: buf2
