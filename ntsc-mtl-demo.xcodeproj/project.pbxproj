@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		1F1F9B692C03C3980085048F /* IIRTransferFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1F9B682C03C3980085048F /* IIRTransferFunction.swift */; };
+		1F2159A82C11476200D2483B /* CompositeNoiseTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2159A72C11476200D2483B /* CompositeNoiseTextureFilter.swift */; };
+		1F2159AC2C11498700D2483B /* MultiplyLuma.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F2159AB2C11498700D2483B /* MultiplyLuma.metal */; };
 		1F259EDC2C022F7500937D0A /* NTSCEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EDB2C022F7500937D0A /* NTSCEffect.swift */; };
 		1F259EDE2C02399C00937D0A /* NTSCEffect+Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EDD2C02399C00937D0A /* NTSCEffect+Defaults.swift */; };
 		1F259EE62C027D0800937D0A /* IIRFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EE52C027D0800937D0A /* IIRFilter.swift */; };
@@ -68,6 +70,8 @@
 		1F1F9B5E2C03AFAD0085048F /* IIRSideEffect.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = IIRSideEffect.metal; sourceTree = "<group>"; };
 		1F1F9B602C03B03B0085048F /* IIRFinalImage.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = IIRFinalImage.metal; sourceTree = "<group>"; };
 		1F1F9B682C03C3980085048F /* IIRTransferFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IIRTransferFunction.swift; sourceTree = "<group>"; };
+		1F2159A72C11476200D2483B /* CompositeNoiseTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompositeNoiseTextureFilter.swift; sourceTree = "<group>"; };
+		1F2159AB2C11498700D2483B /* MultiplyLuma.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = MultiplyLuma.metal; sourceTree = "<group>"; };
 		1F259EDA2C0227E400937D0A /* SettingsAndDefaults.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = SettingsAndDefaults.md; sourceTree = "<group>"; };
 		1F259EDB2C022F7500937D0A /* NTSCEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSCEffect.swift; sourceTree = "<group>"; };
 		1F259EDD2C02399C00937D0A /* NTSCEffect+Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NTSCEffect+Defaults.swift"; sourceTree = "<group>"; };
@@ -179,6 +183,7 @@
 				1F5F93C02C0F585C00EC29A2 /* RGB.metal */,
 				1FA29A8C2C112DBC00070F03 /* ChromaIntoLuma.metal */,
 				1F5F93C92C0F9DCA00EC29A2 /* YIQCompose.metal */,
+				1F2159AB2C11498700D2483B /* MultiplyLuma.metal */,
 				1F5F93DA2C0FEC3000EC29A2 /* YIQCompose3.metal */,
 				1F5F93CE2C0FC53E00EC29A2 /* IIRInitialCondition.metal */,
 				1F5F93D22C0FD03400EC29A2 /* IIRFilterSample.metal */,
@@ -209,6 +214,7 @@
 			isa = PBXGroup;
 			children = (
 				1F5F93BB2C0E83EC00EC29A2 /* NTSCTextureFilter.swift */,
+				1F2159A72C11476200D2483B /* CompositeNoiseTextureFilter.swift */,
 				1F5F93C52C0F910300EC29A2 /* LumaBoxTextureFilter.swift */,
 				1FA29A8E2C112E3E00070F03 /* ChromaIntoLumaTextureFilter.swift */,
 				1F5F93CC2C0FA96C00EC29A2 /* IIRTextureFilter.swift */,
@@ -425,12 +431,14 @@
 				1FA29A8B2C111B6000070F03 /* ClampFunctions.metal in Sources */,
 				1F5B6CC62C04FCA50051A9ED /* PolynomialMultiply.swift in Sources */,
 				1FCC1D2F2C0A0BB400943847 /* BoxBlurFilter.swift in Sources */,
+				1F2159AC2C11498700D2483B /* MultiplyLuma.metal in Sources */,
 				1FEE32442C0A9FC3009F09BA /* SnowFilter.swift in Sources */,
 				1FC887372C10A62400EE14A7 /* MTLTexture+Extensions.swift in Sources */,
 				1F5F93D72C0FDB8700EC29A2 /* IIRFinalImage.metal in Sources */,
 				1F5F93CD2C0FA96C00EC29A2 /* IIRTextureFilter.swift in Sources */,
 				1F5F93D52C0FD58E00EC29A2 /* IIRSideEffect.metal in Sources */,
 				1F259EDC2C022F7500937D0A /* NTSCEffect.swift in Sources */,
+				1F2159A82C11476200D2483B /* CompositeNoiseTextureFilter.swift in Sources */,
 				1F5B6CDC2C0558140051A9ED /* MultiplyLumaFilter.swift in Sources */,
 				1F5F93C12C0F585C00EC29A2 /* RGB.metal in Sources */,
 				1F6BFE2A2BFFBFC200883169 /* CameraView.swift in Sources */,

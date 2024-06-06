@@ -99,7 +99,7 @@ struct TrackingNoiseSettings {
 
 struct FBMNoiseSettings {
     var frequency: Float
-    var intensity: Float
+    var intensity: Float16
     var detail: UInt
 }
 

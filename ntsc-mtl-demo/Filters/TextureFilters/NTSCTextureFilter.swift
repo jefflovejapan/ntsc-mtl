@@ -38,6 +38,7 @@ class NTSCTextureFilter {
     private let fullChromaLowpassFilter: ChromaLowpassTextureFilter
     private let chromaIntoLumaFilter: ChromaIntoLumaTextureFilter
     private let compositePreemphasisFilter: IIRTextureFilter
+    private let compositeNoiseFilter: CompositeNoiseTextureFilter
     
     init(effect: NTSCEffect, device: MTLDevice, context: CIContext) throws {
         self.effect = effect
@@ -77,6 +78,7 @@ class NTSCTextureFilter {
             scale: -effect.compositePreemphasis,
             delay: 0
         )
+        self.compositeNoiseFilter = CompositeNoiseTextureFilter(noise: effect.compositeNoise, device: device, library: library, ciContext: context)
     }
     
     var inputImage: CIImage?
@@ -165,6 +167,10 @@ class NTSCTextureFilter {
     }
     
     static func compositePreemphasis(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: IIRTextureFilter, commandBuffer: MTLCommandBuffer) throws {
+        try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
+    }
+    
+    static func compositeNoise(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: CompositeNoiseTextureFilter, commandBuffer: MTLCommandBuffer) throws {
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
@@ -293,9 +299,15 @@ class NTSCTextureFilter {
                 filter: compositePreemphasisFilter,
                 commandBuffer: commandBuffer
             )
+            try Self.compositeNoise(
+                inputTexture: textureC,
+                outputTexture: textureA,
+                filter: compositeNoiseFilter,
+                commandBuffer: commandBuffer
+            )
             try Self.convertToRGB(
-                textureC,
-                output: textureA,
+                textureA,
+                output: textureB,
                 commandBuffer: commandBuffer,
                 library: library,
                 device: device
@@ -306,7 +318,7 @@ class NTSCTextureFilter {
             print("Error converting to YIQ: \(error)")
             return nil
         }
-        let outImage = CIImage(mtlTexture: textureA)
+        let outImage = CIImage(mtlTexture: textureB)
         return outImage
     }
 }
