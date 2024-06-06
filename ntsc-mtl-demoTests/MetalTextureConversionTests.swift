@@ -236,8 +236,8 @@ final class MetalTextureConversionTests: XCTestCase {
         let iFilter = IIRTextureFilter(
             device: device,
             library: library,
-            numerators: numerators.map(Float16.init),
-            denominators: denominators.map(Float16.init),
+            numerators: numerators,
+            denominators: denominators,
             initialCondition: .zero,
             channels: .i,
             scale: 1,
@@ -286,8 +286,8 @@ final class MetalTextureConversionTests: XCTestCase {
             initialCondition: .zero,
             initialConditionTexture: initialConditionTexture,
             textures: zTextures,
-            numerators: numerators.map(Float16.init),
-            denominators: denominators.map(Float16.init),
+            numerators: numerators,
+            denominators: denominators,
             library: library,
             device: device,
             commandBuffer: buf0
@@ -309,7 +309,7 @@ final class MetalTextureConversionTests: XCTestCase {
             texture,
             zTex0: zTextures[0],
             filteredSampleTexture: initialConditionTexture,
-            num0: Float16(numerators[0]),
+            num0: numerators[0],
             library: library,
             device: device, 
             commandBuffer: buf1
@@ -337,8 +337,8 @@ final class MetalTextureConversionTests: XCTestCase {
                 z: z,
                 zPlusOne: zPlusOne,
                 filteredSample: initialConditionTexture,
-                numerator: Float16(numerators[nextIdx]),
-                denominator: Float16(denominators[nextIdx]),
+                numerator: numerators[nextIdx],
+                denominator: denominators[nextIdx],
                 library: library,
                 device: device,
                 commandBuffer: buf2
