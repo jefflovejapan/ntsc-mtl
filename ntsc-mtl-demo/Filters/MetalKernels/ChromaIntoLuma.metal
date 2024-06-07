@@ -48,12 +48,17 @@ kernel void chromaIntoLuma
  constant int &phaseShiftOffset [[buffer(2)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
+//    half minWidth = min(inputTexture.get_width(), outputTexture.get_width());
+//    half minHeight = min(inputTexture.get_height(), outputTexture.get_height());
+//    if (gid.x >= minWidth || gid.y >= minHeight) {
+//        return;
+//    }
     half4 yiqSample = inputTexture.read(gid);
     int2 intCoord = int2(gid);
     uint32_t chromaPhaseShift = ChromaPhaseShift(phaseShift, phaseShiftOffset, timestamp, intCoord * 2);
     half4 yiqResult = ProcessPhase(yiqSample, chromaPhaseShift, gid);
     half3 yiq = yiqResult.xyz;
-    yiq = clampYIQ(yiq);
+//    yiq = clampYIQ(yiq);
     half4 yiqa = half4(yiq, 1.0);
     outputTexture.write(yiqa, gid);
 }

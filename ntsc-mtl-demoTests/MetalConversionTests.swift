@@ -11,7 +11,7 @@ import Metal
 import CoreImage.CIFilterBuiltins
 
 // Create a 100x100 pixel CIImage with a specific color
-private func createTestImage(color: CIColor, size: CGSize = CGSize(width: 100, height: 100)) -> CIImage {
+func createTestImage(color: CIColor, size: CGSize = CGSize(width: 100, height: 100)) -> CIImage {
     let img = CIImage(color: color).cropped(to: CGRect(origin: .zero, size: size))
     return img
 }

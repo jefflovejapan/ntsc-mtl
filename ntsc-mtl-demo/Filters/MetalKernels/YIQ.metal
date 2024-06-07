@@ -24,6 +24,11 @@ kernel void convertToYIQ
  texture2d<half, access::write> outputTexture [[texture(1)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
+//    half minWidth = min(inputTexture.get_width(), outputTexture.get_width());
+//    half minHeight = min(inputTexture.get_height(), outputTexture.get_height());
+//    if (gid.x >= minWidth || minHeight >= minHeight) {
+//        return;
+//    }
     
     // Read the pixel at the current thread position
     half4 color = inputTexture.read(gid);
@@ -31,7 +36,7 @@ kernel void convertToYIQ
     // Convert RGB to YIQ using the matrix
     half3 rgb = half3(color.r, color.g, color.b);
     half3 yiq = rgbToYIQMatrix * rgb;
-    yiq = clampYIQ(yiq);
+//    yiq = clampYIQ(yiq);
 
     // Write the converted YIQ values back to the texture
     outputTexture.write(half4(yiq, 1.0), gid);

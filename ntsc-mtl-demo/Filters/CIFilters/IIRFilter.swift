@@ -70,14 +70,9 @@ class IIRFilter: CIFilter {
         self.device = device
         let context = CIContext(mtlDevice: device)
         self.ciContext = context
-        let maxLength = max(numerators.count, denominators.count)
-        var paddedNumerators: [Float] = Array(repeating: 0, count: maxLength)
-        paddedNumerators[0..<numerators.count] = numerators[0...]
-        var paddedDenominators: [Float] = Array(repeating: 0, count: maxLength)
-        paddedDenominators[0..<denominators.count] = denominators[0...]
         self.initialCondition = initialCondition
-        self.numerators = paddedNumerators
-        self.denominators = paddedDenominators
+        self.numerators = numerators
+        self.denominators = denominators
         self.scale = scale
         super.init()
     }

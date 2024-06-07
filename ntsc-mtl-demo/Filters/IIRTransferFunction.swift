@@ -8,8 +8,14 @@
 import Foundation
 
 struct IIRTransferFunction {
-    var numerators: [Float16]
-    var denominators: [Float16]
+    var numerators: [Float]
+    var denominators: [Float]
+    
+    init(numerators: [Float], denominators: [Float]) {
+        let maxLength = max(numerators.count, denominators.count)
+        self.numerators = numerators.padded(toLength: maxLength, with: 0)
+        self.denominators = denominators.padded(toLength: maxLength, with: 0)
+    }
     
     enum Error: Swift.Error {
         case notchFrequencyOutOfBounds
@@ -28,8 +34,8 @@ struct IIRTransferFunction {
         let beta: Float = (sqrt(1 - (pow(gb, 2)))/gb) * tan(normalizedBandwidth / 2)
         let gain = 1.0 / (1.0 + beta)
         let middleParam = -2.0 * cos(normalizedFrequency) * gain
-        let numerators: [Float16] = [gain, middleParam, gain].map { Float16($0) }
-        let denominators: [Float16] = [1, middleParam, (2 * gain) - 1].map { Float16($0) }
+        let numerators: [Float] = [gain, middleParam, gain]
+        let denominators: [Float] = [1, middleParam, (2 * gain) - 1]
         return IIRTransferFunction(numerators: numerators, denominators: denominators)
     }
     
@@ -61,8 +67,8 @@ struct IIRTransferFunction {
         let tau = 1.0 / (cutoff * 2.0 * .pi)
         let alpha = timeInterval / (tau + timeInterval)
         
-        let numerators: [Float16] = [alpha].map { Float16($0) }
-        let denominators: [Float16] = [1, -(1 - alpha)].map { Float16($0) }
+        let numerators: [Float] = [alpha]
+        let denominators: [Float] = [1, -(1 - alpha)]
         return IIRTransferFunction(
             numerators: numerators,
             denominators: denominators
@@ -142,8 +148,8 @@ struct IIRTransferFunction {
         let a2 = 1.0 - alpha
         
         // Normalize coefficients
-        let nums = [b0 / a0, b1 / a0, b2 / a0].map { Float16($0) }
-        let denoms = [1.0, a1 / a0, a2 / a0].map { Float16($0) }
+        let nums = [b0 / a0, b1 / a0, b2 / a0]
+        let denoms = [1.0, a1 / a0, a2 / a0]
         
         return IIRTransferFunction(numerators: nums, denominators: denoms)
     }
