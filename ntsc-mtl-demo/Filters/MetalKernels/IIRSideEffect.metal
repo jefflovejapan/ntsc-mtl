@@ -12,7 +12,7 @@ using namespace metal;
 kernel void iirSideEffect
 (
  texture2d<half, access::read> inputTexture [[texture(0)]],
- texture2d<half, access::read_write> z [[texture(1)]],
+ texture2d<half, access::write> z [[texture(1)]],
  texture2d<half, access::read> zPlusOne [[texture(2)]],
  texture2d<half, access::read> filteredSampleTexture [[texture(3)]],
  constant float &num [[buffer(0)]],

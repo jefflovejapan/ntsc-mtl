@@ -11,7 +11,7 @@ using namespace metal;
 
 kernel void iirMultiply
 (
- texture2d<half, access::read> textureToFill [[texture(0)]], 
+ texture2d<half, access::read> z0Texture [[texture(0)]],
  texture2d<half, access::read> initialConditionTexture [[texture(1)]],
  texture2d<half, access::write> outputTexture [[texture(2)]],
  uint2 gid [[thread_position_in_grid]]
@@ -21,7 +21,7 @@ kernel void iirMultiply
 //    if (gid.x >= minWidth || gid.y >= minHeight) {
 //        return;
 //    }
-    half4 currentState = textureToFill.read(gid);
+    half4 currentState = z0Texture.read(gid);
     half4 initialCondition = initialConditionTexture.read(gid);
     half4 product = currentState * initialCondition;
     half3 productYIQ = product.xyz;

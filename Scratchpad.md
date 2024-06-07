@@ -1,6 +1,6 @@
 #  Scratchpad
 
-## May 23
+# May 23
 
 Looking at the Rust code, the main function is `NtscEffect.apply_effect_to_yiq_field`, which does the following:
 
@@ -12,7 +12,7 @@ Looking at the Rust code, the main function is `NtscEffect.apply_effect_to_yiq_f
 
 I think a good first goal is to apply the luma filter to the entire yiq field / frame
 
-## May 25
+# May 25
 
 ### What's going on with filter_plane?
 
@@ -32,7 +32,7 @@ I think a good first goal is to apply the luma filter to the entire yiq field / 
 - What is `filter_signal_in_place` doing?
 - Am I correct in assuming that initialCondition::firstSample takes the pixel (luma) value at the first position in the row and uses that for the entire row?
 
-## May 26
+# May 26
 
 OK, let's look at the outputImage code
 
@@ -228,13 +228,13 @@ Breakthrough!!
     - 
 - Hypothesis: different numerical formats but we're far enough away from the bounds
 
-### Jun 3
+# Jun 3
 
 - I think I'm so close to getting this to work. I have reliable tests that can convert to/from RGB/YIQ. Everything looks more or less right for reach phase of the filter. I just need to run it one more time, comparing with Rust, then looking at the composite result. I also need to investigate what we get for the RGB output on both sides to make sure the return conversion works correctly.
 - I've pinpointed an issue and it's bad for the project. The issue is that moving from YIQ back to RGB is lossy -- we're dropping negative values somewhere along the way. This can be verified in the test `test_i_lowpass_butterworth` in the Rust code -- we're getting back some values that don't correspond to a simple to_rgb conversion on the plane data. It's hard to pinpoint exactly where this is getting adjusted, but my suspicion is that it's somewhere in the `RgbImage::from` path.
     - This is pretty much a dead end for the current strategy, because the expectation was that we'd always be able to move losslessly back and forth between RGB and YIQ. The only real way to solve this at this point is to rely on textures that can hold YIQ data. This means another big rewrite. Do I really want to do this?
 
-### Jun 4
+# Jun 4
 
 NTSCTextureFilter implementation. What I need:
 
@@ -279,8 +279,8 @@ OK, realized in first test that numerators and denominators can overflow float16
 
 - The issue is probably not an overflow, but is probably related to single-buffering the IIR filter. Need to review the pipeline for places where we're reading from / writing to the same buffer
     - **IIRInitialCondition we're single buffering** ✅
-    - **IIRMultiply we're single buffering**
-    - **IIRFinalImage we're single buffering**
+    - **IIRMultiply we're single buffering** ✅
+    - **IIRFinalImage we're single buffering** ✅
   
 ## Office Hours
             
@@ -292,5 +292,17 @@ OK, realized in first test that numerators and denominators can overflow float16
 - Blogging makes however you've been spending your time interesting and worthwhile
 - Pairing with people can be cool
     - Ask for help with your thing!
-- 
 
+## Jun 7
+
+- Realizeed late last night that the issue I'm running into is probably from single-buffering in multiple places
+- Rewriting the filter to double buffer
+- Trying to decide how hard I should try to optimize here
+    - How many textures do I actually need?
+    - When are the z-textures no longer used?
+        - By the time we get to filterSample we're only using z0. Otherwise zs are done.
+    - What happens with the "initial condition texture" -- is it used in filterSample?
+        - No, only input and z0
+        - Can ignore the "zero" case for initial condition
+- Initial condition
+    - 
