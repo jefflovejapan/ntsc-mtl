@@ -303,27 +303,29 @@ final class MetalTextureConversionTests: XCTestCase {
         assertArraysEqual(lhs: z1, rhs: [0, 0, 0, 1])
         var z2 = zTextures[2].pixelValue(x: 0, y: 0)
         assertArraysEqual(lhs: z2, rhs: [0, 0, 0, 1])
-//        
-//        let buf1 = try XCTUnwrap(commandQueue.makeCommandBuffer())
-//        
-//        try IIRTextureFilter.filterSample(
-//            texture,
-//            zTex0: zTextures[0],
-//            filteredSampleTexture: initialConditionTexture,
-//            num0: numerators[0],
-//            library: library,
-//            device: device, 
-//            commandBuffer: buf1
-//        )
-//        buf1.commit()
-//        buf1.waitUntilCompleted()
-//        tex = texture.pixelValue(x: 0, y: 0)
-//        assertArraysEqual(lhs: tex, rhs: initialFill)
-////        let filteredSample = initialConditionTexture.pixelValue(x: 0, y: 0)
-//        
-//        // From Rust
-////        XCTAssertEqual(filteredSample, [0.028536469, 8.53801251E-10, 8.53801251E-10, 1])
-//        
+        
+        let buf1 = try XCTUnwrap(commandQueue.makeCommandBuffer())
+        
+        let tempZ0Tex = try XCTUnwrap(IIRTextureFilter.texture(from: texture, device: device))
+        let filteredSampleTex = try XCTUnwrap(IIRTextureFilter.texture(from: texture, device: device))
+        
+        try IIRTextureFilter.filterSample(
+            inputTexture: texture,
+            zTex0: zTextures[0],
+            filteredSampleTexture: filteredSampleTex,
+            num0: numerators[0],
+            library: library,
+            device: device, 
+            commandBuffer: buf1
+        )
+        buf1.commit()
+        buf1.waitUntilCompleted()
+        tex = filteredSampleTex.pixelValue(x: 0, y: 0)
+        let filteredSample = filteredSampleTex.pixelValue(x: 0, y: 0)
+        
+//        From Rust
+        assertArraysEqual(lhs: filteredSample, rhs: [0.028536469, 0, 0, 1])
+//
 //        let buf2 = try XCTUnwrap(commandQueue.makeCommandBuffer())
 //        
 //        for i in numerators.indices {

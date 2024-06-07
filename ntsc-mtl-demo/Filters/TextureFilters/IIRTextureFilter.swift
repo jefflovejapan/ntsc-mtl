@@ -317,7 +317,7 @@ class IIRTextureFilter {
         let zTex0 = zTextures[0]
         let num0 = numerators[0]
         try Self.filterSample(
-            inputTexture,
+            inputTexture: inputTexture,
             zTex0: zTex0,
             filteredSampleTexture: filteredSampleTexture!,
             num0: num0,
@@ -457,7 +457,7 @@ class IIRTextureFilter {
         commandEncoder.endEncoding()
     }
         
-    static func filterSample(_ inputTexture: MTLTexture, zTex0: MTLTexture, filteredSampleTexture: MTLTexture, num0: Float, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
+    static func filterSample(inputTexture: MTLTexture, zTex0: MTLTexture, filteredSampleTexture: MTLTexture, num0: Float, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
         let pipelineState: MTLComputePipelineState
         if let iirFilterSamplePipelineState {
             pipelineState = iirFilterSamplePipelineState
