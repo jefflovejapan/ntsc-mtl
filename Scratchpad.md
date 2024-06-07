@@ -306,3 +306,5 @@ OK, realized in first test that numerators and denominators can overflow float16
         - Can ignore the "zero" case for initial condition
 - Initial condition
 - Do I need to be worried that the values I'm pulling are underflowing to 0 when Rust still has precision? Should I be using Float32 textures for z (and maybe others?)
+- It looks like the issue may have had to do with filling z0 after all. Wrote a paint function to do what I want.
+

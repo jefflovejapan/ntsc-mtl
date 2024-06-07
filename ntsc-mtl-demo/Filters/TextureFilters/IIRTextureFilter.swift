@@ -106,14 +106,11 @@ class IIRTextureFilter {
         device: MTLDevice,
         commandBuffer: MTLCommandBuffer
     ) throws {
-        let region = MTLRegionMake2D(0, 0, inputTexture.width, inputTexture.height)
-        let bytesPerRow: Int = MemoryLayout<Float16>.size * 4 * inputTexture.width
         switch initialCondition {
         case .zero:
             let input: [Float16] = [0, 0, 0, 1]   // black/zero
-            var yiqa = input
             for tex in zTextures {
-                tex.replace(region: region, mipmapLevel: 0, withBytes: &yiqa, bytesPerRow: bytesPerRow)
+                try paint(texture: tex, with: input, library: library, device: device, commandBuffer: commandBuffer)
             }
             return
         case .firstSample:
@@ -123,8 +120,7 @@ class IIRTextureFilter {
             blitEncoder.copy(from: inputTexture, to: initialConditionTexture)
             blitEncoder.endEncoding()
         case .constant(let color):
-            var yiqa = color
-            initialConditionTexture.replace(region: region, mipmapLevel: 0, withBytes: &yiqa, bytesPerRow: bytesPerRow)
+            try paint(texture: initialConditionTexture, with: color, library: library, device: device, commandBuffer: commandBuffer)
         }
         
         guard let firstNonZeroCoeff = denominators.first(where: { !$0.isZero }) else {
@@ -146,8 +142,7 @@ class IIRTextureFilter {
         }
         let z0Fill = bSum / normalizedDenominators.reduce(0, +)
         let z0FillValues: [Float16] = [z0Fill, z0Fill, z0Fill, 1].map(Float16.init)
-        var z0FillMutable = z0FillValues
-        tempZ0Texture.replace(region: region, mipmapLevel: 0, withBytes: &z0FillMutable, bytesPerRow: bytesPerRow)
+        try paint(texture: tempZ0Texture, with: z0FillValues, library: library, device: device, commandBuffer: commandBuffer)
         var aSum: Float = 1
         var cSum: Float = 0
         for i in 1 ..< numerators.count {
