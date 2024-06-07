@@ -34,16 +34,16 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string>            self.mtkView.setNeedsDisplay()
+				<string>        DispatchQueue.main.async {
 </string>
 				<key>leading</key>
-				<string>        self.lastImage = ciImage
-        DispatchQueue.main.async {
+				<string>
+        self.lastImage = ciImage
 </string>
 				<key>trailing</key>
-				<string>        }
+				<string>            self.mtkView.setNeedsDisplay()
+        }
     }
-}
 </string>
 			</dict>
 			<key>title</key>

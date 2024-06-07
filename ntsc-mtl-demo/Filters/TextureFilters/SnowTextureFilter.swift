@@ -8,6 +8,7 @@
 import CoreImage
 import Foundation
 import Metal
+import CoreImage.CIFilterBuiltins
 
 class SnowTextureFilter {
     typealias Error = TextureFilterError

@@ -307,6 +307,7 @@ OK, realized in first test that numerators and denominators can overflow float16
 - Initial condition
 - Do I need to be worried that the values I'm pulling are underflowing to 0 when Rust still has precision? Should I be using Float32 textures for z (and maybe others?)
 - It looks like the issue may have had to do with filling z0 after all. Wrote a paint function to do what I want.
+- Finally got it working. What a relief
 
 ### Performance
 
@@ -402,3 +403,4 @@ a: [1.0, -2.5470028, 2.4327087, -1.032686, 0.16439088]
 b: [1.0, -2.5470028, 2.4327087, -1.032686, 0.16439088]
 out: [1.0, -5.0940056, 11.35264, -14.457603, 11.507361, -5.8618565, 1.8662705, -0.33952832, 0.02702436]
 
+### 

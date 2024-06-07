@@ -54,7 +54,8 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     }
     
     private func setupCamera() {
-        captureSession.sessionPreset = .hd1920x1080
+//        captureSession.sessionPreset = .hd1920x1080
+        captureSession.sessionPreset = .hd1280x720
         guard let captureDevice = AVCaptureDevice.default(for: .video) else {
             return
         }
