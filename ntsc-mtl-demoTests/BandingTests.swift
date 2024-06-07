@@ -45,7 +45,7 @@ final class BandingTests: XCTestCase {
         self.filter.inputImage = image
         // Got some banding already
         let outputImage = try XCTUnwrap(self.filter.outputImage)
-        XCTAssertEqual(Int(outputImage.extent.height), 100)
+        XCTAssertEqual(Int(outputImage.extent.height), 4032)
     }
     
     func outputImage(for inputImage: CIImage) throws -> CIImage {
@@ -67,7 +67,7 @@ final class BandingTests: XCTestCase {
     
     func testApplyingChroma() throws {
         let outputImage = try outputImage(for: image)
-        XCTAssertEqual(Int(outputImage.extent.width), 100)
+        XCTAssertEqual(Int(outputImage.extent.width), 3024)
     }
     
     func saveCIImageToDisk(_ ciImage: CIImage, filename: String, context: CIContext) throws {
@@ -89,7 +89,7 @@ final class BandingTests: XCTestCase {
                 for b in stride(from: rangeStart, to: rangeEnd, by: strideSize) {
                     let image = createTestImage(color: CIColor(red: r, green: g, blue: b), size: CGSize(width: 1000, height: 1000))
                     let outputImage = try outputImage(for: image)
-                    try saveCIImageToDisk(outputImage, filename: "red: \(r) green: \(g) blue: \(b)", context: ciContext)
+                    try saveCIImageToDisk(outputImage, filename: "red: \(Int(r * 100)) green: \(Int(g * 100)) blue: \(Int(b * 100))", context: ciContext)
                     XCTAssertEqual(Int(outputImage.extent.width), 1000)
                 }
             }

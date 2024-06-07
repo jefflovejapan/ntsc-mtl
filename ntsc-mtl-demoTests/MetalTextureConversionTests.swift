@@ -93,10 +93,7 @@ final class MetalTextureConversionTests: XCTestCase {
         let commandBuffer = try XCTUnwrap(commandQueue?.makeCommandBuffer())
         let library = try XCTUnwrap(library)
         let input: [Float16] = [0.5, 0.5, 0.5, 1]
-        var yiqa = input
-        let region = MTLRegionMake2D(0, 0, 1, 1)
-        let bytesPerRow: Int = MemoryLayout<Float16>.size * 4 * 1
-        texture.replace(region: region, mipmapLevel: 0, withBytes: &yiqa, bytesPerRow: bytesPerRow)
+        try IIRTextureFilter.paint(texture: texture, with: input, library: library, device: device, commandBuffer: commandBuffer)
         try NTSCTextureFilter.convertToRGB(
             texture,
             output: outputTexture,
@@ -108,8 +105,7 @@ final class MetalTextureConversionTests: XCTestCase {
         commandBuffer.waitUntilCompleted()
         // from Rust
         let want: [Float16] = [1.2875, 0.040499985, 0.7985, 1]
-        var got: [Float16] = [0, 0, 0, 0]
-        outputTexture.getBytes(&got, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
+        let got = outputTexture.pixelValue(x: 0, y: 0)
         assertArraysEqual(lhs: want, rhs: got)
     }
     
@@ -201,8 +197,8 @@ final class MetalTextureConversionTests: XCTestCase {
         
         let outputTexture = try XCTUnwrap(IIRTextureFilter.texture(width: texture.width, height: texture.height, pixelFormat: texture.pixelFormat, device: device))
         for color in Self.randomColors.prefix(1_000) {
-            texture.paint(with: color)
             let commandBuffer = try XCTUnwrap(commandQueue?.makeCommandBuffer())
+            try IIRTextureFilter.paint(texture: texture, with: color, library: library, device: device, commandBuffer: commandBuffer)
             try NTSCTextureFilter.convertToYIQ(
                 texture,
                 output: outputTexture,
@@ -264,7 +260,7 @@ final class MetalTextureConversionTests: XCTestCase {
         let library = try XCTUnwrap(library)
         let buf0 = try XCTUnwrap(commandQueue.makeCommandBuffer())
         let initialFill: [Float16] = [0.498039246, 0, 0, 1]
-        texture.paint(with: initialFill)
+        try IIRTextureFilter.paint(texture: texture, with: initialFill, library: library, device: device, commandBuffer: buf0)
         let initialConditionTexture = try XCTUnwrap(IIRTextureFilter.texture(
             from: texture,
             device: device
@@ -432,9 +428,8 @@ final class MetalTextureConversionTests: XCTestCase {
         )
         
         let commandBuffer = try XCTUnwrap(commandQueue.makeCommandBuffer())
-        
-        texture.paint(with: [0, 1, 2, 3])
-        anotherTexture.paint(with: [4, 5, 6, 7])
+        try IIRTextureFilter.paint(texture: texture, with: [0, 1, 2, 3], library: library, device: device, commandBuffer: commandBuffer)
+        try IIRTextureFilter.paint(texture: anotherTexture, with: [4, 5, 6, 7], library: library, device: device, commandBuffer: commandBuffer)
         try IIRTextureFilter.finalCompose(
             inputImage: texture,
             filteredImage: anotherTexture, 
