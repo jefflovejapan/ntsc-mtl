@@ -308,3 +308,21 @@ OK, realized in first test that numerators and denominators can overflow float16
 - Do I need to be worried that the values I'm pulling are underflowing to 0 when Rust still has precision? Should I be using Float32 textures for z (and maybe others?)
 - It looks like the issue may have had to do with filling z0 after all. Wrote a paint function to do what I want.
 
+### Performance
+
+- Down to about 30fps with standard (everything) config
+- Input luma
+    - no problem with box
+    - notch isn't nearly as bad as chroma lowpass
+- What if we ditch the phase stuff? (chroma into luma)
+    - Doesn't really make a difference
+- How about chroma lowpass?
+    - kills us ☝️☝️☝️
+- Chroma into luma?
+    - no difference
+- Composite preemphasis
+    - no diff
+- Composite noise
+    - no diff
+- Snow
+    - completely boned

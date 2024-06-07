@@ -264,62 +264,66 @@ class NTSCTextureFilter {
             print("Couldn't make command buffer")
             return nil
         }
+        
+        let textures: [MTLTexture] = [textureA, textureB, textureC]
+        let iter = IteratorThing(vals: textures)
+        
         do {
             try Self.convertToYIQ(
-                textureA,
-                output: textureB,
+                iter.next()!,
+                output: iter.next()!,
                 library: library,
                 commandBuffer: commandBuffer,
                 device: device
             )
-            try Self.inputLuma(
-                textureB,
-                output: textureC,
-                commandBuffer: commandBuffer,
-                lumaLowpass: effect.inputLumaFilter, 
-                lumaBoxFilter: lumaBoxFilter,
-                lumaNotchFilter: lumaNotchFilter
-            )
+//            try Self.inputLuma(
+//                iter.last!,
+//                output: iter.next()!,
+//                commandBuffer: commandBuffer,
+//                lumaLowpass: effect.inputLumaFilter, 
+//                lumaBoxFilter: lumaBoxFilter,
+//                lumaNotchFilter: lumaNotchFilter
+//            )
             try Self.chromaLowpass(
-                textureC,
-                output: textureA,
+                iter.last!,
+                output: iter.next()!,
                 commandBuffer: commandBuffer,
                 chromaLowpass: effect.chromaLowpassIn,
                 lightFilter: lightChromaLowpassFilter,
                 fullFilter: fullChromaLowpassFilter
             )
-            try Self.chromaIntoLuma(
-                inputTexture: textureA,
-                outputTexture: textureB,
-                timestamp: frameNum,
-                phaseShift: effect.videoScanlinePhaseShift,
-                phaseShiftOffset: effect.videoScanlinePhaseShiftOffset,
-                filter: self.chromaIntoLumaFilter,
-                library: library,
-                device: device,
-                commandBuffer: commandBuffer
-            )
-            try Self.compositePreemphasis(
-                inputTexture: textureB,
-                outputTexture: textureC,
-                filter: compositePreemphasisFilter,
-                commandBuffer: commandBuffer
-            )
-            try Self.compositeNoise(
-                inputTexture: textureC,
-                outputTexture: textureA,
-                filter: compositeNoiseFilter,
-                commandBuffer: commandBuffer
-            )
-            try Self.snow(
-                inputTexture: textureA,
-                outputTexture: textureB,
-                filter: snowFilter,
-                commandBuffer: commandBuffer
-            )
+//            try Self.chromaIntoLuma(
+//                inputTexture: iter.last!,
+//                outputTexture: iter.next()!,
+//                timestamp: frameNum,
+//                phaseShift: effect.videoScanlinePhaseShift,
+//                phaseShiftOffset: effect.videoScanlinePhaseShiftOffset,
+//                filter: self.chromaIntoLumaFilter,
+//                library: library,
+//                device: device,
+//                commandBuffer: commandBuffer
+//            )
+//            try Self.compositePreemphasis(
+//                inputTexture: iter.last!,
+//                outputTexture: iter.next()!,
+//                filter: compositePreemphasisFilter,
+//                commandBuffer: commandBuffer
+//            )
+//            try Self.compositeNoise(
+//                inputTexture: iter.last!,
+//                outputTexture: iter.next()!,
+//                filter: compositeNoiseFilter,
+//                commandBuffer: commandBuffer
+//            )
+//            try Self.snow(
+//                inputTexture: iter.last!,
+//                outputTexture: iter.next()!,
+//                filter: snowFilter,
+//                commandBuffer: commandBuffer
+//            )
             try Self.convertToRGB(
-                textureB,
-                output: textureC,
+                iter.last!,
+                output: iter.next()!,
                 commandBuffer: commandBuffer,
                 library: library,
                 device: device
@@ -327,10 +331,10 @@ class NTSCTextureFilter {
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()
         } catch {
-            print("Error converting to YIQ: \(error)")
+            print("Error generating output image: \(error)")
             return nil
         }
-        let outImage = CIImage(mtlTexture: textureC)
+        let outImage = CIImage(mtlTexture: iter.last!)
         return outImage
     }
 }
