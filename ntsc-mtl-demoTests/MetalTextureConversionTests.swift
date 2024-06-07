@@ -357,8 +357,8 @@ final class MetalTextureConversionTests: XCTestCase {
         assertArraysEqual(lhs: z1, rhs: [0.01577138, 4.718742e-10, 4.718742e-10, 1.0])
         z2 = zTextures[2].pixelValue(x: 0, y: 0)
         assertArraysEqual(lhs: z2, rhs: [0.0, 0.0, 0.0, 1.0])
-//        
-//        let buf3 = try XCTUnwrap(commandQueue.makeCommandBuffer())
+        
+        let buf3 = try XCTUnwrap(commandQueue.makeCommandBuffer())
 //        try IIRTextureFilter.finalImage(
 //            inputImage: texture,
 //            filteredImage: initialConditionTexture,
@@ -367,18 +367,28 @@ final class MetalTextureConversionTests: XCTestCase {
 //            device: device,
 //            commandBuffer: buf3
 //        )
-//        buf3.commit()
-//        buf3.waitUntilCompleted()
-//        tex = texture.pixelValue(x: 0, y: 0)
-//        assertArraysEqual(lhs: tex, rhs: initialFill)
-//        
-//        let filtered = initialConditionTexture.pixelValue(x: 0, y: 0)
-//        // from Rust
-//        assertArraysEqual(lhs: filtered, rhs: [0.028536469, 8.538015e-10, 8.538015e-10, 1.0])
-//        let input = texture.pixelValue(x: 0, y: 0)
-//        
-//        // Why does texture have 0 alpha???
-//        assertArraysEqual(lhs: input, rhs: [0.49803925, 1.4901161e-08, 1.4901161e-08, 1.0])
+        let filteredImageTex = try XCTUnwrap(IIRTextureFilter.texture(from: texture, device: device))
+        try IIRTextureFilter.filterImage(
+            inputImage: texture,
+            filteredSample: filteredSampleTex,
+            outputTexture: filteredImageTex,
+            scale: 1,
+            library: library,
+            device: device,
+            commandBuffer: buf3
+        )
+        buf3.commit()
+        buf3.waitUntilCompleted()
+        tex = texture.pixelValue(x: 0, y: 0)
+        assertArraysEqual(lhs: tex, rhs: initialFill)
+        
+        let filtered = filteredImageTex.pixelValue(x: 0, y: 0)
+        // from Rust
+        assertArraysEqual(lhs: filtered, rhs: [0.028536469, 8.538015e-10, 8.538015e-10, 1.0])
+        let input = texture.pixelValue(x: 0, y: 0)
+        
+        // Why does texture have 0 alpha???
+        assertArraysEqual(lhs: input, rhs: [0.49803925, 1.4901161e-08, 1.4901161e-08, 1.0])
 //        
 //        let buf4 = try XCTUnwrap(commandQueue.makeCommandBuffer())
 //        let outputTexture = try XCTUnwrap(IIRTextureFilter.texture(width: texture.width, height: texture.height, pixelFormat: texture.pixelFormat, device: device))

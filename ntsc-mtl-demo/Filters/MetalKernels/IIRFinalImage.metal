@@ -12,7 +12,7 @@ using namespace metal;
 kernel void iirFinalImage
 (
  texture2d<half, access::read> inputTexture [[texture(0)]],
- texture2d<half, access::read> filteredImageTexture [[texture(1)]],
+ texture2d<half, access::read> filteredSampleTexture [[texture(1)]],
  texture2d<half, access::write> outputTexture [[texture(2)]],
  constant half &scale [[buffer(0)]],
  uint2 gid [[thread_position_in_grid]]
@@ -23,7 +23,7 @@ kernel void iirFinalImage
 //        return;
 //    }
     half4 currentSample = inputTexture.read(gid);
-    half4 filteredSample = filteredImageTexture.read(gid);
+    half4 filteredSample = filteredSampleTexture.read(gid);
     half4 combined = ((filteredSample - currentSample) * scale) + currentSample;
     half3 yiq = combined.xyz;
     yiq = clampYIQ(yiq);

@@ -347,7 +347,8 @@ class IIRTextureFilter {
         }
         try Self.filterImage(
             inputImage: inputTexture,
-            filteredImage: filteredSampleTexture!,
+            filteredSample: filteredSampleTexture!,
+            outputTexture: filteredImageTexture!,
             scale: scale,
             library: library,
             device: device,
@@ -366,7 +367,8 @@ class IIRTextureFilter {
         
     static func filterImage(
         inputImage: MTLTexture,
-        filteredImage: MTLTexture,
+        filteredSample: MTLTexture,
+        outputTexture: MTLTexture,
         scale: Float16,
         library: MTLLibrary,
         device: MTLDevice,
@@ -388,7 +390,8 @@ class IIRTextureFilter {
         }
         commandEncoder.setComputePipelineState(pipelineState)
         commandEncoder.setTexture(inputImage, index: 0)
-        commandEncoder.setTexture(filteredImage, index: 1)
+        commandEncoder.setTexture(filteredSample, index: 1)
+        commandEncoder.setTexture(outputTexture, index: 2)
         var scale = scale
         commandEncoder.setBytes(&scale, length: MemoryLayout<Float16>.size, index: 0)
         commandEncoder.dispatchThreads(
