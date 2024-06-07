@@ -11,8 +11,9 @@ using namespace metal;
 
 kernel void iirInitialCondition
 (
- texture2d<half, access::read_write> textureToFill [[texture(0)]],
+ texture2d<half, access::read> textureToFill [[texture(0)]],
  texture2d<half, access::read> sideEffectedTexture [[texture(1)]], 
+ texture2d<half, access::write> outputTexture [[texture(2)]],
  constant float &aSum [[buffer(0)]],
  constant float &cSum [[buffer(1)]],
  uint2 gid [[thread_position_in_grid]]
@@ -28,5 +29,5 @@ kernel void iirInitialCondition
     half3 yiq = output.xyz;
     yiq = clampYIQ(yiq);
     half4 final = half4(yiq, 1.0);
-    textureToFill.write(final, gid);
+    outputTexture.write(final, gid);
 }

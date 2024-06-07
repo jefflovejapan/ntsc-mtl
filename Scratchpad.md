@@ -276,6 +276,11 @@ NTSCTextureFilter implementation. What I need:
         - called by ChromaLowpassTextureFilter.init with the same cutoffs and rates as above
 
 OK, realized in first test that numerators and denominators can overflow float16. That means we'll have to pass Floats to the textures and hopefully the shader operations result in values that are within float16 range
+
+- The issue is probably not an overflow, but is probably related to single-buffering the IIR filter. Need to review the pipeline for places where we're reading from / writing to the same buffer
+    - **IIRInitialCondition we're single buffering** ✅
+    - **IIRMultiply we're single buffering**
+    - **IIRFinalImage we're single buffering**
   
 ## Office Hours
             

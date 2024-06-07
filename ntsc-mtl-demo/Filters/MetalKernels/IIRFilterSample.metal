@@ -13,7 +13,7 @@ kernel void iirFilterSample
 (
  texture2d<half, access::read> inputTexture [[texture(0)]],
  texture2d<half, access::read> zTex0 [[texture(1)]],
- texture2d<half, access::read_write> filteredSampleTexture [[texture(2)]],
+ texture2d<half, access::read_write> outputTexture [[texture(2)]],
  constant float &num0 [[buffer(0)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
@@ -26,5 +26,5 @@ kernel void iirFilterSample
     half3 yiq = result.xyz;
     yiq = clampYIQ(yiq);
     half4 final = half4(yiq, 1.0);
-    filteredSampleTexture.write(final, gid);
+    outputTexture.write(final, gid);
 }
