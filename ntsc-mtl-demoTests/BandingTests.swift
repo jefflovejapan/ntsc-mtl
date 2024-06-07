@@ -77,10 +77,11 @@ final class BandingTests: XCTestCase {
         let data = try XCTUnwrap(uiImage.pngData())
         let url = try XCTUnwrap(FileManager.default.temporaryDirectory.appendingPathComponent(filename))
         try data.write(to: url)
+        print("Wrote image to \(url.absoluteString)")
     }
     
     func testApplyingChromaToPlainWhiteImage() throws {
-        let strideSize: CGFloat = 0.1
+        let strideSize: CGFloat = 0.2
         let rangeStart: CGFloat = 0
         let rangeEnd: CGFloat = 1
         for r in stride(from: rangeStart, to: rangeEnd, by: strideSize) {
