@@ -367,11 +367,11 @@ final class MetalTextureConversionTests: XCTestCase {
 //            device: device,
 //            commandBuffer: buf3
 //        )
-        let filteredImageTex = try XCTUnwrap(IIRTextureFilter.texture(from: texture, device: device))
+        let filteredImageTexture = try XCTUnwrap(IIRTextureFilter.texture(from: texture, device: device))
         try IIRTextureFilter.filterImage(
             inputImage: texture,
             filteredSample: filteredSampleTex,
-            outputTexture: filteredImageTex,
+            outputTexture: filteredImageTexture,
             scale: 1,
             library: library,
             device: device,
@@ -382,34 +382,34 @@ final class MetalTextureConversionTests: XCTestCase {
         tex = texture.pixelValue(x: 0, y: 0)
         assertArraysEqual(lhs: tex, rhs: initialFill)
         
-        let filtered = filteredImageTex.pixelValue(x: 0, y: 0)
+        let filtered = filteredImageTexture.pixelValue(x: 0, y: 0)
         // from Rust
         assertArraysEqual(lhs: filtered, rhs: [0.028536469, 8.538015e-10, 8.538015e-10, 1.0])
         let input = texture.pixelValue(x: 0, y: 0)
         
         // Why does texture have 0 alpha???
         assertArraysEqual(lhs: input, rhs: [0.49803925, 1.4901161e-08, 1.4901161e-08, 1.0])
-//        
-//        let buf4 = try XCTUnwrap(commandQueue.makeCommandBuffer())
-//        let outputTexture = try XCTUnwrap(IIRTextureFilter.texture(width: texture.width, height: texture.height, pixelFormat: texture.pixelFormat, device: device))
-//        try IIRTextureFilter.finalCompose(
-//            inputImage: texture,
-//            filteredImage: filteredImageTexture,
-//            writingTo: outputTexture,
-//            channels: .i,
-//            library: library,
-//            device: device,
-//            commandBuffer: buf4
-//        )
-//        
-//        buf4.commit()
-//        buf4.waitUntilCompleted()
-//        tex = texture.pixelValue(x: 0, y: 0)
-//        XCTAssertEqual(tex, initialFill)
-//        let got = outputTexture.pixelValue(x: 0, y: 0)
-//        // From Rust
-//        let want: [Float16] = [0.498039246, 0, 0, 1]
-//        assertArraysEqual(lhs: got, rhs: want)
+        
+        let buf4 = try XCTUnwrap(commandQueue.makeCommandBuffer())
+        let outputTexture = try XCTUnwrap(IIRTextureFilter.texture(width: texture.width, height: texture.height, pixelFormat: texture.pixelFormat, device: device))
+        try IIRTextureFilter.finalCompose(
+            inputImage: texture,
+            filteredImage: filteredImageTexture,
+            writingTo: outputTexture,
+            channels: .i,
+            library: library,
+            device: device,
+            commandBuffer: buf4
+        )
+        
+        buf4.commit()
+        buf4.waitUntilCompleted()
+        tex = texture.pixelValue(x: 0, y: 0)
+        XCTAssertEqual(tex, initialFill)
+        let got = outputTexture.pixelValue(x: 0, y: 0)
+        // From Rust
+        let want: [Float16] = [0.498039246, 0, 0, 1]
+        assertArraysEqual(lhs: got, rhs: want)
     }
     
     func testYIQCompose() throws {
