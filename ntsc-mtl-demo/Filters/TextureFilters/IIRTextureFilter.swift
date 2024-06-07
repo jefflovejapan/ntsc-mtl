@@ -40,9 +40,7 @@ class IIRTextureFilter {
     private let scale: Float16
     private(set) var zTextures: [MTLTexture] = []
     private var initialConditionTexture: MTLTexture?
-    private var filteredSampleTexture: MTLTexture? {
-        initialConditionTexture
-    }
+    private var filteredSampleTexture: MTLTexture?
     private var spareTexture: MTLTexture?
     private var filteredImageTexture: MTLTexture?
     private var outputTexture: MTLTexture? {
@@ -311,7 +309,8 @@ class IIRTextureFilter {
                 commandBuffer: commandBuffer)
             self.zTextures = zTextures
             self.initialConditionTexture = initialConditionTexture
-            self.spareTexture = tempZ0Texture
+            self.filteredSampleTexture = filteredSampleTexture
+            self.filteredImageTexture = tempZ0Texture
         }
         
         let zTex0 = zTextures[0]
