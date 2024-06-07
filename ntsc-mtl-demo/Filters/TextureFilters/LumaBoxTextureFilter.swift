@@ -21,11 +21,11 @@ class LumaBoxTextureFilter {
     init(device: MTLDevice, commandQueue: MTLCommandQueue, library: MTLLibrary) {
         self.device = device
         self.commandQueue = commandQueue
-        self.blurKernel = MPSImageBox(device: device, kernelWidth: 99, kernelHeight: 99)
+        self.blurKernel = MPSImageBox(device: device, kernelWidth: 5, kernelHeight: 5)
         self.library = library
     }
     
-    private var yiqComposepipelineState: MTLComputePipelineState?
+    private var yiqComposePipelineState: MTLComputePipelineState?
     
     func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         let needsUpdate: Bool
@@ -55,28 +55,11 @@ class LumaBoxTextureFilter {
         }
         self.scratchTexture = scratchTexture
         
-        guard let blitEncoder = commandBuffer.makeBlitCommandEncoder() else {
-            throw Error.cantMakeBlitEncoder
-        }
-        
-        blitEncoder.copy(
-            from: outputTexture,
-            sourceSlice: 0,
-            sourceLevel: 0,
-            to: scratchTexture,
-            destinationSlice: 0,
-            destinationLevel: 0,
-            sliceCount: outputTexture.arrayLength,
-            levelCount: outputTexture.mipmapLevelCount
-        )
-
-        blitEncoder.endEncoding()
-        
         // We've blurred the YIQ "image" in scratchTexture
-        self.blurKernel.encode(commandBuffer: commandBuffer, inPlaceTexture: &scratchTexture)
+        self.blurKernel.encode(commandBuffer: commandBuffer, sourceTexture: inputTexture, destinationTexture: scratchTexture)
         let pipelineState: MTLComputePipelineState
-        if let yiqComposepipelineState {
-            pipelineState = yiqComposepipelineState
+        if let yiqComposePipelineState {
+            pipelineState = yiqComposePipelineState
         } else {
             let composeFunctionName = "yiqCompose"
             guard let function = library.makeFunction(name: composeFunctionName) else {
@@ -84,7 +67,7 @@ class LumaBoxTextureFilter {
             }
             
             pipelineState = try device.makeComputePipelineState(function: function)
-            self.yiqComposepipelineState = pipelineState
+            self.yiqComposePipelineState = pipelineState
         }
         
         guard let composeCommandEncoder = commandBuffer.makeComputeCommandEncoder() else {
