@@ -89,6 +89,7 @@ final class BandingTests: XCTestCase {
                     let image = createTestImage(color: CIColor(red: r, green: g, blue: b), size: CGSize(width: 1000, height: 1000))
                     let outputImage = try outputImage(for: image)
                     try saveCIImageToDisk(outputImage, filename: "red: \(r) green: \(g), blue: \(b).png", context: ciContext)
+                    XCTAssertEqual(Int(outputImage.extent.width), 1000)
                 }
             }
         }

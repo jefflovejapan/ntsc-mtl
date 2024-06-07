@@ -24,6 +24,11 @@ kernel void convertToYIQ
  texture2d<half, access::write> outputTexture [[texture(1)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
+//    half minWidth = min(inputTexture.get_width(), outputTexture.get_width());
+//    half minHeight = min(inputTexture.get_height(), outputTexture.get_height());
+//    if (gid.x >= minWidth || minHeight >= minHeight) {
+//        return;
+//    }
     
     // Read the pixel at the current thread position
     half4 color = inputTexture.read(gid);

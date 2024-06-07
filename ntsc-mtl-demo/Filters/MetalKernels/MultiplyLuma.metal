@@ -17,6 +17,11 @@ kernel void multiplyLuma
  constant half &intensity,
  uint2 gid [[thread_position_in_grid]]
  ) {
+//    half minWidth = min(textureA.get_width(), textureB.get_width());
+//    half minHeight = min(textureA.get_height(), textureB.get_height());
+//    if (gid.x >= minWidth || gid.y >= minHeight) {
+//        return;
+//    }
     half4 sampleA = textureA.read(gid);
     half4 sampleB = textureB.read(gid);
     half4 result = sampleA;

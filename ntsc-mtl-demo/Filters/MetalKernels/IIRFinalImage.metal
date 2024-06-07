@@ -16,6 +16,11 @@ kernel void iirFinalImage
  constant half &scale [[buffer(0)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
+//    half minWidth = min(inputTexture.get_width(), filteredImageTexture.get_width());
+//    half minHeight = min(inputTexture.get_height(), filteredImageTexture.get_height());
+//    if (gid.x >= minWidth || gid.y >= minHeight) {
+//        return;
+//    }
     half4 currentSample = inputTexture.read(gid);
     half4 filteredSample = filteredImageTexture.read(gid);
     half4 combined = ((filteredSample - currentSample) * scale) + currentSample;

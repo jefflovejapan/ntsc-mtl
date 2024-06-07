@@ -20,8 +20,12 @@ kernel void convertToRGB
 (
  texture2d<half, access::read> inputTexture [[texture(0)]],
  texture2d<half, access::write> outputTexture [[texture(1)]],
- 
  uint2 gid [[thread_position_in_grid]]) {
+//    half minWidth = min(inputTexture.get_width(), outputTexture.get_width());
+//    half minHeight = min(inputTexture.get_height(), outputTexture.get_height());
+//    if (gid.x >= minWidth || gid.y >= minHeight) {
+//        return;
+//    }
     half4 yiqa = inputTexture.read(gid);
     half3 yiq = yiqa.xyz;
     half3 rgb = yiqToRGBMatrix * yiq;

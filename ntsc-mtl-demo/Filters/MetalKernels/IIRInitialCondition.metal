@@ -14,9 +14,14 @@ kernel void iirInitialCondition
  texture2d<half, access::read_write> textureToFill [[texture(0)]],
  texture2d<half, access::read> sideEffectedTexture [[texture(1)]], 
  constant float &aSum [[buffer(0)]],
- constant float &cSum [[buffer(1)]], 
+ constant float &cSum [[buffer(1)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
+//    half minWidth = min(textureToFill.get_width(), sideEffectedTexture.get_width());
+//    half minHeight = min(textureToFill.get_height(), sideEffectedTexture.get_height());
+//    if (gid.x >= minWidth || gid.y >= minHeight) {
+//        return;
+//    }
     half4 initialCondition = textureToFill.read(gid);
     half4 sideEffected = sideEffectedTexture.read(gid);
     half4 output = ((aSum * sideEffected) - cSum) * initialCondition;

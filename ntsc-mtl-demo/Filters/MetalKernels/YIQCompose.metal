@@ -17,6 +17,11 @@ kernel void yiqCompose
  constant half4& channelMix [[buffer(0)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
+//    half minWidth = min(sampleTexture.get_width(), min(fallbackTexture.get_width(), outputTexture.get_width()));
+//    half minHeight = min(sampleTexture.get_height(), min(fallbackTexture.get_height(), outputTexture.get_height()));
+//    if (gid.x >= minWidth || gid.y >= minHeight) {
+//        return;
+//    }
     half4 samplePixel = sampleTexture.read(gid);
     half4 fallbackPixel = fallbackTexture.read(gid);
     

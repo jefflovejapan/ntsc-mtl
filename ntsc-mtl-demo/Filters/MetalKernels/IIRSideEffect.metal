@@ -19,6 +19,11 @@ kernel void iirSideEffect
  constant float &denom [[buffer(1)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
+//    half minWidth = min(inputTexture.get_width(), min(z.get_width(), min(zPlusOne.get_width(), filteredSampleTexture.get_width())));
+//    half minHeight = min(inputTexture.get_height(), min(z.get_height(), min(zPlusOne.get_height(), filteredSampleTexture.get_height())));
+//    if (gid.x >= minWidth || gid.y >= minHeight) {
+//        return;
+//    }
     half4 currentSample = inputTexture.read(gid);
     half4 sideEffected = zPlusOne.read(gid);
     half4 filteredSample = filteredSampleTexture.read(gid);

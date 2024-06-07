@@ -15,6 +15,11 @@ kernel void iirMultiply
  texture2d<half, access::read> initialConditionTexture [[texture(1)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
+//    half minWidth = min(textureToFill.get_width(), initialConditionTexture.get_width());
+//    half minHeight = min(textureToFill.get_height(), initialConditionTexture.get_height());
+//    if (gid.x >= minWidth || gid.y >= minHeight) {
+//        return;
+//    }
     half4 currentState = textureToFill.read(gid);
     half4 initialCondition = initialConditionTexture.read(gid);
     half4 product = currentState * initialCondition;

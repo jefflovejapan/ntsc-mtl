@@ -20,6 +20,11 @@ kernel void snow
  constant int &width [[buffer(3)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
+//    half minWidth = min(randomTexture.get_width(), min(inputTexture.get_width(), outputTexture.get_width()));
+//    half minHeight = min(randomTexture.get_height(), min(inputTexture.get_height(), outputTexture.get_height()));
+//    if (gid.x >= minWidth || gid.y >= minHeight) {
+//        return;
+//    }
     half4 inputPixel = inputTexture.read(gid);
     half4 randomPixel = randomTexture.read(gid);
     half rand1 = mix(half(-1.0), half(1.0), randomPixel.x);
