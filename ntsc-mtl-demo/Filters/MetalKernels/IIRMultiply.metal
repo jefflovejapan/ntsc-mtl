@@ -25,7 +25,7 @@ kernel void iirMultiply
     half4 initialCondition = initialConditionTexture.read(gid);
     half4 product = currentState * initialCondition;
     half3 productYIQ = product.xyz;
-    productYIQ = clampYIQ(productYIQ);
+//    productYIQ = clampYIQ(productYIQ);
     half4 yiqa = half4(productYIQ, 1.0);
     outputTexture.write(yiqa, gid);
 }

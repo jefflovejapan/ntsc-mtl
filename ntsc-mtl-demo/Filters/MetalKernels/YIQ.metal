@@ -36,7 +36,7 @@ kernel void convertToYIQ
     // Convert RGB to YIQ using the matrix
     half3 rgb = half3(color.r, color.g, color.b);
     half3 yiq = rgbToYIQMatrix * rgb;
-    yiq = clampYIQ(yiq);
+//    yiq = clampYIQ(yiq);
 
     // Write the converted YIQ values back to the texture
     outputTexture.write(half4(yiq, 1.0), gid);

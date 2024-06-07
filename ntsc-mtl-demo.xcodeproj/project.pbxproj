@@ -15,7 +15,6 @@
 		1F259EDC2C022F7500937D0A /* NTSCEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EDB2C022F7500937D0A /* NTSCEffect.swift */; };
 		1F259EDE2C02399C00937D0A /* NTSCEffect+Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EDD2C02399C00937D0A /* NTSCEffect+Defaults.swift */; };
 		1F259EE62C027D0800937D0A /* IIRFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EE52C027D0800937D0A /* IIRFilter.swift */; };
-		1F3E381E2C123C7300D16CF0 /* ParameterValueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F3E381D2C123C7300D16CF0 /* ParameterValueTests.swift */; };
 		1F3E38202C123D4700D16CF0 /* Float+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F3E381F2C123D4700D16CF0 /* Float+Extensions.swift */; };
 		1F3E38242C12486C00D16CF0 /* BandingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F3E38232C12486C00D16CF0 /* BandingTests.swift */; };
 		1F3E38252C1248E100D16CF0 /* video-frame.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1F3E38212C1247DC00D16CF0 /* video-frame.jpg */; };
@@ -88,7 +87,6 @@
 		1F259EDF2C026A6700937D0A /* Fun.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Fun.ci.metal; sourceTree = "<group>"; };
 		1F259EE52C027D0800937D0A /* IIRFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IIRFilter.swift; sourceTree = "<group>"; };
 		1F259EEB2C02A2C300937D0A /* IIRFilterSample.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = IIRFilterSample.ci.metal; sourceTree = "<group>"; };
-		1F3E381D2C123C7300D16CF0 /* ParameterValueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParameterValueTests.swift; sourceTree = "<group>"; };
 		1F3E381F2C123D4700D16CF0 /* Float+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Float+Extensions.swift"; sourceTree = "<group>"; };
 		1F3E38212C1247DC00D16CF0 /* video-frame.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "video-frame.jpg"; sourceTree = "<group>"; };
 		1F3E38232C12486C00D16CF0 /* BandingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandingTests.swift; sourceTree = "<group>"; };
@@ -296,7 +294,6 @@
 			isa = PBXGroup;
 			children = (
 				1FEEA8582C00C6B000101141 /* MetalConversionTests.swift */,
-				1F3E381D2C123C7300D16CF0 /* ParameterValueTests.swift */,
 				1F5F93C22C0F7F4E00EC29A2 /* MetalTextureConversionTests.swift */,
 				1F5F93B72C0E02D400EC29A2 /* TestIIR.swift */,
 				1F5F93B92C0E04A100EC29A2 /* SimpleIIRTests.swift */,
@@ -499,7 +496,6 @@
 			files = (
 				1F5F93BA2C0E04A100EC29A2 /* SimpleIIRTests.swift in Sources */,
 				1F5F93B82C0E02D400EC29A2 /* TestIIR.swift in Sources */,
-				1F3E381E2C123C7300D16CF0 /* ParameterValueTests.swift in Sources */,
 				1FEEA8592C00C6B000101141 /* MetalConversionTests.swift in Sources */,
 				1F5F93C32C0F7F4E00EC29A2 /* MetalTextureConversionTests.swift in Sources */,
 				1F3E38242C12486C00D16CF0 /* BandingTests.swift in Sources */,

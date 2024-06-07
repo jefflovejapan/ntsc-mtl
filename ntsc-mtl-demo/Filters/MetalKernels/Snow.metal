@@ -56,7 +56,7 @@ kernel void snow
     half4 modPixel = inputPixel;
     modPixel.x += mod;
     half3 modYIQ = modPixel.xyz;
-    modYIQ = clampYIQ(modYIQ);
+//    modYIQ = clampYIQ(modYIQ);
     half4 final = half4(modYIQ, 1.0);
     outputTexture.write(final, gid);
 }

@@ -26,7 +26,7 @@ kernel void yiqCompose3
     half i = iTexture.read(gid).y;
     half q = qTexture.read(gid).z;
     half3 yiq = half3(y, i, q);
-    yiq = clampYIQ(yiq);
+//    yiq = clampYIQ(yiq);
     half4 result = half4(yiq, 1.0);
     outputTexture.write(result, gid);
 }

@@ -27,7 +27,7 @@ kernel void multiplyLuma
     half4 result = sampleA;
     result.x += (sampleB.x * 0.25 * intensity);
     half3 yiq = result.xyz;
-    yiq = clampYIQ(yiq);
+//    yiq = clampYIQ(yiq);
     half4 yiqa = half4(yiq, 1.0);
     outputTexture.write(yiqa, gid);
 }

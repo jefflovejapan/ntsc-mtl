@@ -58,7 +58,7 @@ kernel void chromaIntoLuma
     uint32_t chromaPhaseShift = ChromaPhaseShift(phaseShift, phaseShiftOffset, timestamp, intCoord * 2);
     half4 yiqResult = ProcessPhase(yiqSample, chromaPhaseShift, gid);
     half3 yiq = yiqResult.xyz;
-    yiq = clampYIQ(yiq);
+//    yiq = clampYIQ(yiq);
     half4 yiqa = half4(yiq, 1.0);
     outputTexture.write(yiqa, gid);
 }

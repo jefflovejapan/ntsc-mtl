@@ -29,7 +29,7 @@ kernel void iirSideEffect
     half4 filteredSample = filteredSampleTexture.read(gid);
     half4 result = sideEffected + (num * currentSample) - (denom * filteredSample);
     half3 yiq = result.xyz;
-    yiq = clampYIQ(yiq);
+//    yiq = clampYIQ(yiq);
     half4 final = half4(yiq, 1.0);
     z.write(final, gid);
 }

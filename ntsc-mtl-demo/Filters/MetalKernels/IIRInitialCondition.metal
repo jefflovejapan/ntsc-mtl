@@ -27,7 +27,7 @@ kernel void iirInitialCondition
     half4 z0 = zTex0.read(gid);
     half4 output = ((aSum * z0) - cSum) * initialCondition;
     half3 yiq = output.xyz;
-    yiq = clampYIQ(yiq);
+//    yiq = clampYIQ(yiq);
     half4 final = half4(yiq, 1.0);
     zTexToFill.write(final, gid);
 }

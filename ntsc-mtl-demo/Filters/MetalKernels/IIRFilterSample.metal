@@ -24,7 +24,7 @@ kernel void iirFilterSample
 //    }
     half4 result = zTex0.read(gid) + (num0 * inputTexture.read(gid));
     half3 yiq = result.xyz;
-    yiq = clampYIQ(yiq);
+//    yiq = clampYIQ(yiq);
     half4 final = half4(yiq, 1.0);
     outputTexture.write(final, gid);
 }

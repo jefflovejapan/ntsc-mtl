@@ -90,19 +90,19 @@ final class MetalTextureConversionTests: XCTestCase {
         let texture = try XCTUnwrap(texture)
         let device = try XCTUnwrap(device)
         let outputTexture = try XCTUnwrap(IIRTextureFilter.texture(from: texture, device: device))
-        let commandBuffer = try XCTUnwrap(commandQueue?.makeCommandBuffer())
+        let buf0 = try XCTUnwrap(commandQueue?.makeCommandBuffer())
         let library = try XCTUnwrap(library)
         let input: [Float16] = [0.5, 0.5, 0.5, 1]
-        try IIRTextureFilter.paint(texture: texture, with: input, library: library, device: device, commandBuffer: commandBuffer)
+        try IIRTextureFilter.paint(texture: texture, with: input, library: library, device: device, commandBuffer: buf0)
         try NTSCTextureFilter.convertToRGB(
             texture,
             output: outputTexture,
-            commandBuffer: commandBuffer,
+            commandBuffer: buf0,
             library: library,
             device: device
         )
-        commandBuffer.commit()
-        commandBuffer.waitUntilCompleted()
+        buf0.commit()
+        buf0.waitUntilCompleted()
         // from Rust
         let want: [Float16] = [1.2875, 0.040499985, 0.7985, 1]
         let got = outputTexture.pixelValue(x: 0, y: 0)
@@ -427,21 +427,24 @@ final class MetalTextureConversionTests: XCTestCase {
             device: device)
         )
         
-        let commandBuffer = try XCTUnwrap(commandQueue.makeCommandBuffer())
-        try IIRTextureFilter.paint(texture: texture, with: [0, 1, 2, 3], library: library, device: device, commandBuffer: commandBuffer)
-        try IIRTextureFilter.paint(texture: anotherTexture, with: [4, 5, 6, 7], library: library, device: device, commandBuffer: commandBuffer)
+        let buf0 = try XCTUnwrap(commandQueue.makeCommandBuffer())
+        try IIRTextureFilter.paint(texture: texture, with: [0.0, 0.01, 0.02, 1], library: library, device: device, commandBuffer: buf0)
+        try IIRTextureFilter.paint(texture: anotherTexture, with: [0.04, 0.05, 0.06, 1], library: library, device: device, commandBuffer: buf0)
+        buf0.commit()
+        buf0.waitUntilCompleted()
+        let buf1 = try XCTUnwrap(commandQueue.makeCommandBuffer())
         try IIRTextureFilter.finalCompose(
             inputImage: texture,
-            filteredImage: anotherTexture, 
+            filteredImage: anotherTexture,
             writingTo: outputTexture,
             channels: .i,
             library: library,
             device: device,
-            commandBuffer: commandBuffer
+            commandBuffer: buf1
         )
-        commandBuffer.commit()
-        commandBuffer.waitUntilCompleted()
+        buf1.commit()
+        buf1.waitUntilCompleted()
         let composed = outputTexture.pixelValue(x: 0, y: 0)
-        assertArraysEqual(lhs: composed, rhs: [0, 5, 2, 1])
+        assertArraysEqual(lhs: composed, rhs: [0, 0.05, 0.02, 1])
     }
 }

@@ -29,6 +29,6 @@ kernel void convertToRGB
     half4 yiqa = inputTexture.read(gid);
     half3 yiq = yiqa.xyz;
     half3 rgb = yiqToRGBMatrix * yiq;
-    rgb = clampRGB(rgb);
+//    rgb = clampRGB(rgb);
     outputTexture.write(half4(rgb, 1.0), gid);
 }

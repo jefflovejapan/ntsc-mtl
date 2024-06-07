@@ -198,7 +198,7 @@ class IIRTextureFilter {
         commandEncoder.setComputePipelineState(pipelineState)
         commandEncoder.setTexture(texture, index: 0)
         var color = color
-        commandEncoder.setBytes(&color, length: MemoryLayout<Float>.size * 4, index: 0)
+        commandEncoder.setBytes(&color, length: MemoryLayout<Float16>.size * 4, index: 0)
         commandEncoder.dispatchThreads(
             MTLSize(width: texture.width, height: texture.height, depth: 1),
             threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))

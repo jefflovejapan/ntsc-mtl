@@ -13,7 +13,7 @@ kernel void yiqCompose
 (
  texture2d<half, access::read> sampleTexture [[texture(0)]],
  texture2d<half, access::read> fallbackTexture [[texture(1)]],
- texture2d<half, access::read_write> outputTexture [[texture(2)]],
+ texture2d<half, access::write> outputTexture [[texture(2)]],
  constant half4& channelMix [[buffer(0)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
@@ -29,7 +29,7 @@ kernel void yiqCompose
     half i = mix(fallbackPixel.y, samplePixel.y, channelMix.y);
     half q = mix(fallbackPixel.z, samplePixel.z, channelMix.z);
     half3 yiq = half3(y, i, q);
-    yiq = clampYIQ(yiq);
+//    yiq = clampYIQ(yiq);
     half4 result = half4(yiq, 1.0);
     outputTexture.write(result, gid);
 }
