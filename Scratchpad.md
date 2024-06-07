@@ -305,4 +305,4 @@ OK, realized in first test that numerators and denominators can overflow float16
         - No, only input and z0
         - Can ignore the "zero" case for initial condition
 - Initial condition
-    - 
+- Do I need to be worried that the values I'm pulling are underflowing to 0 when Rust still has precision? Should I be using Float32 textures for z (and maybe others?)

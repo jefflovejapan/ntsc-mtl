@@ -325,38 +325,38 @@ final class MetalTextureConversionTests: XCTestCase {
         
 //        From Rust
         assertArraysEqual(lhs: filteredSample, rhs: [0.028536469, 0, 0, 1])
-//
-//        let buf2 = try XCTUnwrap(commandQueue.makeCommandBuffer())
-//        
-//        for i in numerators.indices {
-//            let nextIdx = i + 1
-//            guard nextIdx < numerators.count else {
-//                break
-//            }
-//            let z = zTextures[i]
-//            let zPlusOne = zTextures[nextIdx]
-//            try IIRTextureFilter.sideEffect(
-//                inputImage: texture,
-//                z: z,
-//                zPlusOne: zPlusOne,
-//                filteredSample: initialConditionTexture,
-//                numerator: numerators[nextIdx],
-//                denominator: denominators[nextIdx],
-//                library: library,
-//                device: device,
-//                commandBuffer: buf2
-//            )
-//        }
-//        buf2.commit()
-//        buf2.waitUntilCompleted()
-//        tex = texture.pixelValue(x: 0, y: 0)
-//        assertArraysEqual(lhs: tex, rhs: initialFill)
-//        z0 = zTextures[0].pixelValue(x: 0, y: 0)
-//        assertArraysEqual(lhs: z0, rhs: [0.09183421, 2.7476477e-09, 2.7476477e-09, 1.0])
-//        z1 = zTextures[1].pixelValue(x: 0, y: 0)
-//        assertArraysEqual(lhs: z1, rhs: [0.01577138, 4.718742e-10, 4.718742e-10, 1.0])
-//        z2 = zTextures[2].pixelValue(x: 0, y: 0)
-//        assertArraysEqual(lhs: z2, rhs: [0.0, 0.0, 0.0, 1.0])
+
+        let buf2 = try XCTUnwrap(commandQueue.makeCommandBuffer())
+        
+        for i in numerators.indices {
+            let nextIdx = i + 1
+            guard nextIdx < numerators.count else {
+                break
+            }
+            let z = zTextures[i]
+            let zPlusOne = zTextures[nextIdx]
+            try IIRTextureFilter.sideEffect(
+                inputImage: texture,
+                z: z,
+                zPlusOne: zPlusOne,
+                filteredSample: filteredSampleTex,
+                numerator: numerators[nextIdx],
+                denominator: denominators[nextIdx],
+                library: library,
+                device: device,
+                commandBuffer: buf2
+            )
+        }
+        buf2.commit()
+        buf2.waitUntilCompleted()
+        tex = texture.pixelValue(x: 0, y: 0)
+        assertArraysEqual(lhs: tex, rhs: initialFill)
+        z0 = zTextures[0].pixelValue(x: 0, y: 0)
+        assertArraysEqual(lhs: z0, rhs: [0.09183421, 2.7476477e-09, 2.7476477e-09, 1.0])
+        z1 = zTextures[1].pixelValue(x: 0, y: 0)
+        assertArraysEqual(lhs: z1, rhs: [0.01577138, 4.718742e-10, 4.718742e-10, 1.0])
+        z2 = zTextures[2].pixelValue(x: 0, y: 0)
+        assertArraysEqual(lhs: z2, rhs: [0.0, 0.0, 0.0, 1.0])
 //        
 //        let buf3 = try XCTUnwrap(commandQueue.makeCommandBuffer())
 //        try IIRTextureFilter.finalImage(
