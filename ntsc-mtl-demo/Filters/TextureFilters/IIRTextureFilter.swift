@@ -96,6 +96,10 @@ class IIRTextureFilter {
         }
     }
     
+    static func assertTextureIDsUnique(_ lhs: MTLTexture, _ rhs: MTLTexture) {
+        assert(ObjectIdentifier(lhs) != ObjectIdentifier(rhs))
+    }
+    
     
     /// WARN: Swaps zOutTexture with z[0]!!
     static func fillTexturesForInitialCondition(
@@ -159,6 +163,10 @@ class IIRTextureFilter {
             let den = normalizedDenominators[i]
             aSum += den
             cSum += (num - (den * normalizedNumerators[0]))
+            assertTextureIDsUnique(inputTexture, initialConditionTexture)
+            assertTextureIDsUnique(initialConditionTexture, tempZ0Texture)
+            assertTextureIDsUnique(tempZ0Texture, zTextures[i])
+            assertTextureIDsUnique(zTextures[i], initialConditionTexture)
             try initialConditionFill(
                 initialConditionTex: initialConditionTexture,
                 zTex0: tempZ0Texture,
@@ -170,6 +178,10 @@ class IIRTextureFilter {
                 commandBuffer: commandBuffer
             )
         }
+        assertTextureIDsUnique(tempZ0Texture, initialConditionTexture)
+        assertTextureIDsUnique(initialConditionTexture, zTextures[0])
+        assertTextureIDsUnique(zTextures[0], tempZ0Texture)
+        
         try finalZ0Fill(
             z0InTexture: tempZ0Texture,
             initialConditionTexture: initialConditionTexture,
@@ -315,6 +327,10 @@ class IIRTextureFilter {
         
         let zTex0 = zTextures[0]
         let num0 = numerators[0]
+        
+        Self.assertTextureIDsUnique(inputTexture, zTex0)
+        Self.assertTextureIDsUnique(zTex0, filteredSampleTexture!)
+        Self.assertTextureIDsUnique(filteredSampleTexture!, inputTexture)
         try Self.filterSample(
             inputTexture: inputTexture,
             zTex0: zTex0,
@@ -332,6 +348,10 @@ class IIRTextureFilter {
             }
             let z = zTextures[i]
             let zPlusOne = zTextures[nextIdx]
+            Self.assertTextureIDsUnique(inputTexture, z)
+            Self.assertTextureIDsUnique(z, zPlusOne)
+            Self.assertTextureIDsUnique(zPlusOne, filteredSampleTexture!)
+            Self.assertTextureIDsUnique(filteredSampleTexture!, inputTexture)
             try Self.sideEffect(
                 inputImage: inputTexture,
                 z: z,
@@ -344,6 +364,9 @@ class IIRTextureFilter {
                 commandBuffer: commandBuffer
             )
         }
+        Self.assertTextureIDsUnique(inputTexture, filteredSampleTexture!)
+        Self.assertTextureIDsUnique(filteredSampleTexture!, filteredImageTexture!)
+        Self.assertTextureIDsUnique(filteredImageTexture!, inputTexture)
         try Self.filterImage(
             inputImage: inputTexture,
             filteredSample: filteredSampleTexture!,
@@ -353,6 +376,9 @@ class IIRTextureFilter {
             device: device,
             commandBuffer: commandBuffer
         )
+        Self.assertTextureIDsUnique(inputTexture, filteredSampleTexture!)
+        Self.assertTextureIDsUnique(filteredSampleTexture!, outputTexture)
+        Self.assertTextureIDsUnique(outputTexture, inputTexture)
         try Self.finalCompose(
             inputImage: inputTexture,
             filteredImage: filteredSampleTexture!,
