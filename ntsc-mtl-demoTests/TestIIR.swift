@@ -34,10 +34,8 @@ class IIRTester {
     
     init(numerators: [Float], denominators: [Float], initialCondition: InitialCondition, scale: Float, delay: UInt) {
         let maxLength = max(numerators.count, denominators.count)
-        var paddedNumerators: [Float] = Array(repeating: 0, count: maxLength)
-        paddedNumerators[0..<numerators.count] = numerators[0...]
-        var paddedDenominators: [Float] = Array(repeating: 0, count: maxLength)
-        paddedDenominators[0..<denominators.count] = denominators[0...]
+        let paddedNumerators = numerators.padded(toLength: maxLength, with: 0)
+        let paddedDenominators = denominators.padded(toLength: maxLength, with: 0)
         self.initialCondition = initialCondition
         self.numerators = paddedNumerators
         self.denominators = paddedDenominators

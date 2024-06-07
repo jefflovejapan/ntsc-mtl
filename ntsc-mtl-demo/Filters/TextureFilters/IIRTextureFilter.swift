@@ -30,6 +30,7 @@ class IIRTextureFilter {
     private static var yiqComposePipelineState: MTLComputePipelineState?
     private static var iirSideEffectPipelineState: MTLComputePipelineState?
     private static var iirFilterSamplePipelineState: MTLComputePipelineState?
+    private static var paintPipelineState: MTLComputePipelineState?
     
     private let device: MTLDevice
     private let library: MTLLibrary
@@ -43,20 +44,13 @@ class IIRTextureFilter {
     private var filteredSampleTexture: MTLTexture?
     private var spareTexture: MTLTexture?
     private var filteredImageTexture: MTLTexture?
-    private var outputTexture: MTLTexture? {
-        filteredSampleTexture
-    }
+    private var outputTexture: MTLTexture?
     
     init(device: MTLDevice, library: MTLLibrary, numerators: [Float], denominators: [Float], initialCondition: InitialCondition, channels: YIQChannels, scale: Float16, delay: UInt) {
         self.device = device
         self.library = library
-        let maxLength = max(numerators.count, denominators.count)
-        var paddedNumerators: [Float] = Array(repeating: 0, count: maxLength)
-        paddedNumerators[0..<numerators.count] = numerators[0...]
-        var paddedDenominators: [Float] = Array(repeating: 0, count: maxLength)
-        paddedDenominators[0..<denominators.count] = denominators[0...]
-        self.numerators = paddedNumerators
-        self.denominators = paddedDenominators
+        self.numerators = numerators
+        self.denominators = denominators
         self.initialCondition = initialCondition
         self.channelMix = channels
         self.scale = scale
@@ -100,8 +94,6 @@ class IIRTextureFilter {
         assert(ObjectIdentifier(lhs) != ObjectIdentifier(rhs))
     }
     
-    
-    /// WARN: Swaps zOutTexture with z[0]!!
     static func fillTexturesForInitialCondition(
         inputTexture: MTLTexture,
         initialCondition: InitialCondition,
@@ -192,7 +184,33 @@ class IIRTextureFilter {
         )
     }
     
-    private static func initialConditionFill(
+    static func paint(texture: MTLTexture, with color: [Float16], library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
+        let pipelineState: MTLComputePipelineState
+        if let iirInitialConditionPipelineState {
+            pipelineState = iirInitialConditionPipelineState
+        } else {
+            let functionName = "paint"
+            guard let function = library.makeFunction(name: functionName) else {
+                throw Error.cantMakeFunction(functionName)
+            }
+            pipelineState = try device.makeComputePipelineState(function: function)
+            Self.paintPipelineState = pipelineState
+        }
+        
+        guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
+            throw Error.cantMakeComputeEncoder
+        }
+        commandEncoder.setComputePipelineState(pipelineState)
+        commandEncoder.setTexture(texture, index: 0)
+        var color = color
+        commandEncoder.setBytes(&color, length: MemoryLayout<Float>.size * 4, index: 0)
+        commandEncoder.dispatchThreads(
+            MTLSize(width: texture.width, height: texture.height, depth: 1),
+            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
+        commandEncoder.endEncoding()
+    }
+    
+    static func initialConditionFill(
         initialConditionTex: MTLTexture,
         zTex0: MTLTexture,
         zTexToFill: MTLTexture,
@@ -286,9 +304,7 @@ class IIRTextureFilter {
             guard let filteredImageTexture = Self.texture(from: inputTexture, device: device) else {
                 throw Error.cantInstantiateTexture
             }
-            
-            let finalOutputTexture = filteredImageTexture
-            
+                        
             let zTextures = Array(
                 Self.textures(
                     width: inputTexture.width,
@@ -305,8 +321,6 @@ class IIRTextureFilter {
             guard let tempZ0Texture = Self.texture(from: inputTexture, device: device) else {
                 throw Error.cantInstantiateTexture
             }
-            
-            // I think the thing to do here is to have a "temp z0" rather than mutating the array. Not sure if that's the cause of the issue but definitely cleaner.
             
             try Self.fillTexturesForInitialCondition(
                 inputTexture: inputTexture,

@@ -11,6 +11,12 @@ struct IIRTransferFunction {
     var numerators: [Float]
     var denominators: [Float]
     
+    init(numerators: [Float], denominators: [Float]) {
+        let maxLength = max(numerators.count, denominators.count)
+        self.numerators = numerators.padded(toLength: maxLength, with: 0)
+        self.denominators = denominators.padded(toLength: maxLength, with: 0)
+    }
+    
     enum Error: Swift.Error {
         case notchFrequencyOutOfBounds
     }
