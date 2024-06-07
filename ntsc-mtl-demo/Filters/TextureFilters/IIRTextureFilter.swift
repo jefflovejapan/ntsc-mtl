@@ -104,8 +104,8 @@ class IIRTextureFilter {
         inputTexture: MTLTexture,
         initialCondition: InitialCondition,
         initialConditionTexture: MTLTexture,
-        zTextures: inout [MTLTexture],
-        zOutTexture: inout MTLTexture,
+        tempZ0Texture: MTLTexture,
+        zTextures: [MTLTexture],
         numerators: [Float],
         denominators: [Float],
         library: MTLLibrary,
@@ -153,7 +153,7 @@ class IIRTextureFilter {
         let z0Fill = bSum / normalizedDenominators.reduce(0, +)
         let z0FillValues: [Float16] = [z0Fill, z0Fill, z0Fill, 1].map(Float16.init)
         var z0FillMutable = z0FillValues
-        zTextures[0].replace(region: region, mipmapLevel: 0, withBytes: &z0FillMutable, bytesPerRow: bytesPerRow)
+        tempZ0Texture.replace(region: region, mipmapLevel: 0, withBytes: &z0FillMutable, bytesPerRow: bytesPerRow)
         var aSum: Float = 1
         var cSum: Float = 0
         for i in 1 ..< numerators.count {
@@ -163,7 +163,7 @@ class IIRTextureFilter {
             cSum += (num - (den * normalizedNumerators[0]))
             try initialConditionFill(
                 initialConditionTex: initialConditionTexture,
-                zTex0: zTextures[0],
+                zTex0: tempZ0Texture,
                 zTexToFill: zTextures[i],
                 aSum: aSum,
                 cSum: cSum,
@@ -173,17 +173,13 @@ class IIRTextureFilter {
             )
         }
         try finalZ0Fill(
-            z0InTexture: zTextures[0],
+            z0InTexture: tempZ0Texture,
             initialConditionTexture: initialConditionTexture,
-            z0OutTexture: zOutTexture,
+            z0OutTexture: zTextures[0],
             library: library,
             device: device,
             commandBuffer: commandBuffer
         )
-        let oldZ0 = zTextures[0]
-        let zOut = zOutTexture
-        zTextures[0] = zOut
-        zOutTexture = oldZ0
     }
     
     private static func initialConditionFill(
@@ -283,7 +279,7 @@ class IIRTextureFilter {
             
             let finalOutputTexture = filteredImageTexture
             
-            var zTextures = Array(
+            let zTextures = Array(
                 Self.textures(
                     width: inputTexture.width,
                     height: inputTexture.height,
@@ -296,15 +292,18 @@ class IIRTextureFilter {
                 throw Error.cantInstantiateTexture
             }
             
-            guard var zOutTexture = Self.texture(from: inputTexture, device: device) else {
+            guard let tempZ0Texture = Self.texture(from: inputTexture, device: device) else {
                 throw Error.cantInstantiateTexture
             }
+            
+            // I think the thing to do here is to have a "temp z0" rather than mutating the array. Not sure if that's the cause of the issue but definitely cleaner.
+            
             try Self.fillTexturesForInitialCondition(
                 inputTexture: inputTexture,
                 initialCondition: initialCondition,
                 initialConditionTexture: initialConditionTexture,
-                zTextures: &zTextures,
-                zOutTexture: &zOutTexture,
+                tempZ0Texture: tempZ0Texture,
+                zTextures: zTextures,
                 numerators: numerators,
                 denominators: denominators,
                 library: library,
@@ -312,7 +311,7 @@ class IIRTextureFilter {
                 commandBuffer: commandBuffer)
             self.zTextures = zTextures
             self.initialConditionTexture = initialConditionTexture
-            self.spareTexture = zOutTexture
+            self.spareTexture = tempZ0Texture
         }
         
         let zTex0 = zTextures[0]
