@@ -175,8 +175,9 @@ extension IIRTransferFunction {
     }
     
     func cascade(n: UInt) -> IIRTransferFunction {
+        
         var fn = self
-        for _ in 0..<n {
+        for _ in 1..<n {
             fn = fn * fn
         }
         return fn

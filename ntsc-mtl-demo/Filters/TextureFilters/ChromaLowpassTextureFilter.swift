@@ -78,7 +78,8 @@ class ChromaLowpassTextureFilter {
         switch filterType {
         case .constantK:
             let lowpass = IIRTransferFunction.lowpassFilter(cutoff: cutoff, rate: rate)
-            return lowpass.cascade(n: 3)
+            let result = lowpass.cascade(n: 3)
+            return result
         case .butterworth:
             return IIRTransferFunction.butterworth(cutoff: cutoff, rate: rate)
         }

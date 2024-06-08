@@ -43,7 +43,7 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         NSLayoutConstraint.activate(hConstraints + vConstraints)
         var effect: NTSCEffect = .default
         effect.inputLumaFilter = .notch
-        effect.filterType = .butterworth
+        effect.filterType = .constantK
         effect.chromaLowpassIn = .full
         self.filter = try! NTSCTextureFilter(effect: effect, device: device, context: ciContext)
         setupCamera()

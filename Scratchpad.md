@@ -326,3 +326,79 @@ OK, realized in first test that numerators and denominators can overflow float16
     - no diff
 - Snow
     - completely boned
+
+### Debugging ConstantK
+
+- First pass of cascade
+    - Swift
+        - nums: [0.3632493, 0.0] (for both left and right)
+            - trimmedZeroes: [0.3632493] (seems wrong)
+                - not wrong, same thing in Rust
+        - dens: [1.0, -0.6367507] (for both left and right)
+            - trimmedZeroes: no change (for either left or right)
+            - trimmedZeroes: same for Rust
+        - polynomialMultiply
+            - a and b are both equal to 0.3632493 (for nums)
+            - a and b are both equal to [1.0, -0.6367507] (for dens)
+        - second pass (already returned out for nums and dens once)
+            - a nums are [0.131950051] and b are [0.363249302]
+                - same in Rust
+            - out is [0.0479] in Rust
+            - out is 
+    - Rust
+        - polynomialMultiply
+            - a and b are both the 0.36 number
+            - degree 1
+                - first loop ai and bi are both 0
+                    - out = [0.131950051]
+                - only one loop
+                - returning [0.131950051]
+            - a and b are identical to Swift for dens
+                - out is [1.0, -1.27, 0.405] for both swift and rust
+
+- This is too confusing. Here's all the invocations from Rust:
+
+poly_mul_count: 0
+a: [0.3632493]
+b: [0.3632493]
+out: [0.13195005]
+poly_mul_count: 1
+a: [1.0, -0.6367507]
+b: [1.0, -0.6367507]
+out: [1.0, -1.2735014, 0.40545145]
+poly_mul_count: 2
+a: [0.13195005]
+b: [0.3632493]
+out: [0.047930762]
+poly_mul_count: 3
+a: [1.0, -1.2735014, 0.40545145]
+b: [1.0, -0.6367507]
+out: [1.0, -1.9102521, 1.2163544, -0.2581715]
+
+- And here they are in swift
+
+poly_mul_count: 0
+a: [0.3632493]
+b: [0.3632493]
+out: [0.13195005]
+poly_mul_count: 1
+a: [1.0, -0.6367507]
+b: [1.0, -0.6367507]
+out: [1.0, -1.2735014, 0.40545145]
+poly_mul_count: 2
+a: [0.13195005]
+b: [0.13195005]
+out: [0.017410817]
+poly_mul_count: 3
+a: [1.0, -1.2735014, 0.40545145]
+b: [1.0, -1.2735014, 0.40545145]
+out: [1.0, -2.5470028, 2.4327087, -1.032686, 0.16439088]
+poly_mul_count: 4
+a: [0.017410817]
+b: [0.017410817]
+out: [0.00030313653]
+poly_mul_count: 5
+a: [1.0, -2.5470028, 2.4327087, -1.032686, 0.16439088]
+b: [1.0, -2.5470028, 2.4327087, -1.032686, 0.16439088]
+out: [1.0, -5.0940056, 11.35264, -14.457603, 11.507361, -5.8618565, 1.8662705, -0.33952832, 0.02702436]
+
