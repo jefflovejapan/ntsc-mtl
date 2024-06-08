@@ -38,7 +38,8 @@ kernel void shiftRow
     }
     
     uint textureWidth = inputTexture.get_width();
-    int desiredPixelIndex = gid.x + offsetRows;
+    int shiftInt = shift < 0.0 ? 1 : 0;
+    int desiredPixelIndex = gid.x + shiftInt;
     uint pixelIndex = 0;
     if (desiredPixelIndex < 0) {
         pixelIndex = boundaryColumnIndex;
@@ -49,26 +50,5 @@ kernel void shiftRow
     }
     half4 otherPixel = inputTexture.read(uint2(pixelIndex, gid.y));
     half4 mixel = (shiftFrac * thisPixel) + ((1.0 - shiftFrac) * otherPixel);
-    
-    /*
-     Get some values as a function of our position, shift, and boundary handling (shift_int, shift_frac, boundary_value, and prev)
-     
-     There's some branching depending on whether shift_int is greater than 0. We're either shifting forwards or backwards
-     
-     We're using this mutable "prev" thing to keep track of our last pixel value
-     
-     I think we're just doing this because we're shifting an array in place. If we do this in shadertown we can just sample from a different place in the texture
-     
-     shift_int is either 1 or 0 depending on whether shift is < 0 or not
-     
-     boundaryValue is a constant:
-        - first pixel if shift_int is >= 0
-        - last pixel if shift_int is < 0
-     
-     shift_frac is what proportion of the neighboring frame to use
-     
-     prev is always a constant related to shift_int
-     return (shift_int, shift_frac, boundary_value, and prev)
-     */
     outputTexture.write(mixel, gid);
 }

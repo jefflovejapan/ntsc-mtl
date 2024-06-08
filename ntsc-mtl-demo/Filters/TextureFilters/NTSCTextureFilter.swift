@@ -284,51 +284,51 @@ class NTSCTextureFilter {
                 commandBuffer: commandBuffer,
                 device: device
             )
-//            try Self.inputLuma(
-//                iter.last!,
-//                output: iter.next()!,
-//                commandBuffer: commandBuffer,
-//                lumaLowpass: effect.inputLumaFilter, 
-//                lumaBoxFilter: lumaBoxFilter,
-//                lumaNotchFilter: lumaNotchFilter
-//            )
-//            try Self.chromaLowpass(
-//                iter.last!,
-//                output: iter.next()!,
-//                commandBuffer: commandBuffer,
-//                chromaLowpass: effect.chromaLowpassIn,
-//                lightFilter: lightChromaLowpassFilter,
-//                fullFilter: fullChromaLowpassFilter
-//            )
-//            try Self.chromaIntoLuma(
-//                inputTexture: iter.last!,
-//                outputTexture: iter.next()!,
-//                timestamp: frameNum,
-//                phaseShift: effect.videoScanlinePhaseShift,
-//                phaseShiftOffset: effect.videoScanlinePhaseShiftOffset,
-//                filter: self.chromaIntoLumaFilter,
-//                library: library,
-//                device: device,
-//                commandBuffer: commandBuffer
-//            )
-//            try Self.compositePreemphasis(
-//                inputTexture: iter.last!,
-//                outputTexture: iter.next()!,
-//                filter: compositePreemphasisFilter,
-//                commandBuffer: commandBuffer
-//            )
-//            try Self.compositeNoise(
-//                inputTexture: iter.last!,
-//                outputTexture: iter.next()!,
-//                filter: compositeNoiseFilter,
-//                commandBuffer: commandBuffer
-//            )
-//            try Self.snow(
-//                inputTexture: iter.last!,
-//                outputTexture: iter.next()!,
-//                filter: snowFilter,
-//                commandBuffer: commandBuffer
-//            )
+            try Self.inputLuma(
+                iter.last!,
+                output: iter.next()!,
+                commandBuffer: commandBuffer,
+                lumaLowpass: effect.inputLumaFilter, 
+                lumaBoxFilter: lumaBoxFilter,
+                lumaNotchFilter: lumaNotchFilter
+            )
+            try Self.chromaLowpass(
+                iter.last!,
+                output: iter.next()!,
+                commandBuffer: commandBuffer,
+                chromaLowpass: effect.chromaLowpassIn,
+                lightFilter: lightChromaLowpassFilter,
+                fullFilter: fullChromaLowpassFilter
+            )
+            try Self.chromaIntoLuma(
+                inputTexture: iter.last!,
+                outputTexture: iter.next()!,
+                timestamp: frameNum,
+                phaseShift: effect.videoScanlinePhaseShift,
+                phaseShiftOffset: effect.videoScanlinePhaseShiftOffset,
+                filter: self.chromaIntoLumaFilter,
+                library: library,
+                device: device,
+                commandBuffer: commandBuffer
+            )
+            try Self.compositePreemphasis(
+                inputTexture: iter.last!,
+                outputTexture: iter.next()!,
+                filter: compositePreemphasisFilter,
+                commandBuffer: commandBuffer
+            )
+            try Self.compositeNoise(
+                inputTexture: iter.last!,
+                outputTexture: iter.next()!,
+                filter: compositeNoiseFilter,
+                commandBuffer: commandBuffer
+            )
+            try Self.snow(
+                inputTexture: iter.last!,
+                outputTexture: iter.next()!,
+                filter: snowFilter,
+                commandBuffer: commandBuffer
+            )
             try Self.headSwitching(
                 inputTexture: iter.last!,
                 outputTexture: iter.next()!,

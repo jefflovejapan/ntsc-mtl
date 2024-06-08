@@ -34,36 +34,6 @@
             endingLineNumber = "161"
             landmarkName = "shiftRowMidline(inputTexture:outputTexture:commandBuffer:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "5A33E658-861C-4B37-BF25-7FE6AEC5BFB9 - 825b3c14fbab503a"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ntsc_mtl_demo.HeadSwitchingTextureFilter.shiftRowMidline(inputTexture: __C.MTLTexture, outputTexture: __C.MTLTexture, commandBuffer: __C.MTLCommandBuffer) throws -&gt; ()"
-                  moduleName = "ntsc-mtl-demo"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jeff/Developer/recurse/ntsc-mtl-demo/ntsc-mtl-demo/Filters/TextureFilters/HeadSwitchingTextureFilter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "162"
-                  endingLineNumber = "162">
-               </Location>
-               <Location
-                  uuid = "5A33E658-861C-4B37-BF25-7FE6AEC5BFB9 - 825b3c14fbab503a"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ntsc_mtl_demo.HeadSwitchingTextureFilter.shiftRowMidline(inputTexture: __C.MTLTexture, outputTexture: __C.MTLTexture, commandBuffer: __C.MTLCommandBuffer) throws -&gt; ()"
-                  moduleName = "ntsc-mtl-demo"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jeff/Developer/recurse/ntsc-mtl-demo/ntsc-mtl-demo/Filters/TextureFilters/HeadSwitchingTextureFilter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "162"
-                  endingLineNumber = "162">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -80,36 +50,6 @@
             endingLineNumber = "100"
             landmarkName = "shiftRow(inputTexture:randomTexture:outputTexture:shift:offset:boundaryHandling:bandwidthScale:commandBuffer:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "701B991F-6019-437E-8DF7-84C4B347CB71 - 214e77a910470e7f"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ntsc_mtl_demo.HeadSwitchingTextureFilter.shiftRow(inputTexture: __C.MTLTexture, randomTexture: __C.MTLTexture, outputTexture: __C.MTLTexture, shift: Swift.Float, offset: Swift.UInt, boundaryHandling: ntsc_mtl_demo.BoundaryHandling, bandwidthScale: Swift.Float, commandBuffer: __C.MTLCommandBuffer) throws -&gt; ()"
-                  moduleName = "ntsc-mtl-demo"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jeff/Developer/recurse/ntsc-mtl-demo/ntsc-mtl-demo/Filters/TextureFilters/HeadSwitchingTextureFilter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "101"
-                  endingLineNumber = "101">
-               </Location>
-               <Location
-                  uuid = "701B991F-6019-437E-8DF7-84C4B347CB71 - 214e77a910470e7f"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ntsc_mtl_demo.HeadSwitchingTextureFilter.shiftRow(inputTexture: __C.MTLTexture, randomTexture: __C.MTLTexture, outputTexture: __C.MTLTexture, shift: Swift.Float, offset: Swift.UInt, boundaryHandling: ntsc_mtl_demo.BoundaryHandling, bandwidthScale: Swift.Float, commandBuffer: __C.MTLCommandBuffer) throws -&gt; ()"
-                  moduleName = "ntsc-mtl-demo"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jeff/Developer/recurse/ntsc-mtl-demo/ntsc-mtl-demo/Filters/TextureFilters/HeadSwitchingTextureFilter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "101"
-                  endingLineNumber = "101">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
