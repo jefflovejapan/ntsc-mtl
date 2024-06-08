@@ -10,6 +10,10 @@ import XCTest
 import Metal
 import CoreImage
 
+func createTestImage(color: CIColor, size: CGSize = CGSize(width: 1, height: 1)) -> CIImage {
+    return CIImage(color: color).cropped(to: CGRect(origin: .zero, size: size))
+}
+
 final class BandingTests: XCTestCase {
     var image: CIImage!
     var device: MTLDevice!

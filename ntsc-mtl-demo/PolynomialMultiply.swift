@@ -7,6 +7,7 @@
 
 import Foundation
 
+var polynomialMultiplyCount = 0
 func polynomialMultiply<A: Numeric>(_ a: [A], _ b: [A]) -> [A] {
     let degree: Int = a.count + b.count - 1
     var out: [A] = Array(repeating: 0, count: degree)
@@ -17,5 +18,10 @@ func polynomialMultiply<A: Numeric>(_ a: [A], _ b: [A]) -> [A] {
         }
     }
 
+    print("poly_mul_count: \(polynomialMultiplyCount)")
+    print("a: \(a)")
+    print("b: \(b)")
+    print("out: \(out)")
+    polynomialMultiplyCount += 1
     return out
 }
