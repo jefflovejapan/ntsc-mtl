@@ -157,7 +157,7 @@ class HeadSwitchingTextureFilter {
         commandEncoder.endEncoding()
     }
     
-    private func shiftRowMidline(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+    private func shiftRowMidline(inputTexture: MTLTexture, randomTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         let pipelineState: MTLComputePipelineState
         if let shiftRowMidlinePipelineState {
             pipelineState = shiftRowMidlinePipelineState
@@ -169,12 +169,24 @@ class HeadSwitchingTextureFilter {
             pipelineState = try device.makeComputePipelineState(function: function)
             self.shiftRowPipelineState = pipelineState
         }
+        
+        guard let randomImage = randomImageGenerator.outputImage else {
+            throw Error.cantMakeRandomImage
+        }
+        
+        let randomXTranslation = CGFloat.random(in: -100..<100, using: &randomNumberGenerator)
+        let randomYTranslation = CGFloat.random(in: -100..<100, using: &randomNumberGenerator)
+        let translatedImage = randomImage.transformed(by: CGAffineTransform(translationX: randomXTranslation, y: randomYTranslation))
+        context.render(translatedImage, to: randomTexture, commandBuffer: commandBuffer, bounds: CGRect(origin: .zero, size: CGSize(width: inputTexture.width, height: outputTexture.height)), colorSpace: context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
+        
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
+        
         commandEncoder.setComputePipelineState(pipelineState)
         commandEncoder.setTexture(inputTexture, index: 0)
-        commandEncoder.setTexture(outputTexture, index: 1)
+        commandEncoder.setTexture(randomTexture, index: 1)
+        commandEncoder.setTexture(outputTexture, index: 2)
         commandEncoder.dispatchThreads(
             MTLSize(width: inputTexture.width, height: inputTexture.height, depth: 1),
             threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1)
