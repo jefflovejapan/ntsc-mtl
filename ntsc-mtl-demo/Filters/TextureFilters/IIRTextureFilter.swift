@@ -295,11 +295,6 @@ class IIRTextureFilter {
             }
             
             let filteredSampleTexture = initialConditionTexture
-            
-            guard let filteredImageTexture = Self.texture(from: inputTexture, device: device) else {
-                throw Error.cantInstantiateTexture
-            }
-                        
             let zTextures = Array(
                 Self.textures(
                     width: inputTexture.width,

@@ -15,6 +15,8 @@ class HeadSwitchingTextureFilter {
     private let library: MTLLibrary
     private let context: CIContext
     var headSwitchingSettings: HeadSwitchingSettings?
+    var bandwidthScale: Float = NTSCEffect.default.bandwidthScale
+    private var randomImageTexture: MTLTexture?
     init(device: MTLDevice, library: MTLLibrary, ciContext: CIContext) {
         self.device = device
         self.library = library
@@ -25,6 +27,20 @@ class HeadSwitchingTextureFilter {
         guard let hs = headSwitchingSettings else {
             try justBlit(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
             return
+        }
+        
+        let needsUpdate: Bool
+        if let randomImageTexture {
+            needsUpdate = !(randomImageTexture.width == inputTexture.width && randomImageTexture.height == inputTexture.height)
+        } else {
+            needsUpdate = true
+        }
+        if needsUpdate {
+            randomImageTexture = IIRTextureFilter.texture(from: inputTexture, device: device)
+        }
+        
+        guard let randomImageTexture else {
+            throw Error.cantInstantiateTexture
         }
 //        /*
 //         We're getting called with num_rows, offset, shift, and mid_line -- what are these?
@@ -64,9 +80,12 @@ class HeadSwitchingTextureFilter {
         } else {
             try shiftRow(
                 inputTexture: inputTexture,
+                randomTexture: randomImageTexture,
                 outputTexture: outputTexture,
                 shift: hs.horizShift,
+                offset: hs.offset,
                 boundaryHandling: .constant(0),
+                bandwidthScale: bandwidthScale,
                 commandBuffer: commandBuffer
             )
         }
@@ -74,8 +93,10 @@ class HeadSwitchingTextureFilter {
     
     private var shiftRowPipelineState: MTLComputePipelineState?
     private var shiftRowMidlinePipelineState: MTLComputePipelineState?
+    private let randomImageGenerator = CIFilter.randomGenerator()
+    private var randomNumberGenerator = SystemRandomNumberGenerator()
     
-    private func shiftRow(inputTexture: MTLTexture, outputTexture: MTLTexture, shift: Float, boundaryHandling: BoundaryHandling, commandBuffer: MTLCommandBuffer) throws {
+    private func shiftRow(inputTexture: MTLTexture, randomTexture: MTLTexture, outputTexture: MTLTexture, shift: Float, offset: UInt, boundaryHandling: BoundaryHandling, bandwidthScale: Float, commandBuffer: MTLCommandBuffer) throws {
         let pipelineState: MTLComputePipelineState
         if let shiftRowPipelineState {
             pipelineState = shiftRowPipelineState
@@ -87,18 +108,48 @@ class HeadSwitchingTextureFilter {
             pipelineState = try device.makeComputePipelineState(function: function)
             self.shiftRowPipelineState = pipelineState
         }
+        guard let randomImage: CIImage = randomImageGenerator.outputImage else {
+            throw Error.cantMakeRandomImage
+        }
+        let randomXTranslation = CGFloat.random(in: -100..<100, using: &randomNumberGenerator)
+        let randomYTranslation = CGFloat.random(in: -100..<100, using: &randomNumberGenerator)
+        let translatedImage = randomImage.transformed(by: CGAffineTransform(translationX: randomXTranslation, y: randomYTranslation)).cropped(
+            to: CGRect(
+                origin: .zero,
+                size: CGSize(
+                    width: inputTexture.width,
+                    height: inputTexture.height
+                )
+            )
+        )
+        context.render(
+            translatedImage,
+            to: randomTexture,
+            commandBuffer: commandBuffer,
+            bounds: CGRect(
+                origin: .zero,
+                size: CGSize(
+                    width: CGFloat(inputTexture.width),
+                    height: CGFloat(inputTexture.height)
+                )
+            ),
+            colorSpace: context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB()
+        )
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
         commandEncoder.setComputePipelineState(pipelineState)
         commandEncoder.setTexture(inputTexture, index: 0)
-        commandEncoder.setTexture(outputTexture, index: 1)
-        var offsetPixelCount: Int = 30;
-        commandEncoder.setBytes(&offsetPixelCount, length: MemoryLayout<Int>.size, index: 0)
+        commandEncoder.setTexture(randomTexture, index: 1)
+        commandEncoder.setTexture(outputTexture, index: 2)
+        var offsetRows: UInt = offset;
+        commandEncoder.setBytes(&offsetRows, length: MemoryLayout<UInt>.size, index: 0)
         var boundaryColumnIndex: UInt = UInt(inputTexture.width - 1)
         commandEncoder.setBytes(&boundaryColumnIndex, length: MemoryLayout<UInt>.size, index: 1)
-        var minRowForEffect: UInt = 300
-        commandEncoder.setBytes(&minRowForEffect, length: MemoryLayout<UInt>.size, index: 2)
+        var shift = shift
+        commandEncoder.setBytes(&shift, length: MemoryLayout<Float>.size, index: 2)
+        var bandwidthScale = bandwidthScale
+        commandEncoder.setBytes(&bandwidthScale, length: MemoryLayout<Float>.size, index: 3)
         commandEncoder.dispatchThreads(
             MTLSize(width: inputTexture.width, height: inputTexture.height, depth: 1),
             threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1)
