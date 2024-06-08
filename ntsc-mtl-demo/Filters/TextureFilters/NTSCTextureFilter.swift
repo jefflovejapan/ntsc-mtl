@@ -182,7 +182,8 @@ class NTSCTextureFilter {
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
-    static func headSwitching(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: HeadSwitchingTextureFilter, commandBuffer: MTLCommandBuffer) throws {
+    static func headSwitching(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: HeadSwitchingTextureFilter, headSwitching: HeadSwitchingSettings?, commandBuffer: MTLCommandBuffer) throws {
+        filter.headSwitchingSettings = headSwitching
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
@@ -330,7 +331,8 @@ class NTSCTextureFilter {
             try Self.headSwitching(
                 inputTexture: iter.last!,
                 outputTexture: iter.next()!,
-                filter: headSwitchingFilter,
+                filter: headSwitchingFilter, 
+                headSwitching: effect.headSwitching,
                 commandBuffer: commandBuffer
             )
             try Self.convertToRGB(

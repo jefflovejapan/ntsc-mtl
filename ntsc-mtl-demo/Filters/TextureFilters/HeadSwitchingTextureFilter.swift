@@ -14,6 +14,7 @@ class HeadSwitchingTextureFilter {
     private let device: MTLDevice
     private let library: MTLLibrary
     private let context: CIContext
+    var headSwitchingSettings: HeadSwitchingSettings?
     init(device: MTLDevice, library: MTLLibrary, ciContext: CIContext) {
         self.device = device
         self.library = library
@@ -21,6 +22,14 @@ class HeadSwitchingTextureFilter {
     }
     
     func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        guard let headSwitchingSettings else {
+            try justBlit(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
+            return
+        }
+        fatalError("Not implemented -- \(headSwitchingSettings as Optional)")
+    }
+    
+    private func justBlit(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         guard let blitEncoder = commandBuffer.makeBlitCommandEncoder() else {
             throw Error.cantMakeBlitEncoder
         }
