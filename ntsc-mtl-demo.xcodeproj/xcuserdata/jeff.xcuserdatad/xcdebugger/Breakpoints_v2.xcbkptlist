@@ -23,49 +23,47 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "D0C407C2-385B-46CF-A339-598B1D990254"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "ntsc-mtl-demo/CameraView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "151"
-            endingLineNumber = "151"
-            landmarkName = "draw(in:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "41F27CC9-77F8-4C05-A513-88738F3295B5"
+            uuid = "5A33E658-861C-4B37-BF25-7FE6AEC5BFB9"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ntsc-mtl-demo/Filters/TextureFilters/HeadSwitchingTextureFilter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "59"
-            endingLineNumber = "59"
-            landmarkName = "run(inputTexture:outputTexture:commandBuffer:)"
+            startingLineNumber = "110"
+            endingLineNumber = "110"
+            landmarkName = "shiftRowMidline(inputTexture:outputTexture:commandBuffer:)"
             landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "A5A0652E-D78B-4697-A188-167DEC75667D"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "ntsc-mtl-demo/Filters/TextureFilters/HeadSwitchingTextureFilter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "61"
-            endingLineNumber = "61"
-            landmarkName = "run(inputTexture:outputTexture:commandBuffer:)"
-            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "5A33E658-861C-4B37-BF25-7FE6AEC5BFB9 - 825b3c14fbaba947"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ntsc_mtl_demo.HeadSwitchingTextureFilter.shiftRowMidline(inputTexture: __C.MTLTexture, outputTexture: __C.MTLTexture, commandBuffer: __C.MTLCommandBuffer) throws -&gt; ()"
+                  moduleName = "ntsc-mtl-demo"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jeff/Developer/recurse/ntsc-mtl-demo/ntsc-mtl-demo/Filters/TextureFilters/HeadSwitchingTextureFilter.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "111"
+                  endingLineNumber = "111">
+               </Location>
+               <Location
+                  uuid = "5A33E658-861C-4B37-BF25-7FE6AEC5BFB9 - 825b3c14fbaba947"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ntsc_mtl_demo.HeadSwitchingTextureFilter.shiftRowMidline(inputTexture: __C.MTLTexture, outputTexture: __C.MTLTexture, commandBuffer: __C.MTLCommandBuffer) throws -&gt; ()"
+                  moduleName = "ntsc-mtl-demo"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jeff/Developer/recurse/ntsc-mtl-demo/ntsc-mtl-demo/Filters/TextureFilters/HeadSwitchingTextureFilter.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "111"
+                  endingLineNumber = "111">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

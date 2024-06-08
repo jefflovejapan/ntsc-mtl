@@ -56,16 +56,26 @@ class HeadSwitchingTextureFilter {
 //        
 //        let shift = hs.horizShift
         if let midLine = hs.midLine {
-            try shiftRowMidline(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
+            try shiftRowMidline(
+                inputTexture: inputTexture,
+                outputTexture: outputTexture,
+                commandBuffer: commandBuffer
+            )
         } else {
-            try shiftRow(inputTexture: inputTexture, outputTexture: outputTexture, boundaryHandling: .constant(0), commandBuffer: commandBuffer)
+            try shiftRow(
+                inputTexture: inputTexture,
+                outputTexture: outputTexture,
+                shift: hs.horizShift,
+                boundaryHandling: .constant(0),
+                commandBuffer: commandBuffer
+            )
         }
     }
     
     private var shiftRowPipelineState: MTLComputePipelineState?
     private var shiftRowMidlinePipelineState: MTLComputePipelineState?
     
-    private func shiftRow(inputTexture: MTLTexture, outputTexture: MTLTexture, boundaryHandling: BoundaryHandling, commandBuffer: MTLCommandBuffer) throws {
+    private func shiftRow(inputTexture: MTLTexture, outputTexture: MTLTexture, shift: Float, boundaryHandling: BoundaryHandling, commandBuffer: MTLCommandBuffer) throws {
         let pipelineState: MTLComputePipelineState
         if let shiftRowPipelineState {
             pipelineState = shiftRowPipelineState
@@ -83,6 +93,12 @@ class HeadSwitchingTextureFilter {
         commandEncoder.setComputePipelineState(pipelineState)
         commandEncoder.setTexture(inputTexture, index: 0)
         commandEncoder.setTexture(outputTexture, index: 1)
+        var offsetPixelCount: Int = 30;
+        commandEncoder.setBytes(&offsetPixelCount, length: MemoryLayout<Int>.size, index: 0)
+        var boundaryColumnIndex: UInt = UInt(inputTexture.width - 1)
+        commandEncoder.setBytes(&boundaryColumnIndex, length: MemoryLayout<UInt>.size, index: 1)
+        var minRowForEffect: UInt = 300
+        commandEncoder.setBytes(&minRowForEffect, length: MemoryLayout<UInt>.size, index: 2)
         commandEncoder.dispatchThreads(
             MTLSize(width: inputTexture.width, height: inputTexture.height, depth: 1),
             threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1)
