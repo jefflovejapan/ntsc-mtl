@@ -403,4 +403,11 @@ a: [1.0, -2.5470028, 2.4327087, -1.032686, 0.16439088]
 b: [1.0, -2.5470028, 2.4327087, -1.032686, 0.16439088]
 out: [1.0, -5.0940056, 11.35264, -14.457603, 11.507361, -5.8618565, 1.8662705, -0.33952832, 0.02702436]
 
-### 
+### Head Switching
+
+- calculate a rowshift and noisyshift
+    - rowShift: can pass shift and offset into kernel along with width (although you can call get_width inside the kernel)
+    - noisyShift: `(rowShift + random - 0.5) * bandwidthScale`
+    - if we've got midLine stuff then we do a bunch of extra math, otherwise we shiftRow(row, noisyShift, boundaryHandling of 0)
+        - we shift the row by a non-integer amount using linear interpolation
+    

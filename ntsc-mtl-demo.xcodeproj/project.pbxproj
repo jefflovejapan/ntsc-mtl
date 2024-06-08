@@ -19,11 +19,10 @@
 		1F3E38252C1248E100D16CF0 /* video-frame.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1F3E38212C1247DC00D16CF0 /* video-frame.jpg */; };
 		1F4692CF2C138F9900CD7756 /* Array+PaddedToLength.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4692CE2C138F9900CD7756 /* Array+PaddedToLength.swift */; };
 		1F4692D12C13A27700CD7756 /* Paint.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F4692D02C13A27700CD7756 /* Paint.metal */; };
+		1F4692D32C13C4A100CD7756 /* HeadSwitchingTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4692D22C13C4A100CD7756 /* HeadSwitchingTextureFilter.swift */; };
 		1F4692D52C13CAA000CD7756 /* IteratorThing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4692D42C13CAA000CD7756 /* IteratorThing.swift */; };
 		1F4692D72C13CC4000CD7756 /* IteratorThingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4692D62C13CC4000CD7756 /* IteratorThingTests.swift */; };
 		1F4692D92C13D7E700CD7756 /* TransferFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4692D82C13D7E700CD7756 /* TransferFunctionTests.swift */; };
-		1F5B6CBE2C04BB970051A9ED /* ChromaIntoLumaFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CBD2C04BB970051A9ED /* ChromaIntoLumaFilter.swift */; };
-		1F4692D32C13C4A100CD7756 /* HeadSwitchingTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4692D22C13C4A100CD7756 /* HeadSwitchingTextureFilter.swift */; };
 		1F5B6CC22C04D4010051A9ED /* NTSC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CC12C04D4010051A9ED /* NTSC.swift */; };
 		1F5B6CC62C04FCA50051A9ED /* PolynomialMultiply.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CC52C04FCA50051A9ED /* PolynomialMultiply.swift */; };
 		1F5B6CD02C0536600051A9ED /* Clamped.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CCF2C0536600051A9ED /* Clamped.swift */; };
@@ -53,6 +52,9 @@
 		1FA29A8B2C111B6000070F03 /* ClampFunctions.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FA29A8A2C111B6000070F03 /* ClampFunctions.metal */; };
 		1FA29A8D2C112DBC00070F03 /* ChromaIntoLuma.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FA29A8C2C112DBC00070F03 /* ChromaIntoLuma.metal */; };
 		1FA29A8F2C112E3E00070F03 /* ChromaIntoLumaTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA29A8E2C112E3E00070F03 /* ChromaIntoLumaTextureFilter.swift */; };
+		1FA64F782C1468BF00E54D6F /* BoundaryHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA64F772C1468BF00E54D6F /* BoundaryHandling.swift */; };
+		1FA64F7A2C146AA800E54D6F /* ShiftRow.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FA64F792C146AA800E54D6F /* ShiftRow.metal */; };
+		1FA64F7C2C146C3D00E54D6F /* ShiftRowMidline.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FA64F7B2C146C3D00E54D6F /* ShiftRowMidline.metal */; };
 		1FC887372C10A62400EE14A7 /* MTLTexture+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FC887362C10A62400EE14A7 /* MTLTexture+Extensions.swift */; };
 		1FCC1D312C0A0C2700943847 /* YIQChannels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FCC1D302C0A0C2700943847 /* YIQChannels.swift */; };
 		1FEE323E2C0A3FCC009F09BA /* YIQ.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FEE323D2C0A3FCC009F09BA /* YIQ.swift */; };
@@ -82,10 +84,10 @@
 		1F3E38232C12486C00D16CF0 /* BandingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandingTests.swift; sourceTree = "<group>"; };
 		1F4692CE2C138F9900CD7756 /* Array+PaddedToLength.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+PaddedToLength.swift"; sourceTree = "<group>"; };
 		1F4692D02C13A27700CD7756 /* Paint.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Paint.metal; sourceTree = "<group>"; };
+		1F4692D22C13C4A100CD7756 /* HeadSwitchingTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadSwitchingTextureFilter.swift; sourceTree = "<group>"; };
 		1F4692D42C13CAA000CD7756 /* IteratorThing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IteratorThing.swift; sourceTree = "<group>"; };
 		1F4692D62C13CC4000CD7756 /* IteratorThingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IteratorThingTests.swift; sourceTree = "<group>"; };
 		1F4692D82C13D7E700CD7756 /* TransferFunctionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferFunctionTests.swift; sourceTree = "<group>"; };
-		1F4692D22C13C4A100CD7756 /* HeadSwitchingTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadSwitchingTextureFilter.swift; sourceTree = "<group>"; };
 		1F5B6CC12C04D4010051A9ED /* NTSC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSC.swift; sourceTree = "<group>"; };
 		1F5B6CC52C04FCA50051A9ED /* PolynomialMultiply.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolynomialMultiply.swift; sourceTree = "<group>"; };
 		1F5B6CCF2C0536600051A9ED /* Clamped.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Clamped.swift; sourceTree = "<group>"; };
@@ -118,6 +120,9 @@
 		1FA29A8A2C111B6000070F03 /* ClampFunctions.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ClampFunctions.metal; sourceTree = "<group>"; };
 		1FA29A8C2C112DBC00070F03 /* ChromaIntoLuma.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ChromaIntoLuma.metal; sourceTree = "<group>"; };
 		1FA29A8E2C112E3E00070F03 /* ChromaIntoLumaTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromaIntoLumaTextureFilter.swift; sourceTree = "<group>"; };
+		1FA64F772C1468BF00E54D6F /* BoundaryHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoundaryHandling.swift; sourceTree = "<group>"; };
+		1FA64F792C146AA800E54D6F /* ShiftRow.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ShiftRow.metal; sourceTree = "<group>"; };
+		1FA64F7B2C146C3D00E54D6F /* ShiftRowMidline.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ShiftRowMidline.metal; sourceTree = "<group>"; };
 		1FC887362C10A62400EE14A7 /* MTLTexture+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MTLTexture+Extensions.swift"; sourceTree = "<group>"; };
 		1FCC1D302C0A0C2700943847 /* YIQChannels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YIQChannels.swift; sourceTree = "<group>"; };
 		1FEE323D2C0A3FCC009F09BA /* YIQ.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YIQ.swift; sourceTree = "<group>"; };
@@ -160,6 +165,8 @@
 				1F5F93D42C0FD58E00EC29A2 /* IIRSideEffect.metal */,
 				1F5F93D02C0FC84500EC29A2 /* IIRMultiply.metal */,
 				1F5F93D62C0FDB8700EC29A2 /* IIRFinalImage.metal */,
+				1FA64F792C146AA800E54D6F /* ShiftRow.metal */,
+				1FA64F7B2C146C3D00E54D6F /* ShiftRowMidline.metal */,
 			);
 			path = MetalKernels;
 			sourceTree = "<group>";
@@ -210,6 +217,7 @@
 				1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */,
 				1FC887362C10A62400EE14A7 /* MTLTexture+Extensions.swift */,
 				1F3E381F2C123D4700D16CF0 /* Float+Extensions.swift */,
+				1FA64F772C1468BF00E54D6F /* BoundaryHandling.swift */,
 				1F4692CE2C138F9900CD7756 /* Array+PaddedToLength.swift */,
 				1F6BFDEC2BFF799F00883169 /* ContentView.swift */,
 				1F5B6CCF2C0536600051A9ED /* Clamped.swift */,
@@ -418,6 +426,9 @@
 				1F5B6CD02C0536600051A9ED /* Clamped.swift in Sources */,
 				1F5F93CA2C0F9DCA00EC29A2 /* YIQCompose.metal in Sources */,
 				1F1F9B692C03C3980085048F /* IIRTransferFunction.swift in Sources */,
+				1FA64F782C1468BF00E54D6F /* BoundaryHandling.swift in Sources */,
+				1FA64F7A2C146AA800E54D6F /* ShiftRow.metal in Sources */,
+				1FA64F7C2C146C3D00E54D6F /* ShiftRowMidline.metal in Sources */,
 				1F5B6CC22C04D4010051A9ED /* NTSC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

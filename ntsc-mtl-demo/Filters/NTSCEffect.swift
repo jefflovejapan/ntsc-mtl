@@ -81,7 +81,7 @@ struct HeadSwitchingSettings {
     var height: UInt
     var offset: UInt
     var horizShift: Float
-    var midLine: HeadSwitchingMidLineSettings
+    var midLine: HeadSwitchingMidLineSettings?
 }
 
 struct HeadSwitchingMidLineSettings {
