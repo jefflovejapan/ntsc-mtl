@@ -16,17 +16,18 @@ class CompositeNoiseTextureFilter {
     private var simplexNoiseTexture: MTLTexture?
     var noise: FBMNoiseSettings?
     private var rng = SystemRandomNumberGenerator()
-    private var multiplyLumaPipelineState: MTLComputePipelineState?
     private let device: MTLDevice
     private let library: MTLLibrary
     private let ciContext: CIContext
+    private let pipelineCache: MetalPipelineCache
     private static let defaultIntensity: Float16 = 0.05
     
-    init(noise: FBMNoiseSettings?, device: MTLDevice, library: MTLLibrary, ciContext: CIContext) {
+    init(noise: FBMNoiseSettings?, device: MTLDevice, library: MTLLibrary, ciContext: CIContext, pipelineCache: MetalPipelineCache) {
         self.noise = noise
         self.device = device
         self.library = library
         self.ciContext = ciContext
+        self.pipelineCache = pipelineCache
     }
     
     func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
@@ -55,17 +56,7 @@ class CompositeNoiseTextureFilter {
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
-        let pipelineState: MTLComputePipelineState
-        if let multiplyLumaPipelineState {
-            pipelineState = multiplyLumaPipelineState
-        } else {
-            let functionName = "multiplyLuma"
-            guard let function = library.makeFunction(name: functionName) else {
-                throw Error.cantMakeFunction(functionName)
-            }
-            pipelineState = try device.makeComputePipelineState(function: function)
-            self.multiplyLumaPipelineState = pipelineState
-        }
+        let pipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .multiplyLuma)
         commandEncoder.setComputePipelineState(pipelineState)
         commandEncoder.setTexture(inputTexture, index: 0)
         commandEncoder.setTexture(simplexNoiseTexture, index: 1)

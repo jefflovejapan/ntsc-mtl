@@ -30,6 +30,7 @@ class NTSCTextureFilter {
     private let context: CIContext
     private let commandQueue: MTLCommandQueue
     private let library: MTLLibrary
+    private let pipelineCache: MetalPipelineCache
     var effect: NTSCEffect
     
     // MARK: -Filters
@@ -55,11 +56,13 @@ class NTSCTextureFilter {
             throw Error.cantMakeLibrary
         }
         self.library = library
-        self.lumaBoxFilter = LumaBoxTextureFilter(device: device, commandQueue: commandQueue, library: library)
+        self.pipelineCache = try MetalPipelineCache(device: device, library: library)
+        self.lumaBoxFilter = LumaBoxTextureFilter(device: device, commandQueue: commandQueue, library: library, pipelineCache: pipelineCache)
         let lumaNotchTransferFunction = IIRTransferFunction.lumaNotch
         self.lumaNotchFilter = IIRTextureFilter(
             device: device,
-            library: library,
+            library: library, 
+            pipelineCache: pipelineCache,
             numerators: lumaNotchTransferFunction.numerators,
             denominators: lumaNotchTransferFunction.denominators,
             initialCondition: .firstSample,
@@ -67,13 +70,14 @@ class NTSCTextureFilter {
             scale: 1,
             delay: 0
         )
-        self.lightChromaLowpassFilter = ChromaLowpassTextureFilter(device: device, library: library, intensity: .light, bandwidthScale: effect.bandwidthScale, filterType: effect.filterType)
-        self.fullChromaLowpassFilter = ChromaLowpassTextureFilter(device: device, library: library, intensity: .full, bandwidthScale: effect.bandwidthScale, filterType: effect.filterType)
-        self.chromaIntoLumaFilter = ChromaIntoLumaTextureFilter()
+        self.lightChromaLowpassFilter = ChromaLowpassTextureFilter(device: device, library: library, pipelineCache: pipelineCache, intensity: .light, bandwidthScale: effect.bandwidthScale, filterType: effect.filterType)
+        self.fullChromaLowpassFilter = ChromaLowpassTextureFilter(device: device, library: library, pipelineCache: pipelineCache, intensity: .full, bandwidthScale: effect.bandwidthScale, filterType: effect.filterType)
+        self.chromaIntoLumaFilter = ChromaIntoLumaTextureFilter(library: library, device: device, pipelineCache: pipelineCache)
         let compositePreemphasisFunction = IIRTransferFunction.compositePreemphasis(bandwidthScale: effect.bandwidthScale)
         self.compositePreemphasisFilter = IIRTextureFilter(
             device: device,
-            library: library,
+            library: library, 
+            pipelineCache: pipelineCache,
             numerators: compositePreemphasisFunction.numerators,
             denominators: compositePreemphasisFunction.denominators,
             initialCondition: .zero,
@@ -81,33 +85,19 @@ class NTSCTextureFilter {
             scale: -effect.compositePreemphasis,
             delay: 0
         )
-        self.compositeNoiseFilter = CompositeNoiseTextureFilter(noise: effect.compositeNoise, device: device, library: library, ciContext: context)
-        self.snowFilter = SnowTextureFilter(device: device, library: library, ciContext: context)
-        self.headSwitchingFilter = HeadSwitchingTextureFilter(device: device, library: library, ciContext: context)
+        self.compositeNoiseFilter = CompositeNoiseTextureFilter(noise: effect.compositeNoise, device: device, library: library, ciContext: context, pipelineCache: pipelineCache)
+        self.snowFilter = SnowTextureFilter(device: device, library: library, ciContext: context, pipelineCache: pipelineCache)
+        self.headSwitchingFilter = HeadSwitchingTextureFilter(device: device, library: library, ciContext: context, pipelineCache: pipelineCache)
     }
     
     var inputImage: CIImage?
-    
-    private static var convertToYIQPipelineState: MTLComputePipelineState?
-    
-    static func convertToYIQ(_ texture: (any MTLTexture), output: (any MTLTexture), library: MTLLibrary, commandBuffer: MTLCommandBuffer, device: MTLDevice) throws {
+        
+    static func convertToYIQ(_ texture: (any MTLTexture), output: (any MTLTexture), library: MTLLibrary, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
         // Create a command buffer and encoder
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
-        
-        let pipelineState: MTLComputePipelineState
-        if let convertToYIQPipelineState {
-            pipelineState = convertToYIQPipelineState
-        } else {
-            let functionName = "convertToYIQ"
-            guard let function = library.makeFunction(name: functionName) else {
-                throw Error.cantMakeFunction(functionName)
-            }
-            pipelineState = try device.makeComputePipelineState(function: function)
-            Self.convertToYIQPipelineState = pipelineState
-        }
-        
+        let pipelineState = try pipelineCache.pipelineState(function: .convertToYIQ)
         commandEncoder.setComputePipelineState(pipelineState)
         
         // Set the texture and dispatch threads
@@ -159,16 +149,7 @@ class NTSCTextureFilter {
     }
     
     static func chromaIntoLuma(inputTexture: MTLTexture, outputTexture: MTLTexture, timestamp: UInt32, phaseShift: PhaseShift, phaseShiftOffset: Int, filter: ChromaIntoLumaTextureFilter, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
-        try filter.run(
-            inputTexture: inputTexture,
-            outputTexture: outputTexture,
-            timestamp: timestamp,
-            phaseShift: phaseShift,
-            phaseShiftOffset: phaseShiftOffset,
-            library: library,
-            device: device,
-            commandBuffer: commandBuffer
-        )
+        try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, timestamp: timestamp, phaseShift: phaseShift, phaseShiftOffset: phaseShiftOffset, commandBuffer: commandBuffer)
     }
     
     static func compositePreemphasis(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: IIRTextureFilter, commandBuffer: MTLCommandBuffer) throws {
@@ -187,26 +168,14 @@ class NTSCTextureFilter {
         filter.headSwitchingSettings = headSwitching
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
-    
-    private static var convertToRGBPipelineState: MTLComputePipelineState?
-    
-    static func convertToRGB(_ texture: (any MTLTexture), output: (any MTLTexture), commandBuffer: MTLCommandBuffer, library: MTLLibrary, device: MTLDevice) throws {
+        
+    static func convertToRGB(_ texture: (any MTLTexture), output: (any MTLTexture), commandBuffer: MTLCommandBuffer, library: MTLLibrary, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
         // Create a command buffer and encoder
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
         
-        let pipelineState: MTLComputePipelineState
-        if let convertToRGBPipelineState {
-            pipelineState = convertToRGBPipelineState
-        } else {
-            let functionName = "convertToRGB"
-            guard let function = library.makeFunction(name: functionName) else {
-                throw Error.cantMakeFunction(functionName)
-            }
-            pipelineState = try device.makeComputePipelineState(function: function)
-            self.convertToRGBPipelineState = pipelineState
-        }
+        let pipelineState = try pipelineCache.pipelineState(function: .convertToRGB)
         
         // Set up the compute pipeline
         commandEncoder.setComputePipelineState(pipelineState)
@@ -282,7 +251,8 @@ class NTSCTextureFilter {
                 output: iter.next()!,
                 library: library,
                 commandBuffer: commandBuffer,
-                device: device
+                device: device,
+                pipelineCache: pipelineCache
             )
             try Self.inputLuma(
                 iter.last!,
@@ -341,7 +311,8 @@ class NTSCTextureFilter {
                 output: iter.next()!,
                 commandBuffer: commandBuffer,
                 library: library,
-                device: device
+                device: device,
+                pipelineCache: pipelineCache
             )
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()

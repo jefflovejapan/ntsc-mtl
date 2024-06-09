@@ -16,17 +16,17 @@ class LumaBoxTextureFilter {
     private let commandQueue: MTLCommandQueue
     private let blurKernel: MPSImageBox
     private let library: MTLLibrary
+    private let pipelineCache: MetalPipelineCache
     private var scratchTexture: MTLTexture?
     
-    init(device: MTLDevice, commandQueue: MTLCommandQueue, library: MTLLibrary) {
+    init(device: MTLDevice, commandQueue: MTLCommandQueue, library: MTLLibrary, pipelineCache: MetalPipelineCache) {
         self.device = device
         self.commandQueue = commandQueue
         self.blurKernel = MPSImageBox(device: device, kernelWidth: 5, kernelHeight: 5)
         self.library = library
+        self.pipelineCache = pipelineCache
     }
-    
-    private var yiqComposePipelineState: MTLComputePipelineState?
-    
+        
     func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         let needsUpdate: Bool
         if let scratchTexture {
@@ -57,18 +57,7 @@ class LumaBoxTextureFilter {
         
         // We've blurred the YIQ "image" in scratchTexture
         self.blurKernel.encode(commandBuffer: commandBuffer, sourceTexture: inputTexture, destinationTexture: scratchTexture)
-        let pipelineState: MTLComputePipelineState
-        if let yiqComposePipelineState {
-            pipelineState = yiqComposePipelineState
-        } else {
-            let composeFunctionName = "yiqCompose"
-            guard let function = library.makeFunction(name: composeFunctionName) else {
-                throw Error.cantMakeFunction(composeFunctionName    )
-            }
-            
-            pipelineState = try device.makeComputePipelineState(function: function)
-            self.yiqComposePipelineState = pipelineState
-        }
+        let pipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .yiqCompose)
         
         guard let composeCommandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder

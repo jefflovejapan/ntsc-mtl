@@ -10,28 +10,25 @@ import Metal
 
 class ChromaIntoLumaTextureFilter {
     typealias Error = TextureFilterError
-    var chromaIntoLumaPipelineState: MTLComputePipelineState?
+    private let library: MTLLibrary
+    private let device: MTLDevice
+    private let pipelineCache: MetalPipelineCache
+    
+    init(library: MTLLibrary, device: MTLDevice, pipelineCache: MetalPipelineCache) {
+        self.library = library
+        self.device = device
+        self.pipelineCache = pipelineCache
+    }
+    
     func run(
         inputTexture: MTLTexture,
         outputTexture: MTLTexture,
         timestamp: UInt32,
         phaseShift: PhaseShift,
         phaseShiftOffset: Int,
-        library: MTLLibrary,
-        device: MTLDevice,
         commandBuffer: MTLCommandBuffer
     ) throws {
-        let pipelineState: MTLComputePipelineState
-        if let chromaIntoLumaPipelineState {
-            pipelineState = chromaIntoLumaPipelineState
-        } else {
-            let functionName = "chromaIntoLuma"
-            guard let function = library.makeFunction(name: functionName) else {
-                throw Error.cantMakeFunction(functionName)
-            }
-            pipelineState = try device.makeComputePipelineState(function: function)
-            self.chromaIntoLumaPipelineState = pipelineState
-        }
+        let pipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .chromaIntoLuma)
         
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder

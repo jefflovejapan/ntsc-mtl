@@ -7,6 +7,8 @@
 
 import Foundation
 import Metal
+import CoreImage
+import XCTest
 
 extension MTLTexture {
     func pixelValue(x: Int, y: Int) -> [Float16] {
@@ -16,11 +18,4 @@ extension MTLTexture {
         self.getBytes(&value, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
         return value
     }
-//    
-//    func paint(with value: [Float16]) {
-//        var value = value
-//        let bytesPerRow = 4 * MemoryLayout<Float16>.size * self.width
-//        let region = MTLRegionMake2D(0, 0, self.width, self.height)
-//        self.replace(region: region, mipmapLevel: 0, withBytes: &value, bytesPerRow: bytesPerRow)
-//    }
 }

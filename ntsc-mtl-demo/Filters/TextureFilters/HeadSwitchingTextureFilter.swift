@@ -14,13 +14,15 @@ class HeadSwitchingTextureFilter {
     private let device: MTLDevice
     private let library: MTLLibrary
     private let context: CIContext
+    private let pipelineCache: MetalPipelineCache
     var headSwitchingSettings: HeadSwitchingSettings?
     var bandwidthScale: Float = NTSCEffect.default.bandwidthScale
     private var randomImageTexture: MTLTexture?
-    init(device: MTLDevice, library: MTLLibrary, ciContext: CIContext) {
+    init(device: MTLDevice, library: MTLLibrary, ciContext: CIContext, pipelineCache: MetalPipelineCache) {
         self.device = device
         self.library = library
         self.context = ciContext
+        self.pipelineCache = pipelineCache
     }
     
     func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
@@ -74,6 +76,7 @@ class HeadSwitchingTextureFilter {
         if let midLine = hs.midLine {
             try shiftRowMidline(
                 inputTexture: inputTexture,
+                randomTexture: randomImageTexture,
                 outputTexture: outputTexture,
                 commandBuffer: commandBuffer
             )
@@ -90,24 +93,12 @@ class HeadSwitchingTextureFilter {
             )
         }
     }
-    
-    private var shiftRowPipelineState: MTLComputePipelineState?
-    private var shiftRowMidlinePipelineState: MTLComputePipelineState?
+
     private let randomImageGenerator = CIFilter.randomGenerator()
     private var randomNumberGenerator = SystemRandomNumberGenerator()
     
     private func shiftRow(inputTexture: MTLTexture, randomTexture: MTLTexture, outputTexture: MTLTexture, shift: Float, offset: UInt, boundaryHandling: BoundaryHandling, bandwidthScale: Float, commandBuffer: MTLCommandBuffer) throws {
-        let pipelineState: MTLComputePipelineState
-        if let shiftRowPipelineState {
-            pipelineState = shiftRowPipelineState
-        } else {
-            let functionName = "shiftRow"
-            guard let function = library.makeFunction(name: functionName) else {
-                throw Error.cantMakeFunction(functionName)
-            }
-            pipelineState = try device.makeComputePipelineState(function: function)
-            self.shiftRowPipelineState = pipelineState
-        }
+        let pipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .shiftRow)
         guard let randomImage: CIImage = randomImageGenerator.outputImage else {
             throw Error.cantMakeRandomImage
         }
@@ -158,17 +149,7 @@ class HeadSwitchingTextureFilter {
     }
     
     private func shiftRowMidline(inputTexture: MTLTexture, randomTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        let pipelineState: MTLComputePipelineState
-        if let shiftRowMidlinePipelineState {
-            pipelineState = shiftRowMidlinePipelineState
-        } else {
-            let functionName = "shiftRowMidline"
-            guard let function = library.makeFunction(name: functionName) else {
-                throw Error.cantMakeFunction(functionName)
-            }
-            pipelineState = try device.makeComputePipelineState(function: function)
-            self.shiftRowPipelineState = pipelineState
-        }
+        let pipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .shiftRowMidline)
         
         guard let randomImage = randomImageGenerator.outputImage else {
             throw Error.cantMakeRandomImage
