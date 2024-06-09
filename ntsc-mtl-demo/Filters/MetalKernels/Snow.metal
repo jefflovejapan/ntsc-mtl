@@ -27,9 +27,9 @@ kernel void snow
 //    }
     half4 inputPixel = inputTexture.read(gid);
     half4 randomPixel = randomTexture.read(gid);
-    half rand1 = mix(half(-1.0), half(1.0), randomPixel.x);
-    half rand2 = mix(half(-0.5957), half(0.5957), randomPixel.y);
-    half rand3 = mix(half(-0.5226), half(0.5226), randomPixel.z);
+    half rand1 = randomPixel.x;
+    half rand2 = randomPixel.y;
+    half rand3 = randomPixel.z;
     half logisticFactor = exp((rand1 - intensity) / (intensity * (1.0 - intensity) * (1.0 - anisotropy)));
     half lineSnowIntensity = (anisotropy / (1.0 + logisticFactor)) + (intensity * (1.0 - anisotropy));
     lineSnowIntensity *= 0.125;
