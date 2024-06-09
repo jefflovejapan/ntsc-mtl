@@ -85,8 +85,9 @@ class HeadSwitchingTextureFilter {
                 inputTexture: inputTexture,
                 randomTexture: randomImageTexture,
                 outputTexture: outputTexture,
-                shift: hs.horizShift,
+                height: hs.height,
                 offset: hs.offset,
+                horizShift: hs.horizShift,
                 boundaryHandling: .constant(0),
                 bandwidthScale: bandwidthScale,
                 commandBuffer: commandBuffer
@@ -97,7 +98,17 @@ class HeadSwitchingTextureFilter {
     private let randomImageGenerator = CIFilter.randomGenerator()
     private var randomNumberGenerator = SystemRandomNumberGenerator()
     
-    private func shiftRow(inputTexture: MTLTexture, randomTexture: MTLTexture, outputTexture: MTLTexture, shift: Float, offset: UInt, boundaryHandling: BoundaryHandling, bandwidthScale: Float, commandBuffer: MTLCommandBuffer) throws {
+    private func shiftRow(
+        inputTexture: MTLTexture,
+        randomTexture: MTLTexture,
+        outputTexture: MTLTexture,
+        height: UInt,
+        offset: UInt,
+        horizShift: Float,
+        boundaryHandling: BoundaryHandling,
+        bandwidthScale: Float,
+        commandBuffer: MTLCommandBuffer
+    ) throws {
         let pipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .shiftRow)
         guard let randomImage: CIImage = randomImageGenerator.outputImage else {
             throw Error.cantMakeRandomImage
@@ -133,14 +144,22 @@ class HeadSwitchingTextureFilter {
         commandEncoder.setTexture(inputTexture, index: 0)
         commandEncoder.setTexture(randomTexture, index: 1)
         commandEncoder.setTexture(outputTexture, index: 2)
+        
+        var effectHeight: UInt = height
+        commandEncoder.setBytes(&effectHeight, length: MemoryLayout<UInt>.size, index: 0)
+        
         var offsetRows: UInt = offset;
-        commandEncoder.setBytes(&offsetRows, length: MemoryLayout<UInt>.size, index: 0)
-        var boundaryColumnIndex: UInt = UInt(inputTexture.width - 1)
-        commandEncoder.setBytes(&boundaryColumnIndex, length: MemoryLayout<UInt>.size, index: 1)
-        var shift = shift
+        commandEncoder.setBytes(&offsetRows, length: MemoryLayout<UInt>.size, index: 1)
+        
+        var shift = horizShift
         commandEncoder.setBytes(&shift, length: MemoryLayout<Float>.size, index: 2)
+        
+        var boundaryColumnIndex: UInt = UInt(inputTexture.width - 1)
+        commandEncoder.setBytes(&boundaryColumnIndex, length: MemoryLayout<UInt>.size, index: 3)
+        
         var bandwidthScale = bandwidthScale
-        commandEncoder.setBytes(&bandwidthScale, length: MemoryLayout<Float>.size, index: 3)
+        commandEncoder.setBytes(&bandwidthScale, length: MemoryLayout<Float>.size, index: 4)
+        
         commandEncoder.dispatchThreads(
             MTLSize(width: inputTexture.width, height: inputTexture.height, depth: 1),
             threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1)

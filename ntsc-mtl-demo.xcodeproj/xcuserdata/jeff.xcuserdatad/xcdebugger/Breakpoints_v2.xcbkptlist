@@ -8,7 +8,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "ABEB34FF-D0F1-4287-A178-1BC9287884CB"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ntsc-mtl-demo/Filters/IIRTransferFunction.swift"
@@ -17,6 +17,38 @@
             startingLineNumber = "181"
             endingLineNumber = "181"
             landmarkName = "cascade(n:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "B9BB00BC-2E5B-4FBB-9E69-7EE9C8C2C066"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ntsc-mtl-demo/Filters/TextureFilters/HeadSwitchingTextureFilter.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "143"
+            endingLineNumber = "143"
+            landmarkName = "shiftRow(inputTexture:randomTexture:outputTexture:height:offset:horizShift:boundaryHandling:bandwidthScale:commandBuffer:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "61C06290-573C-4DD3-867B-1E977F40ADEE"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ntsc-mtl-demo/Filters/TextureFilters/HeadSwitchingTextureFilter.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "112"
+            endingLineNumber = "112"
+            landmarkName = "shiftRow(inputTexture:randomTexture:outputTexture:height:offset:horizShift:boundaryHandling:bandwidthScale:commandBuffer:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

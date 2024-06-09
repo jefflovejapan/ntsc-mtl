@@ -518,4 +518,4 @@ b[bi]: 0.40545145
     - noisyShift: `(rowShift + random - 0.5) * bandwidthScale`
     - if we've got midLine stuff then we do a bunch of extra math, otherwise we shiftRow(row, noisyShift, boundaryHandling of 0)
         - we shift the row by a non-integer amount using linear interpolation
-    
+- I think my implementation's still a little off

@@ -14,6 +14,7 @@
 		1F2159B02C1154C100D2483B /* Snow.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F2159AF2C1154C100D2483B /* Snow.metal */; };
 		1F259EDC2C022F7500937D0A /* NTSCEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EDB2C022F7500937D0A /* NTSCEffect.swift */; };
 		1F259EDE2C02399C00937D0A /* NTSCEffect+Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EDD2C02399C00937D0A /* NTSCEffect+Defaults.swift */; };
+		1F2B96E92C16210700DB0B9F /* ShiftRowInline.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F2B96E82C16210700DB0B9F /* ShiftRowInline.metal */; };
 		1F3E38202C123D4700D16CF0 /* Float+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F3E381F2C123D4700D16CF0 /* Float+Extensions.swift */; };
 		1F3E38242C12486C00D16CF0 /* BandingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F3E38232C12486C00D16CF0 /* BandingTests.swift */; };
 		1F3E38252C1248E100D16CF0 /* video-frame.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1F3E38212C1247DC00D16CF0 /* video-frame.jpg */; };
@@ -83,6 +84,7 @@
 		1F259EDA2C0227E400937D0A /* SettingsAndDefaults.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = SettingsAndDefaults.md; sourceTree = "<group>"; };
 		1F259EDB2C022F7500937D0A /* NTSCEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSCEffect.swift; sourceTree = "<group>"; };
 		1F259EDD2C02399C00937D0A /* NTSCEffect+Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NTSCEffect+Defaults.swift"; sourceTree = "<group>"; };
+		1F2B96E82C16210700DB0B9F /* ShiftRowInline.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ShiftRowInline.metal; sourceTree = "<group>"; };
 		1F3E381F2C123D4700D16CF0 /* Float+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Float+Extensions.swift"; sourceTree = "<group>"; };
 		1F3E38212C1247DC00D16CF0 /* video-frame.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "video-frame.jpg"; sourceTree = "<group>"; };
 		1F3E38232C12486C00D16CF0 /* BandingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandingTests.swift; sourceTree = "<group>"; };
@@ -161,6 +163,7 @@
 			children = (
 				1F5F93BD2C0F54F000EC29A2 /* YIQ.metal */,
 				1FA29A8A2C111B6000070F03 /* ClampFunctions.metal */,
+				1F2B96E82C16210700DB0B9F /* ShiftRowInline.metal */,
 				1F5F93C02C0F585C00EC29A2 /* RGB.metal */,
 				1FA29A8C2C112DBC00070F03 /* ChromaIntoLuma.metal */,
 				1F2159AF2C1154C100D2483B /* Snow.metal */,
@@ -403,6 +406,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1FA64F872C151C5600E54D6F /* MetalFucntionCache.swift in Sources */,
+				1F2B96E92C16210700DB0B9F /* ShiftRowInline.metal in Sources */,
 				1F5F93BC2C0E83EC00EC29A2 /* NTSCTextureFilter.swift in Sources */,
 				1F5F93D32C0FD03400EC29A2 /* IIRFilterSample.metal in Sources */,
 				1F5F93D92C0FE70800EC29A2 /* ChromaLowpassTextureFilter.swift in Sources */,
