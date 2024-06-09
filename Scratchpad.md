@@ -307,6 +307,7 @@ OK, realized in first test that numerators and denominators can overflow float16
 - Initial condition
 - Do I need to be worried that the values I'm pulling are underflowing to 0 when Rust still has precision? Should I be using Float32 textures for z (and maybe others?)
 - It looks like the issue may have had to do with filling z0 after all. Wrote a paint function to do what I want.
+- Finally got it working. What a relief
 
 ### Performance
 
@@ -359,46 +360,162 @@ OK, realized in first test that numerators and denominators can overflow float16
 - This is too confusing. Here's all the invocations from Rust:
 
 poly_mul_count: 0
-a: [0.3632493]
-b: [0.3632493]
+a in: [0.3632493]
+b in: [0.3632493]
+degree: 1
+ai: 0
+a[ai]: 0.3632493
+bi: 0
+b[bi]: 0.3632493
 out: [0.13195005]
 poly_mul_count: 1
-a: [1.0, -0.6367507]
-b: [1.0, -0.6367507]
+a in: [1.0, -0.6367507]
+b in: [1.0, -0.6367507]
+degree: 3
+ai: 0
+a[ai]: 1.0
+bi: 0
+b[bi]: 1.0
+ai: 0
+a[ai]: 1.0
+bi: 1
+b[bi]: -0.6367507
+ai: 1
+a[ai]: -0.6367507
+bi: 0
+b[bi]: 1.0
+ai: 1
+a[ai]: -0.6367507
+bi: 1
+b[bi]: -0.6367507
 out: [1.0, -1.2735014, 0.40545145]
-poly_mul_count: 2
-a: [0.13195005]
-b: [0.3632493]
+poly_mul_count: 2   // And here in Rust we're being called with different args
+a in: [0.13195005]
+b in: [0.3632493]
+degree: 1
+ai: 0
+a[ai]: 0.13195005
+bi: 0
+b[bi]: 0.3632493
 out: [0.047930762]
 poly_mul_count: 3
-a: [1.0, -1.2735014, 0.40545145]
-b: [1.0, -0.6367507]
+a in: [1.0, -1.2735014, 0.40545145]
+b in: [1.0, -0.6367507]
+degree: 4
+ai: 0
+a[ai]: 1.0
+bi: 0
+b[bi]: 1.0
+ai: 0
+a[ai]: 1.0
+bi: 1
+b[bi]: -0.6367507
+ai: 1
+a[ai]: -1.2735014
+bi: 0
+b[bi]: 1.0
+ai: 1
+a[ai]: -1.2735014
+bi: 1
+b[bi]: -0.6367507
+ai: 2
+a[ai]: 0.40545145
+bi: 0
+b[bi]: 1.0
+ai: 2
+a[ai]: 0.40545145
+bi: 1
+b[bi]: -0.6367507
 out: [1.0, -1.9102521, 1.2163544, -0.2581715]
 
 - And here they are in swift
 
 poly_mul_count: 0
-a: [0.3632493]
-b: [0.3632493]
-out: [0.13195005]
-poly_mul_count: 1
-a: [1.0, -0.6367507]
-b: [1.0, -0.6367507]
+a in: [0.3632493]
+b in: [0.3632493]
+degree: 1
+ai: 0
+a[ai]: 0.3632493
+bi: 0
+b[bi]: 0.3632493
+out: [0.13195005]   // Here's the bug -- we're returning the same value as the Rust here
+poly_mul_count: 1   // Then we do denoms
+a in: [1.0, -0.6367507]
+b in: [1.0, -0.6367507]
+degree: 3
+ai: 0
+a[ai]: 1.0
+bi: 0
+b[bi]: 1.0
+ai: 0
+a[ai]: 1.0
+bi: 1
+b[bi]: -0.6367507
+ai: 1
+a[ai]: -0.6367507
+bi: 0
+b[bi]: 1.0
+ai: 1
+a[ai]: -0.6367507
+bi: 1
+b[bi]: -0.6367507
 out: [1.0, -1.2735014, 0.40545145]
-poly_mul_count: 2
-a: [0.13195005]
-b: [0.13195005]
+poly_mul_count: 2   // Then we do nums again but we're being called with the same args twice
+a in: [0.13195005]
+b in: [0.13195005]
+degree: 1
+ai: 0
+a[ai]: 0.13195005
+bi: 0
+b[bi]: 0.13195005
 out: [0.017410817]
 poly_mul_count: 3
-a: [1.0, -1.2735014, 0.40545145]
-b: [1.0, -1.2735014, 0.40545145]
-out: [1.0, -2.5470028, 2.4327087, -1.032686, 0.16439088]
-poly_mul_count: 4
-a: [0.017410817]
-b: [0.017410817]
-out: [0.00030313653]
-poly_mul_count: 5
-a: [1.0, -2.5470028, 2.4327087, -1.032686, 0.16439088]
-b: [1.0, -2.5470028, 2.4327087, -1.032686, 0.16439088]
-out: [1.0, -5.0940056, 11.35264, -14.457603, 11.507361, -5.8618565, 1.8662705, -0.33952832, 0.02702436]
+a in: [1.0, -1.2735014, 0.40545145]
+b in: [1.0, -1.2735014, 0.40545145]
+degree: 5
+ai: 0
+a[ai]: 1.0
+bi: 0
+b[bi]: 1.0
+ai: 0
+a[ai]: 1.0
+bi: 1
+b[bi]: -1.2735014
+ai: 0
+a[ai]: 1.0
+bi: 2
+b[bi]: 0.40545145
+ai: 1
+a[ai]: -1.2735014
+bi: 0
+b[bi]: 1.0
+ai: 1
+a[ai]: -1.2735014
+bi: 1
+b[bi]: -1.2735014
+ai: 1
+a[ai]: -1.2735014
+bi: 2
+b[bi]: 0.40545145
+ai: 2
+a[ai]: 0.40545145
+bi: 0
+b[bi]: 1.0
+ai: 2
+a[ai]: 0.40545145
+bi: 1
+b[bi]: -1.2735014
+ai: 2
+a[ai]: 0.40545145
+bi: 2
+b[bi]: 0.40545145
 
+
+### Head Switching
+
+- calculate a rowshift and noisyshift
+    - rowShift: can pass shift and offset into kernel along with width (although you can call get_width inside the kernel)
+    - noisyShift: `(rowShift + random - 0.5) * bandwidthScale`
+    - if we've got midLine stuff then we do a bunch of extra math, otherwise we shiftRow(row, noisyShift, boundaryHandling of 0)
+        - we shift the row by a non-integer amount using linear interpolation
+- I think my implementation's still a little off

@@ -24,16 +24,9 @@ class IIRTextureFilter {
         case constant([Float16])
     }
     
-    private static var iirInitialConditionPipelineState: MTLComputePipelineState?
-    private static var iirMultiplyPipelineState: MTLComputePipelineState?
-    private static var iirFinalImagePipelineState: MTLComputePipelineState?
-    private static var yiqComposePipelineState: MTLComputePipelineState?
-    private static var iirSideEffectPipelineState: MTLComputePipelineState?
-    private static var iirFilterSamplePipelineState: MTLComputePipelineState?
-    private static var paintPipelineState: MTLComputePipelineState?
-    
     private let device: MTLDevice
     private let library: MTLLibrary
+    private let pipelineCache: MetalPipelineCache
     private let numerators: [Float]
     private let denominators: [Float]
     private let initialCondition: InitialCondition
@@ -46,9 +39,10 @@ class IIRTextureFilter {
     private var filteredImageTexture: MTLTexture?
     private var outputTexture: MTLTexture?
     
-    init(device: MTLDevice, library: MTLLibrary, numerators: [Float], denominators: [Float], initialCondition: InitialCondition, channels: YIQChannels, scale: Float16, delay: UInt) {
+    init(device: MTLDevice, library: MTLLibrary, pipelineCache: MetalPipelineCache, numerators: [Float], denominators: [Float], initialCondition: InitialCondition, channels: YIQChannels, scale: Float16, delay: UInt) {
         self.device = device
         self.library = library
+        self.pipelineCache = pipelineCache
         self.numerators = numerators
         self.denominators = denominators
         self.initialCondition = initialCondition
@@ -104,13 +98,14 @@ class IIRTextureFilter {
         denominators: [Float],
         library: MTLLibrary,
         device: MTLDevice,
+        pipelineCache: MetalPipelineCache,
         commandBuffer: MTLCommandBuffer
     ) throws {
         switch initialCondition {
         case .zero:
             let input: [Float16] = [0, 0, 0, 1]   // black/zero
             for tex in zTextures {
-                try paint(texture: tex, with: input, library: library, device: device, commandBuffer: commandBuffer)
+                try paint(texture: tex, with: input, library: library, device: device, pipelineCache: pipelineCache, commandBuffer: commandBuffer)
             }
             return
         case .firstSample:
@@ -120,7 +115,7 @@ class IIRTextureFilter {
             blitEncoder.copy(from: inputTexture, to: initialConditionTexture)
             blitEncoder.endEncoding()
         case .constant(let color):
-            try paint(texture: initialConditionTexture, with: color, library: library, device: device, commandBuffer: commandBuffer)
+            try paint(texture: initialConditionTexture, with: color, library: library, device: device, pipelineCache: pipelineCache, commandBuffer: commandBuffer)
         }
         
         guard let firstNonZeroCoeff = denominators.first(where: { !$0.isZero }) else {
@@ -142,7 +137,7 @@ class IIRTextureFilter {
         }
         let z0Fill = bSum / normalizedDenominators.reduce(0, +)
         let z0FillValues: [Float16] = [z0Fill, z0Fill, z0Fill, 1].map(Float16.init)
-        try paint(texture: tempZ0Texture, with: z0FillValues, library: library, device: device, commandBuffer: commandBuffer)
+        try paint(texture: tempZ0Texture, with: z0FillValues, library: library, device: device, pipelineCache: pipelineCache, commandBuffer: commandBuffer)
         var aSum: Float = 1
         var cSum: Float = 0
         for i in 1 ..< numerators.count {
@@ -161,7 +156,8 @@ class IIRTextureFilter {
                 aSum: aSum,
                 cSum: cSum,
                 library: library,
-                device: device,
+                device: device, 
+                pipelineCache: pipelineCache,
                 commandBuffer: commandBuffer
             )
         }
@@ -174,23 +170,21 @@ class IIRTextureFilter {
             initialConditionTexture: initialConditionTexture,
             z0OutTexture: zTextures[0],
             library: library,
-            device: device,
+            device: device, 
+            pipelineCache: pipelineCache,
             commandBuffer: commandBuffer
         )
     }
     
-    static func paint(texture: MTLTexture, with color: [Float16], library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
-        let pipelineState: MTLComputePipelineState
-        if let iirInitialConditionPipelineState {
-            pipelineState = iirInitialConditionPipelineState
-        } else {
-            let functionName = "paint"
-            guard let function = library.makeFunction(name: functionName) else {
-                throw Error.cantMakeFunction(functionName)
-            }
-            pipelineState = try device.makeComputePipelineState(function: function)
-            Self.paintPipelineState = pipelineState
-        }
+    static func paint(
+        texture: MTLTexture,
+        with color: [Float16],
+        library: MTLLibrary,
+        device: MTLDevice,
+        pipelineCache: MetalPipelineCache,
+        commandBuffer: MTLCommandBuffer
+    ) throws {
+        let pipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .paint)
         
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
@@ -213,19 +207,10 @@ class IIRTextureFilter {
         cSum: Float,
         library: MTLLibrary,
         device: MTLDevice,
+        pipelineCache: MetalPipelineCache,
         commandBuffer: MTLCommandBuffer
     ) throws {
-        let pipelineState: MTLComputePipelineState
-        if let iirInitialConditionPipelineState {
-            pipelineState = iirInitialConditionPipelineState
-        } else {
-            let functionName = "iirInitialCondition"
-            guard let function = library.makeFunction(name: functionName) else {
-                throw Error.cantMakeFunction(functionName)
-            }
-            pipelineState = try device.makeComputePipelineState(function: function)
-            Self.iirInitialConditionPipelineState = pipelineState
-        }
+        let pipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .iirInitialCondition)
         
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
@@ -250,19 +235,10 @@ class IIRTextureFilter {
         z0OutTexture: MTLTexture,
         library: MTLLibrary,
         device: MTLDevice,
+        pipelineCache: MetalPipelineCache,
         commandBuffer: MTLCommandBuffer
     ) throws {
-        let pipelineState: MTLComputePipelineState
-        if let iirMultiplyPipelineState {
-            pipelineState = iirMultiplyPipelineState
-        } else {
-            let functionName = "iirMultiply"
-            guard let function = library.makeFunction(name: functionName) else {
-                throw Error.cantMakeFunction(functionName)
-            }
-            pipelineState = try device.makeComputePipelineState(function: function)
-            Self.iirMultiplyPipelineState = pipelineState
-        }
+        let pipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .iirMultiply)
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
@@ -295,11 +271,6 @@ class IIRTextureFilter {
             }
             
             let filteredSampleTexture = initialConditionTexture
-            
-            guard let filteredImageTexture = Self.texture(from: inputTexture, device: device) else {
-                throw Error.cantInstantiateTexture
-            }
-                        
             let zTextures = Array(
                 Self.textures(
                     width: inputTexture.width,
@@ -326,7 +297,8 @@ class IIRTextureFilter {
                 numerators: numerators,
                 denominators: denominators,
                 library: library,
-                device: device,
+                device: device, 
+                pipelineCache: pipelineCache,
                 commandBuffer: commandBuffer)
             self.zTextures = zTextures
             self.initialConditionTexture = initialConditionTexture
@@ -346,7 +318,8 @@ class IIRTextureFilter {
             filteredSampleTexture: filteredSampleTexture!,
             num0: num0,
             library: library,
-            device: device,
+            device: device, 
+            pipelineCache: pipelineCache,
             commandBuffer: commandBuffer
         )
         
@@ -369,7 +342,8 @@ class IIRTextureFilter {
                 numerator: numerators[nextIdx],
                 denominator: denominators[nextIdx],
                 library: library,
-                device: device,
+                device: device, 
+                pipelineCache: pipelineCache,
                 commandBuffer: commandBuffer
             )
         }
@@ -382,7 +356,8 @@ class IIRTextureFilter {
             outputTexture: filteredImageTexture!,
             scale: scale,
             library: library,
-            device: device,
+            device: device, 
+            pipelineCache: pipelineCache,
             commandBuffer: commandBuffer
         )
         Self.assertTextureIDsUnique(inputTexture, filteredSampleTexture!)
@@ -394,7 +369,8 @@ class IIRTextureFilter {
             writingTo: outputTexture,
             channels: self.channelMix,
             library: library,
-            device: device,
+            device: device, 
+            pipelineCache: pipelineCache,
             commandBuffer: commandBuffer
         )
     }
@@ -406,19 +382,10 @@ class IIRTextureFilter {
         scale: Float16,
         library: MTLLibrary,
         device: MTLDevice,
+        pipelineCache: MetalPipelineCache,
         commandBuffer: MTLCommandBuffer
     ) throws {
-        let pipelineState: MTLComputePipelineState
-        if let iirFinalImagePipelineState {
-            pipelineState = iirFinalImagePipelineState
-        } else {
-            let functionName = "iirFinalImage"
-            guard let function = library.makeFunction(name: functionName) else {
-                throw Error.cantMakeFunction(functionName)
-            }
-            pipelineState = try device.makeComputePipelineState(function: function)
-            Self.iirFinalImagePipelineState = pipelineState
-        }
+        let pipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .iirFinalImage)
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
@@ -435,18 +402,8 @@ class IIRTextureFilter {
     }
     
     
-    static func finalCompose(inputImage: MTLTexture, filteredImage: MTLTexture, writingTo outputTexture: MTLTexture, channels: YIQChannels, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
-        let pipelineState: MTLComputePipelineState
-        if let yiqComposePipelineState {
-            pipelineState = yiqComposePipelineState
-        } else {
-            let functionName = "yiqCompose"
-            guard let function = library.makeFunction(name: functionName) else {
-                throw Error.cantMakeFunction(functionName)
-            }
-            pipelineState = try device.makeComputePipelineState(function: function)
-            Self.yiqComposePipelineState = pipelineState
-        }
+    static func finalCompose(inputImage: MTLTexture, filteredImage: MTLTexture, writingTo outputTexture: MTLTexture, channels: YIQChannels, library: MTLLibrary, device: MTLDevice, pipelineCache: MetalPipelineCache, commandBuffer: MTLCommandBuffer) throws {
+        let pipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .yiqCompose)
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
@@ -464,18 +421,8 @@ class IIRTextureFilter {
     
 
     
-    static func sideEffect(inputImage: MTLTexture, z: MTLTexture, zPlusOne: MTLTexture, filteredSample: MTLTexture, numerator: Float, denominator: Float, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
-        let pipelineState: MTLComputePipelineState
-        if let iirSideEffectPipelineState {
-            pipelineState = iirSideEffectPipelineState
-        } else {
-            let functionName = "iirSideEffect"
-            guard let function = library.makeFunction(name: functionName) else {
-                throw Error.cantMakeFunction(functionName)
-            }
-            pipelineState = try device.makeComputePipelineState(function: function)
-            Self.iirSideEffectPipelineState = pipelineState
-        }
+    static func sideEffect(inputImage: MTLTexture, z: MTLTexture, zPlusOne: MTLTexture, filteredSample: MTLTexture, numerator: Float, denominator: Float, library: MTLLibrary, device: MTLDevice, pipelineCache: MetalPipelineCache, commandBuffer: MTLCommandBuffer) throws {
+        let pipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .iirSideEffect)
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
@@ -494,18 +441,8 @@ class IIRTextureFilter {
         commandEncoder.endEncoding()
     }
         
-    static func filterSample(inputTexture: MTLTexture, zTex0: MTLTexture, filteredSampleTexture: MTLTexture, num0: Float, library: MTLLibrary, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
-        let pipelineState: MTLComputePipelineState
-        if let iirFilterSamplePipelineState {
-            pipelineState = iirFilterSamplePipelineState
-        } else {
-            let functionName = "iirFilterSample"
-            guard let function = library.makeFunction(name: functionName) else {
-                throw Error.cantMakeFunction(functionName)
-            }
-            pipelineState = try device.makeComputePipelineState(function: function)
-            Self.iirFilterSamplePipelineState = pipelineState
-        }
+    static func filterSample(inputTexture: MTLTexture, zTex0: MTLTexture, filteredSampleTexture: MTLTexture, num0: Float, library: MTLLibrary, device: MTLDevice, pipelineCache: MetalPipelineCache, commandBuffer: MTLCommandBuffer) throws {
+        let pipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .iirFilterSample)
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }

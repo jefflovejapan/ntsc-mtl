@@ -175,10 +175,10 @@ extension IIRTransferFunction {
     }
     
     func cascade(n: UInt) -> IIRTransferFunction {
-        
         var fn = self
         for _ in 1..<n {
-            fn = fn * fn
+            let result = (fn * fn)
+            fn = result
         }
         return fn
     }

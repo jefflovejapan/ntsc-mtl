@@ -8,6 +8,7 @@
 import CoreImage
 import Foundation
 import Metal
+import CoreImage.CIFilterBuiltins
 
 class SnowTextureFilter {
     typealias Error = TextureFilterError
@@ -17,16 +18,17 @@ class SnowTextureFilter {
     private let device: MTLDevice
     private let library: MTLLibrary
     private let ciContext: CIContext
+    private let pipelineCache: MetalPipelineCache
     
-    init(device: MTLDevice, library: MTLLibrary, ciContext: CIContext) {
+    init(device: MTLDevice, library: MTLLibrary, ciContext: CIContext, pipelineCache: MetalPipelineCache) {
         self.device = device
         self.library = library
         self.ciContext = ciContext
+        self.pipelineCache = pipelineCache
     }
     
     private var rng = SystemRandomNumberGenerator()
     private let randomFilter = CIFilter.randomGenerator()
-    private var snowPipelineState: MTLComputePipelineState?
     private var randomTexture: MTLTexture?
     
     func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
@@ -52,17 +54,7 @@ class SnowTextureFilter {
         
         ciContext.render(randomImage, to: randomTexture, commandBuffer: commandBuffer, bounds: CGRect(x: 0, y: 0, width: inputTexture.width, height: inputTexture.height), colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
         
-        let pipelineState: MTLComputePipelineState
-        if let snowPipelineState {
-            pipelineState = snowPipelineState
-        } else {
-            let functionName = "snow"
-            guard let function = library.makeFunction(name: functionName) else {
-                throw Error.cantMakeFunction(functionName)
-            }
-            pipelineState = try device.makeComputePipelineState(function: function)
-            self.snowPipelineState = pipelineState
-        }
+        let pipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .snow)
         
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder

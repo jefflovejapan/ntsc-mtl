@@ -45,6 +45,10 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         effect.inputLumaFilter = .notch
         effect.filterType = .constantK
         effect.chromaLowpassIn = .full
+        effect.headSwitching?.midLine = nil
+        effect.headSwitching?.offset = 32
+        effect.headSwitching?.height = 64
+        effect.headSwitching?.horizShift = 10
         self.filter = try! NTSCTextureFilter(effect: effect, device: device, context: ciContext)
         setupCamera()
     }
@@ -54,7 +58,8 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     }
     
     private func setupCamera() {
-        captureSession.sessionPreset = .hd1920x1080
+//        captureSession.sessionPreset = .hd1920x1080
+        captureSession.sessionPreset = .vga640x480
         guard let captureDevice = AVCaptureDevice.default(for: .video) else {
             return
         }
@@ -143,8 +148,12 @@ extension CameraUIView: MTKViewDelegate {
             return
         }
         
+        let aspectFitted = AVMakeRect(aspectRatio: outputImage.extent.size, insideRect: CGRect(origin: .zero, size: dSize))
+        let scaleFactor = aspectFitted.width / outputImage.extent.width
+        let scaledImage = outputImage.transformed(by: CGAffineTransform.init(scaleX: scaleFactor, y: scaleFactor))
+        
         do {
-            try ciContext.startTask(toRender: outputImage, to: destination)
+            try ciContext.startTask(toRender: scaledImage, to: destination)
             commandBuffer.present(drawable)
             commandBuffer.commit()
         } catch {

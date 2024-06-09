@@ -10,26 +10,23 @@ import XCTest
 import Metal
 import CoreImage
 
-func createTestImage(color: CIColor, size: CGSize = CGSize(width: 1, height: 1)) -> CIImage {
-    return CIImage(color: color).cropped(to: CGRect(origin: .zero, size: size))
-}
-
 final class BandingTests: XCTestCase {
     var image: CIImage!
     var device: MTLDevice!
     var library: MTLLibrary!
+    var pipelineCache: MetalPipelineCache!
     var commandQueue: MTLCommandQueue!
     var ciContext: CIContext!
     var filter: NTSCTextureFilter!
 
     override func setUpWithError() throws {
-        let imageURL = try XCTUnwrap(Bundle(for: BandingTests.self).url(forResource: "video-frame", withExtension: "jpg"))
-        let imageData = try Data(contentsOf: imageURL)
-        self.image = CIImage(data: imageData)
+        self.image = try CIImage.videoFrame()
         let effect: NTSCEffect = .default
         let device = try XCTUnwrap(MTLCreateSystemDefaultDevice())
         self.device = device
-        self.library = try XCTUnwrap(device.makeDefaultLibrary())
+        let library = try XCTUnwrap(device.makeDefaultLibrary())
+        self.library = library
+        self.pipelineCache = try MetalPipelineCache(device: device, library: library)
         let commandQueue = try XCTUnwrap(device.makeCommandQueue())
         self.commandQueue = commandQueue
         let ciContext = CIContext(mtlCommandQueue: commandQueue)
@@ -41,6 +38,8 @@ final class BandingTests: XCTestCase {
         self.filter = nil
         self.ciContext = nil
         self.commandQueue = nil
+        self.pipelineCache = nil
+        self.library = nil
         self.device = nil
         self.image = nil
     }
@@ -58,12 +57,12 @@ final class BandingTests: XCTestCase {
         let textureB = try XCTUnwrap(IIRTextureFilter.texture(from: textureA, device: device))
         
         ciContext.render(inputImage, to: textureA, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
-        try NTSCTextureFilter.convertToYIQ(textureA, output: textureB, library: library, commandBuffer: commandBuffer, device: device)
+        try NTSCTextureFilter.convertToYIQ(textureA, output: textureB, library: library, commandBuffer: commandBuffer, device: device, pipelineCache: pipelineCache)
         
         let function = IIRTransferFunction.lowpassFilter(cutoff: 1_300_000, rate: NTSC.rate * 1)
-        let fullIButterworthFilter = IIRTextureFilter(device: device, library: library, numerators: function.numerators, denominators: function.denominators, initialCondition: .zero, channels: .i, scale: 1, delay: 2)
+        let fullIButterworthFilter = IIRTextureFilter(device: device, library: library, pipelineCache: pipelineCache, numerators: function.numerators, denominators: function.denominators, initialCondition: .zero, channels: .i, scale: 1, delay: 2)
         try fullIButterworthFilter.run(inputTexture: textureB, outputTexture: textureA, commandBuffer: commandBuffer)
-        try NTSCTextureFilter.convertToRGB(textureA, output: textureB, commandBuffer: commandBuffer, library: library, device: device)
+        try NTSCTextureFilter.convertToRGB(textureA, output: textureB, commandBuffer: commandBuffer, library: library, device: device, pipelineCache: pipelineCache)
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
         return try XCTUnwrap(CIImage(mtlTexture: textureB))
@@ -74,16 +73,6 @@ final class BandingTests: XCTestCase {
         XCTAssertEqual(Int(outputImage.extent.width), 3024)
     }
     
-    func saveCIImageToDisk(_ ciImage: CIImage, filename: String, context: CIContext) throws {
-        // Convert CIImage to CGImage
-        let cgImage = try XCTUnwrap(context.createCGImage(ciImage, from: ciImage.extent))
-        let uiImage = UIImage(cgImage: cgImage)
-        let data = try XCTUnwrap(uiImage.pngData())
-        let url = try XCTUnwrap(FileManager.default.temporaryDirectory.appendingPathComponent(filename).appendingPathExtension("png"))
-        try data.write(to: url)
-        print("Wrote image to \(url.absoluteString)")
-    }
-    
     func testApplyingChromaToPlainWhiteImage() throws {
         let strideSize: CGFloat = 0.2
         let rangeStart: CGFloat = 0
@@ -91,9 +80,9 @@ final class BandingTests: XCTestCase {
         for r in stride(from: rangeStart, to: rangeEnd, by: strideSize) {
             for g in stride(from: rangeStart, to: rangeEnd, by: strideSize) {
                 for b in stride(from: rangeStart, to: rangeEnd, by: strideSize) {
-                    let image = createTestImage(color: CIColor(red: r, green: g, blue: b), size: CGSize(width: 1000, height: 1000))
+                    let image = CIImage.testImage(color: CIColor(red: r, green: g, blue: b), size: CGSize(width: 1000, height: 1000))
                     let outputImage = try outputImage(for: image)
-                    try saveCIImageToDisk(outputImage, filename: "red: \(Int(r * 100)) green: \(Int(g * 100)) blue: \(Int(b * 100))", context: ciContext)
+                    try CIImage.saveToDisk(outputImage, filename: "red: \(Int(r * 100)) green: \(Int(g * 100)) blue: \(Int(b * 100))", context: ciContext)
                     XCTAssertEqual(Int(outputImage.extent.width), 1000)
                 }
             }
@@ -122,7 +111,7 @@ final class BandingTests: XCTestCase {
         let function = IIRTransferFunction.lowpassFilter(cutoff: 1_300_000, rate: NTSC.rate * 1)
         let zTextures = Array(IIRTextureFilter.textures(from: rgbInputTexture, device: device).prefix(function.numerators.count))
         
-        let fullIButterworthFilter = IIRTextureFilter(device: device, library: library, numerators: function.numerators, denominators: function.denominators, initialCondition: .zero, channels: .i, scale: 1, delay: 2)
+        let fullIButterworthFilter = IIRTextureFilter(device: device, library: library, pipelineCache: pipelineCache, numerators: function.numerators, denominators: function.denominators, initialCondition: .zero, channels: .i, scale: 1, delay: 2)
         try IIRTextureFilter.fillTexturesForInitialCondition(
             inputTexture: rgbInputTexture,
             initialCondition: .zero,
@@ -132,7 +121,8 @@ final class BandingTests: XCTestCase {
             numerators: function.numerators,
             denominators: function.denominators,
             library: library,
-            device: device,
+            device: device, 
+            pipelineCache: pipelineCache,
             commandBuffer: commandBuffer)
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
@@ -170,9 +160,9 @@ final class BandingTests: XCTestCase {
         }
         let z0Fill = bSum / normalizedDenominators.reduce(0, +)
         var z0FillValues: [Float16] = [z0Fill, z0Fill, z0Fill, 1].map(Float16.init)
-        try IIRTextureFilter.paint(texture: zTex0, with: z0FillValues, library: library, device: device, commandBuffer: commandBuffer)
+        try IIRTextureFilter.paint(texture: zTex0, with: z0FillValues, library: library, device: device, pipelineCache: pipelineCache, commandBuffer: commandBuffer)
         
-        try IIRTextureFilter.initialConditionFill(initialConditionTex: initialConditionTexture, zTex0: zTex0, zTexToFill: zTexI, aSum: aSum, cSum: cSum, library: library, device: device, commandBuffer: commandBuffer)
+        try IIRTextureFilter.initialConditionFill(initialConditionTex: initialConditionTexture, zTex0: zTex0, zTexToFill: zTexI, aSum: aSum, cSum: cSum, library: library, device: device, pipelineCache: pipelineCache, commandBuffer: commandBuffer)
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
         
@@ -206,41 +196,40 @@ final class BandingTests: XCTestCase {
         let z0Fill = bSum / normalizedDenominators.reduce(0, +)
         var z0FillValues: [Float16] = [z0Fill, z0Fill, z0Fill, 1].map(Float16.init)
         let commandBuffer = try XCTUnwrap(commandQueue.makeCommandBuffer())
-        try IIRTextureFilter.paint(texture: zTex0, with: z0FillValues, library: library, device: device, commandBuffer: commandBuffer)
+        try IIRTextureFilter.paint(texture: zTex0, with: z0FillValues, library: library, device: device, pipelineCache: pipelineCache, commandBuffer: commandBuffer)
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
         return try XCTUnwrap(CIImage(mtlTexture: zTex0))
     }
     
     func testInitialZ0Only() throws {
-        let image = createTestImage(color: CIColor(red: 0.0, green: 0.0, blue: 0.6, alpha: 1.0))
+        let image = CIImage.testImage(color: CIColor(red: 0.0, green: 0.0, blue: 0.6, alpha: 1.0))
         let function = IIRTransferFunction.lowpassFilter(cutoff: 1_300_000, rate: NTSC.rate * 1)
         let outputImage = try initialZ0FillOnly(image: image, index: 0, function: function)
-        try saveCIImageToDisk(outputImage, filename: "z0-only", context: ciContext)
+        try CIImage.saveToDisk(outputImage, filename: "z0-only", context: ciContext)
     }
-    
     
     // Write tests for each individual phase. We don't care how crazy the output looks, we only care if we see the banding
     
     func testFillingForInitialCondition() throws {
-        let image = createTestImage(color: CIColor(red: 0.0, green: 0.0, blue: 0.6, alpha: 1.0), size: CGSize(width: 1000, height: 1000))
+        let image = CIImage.testImage(color: CIColor(red: 0.0, green: 0.0, blue: 0.6, alpha: 1.0), size: CGSize(width: 1000, height: 1000))
         let result = try fillTexturesForInitialCondition(image: image)
-        try saveCIImageToDisk(result.rgbInput, filename: "rgbInput", context: ciContext)
-        try saveCIImageToDisk(result.initialCondition, filename: "initialCondition", context: ciContext)
-        try saveCIImageToDisk(result.tempZ0, filename: "tempZ0", context: ciContext)
+        try CIImage.saveToDisk(result.rgbInput, filename: "rgbInput", context: ciContext)
+        try CIImage.saveToDisk(result.initialCondition, filename: "initialCondition", context: ciContext)
+        try CIImage.saveToDisk(result.tempZ0, filename: "tempZ0", context: ciContext)
         for (idx, img) in result.z.enumerated() {
-            try saveCIImageToDisk(img, filename: "z-\(idx)", context: ciContext)
+            try CIImage.saveToDisk(img, filename: "z-\(idx)", context: ciContext)
         }
     }
     
     func testInitialFillOnly() throws {
-        let image = createTestImage(color: CIColor(red: 0.0, green: 0.0, blue: 0.6, alpha: 1.0), size: CGSize(width: 1000, height: 1000))
+        let image = CIImage.testImage(color: CIColor(red: 0.0, green: 0.0, blue: 0.6, alpha: 1.0), size: CGSize(width: 1000, height: 1000))
         let function = IIRTransferFunction.lowpassFilter(cutoff: 1_300_000, rate: NTSC.rate * 1)
         for idx in function.numerators.indices {
             let result = try initialConditionFillOnly(image: image, index: idx, function: function)
-            try saveCIImageToDisk(result.rgbInput, filename: "rgbInput-\(idx)", context: ciContext)
-            try saveCIImageToDisk(result.z0, filename: "z0-\(idx)", context: ciContext)
-            try saveCIImageToDisk(result.zI, filename: "zI-\(idx)", context: ciContext)
+            try CIImage.saveToDisk(result.rgbInput, filename: "rgbInput-\(idx)", context: ciContext)
+            try CIImage.saveToDisk(result.z0, filename: "z0-\(idx)", context: ciContext)
+            try CIImage.saveToDisk(result.zI, filename: "zI-\(idx)", context: ciContext)
         }
     }
 }

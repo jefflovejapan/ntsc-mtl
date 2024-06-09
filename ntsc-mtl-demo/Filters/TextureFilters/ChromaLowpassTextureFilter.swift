@@ -22,11 +22,13 @@ class ChromaLowpassTextureFilter {
     
     private let device: MTLDevice
     private let library: MTLLibrary
+    private let pipelineCache: MetalPipelineCache
     let filters: FiltersForIntensity
     
-    init(device: MTLDevice, library: MTLLibrary, intensity: Intensity, bandwidthScale: Float, filterType: FilterType) {
+    init(device: MTLDevice, library: MTLLibrary, pipelineCache: MetalPipelineCache, intensity: Intensity, bandwidthScale: Float, filterType: FilterType) {
         self.device = device
         self.library = library
+        self.pipelineCache = pipelineCache
         let initialCondition: IIRTextureFilter.InitialCondition = .zero
         let rate = NTSC.rate * bandwidthScale
         switch intensity {
@@ -34,7 +36,8 @@ class ChromaLowpassTextureFilter {
             let iFunction = Self.lowpassFilter(cutoff: 1_300_000.0, rate: rate, filterType: filterType)
             let iFilter = IIRTextureFilter(
                 device: device,
-                library: library,
+                library: library, 
+                pipelineCache: pipelineCache,
                 numerators: iFunction.numerators,
                 denominators: iFunction.denominators,
                 initialCondition: initialCondition,
@@ -45,7 +48,8 @@ class ChromaLowpassTextureFilter {
             let qFunction = Self.lowpassFilter(cutoff: 600_000.0, rate: rate, filterType: filterType)
             let qFilter = IIRTextureFilter(
                 device: device,
-                library: library,
+                library: library, 
+                pipelineCache: pipelineCache,
                 numerators: qFunction.numerators,
                 denominators: qFunction.denominators,
                 initialCondition: initialCondition,
@@ -58,7 +62,8 @@ class ChromaLowpassTextureFilter {
             let function = Self.lowpassFilter(cutoff: 2_600_000.0, rate: rate, filterType: filterType)
             let iAndQFilter = IIRTextureFilter(
                 device: device,
-                library: library,
+                library: library, 
+                pipelineCache: pipelineCache,
                 numerators: function.numerators,
                 denominators: function.denominators,
                 initialCondition: initialCondition,
@@ -94,27 +99,9 @@ class ChromaLowpassTextureFilter {
         get throws {
             switch filters {
             case .light:
-                if let yiqComposePipelineState {
-                    return yiqComposePipelineState
-                }
-                let functionName = "yiqCompose"
-                guard let function = library.makeFunction(name: functionName) else {
-                    throw Error.cantMakeFunction(functionName)
-                }
-                let pipelineState = try device.makeComputePipelineState(function: function)
-                self.yiqComposePipelineState = pipelineState
-                return pipelineState
+                return try pipelineCache.pipelineState(function: .yiqCompose)
             case .full:
-                if let yiqCompose3PipelineState {
-                    return yiqCompose3PipelineState
-                }
-                let functionName = "yiqCompose3"
-                guard let function = library.makeFunction(name: functionName) else {
-                    throw Error.cantMakeFunction(functionName)
-                }
-                let pipelineState = try device.makeComputePipelineState(function: function)
-                self.yiqCompose3PipelineState = pipelineState
-                return pipelineState
+                return try pipelineCache.pipelineState(function: .yiqCompose3)
             }
         }
     }
