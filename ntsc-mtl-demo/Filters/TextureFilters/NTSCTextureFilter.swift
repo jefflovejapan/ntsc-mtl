@@ -43,6 +43,7 @@ class NTSCTextureFilter {
     private let compositeNoiseFilter: CompositeNoiseTextureFilter
     private let snowFilter: SnowTextureFilter
     private let headSwitchingFilter: HeadSwitchingTextureFilter
+    private let lumaSmearFilter: IIRTextureFilter
     private let ringingFilter: IIRTextureFilter
     
     init(effect: NTSCEffect, device: MTLDevice, context: CIContext) throws {
@@ -89,6 +90,18 @@ class NTSCTextureFilter {
         self.compositeNoiseFilter = CompositeNoiseTextureFilter(device: device, library: library, ciContext: context, pipelineCache: pipelineCache)
         self.snowFilter = SnowTextureFilter(device: device, library: library, ciContext: context, pipelineCache: pipelineCache)
         self.headSwitchingFilter = HeadSwitchingTextureFilter(device: device, library: library, ciContext: context, pipelineCache: pipelineCache)
+        let lumaSmearFunction = IIRTransferFunction.lumaSmear(amount: effect.lumaSmear, bandwidthScale: effect.bandwidthScale)
+        self.lumaSmearFilter = IIRTextureFilter(
+            device: device,
+            library: library,
+            pipelineCache: pipelineCache,
+            numerators: lumaSmearFunction.numerators,
+            denominators: lumaSmearFunction.denominators,
+            initialCondition: .zero,
+            channels: .y,
+            scale: 1,
+            delay: 0
+        )
         let ringingSettings = RingingSettings.default
         let ringingFunction = try IIRTransferFunction.ringing(ringingSettings: ringingSettings, bandwidthScale: effect.bandwidthScale)
         self.ringingFilter = IIRTextureFilter(device: device, library: library, pipelineCache: pipelineCache, numerators: ringingFunction.numerators, denominators: ringingFunction.denominators, initialCondition: .firstSample, channels: .y, scale: ringingSettings.intensity, delay: 1)
@@ -171,6 +184,18 @@ class NTSCTextureFilter {
     
     static func headSwitching(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: HeadSwitchingTextureFilter, headSwitching: HeadSwitchingSettings?, commandBuffer: MTLCommandBuffer) throws {
         filter.headSwitchingSettings = headSwitching
+        try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
+    }
+    
+    static func lumaSmear(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: IIRTextureFilter, lumaSmear: Float, commandBuffer: MTLCommandBuffer) throws {
+        if lumaSmear.isZero {
+            guard let blitEncoder = commandBuffer.makeBlitCommandEncoder() else {
+                throw TextureFilterError.cantMakeBlitEncoder
+            }
+            blitEncoder.copy(from: inputTexture, to: outputTexture)
+            blitEncoder.endEncoding()
+            return
+        }
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
@@ -263,23 +288,59 @@ class NTSCTextureFilter {
                 device: device,
                 pipelineCache: pipelineCache
             )
-            try Self.inputLuma(
-                iter.last!,
-                output: iter.next()!,
-                commandBuffer: commandBuffer,
-                lumaLowpass: effect.inputLumaFilter, 
-                lumaBoxFilter: lumaBoxFilter,
-                lumaNotchFilter: lumaNotchFilter
-            )
-            try Self.chromaLowpass(
-                iter.last!,
-                output: iter.next()!,
-                commandBuffer: commandBuffer,
-                chromaLowpass: effect.chromaLowpassIn,
-                lightFilter: lightChromaLowpassFilter,
-                fullFilter: fullChromaLowpassFilter
-            )
-            try Self.chromaIntoLuma(
+//            try Self.inputLuma(
+//                iter.last!,
+//                output: iter.next()!,
+//                commandBuffer: commandBuffer,
+//                lumaLowpass: effect.inputLumaFilter, 
+//                lumaBoxFilter: lumaBoxFilter,
+//                lumaNotchFilter: lumaNotchFilter
+//            )
+//            try Self.chromaLowpass(
+//                iter.last!,
+//                output: iter.next()!,
+//                commandBuffer: commandBuffer,
+//                chromaLowpass: effect.chromaLowpassIn,
+//                lightFilter: lightChromaLowpassFilter,
+//                fullFilter: fullChromaLowpassFilter
+//            )
+//            try Self.chromaIntoLuma(
+//                inputTexture: iter.last!,
+//                outputTexture: iter.next()!,
+//                timestamp: frameNum,
+//                phaseShift: effect.videoScanlinePhaseShift,
+//                phaseShiftOffset: effect.videoScanlinePhaseShiftOffset,
+//                filter: self.chromaIntoLumaFilter,
+//                library: library,
+//                device: device,
+//                commandBuffer: commandBuffer
+//            )
+//            try Self.compositePreemphasis(
+//                inputTexture: iter.last!,
+//                outputTexture: iter.next()!,
+//                filter: compositePreemphasisFilter,
+//                commandBuffer: commandBuffer
+//            )
+//            try Self.compositeNoise(
+//                inputTexture: iter.last!,
+//                outputTexture: iter.next()!,
+//                filter: compositeNoiseFilter,
+//                commandBuffer: commandBuffer
+//            )
+//            try Self.snow(
+//                inputTexture: iter.last!,
+//                outputTexture: iter.next()!,
+//                filter: snowFilter,
+//                commandBuffer: commandBuffer
+//            )
+//            try Self.headSwitching(
+//                inputTexture: iter.last!,
+//                outputTexture: iter.next()!,
+//                filter: headSwitchingFilter, 
+//                headSwitching: effect.headSwitching,
+//                commandBuffer: commandBuffer
+//            )
+            try Self.lumaSmear(
                 inputTexture: iter.last!,
                 outputTexture: iter.next()!,
                 timestamp: frameNum,
@@ -323,6 +384,21 @@ class NTSCTextureFilter {
                 ringing: effect.ringing,
                 commandBuffer: commandBuffer
             )
+//            try Self.ringing(
+//                inputTexture: iter.last!,
+//                outputTexture: iter.next()!,
+//                filter: ringingFilter,
+//                ringing: effect.ringing,
+//                commandBuffer: commandBuffer
+//            )
+//            try Self.chromaLowpass(
+//                iter.last!,
+//                output: iter.next()!,
+//                commandBuffer: commandBuffer,
+//                chromaLowpass: effect.chromaLowpassOut,
+//                lightFilter: lightChromaLowpassFilter,
+//                fullFilter: fullChromaLowpassFilter
+//            )
             try Self.convertToRGB(
                 iter.last!,
                 output: iter.next()!,
