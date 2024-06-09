@@ -56,7 +56,7 @@ class CompositeNoiseTextureFilter {
             self.simplexNoiseTexture = IIRTextureFilter.texture(from: inputTexture, device: device)
         }
         guard let simplexNoiseTexture else {
-            throw Error.cantInstantiateTexture
+            throw Error.cantMakeTexture
         }
         
         ciContext.render(noiseImage, to: simplexNoiseTexture, commandBuffer: commandBuffer, bounds: noiseImage.extent, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())

@@ -44,7 +44,7 @@ class LumaBoxTextureFilter {
             )
             textureDescriptor.usage = [.shaderRead, .shaderWrite, .renderTarget]
             guard let texture = device.makeTexture(descriptor: textureDescriptor) else {
-                throw Error.cantInstantiateTexture
+                throw Error.cantMakeTexture
             }
             scratchTexture = texture
         } else {

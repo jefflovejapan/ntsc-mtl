@@ -49,6 +49,9 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         effect.headSwitching?.offset = 32
         effect.headSwitching?.height = 64
         effect.headSwitching?.horizShift = 10
+        
+        effect.snowIntensity = 10
+        effect.snowAnisotropy = 10
         self.filter = try! NTSCTextureFilter(effect: effect, device: device, context: ciContext)
         setupCamera()
     }

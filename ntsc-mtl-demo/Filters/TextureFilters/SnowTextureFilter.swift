@@ -33,7 +33,7 @@ class SnowTextureFilter {
     
     func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         guard let randomImage = self.randomFilter.outputImage else {
-            throw Error.cantInstantiateTexture
+            throw Error.cantMakeTexture
         }
         
         let needsUpdate: Bool
@@ -44,12 +44,12 @@ class SnowTextureFilter {
         }
         if needsUpdate {
             guard let randomTexture = IIRTextureFilter.texture(from: inputTexture, device: device) else {
-                throw Error.cantInstantiateTexture
+                throw Error.cantMakeTexture
             }
             self.randomTexture = randomTexture
         }
         guard let randomTexture else {
-            throw Error.cantInstantiateTexture
+            throw Error.cantMakeTexture
         }
         
         ciContext.render(randomImage, to: randomTexture, commandBuffer: commandBuffer, bounds: CGRect(x: 0, y: 0, width: inputTexture.width, height: inputTexture.height), colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
@@ -60,6 +60,15 @@ class SnowTextureFilter {
             throw Error.cantMakeComputeEncoder
         }
         commandEncoder.setComputePipelineState(pipelineState)
+        commandEncoder.setTexture(inputTexture, index: 0)
+        commandEncoder.setTexture(randomTexture, index: 1)
+        commandEncoder.setTexture(outputTexture, index: 2)
+        var intensity = intensity
+        commandEncoder.setBytes(&intensity, length: MemoryLayout<Float>.size, index: 0)
+        var anisotropy = anisotropy
+        commandEncoder.setBytes(&anisotropy, length: MemoryLayout<Float>.size, index: 1)
+        var bandwidthScale = bandwidthScale
+        commandEncoder.setBytes(&bandwidthScale, length: MemoryLayout<Float>.size, index: 2)
         commandEncoder.dispatchThreads(
             MTLSize(
                 width: inputTexture.width,

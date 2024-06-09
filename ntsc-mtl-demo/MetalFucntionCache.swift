@@ -13,6 +13,8 @@ enum KernelFunction: String, CaseIterable {
     case convertToRGB
     case chromaIntoLuma
     case snow
+    case snow2
+    case geometricDistribution
     case yiqCompose
     case multiplyLuma
     case yiqCompose3

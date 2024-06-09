@@ -42,7 +42,7 @@ class HeadSwitchingTextureFilter {
         }
         
         guard let randomImageTexture else {
-            throw Error.cantInstantiateTexture
+            throw Error.cantMakeTexture
         }
 //        /*
 //         We're getting called with num_rows, offset, shift, and mid_line -- what are these?
