@@ -43,20 +43,19 @@ final class HeadSwitchingTests: XCTestCase {
     func testBigOffset() throws {
         let image = try CIImage.videoFrame()
         try CIImage.saveToDisk(image, filename: "input", context: ciContext)
-        let commandBuffer = try XCTUnwrap(commandQueue.makeCommandBuffer())
+        let buf0 = try XCTUnwrap(commandQueue.makeCommandBuffer())
         var headSwitching: HeadSwitchingSettings = .default
-        headSwitching.offset = 100
-        headSwitching.horizShift = 100
-        headSwitching.height = 200
         headSwitching.midLine = nil
         filter.headSwitchingSettings = headSwitching
-        
         let inputTexture = try textureForImage(image, device: device)
-        ciContext.render(image, to: inputTexture, commandBuffer: commandBuffer, bounds: image.extent, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
+        ciContext.render(image, to: inputTexture, commandBuffer: buf0, bounds: image.extent, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
+        buf0.commit()
+        buf0.waitUntilCompleted()
+        let buf1 = try XCTUnwrap(commandQueue.makeCommandBuffer())
         let outputTexture = try textureForImage(image, device: device)
-        try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
-        commandBuffer.commit()
-        commandBuffer.waitUntilCompleted()
+        try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: buf1)
+        buf1.commit()
+        buf1.waitUntilCompleted()
         let outputImage = try XCTUnwrap(CIImage(mtlTexture: outputTexture))
         try CIImage.saveToDisk(outputImage, filename: "output", context: ciContext)
     }

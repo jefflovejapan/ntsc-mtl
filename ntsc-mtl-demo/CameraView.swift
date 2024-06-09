@@ -46,8 +46,8 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         effect.filterType = .constantK
         effect.chromaLowpassIn = .full
         effect.headSwitching?.midLine = nil
-        effect.headSwitching?.offset = 50
-        effect.headSwitching?.height = 100
+        effect.headSwitching?.offset = 32
+        effect.headSwitching?.height = 64
         effect.headSwitching?.horizShift = 10
         self.filter = try! NTSCTextureFilter(effect: effect, device: device, context: ciContext)
         setupCamera()

@@ -29,16 +29,16 @@ kernel void shiftRow
         outputTexture.write(thisPixel, gid);
         return;
     }
-    /*
-     - I've got a pixel at y = 70 that I want to map to 0
-     - Height of the tex is 100
-     - height of the tex - y = 30
-     - height of the tex - y - numAffected
-     */
-    uint rowWithinAffected = gid.y - (texHeight - numAffectedRows);
+//    /*
+//     - I've got a pixel at y = 70 that I want to map to 0
+//     - Height of the tex is 100
+//     - height of the tex - y = 30
+//     - height of the tex - y - numAffected
+//     */
+    uint rowWithinAffected = (texHeight - 1 - gid.y);
     
     float rowShift = shift * pow((float(rowWithinAffected) / float(numAffectedRows)), 1.5);
-//    half rand = randomTexture.read(uint2(0, gid.y)).x;
-//    float noisyShift = (rowShift + (rand - 0.5)) * bandwidthScale;
-    shiftRowInline(inputTexture, outputTexture, rowShift, boundaryColumnIndex, gid);
+    half rand = randomTexture.read(uint2(0, gid.y)).x;
+    float noisyShift = (rowShift + (rand - 0.5)) * bandwidthScale;
+    shiftRowInline(inputTexture, outputTexture, noisyShift, boundaryColumnIndex, gid);
 }
