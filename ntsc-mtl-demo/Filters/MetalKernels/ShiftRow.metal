@@ -35,10 +35,10 @@ kernel void shiftRow
      - height of the tex - y = 30
      - height of the tex - y - numAffected
      */
-    uint rowWithinAffected = texHeight - gid.y - numAffectedRows;
+    uint rowWithinAffected = gid.y - (texHeight - numAffectedRows);
     
-//    float rowShift = shift * pow((float(rowWithinAffected) / float(numAffectedRows)), 1.5);
+    float rowShift = shift * pow((float(rowWithinAffected) / float(numAffectedRows)), 1.5);
 //    half rand = randomTexture.read(uint2(0, gid.y)).x;
 //    float noisyShift = (rowShift + (rand - 0.5)) * bandwidthScale;
-    shiftRowInline(inputTexture, outputTexture, /*noisyShift*/shift, boundaryColumnIndex, gid);
+    shiftRowInline(inputTexture, outputTexture, rowShift, boundaryColumnIndex, gid);
 }
