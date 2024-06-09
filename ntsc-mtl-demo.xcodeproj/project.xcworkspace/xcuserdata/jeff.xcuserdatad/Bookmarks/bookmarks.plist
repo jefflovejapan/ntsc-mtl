@@ -12,13 +12,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>100</string>
+					<string>98</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>99</string>
+					<string>97</string>
 					<key>Timestamp</key>
-					<string>739672364.403277</string>
+					<string>739657310.066529</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -34,6 +34,7 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
+<<<<<<< HEAD
 				<string>
 </string>
 				<key>leading</key>
@@ -44,6 +45,18 @@
 				<string>struct CameraView: UIViewRepresentable {
     @Binding var enableFilter: Bool
     
+=======
+				<string>    }
+</string>
+				<key>leading</key>
+				<string>            self.mtkView.setNeedsDisplay()
+        }
+</string>
+				<key>trailing</key>
+				<string>}
+
+struct CameraView: UIViewRepresentable {
+>>>>>>> 383f809 (Ringing)
 </string>
 			</dict>
 			<key>title</key>

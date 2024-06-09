@@ -45,6 +45,13 @@ struct IIRTransferFunction {
         return lowpassFilter(cutoff: cutoff, rate: rate)
     }
     
+    static func ringing(ringingSettings: RingingSettings, bandwidthScale: Float) throws -> IIRTransferFunction {
+        return try notchFilter(
+            frequency: (ringingSettings.frequency / bandwidthScale).clamped(within: 0 ... 1),
+            quality: ringingSettings.power
+        )
+    }
+    
     /*
     if self.composite_preemphasis != 0.0 {
         let preemphasis_filter = make_lowpass(

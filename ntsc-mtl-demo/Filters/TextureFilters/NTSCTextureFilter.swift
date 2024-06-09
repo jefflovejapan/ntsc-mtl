@@ -43,6 +43,7 @@ class NTSCTextureFilter {
     private let compositeNoiseFilter: CompositeNoiseTextureFilter
     private let snowFilter: SnowTextureFilter
     private let headSwitchingFilter: HeadSwitchingTextureFilter
+    private let ringingFilter: IIRTextureFilter
     
     init(effect: NTSCEffect, device: MTLDevice, context: CIContext) throws {
         self.effect = effect
@@ -88,6 +89,9 @@ class NTSCTextureFilter {
         self.compositeNoiseFilter = CompositeNoiseTextureFilter(device: device, library: library, ciContext: context, pipelineCache: pipelineCache)
         self.snowFilter = SnowTextureFilter(device: device, library: library, ciContext: context, pipelineCache: pipelineCache)
         self.headSwitchingFilter = HeadSwitchingTextureFilter(device: device, library: library, ciContext: context, pipelineCache: pipelineCache)
+        let ringingSettings = RingingSettings.default
+        let ringingFunction = try IIRTransferFunction.ringing(ringingSettings: ringingSettings, bandwidthScale: effect.bandwidthScale)
+        self.ringingFilter = IIRTextureFilter(device: device, library: library, pipelineCache: pipelineCache, numerators: ringingFunction.numerators, denominators: ringingFunction.denominators, initialCondition: .firstSample, channels: .y, scale: ringingSettings.intensity, delay: 1)
     }
     
     var inputImage: CIImage?
@@ -167,6 +171,10 @@ class NTSCTextureFilter {
     
     static func headSwitching(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: HeadSwitchingTextureFilter, headSwitching: HeadSwitchingSettings?, commandBuffer: MTLCommandBuffer) throws {
         filter.headSwitchingSettings = headSwitching
+        try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
+    }
+    
+    static func ringing(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: IIRTextureFilter, ringing: RingingSettings?, commandBuffer: MTLCommandBuffer) throws {
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
         
@@ -306,6 +314,13 @@ class NTSCTextureFilter {
                 outputTexture: iter.next()!,
                 filter: headSwitchingFilter, 
                 headSwitching: effect.headSwitching,
+                commandBuffer: commandBuffer
+            )
+            try Self.ringing(
+                inputTexture: iter.last!,
+                outputTexture: iter.next()!,
+                filter: ringingFilter,
+                ringing: effect.ringing,
                 commandBuffer: commandBuffer
             )
             try Self.convertToRGB(
