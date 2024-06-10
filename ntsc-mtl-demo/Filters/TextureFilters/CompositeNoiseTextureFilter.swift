@@ -22,8 +22,7 @@ class CompositeNoiseTextureFilter {
     private let pipelineCache: MetalPipelineCache
     private static let defaultIntensity: Float16 = 0.05
     
-    init(noise: FBMNoiseSettings?, device: MTLDevice, library: MTLLibrary, ciContext: CIContext, pipelineCache: MetalPipelineCache) {
-        self.noise = noise
+    init(device: MTLDevice, library: MTLLibrary, ciContext: CIContext, pipelineCache: MetalPipelineCache) {
         self.device = device
         self.library = library
         self.ciContext = ciContext
@@ -31,11 +30,19 @@ class CompositeNoiseTextureFilter {
     }
     
     func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        guard var noise else {
+            guard let blitEncoder = commandBuffer.makeBlitCommandEncoder() else {
+                throw Error.cantMakeBlitEncoder
+            }
+            blitEncoder.copy(from: inputTexture, to: outputTexture)
+            blitEncoder.endEncoding()
+            return
+        }
         let nextX: UInt8 = rng.next(upperBound: 100)
         let nextY: UInt8 = rng.next(upperBound: 100)
         simplexNoise.offsetX = Float(nextX)
         simplexNoise.offsetY = Float(nextY)
-        guard let noise = simplexNoise.outputImage else {
+        guard let noiseImage = simplexNoise.outputImage?.cropped(to: CGRect(origin: .zero, size: CGSize(width: inputTexture.width, height: inputTexture.height))) else {
             return
         }
         let needsUpdate: Bool
@@ -52,7 +59,7 @@ class CompositeNoiseTextureFilter {
             throw Error.cantInstantiateTexture
         }
         
-        ciContext.render(noise, to: simplexNoiseTexture, commandBuffer: commandBuffer, bounds: CGRect(x: 0, y: 0, width: CGFloat(inputTexture.width), height: CGFloat(inputTexture.height)), colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
+        ciContext.render(noiseImage, to: simplexNoiseTexture, commandBuffer: commandBuffer, bounds: noiseImage.extent, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
@@ -61,7 +68,7 @@ class CompositeNoiseTextureFilter {
         commandEncoder.setTexture(inputTexture, index: 0)
         commandEncoder.setTexture(simplexNoiseTexture, index: 1)
         commandEncoder.setTexture(outputTexture, index: 2)
-        var intensity = self.noise?.intensity ?? Self.defaultIntensity
+        var intensity = noise.intensity
         commandEncoder.setBytes(&intensity, length: MemoryLayout<Float16>.size, index: 0)
         commandEncoder.dispatchThreads(
             MTLSize(width: inputTexture.width, height: inputTexture.height, depth: 1),
