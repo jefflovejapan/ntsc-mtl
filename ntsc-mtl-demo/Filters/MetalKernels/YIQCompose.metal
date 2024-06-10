@@ -25,8 +25,8 @@ kernel void yiqCompose
 //    }
     half4 fallbackPixel = fallbackTexture.read(gid);
     uint2 sampleGID = gid;
-    sampleGID.y -= delay;
-    if (sampleGID.y < 0) {
+    sampleGID.y += delay;
+    if (sampleGID.y >= sampleTexture.get_height()) {
         outputTexture.write(fallbackPixel, gid);
     }
     half4 samplePixel = sampleTexture.read(sampleGID);
