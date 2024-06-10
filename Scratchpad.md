@@ -519,3 +519,16 @@ b[bi]: 0.40545145
     - if we've got midLine stuff then we do a bunch of extra math, otherwise we shiftRow(row, noisyShift, boundaryHandling of 0)
         - we shift the row by a non-integer amount using linear interpolation
 - I think my implementation's still a little off
+
+# June 9th
+
+OK, spent the whole weekend here but made big progress
+
+I think I finally have the IIR delay stuff figured out and hopefully there's a simple implementation that just involves translating the inputImage for IIR filters. Actually a better way to do it might be in the final compose step -- keep everything in shader land.
+
+I kind of don't want to put this project down but I feel like I'll regret it if I just work on this for the whole retreat. Then again, I might be able to go really far with this. If I focused on it for the next three weeks I could probably have a real library launched and maybe even an app in the App Store.
+
+I think I can demonstrate the value of this to the rest of the team, and maybe continue to work on it when I'm back at 1SE. The only thing that's better than getting paid to work on a passion project is getting paid to work on my *own code*. This is such a cool thing and genuinely interesting for talks and stuff.
+
+The web stuff is cool and I might not have another chance to work on it soon. Then again, with ChatGPT I can always grab enough web code to get by (right?)
+

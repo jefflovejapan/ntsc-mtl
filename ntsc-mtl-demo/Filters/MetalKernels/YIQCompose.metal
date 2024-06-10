@@ -15,6 +15,7 @@ kernel void yiqCompose
  texture2d<half, access::read> fallbackTexture [[texture(1)]],
  texture2d<half, access::write> outputTexture [[texture(2)]],
  constant half4& channelMix [[buffer(0)]],
+ constant uint& delay [[buffer(1)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
 //    half minWidth = min(sampleTexture.get_width(), min(fallbackTexture.get_width(), outputTexture.get_width()));
@@ -22,8 +23,13 @@ kernel void yiqCompose
 //    if (gid.x >= minWidth || gid.y >= minHeight) {
 //        return;
 //    }
-    half4 samplePixel = sampleTexture.read(gid);
     half4 fallbackPixel = fallbackTexture.read(gid);
+    uint2 sampleGID = gid;
+    sampleGID.y -= delay;
+    if (sampleGID.y < 0) {
+        outputTexture.write(fallbackPixel, gid);
+    }
+    half4 samplePixel = sampleTexture.read(sampleGID);
     
     half y = mix(fallbackPixel.x, samplePixel.x, channelMix.x);
     half i = mix(fallbackPixel.y, samplePixel.y, channelMix.y);

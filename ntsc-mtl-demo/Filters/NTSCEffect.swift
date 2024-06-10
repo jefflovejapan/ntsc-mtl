@@ -106,7 +106,7 @@ struct FBMNoiseSettings {
 struct RingingSettings {
     var frequency: Float
     var power: Float
-    var intensity: Float
+    var intensity: Float16
 }
 
 struct VHSSettings {
