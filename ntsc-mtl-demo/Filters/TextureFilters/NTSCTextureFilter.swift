@@ -288,59 +288,23 @@ class NTSCTextureFilter {
                 device: device,
                 pipelineCache: pipelineCache
             )
-//            try Self.inputLuma(
-//                iter.last!,
-//                output: iter.next()!,
-//                commandBuffer: commandBuffer,
-//                lumaLowpass: effect.inputLumaFilter, 
-//                lumaBoxFilter: lumaBoxFilter,
-//                lumaNotchFilter: lumaNotchFilter
-//            )
-//            try Self.chromaLowpass(
-//                iter.last!,
-//                output: iter.next()!,
-//                commandBuffer: commandBuffer,
-//                chromaLowpass: effect.chromaLowpassIn,
-//                lightFilter: lightChromaLowpassFilter,
-//                fullFilter: fullChromaLowpassFilter
-//            )
-//            try Self.chromaIntoLuma(
-//                inputTexture: iter.last!,
-//                outputTexture: iter.next()!,
-//                timestamp: frameNum,
-//                phaseShift: effect.videoScanlinePhaseShift,
-//                phaseShiftOffset: effect.videoScanlinePhaseShiftOffset,
-//                filter: self.chromaIntoLumaFilter,
-//                library: library,
-//                device: device,
-//                commandBuffer: commandBuffer
-//            )
-//            try Self.compositePreemphasis(
-//                inputTexture: iter.last!,
-//                outputTexture: iter.next()!,
-//                filter: compositePreemphasisFilter,
-//                commandBuffer: commandBuffer
-//            )
-//            try Self.compositeNoise(
-//                inputTexture: iter.last!,
-//                outputTexture: iter.next()!,
-//                filter: compositeNoiseFilter,
-//                commandBuffer: commandBuffer
-//            )
-//            try Self.snow(
-//                inputTexture: iter.last!,
-//                outputTexture: iter.next()!,
-//                filter: snowFilter,
-//                commandBuffer: commandBuffer
-//            )
-//            try Self.headSwitching(
-//                inputTexture: iter.last!,
-//                outputTexture: iter.next()!,
-//                filter: headSwitchingFilter, 
-//                headSwitching: effect.headSwitching,
-//                commandBuffer: commandBuffer
-//            )
-            try Self.lumaSmear(
+            try Self.inputLuma(
+                iter.last!,
+                output: iter.next()!,
+                commandBuffer: commandBuffer,
+                lumaLowpass: effect.inputLumaFilter, 
+                lumaBoxFilter: lumaBoxFilter,
+                lumaNotchFilter: lumaNotchFilter
+            )
+            try Self.chromaLowpass(
+                iter.last!,
+                output: iter.next()!,
+                commandBuffer: commandBuffer,
+                chromaLowpass: effect.chromaLowpassIn,
+                lightFilter: lightChromaLowpassFilter,
+                fullFilter: fullChromaLowpassFilter
+            )
+            try Self.chromaIntoLuma(
                 inputTexture: iter.last!,
                 outputTexture: iter.next()!,
                 timestamp: frameNum,
@@ -349,6 +313,46 @@ class NTSCTextureFilter {
                 filter: self.chromaIntoLumaFilter,
                 library: library,
                 device: device,
+                commandBuffer: commandBuffer
+            )
+            try Self.compositePreemphasis(
+                inputTexture: iter.last!,
+                outputTexture: iter.next()!,
+                filter: compositePreemphasisFilter,
+                commandBuffer: commandBuffer
+            )
+            try Self.compositeNoise(
+                inputTexture: iter.last!,
+                outputTexture: iter.next()!,
+                filter: compositeNoiseFilter, 
+                noise: effect.compositeNoise,
+                commandBuffer: commandBuffer
+            )
+            try Self.snow(
+                inputTexture: iter.last!,
+                outputTexture: iter.next()!,
+                filter: snowFilter,
+                commandBuffer: commandBuffer
+            )
+            try Self.headSwitching(
+                inputTexture: iter.last!,
+                outputTexture: iter.next()!,
+                filter: headSwitchingFilter, 
+                headSwitching: effect.headSwitching,
+                commandBuffer: commandBuffer
+            )
+            try Self.lumaSmear(
+                inputTexture: iter.last!,
+                outputTexture: iter.next()!,
+                filter: lumaSmearFilter,
+                lumaSmear: effect.lumaSmear,
+                commandBuffer: commandBuffer
+            )
+            try Self.ringing(
+                inputTexture: iter.last!,
+                outputTexture: iter.next()!,
+                filter: ringingFilter,
+                ringing: effect.ringing,
                 commandBuffer: commandBuffer
             )
             try Self.compositePreemphasis(
@@ -384,21 +388,14 @@ class NTSCTextureFilter {
                 ringing: effect.ringing,
                 commandBuffer: commandBuffer
             )
-//            try Self.ringing(
-//                inputTexture: iter.last!,
-//                outputTexture: iter.next()!,
-//                filter: ringingFilter,
-//                ringing: effect.ringing,
-//                commandBuffer: commandBuffer
-//            )
-//            try Self.chromaLowpass(
-//                iter.last!,
-//                output: iter.next()!,
-//                commandBuffer: commandBuffer,
-//                chromaLowpass: effect.chromaLowpassOut,
-//                lightFilter: lightChromaLowpassFilter,
-//                fullFilter: fullChromaLowpassFilter
-//            )
+            try Self.chromaLowpass(
+                iter.last!,
+                output: iter.next()!,
+                commandBuffer: commandBuffer,
+                chromaLowpass: effect.chromaLowpassOut,
+                lightFilter: lightChromaLowpassFilter,
+                fullFilter: fullChromaLowpassFilter
+            )
             try Self.convertToRGB(
                 iter.last!,
                 output: iter.next()!,

@@ -32,6 +32,7 @@ class IIRTextureFilter {
     private let initialCondition: InitialCondition
     private let channelMix: YIQChannels
     private let scale: Float16
+    private let delay: UInt
     private(set) var zTextures: [MTLTexture] = []
     private var initialConditionTexture: MTLTexture?
     private var filteredSampleTexture: MTLTexture?
@@ -48,6 +49,7 @@ class IIRTextureFilter {
         self.initialCondition = initialCondition
         self.channelMix = channels
         self.scale = scale
+        self.delay = delay
     }
     
     static func texture(from texture: (any MTLTexture), device: MTLDevice) -> MTLTexture? {
@@ -368,6 +370,7 @@ class IIRTextureFilter {
             filteredImage: filteredSampleTexture!,
             writingTo: outputTexture,
             channels: self.channelMix,
+            delay: self.delay,
             library: library,
             device: device, 
             pipelineCache: pipelineCache,
@@ -402,7 +405,7 @@ class IIRTextureFilter {
     }
     
     
-    static func finalCompose(inputImage: MTLTexture, filteredImage: MTLTexture, writingTo outputTexture: MTLTexture, channels: YIQChannels, library: MTLLibrary, device: MTLDevice, pipelineCache: MetalPipelineCache, commandBuffer: MTLCommandBuffer) throws {
+    static func finalCompose(inputImage: MTLTexture, filteredImage: MTLTexture, writingTo outputTexture: MTLTexture, channels: YIQChannels, delay: UInt, library: MTLLibrary, device: MTLDevice, pipelineCache: MetalPipelineCache, commandBuffer: MTLCommandBuffer) throws {
         let pipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .yiqCompose)
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
@@ -413,6 +416,8 @@ class IIRTextureFilter {
         commandEncoder.setTexture(outputTexture, index: 2)
         var channelMix = channels.floatMix
         commandEncoder.setBytes(&channelMix, length: MemoryLayout<Float16>.size * 4, index: 0)
+        var delay = delay
+        commandEncoder.setBytes(&delay, length: MemoryLayout<UInt>.size, index: 1)
         commandEncoder.dispatchThreads(
             MTLSize(width: inputImage.width, height: inputImage.height, depth: 1),
             threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
