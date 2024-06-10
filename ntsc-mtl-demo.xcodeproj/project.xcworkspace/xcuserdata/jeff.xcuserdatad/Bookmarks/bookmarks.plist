@@ -12,13 +12,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>95</string>
+					<string>100</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>94</string>
+					<string>99</string>
 					<key>Timestamp</key>
-					<string>739656777.9637049</string>
+					<string>739672364.403277</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -34,16 +34,16 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string>        DispatchQueue.main.async {
+				<string>
 </string>
 				<key>leading</key>
-				<string>
-        self.lastImage = ciImage
+				<string>    }
+}
 </string>
 				<key>trailing</key>
-				<string>            self.mtkView.setNeedsDisplay()
-        }
-    }
+				<string>struct CameraView: UIViewRepresentable {
+    @Binding var enableFilter: Bool
+    
 </string>
 			</dict>
 			<key>title</key>

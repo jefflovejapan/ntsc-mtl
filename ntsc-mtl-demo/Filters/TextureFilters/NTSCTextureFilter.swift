@@ -85,7 +85,7 @@ class NTSCTextureFilter {
             scale: -effect.compositePreemphasis,
             delay: 0
         )
-        self.compositeNoiseFilter = CompositeNoiseTextureFilter(noise: effect.compositeNoise, device: device, library: library, ciContext: context, pipelineCache: pipelineCache)
+        self.compositeNoiseFilter = CompositeNoiseTextureFilter(device: device, library: library, ciContext: context, pipelineCache: pipelineCache)
         self.snowFilter = SnowTextureFilter(device: device, library: library, ciContext: context, pipelineCache: pipelineCache)
         self.headSwitchingFilter = HeadSwitchingTextureFilter(device: device, library: library, ciContext: context, pipelineCache: pipelineCache)
     }
@@ -156,7 +156,8 @@ class NTSCTextureFilter {
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
-    static func compositeNoise(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: CompositeNoiseTextureFilter, commandBuffer: MTLCommandBuffer) throws {
+    static func compositeNoise(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: CompositeNoiseTextureFilter, noise: FBMNoiseSettings?, commandBuffer: MTLCommandBuffer) throws {
+        filter.noise = noise
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
@@ -291,6 +292,7 @@ class NTSCTextureFilter {
                 inputTexture: iter.last!,
                 outputTexture: iter.next()!,
                 filter: compositeNoiseFilter,
+                noise: effect.compositeNoise,
                 commandBuffer: commandBuffer
             )
             try Self.snow(
