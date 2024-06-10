@@ -111,11 +111,7 @@ class IIRTextureFilter {
             }
             return
         case .firstSample:
-            guard let blitEncoder = commandBuffer.makeBlitCommandEncoder() else {
-                throw Error.cantMakeBlitEncoder
-            }
-            blitEncoder.copy(from: inputTexture, to: initialConditionTexture)
-            blitEncoder.endEncoding()
+            try justBlit(from: inputTexture, to: initialConditionTexture, commandBuffer: commandBuffer)
         case .constant(let color):
             try paint(texture: initialConditionTexture, with: color, library: library, device: device, pipelineCache: pipelineCache, commandBuffer: commandBuffer)
         }

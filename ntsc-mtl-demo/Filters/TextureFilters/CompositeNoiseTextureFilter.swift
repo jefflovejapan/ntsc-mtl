@@ -31,11 +31,7 @@ class CompositeNoiseTextureFilter {
     
     func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         guard var noise else {
-            guard let blitEncoder = commandBuffer.makeBlitCommandEncoder() else {
-                throw Error.cantMakeBlitEncoder
-            }
-            blitEncoder.copy(from: inputTexture, to: outputTexture)
-            blitEncoder.endEncoding()
+            try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
             return
         }
         let nextX: UInt8 = rng.next(upperBound: 100)

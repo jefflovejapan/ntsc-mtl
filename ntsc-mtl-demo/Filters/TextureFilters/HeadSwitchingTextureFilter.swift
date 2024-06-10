@@ -27,7 +27,7 @@ class HeadSwitchingTextureFilter {
     
     func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         guard let hs = headSwitchingSettings else {
-            try justBlit(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
+            try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
             return
         }
         
@@ -192,13 +192,5 @@ class HeadSwitchingTextureFilter {
             threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1)
         )
         commandEncoder.endEncoding()
-    }
-    
-    private func justBlit(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        guard let blitEncoder = commandBuffer.makeBlitCommandEncoder() else {
-            throw Error.cantMakeBlitEncoder
-        }
-        blitEncoder.copy(from: inputTexture, to: outputTexture)
-        blitEncoder.endEncoding()
     }
 }

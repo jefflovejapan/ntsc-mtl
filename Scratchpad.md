@@ -532,3 +532,6 @@ I think I can demonstrate the value of this to the rest of the team, and maybe c
 
 The web stuff is cool and I might not have another chance to work on it soon. Then again, with ChatGPT I can always grab enough web code to get by (right?)
 
+# June 10th
+
+Hopefully starting on web stuff today! Feels like I made great progress over the weekend even though at the time it might have felt slow.

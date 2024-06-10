@@ -18,6 +18,7 @@
 		1F2B96EB2C1661D900DB0B9F /* Snow2.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F2B96EA2C1661D900DB0B9F /* Snow2.metal */; };
 		1F2B96ED2C16680D00DB0B9F /* GeometricDistribution.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F2B96EC2C16680D00DB0B9F /* GeometricDistribution.metal */; };
 		1F2B96EF2C166A0500DB0B9F /* SnowTextureFilter2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2B96EE2C166A0500DB0B9F /* SnowTextureFilter2.swift */; };
+		1F2B96F12C17477200DB0B9F /* JustBlit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2B96F02C17477200DB0B9F /* JustBlit.swift */; };
 		1F3E38202C123D4700D16CF0 /* Float+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F3E381F2C123D4700D16CF0 /* Float+Extensions.swift */; };
 		1F3E38242C12486C00D16CF0 /* BandingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F3E38232C12486C00D16CF0 /* BandingTests.swift */; };
 		1F3E38252C1248E100D16CF0 /* video-frame.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1F3E38212C1247DC00D16CF0 /* video-frame.jpg */; };
@@ -91,6 +92,7 @@
 		1F2B96EA2C1661D900DB0B9F /* Snow2.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Snow2.metal; sourceTree = "<group>"; };
 		1F2B96EC2C16680D00DB0B9F /* GeometricDistribution.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = GeometricDistribution.metal; sourceTree = "<group>"; };
 		1F2B96EE2C166A0500DB0B9F /* SnowTextureFilter2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnowTextureFilter2.swift; sourceTree = "<group>"; };
+		1F2B96F02C17477200DB0B9F /* JustBlit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JustBlit.swift; sourceTree = "<group>"; };
 		1F3E381F2C123D4700D16CF0 /* Float+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Float+Extensions.swift"; sourceTree = "<group>"; };
 		1F3E38212C1247DC00D16CF0 /* video-frame.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "video-frame.jpg"; sourceTree = "<group>"; };
 		1F3E38232C12486C00D16CF0 /* BandingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandingTests.swift; sourceTree = "<group>"; };
@@ -243,6 +245,7 @@
 				1F6BFDEC2BFF799F00883169 /* ContentView.swift */,
 				1F5B6CCF2C0536600051A9ED /* Clamped.swift */,
 				1F5B6CC52C04FCA50051A9ED /* PolynomialMultiply.swift */,
+				1F2B96F02C17477200DB0B9F /* JustBlit.swift */,
 				1F6BFE1A2BFF7E9600883169 /* Filters */,
 				1F6BFDEE2BFF79A000883169 /* Assets.xcassets */,
 				1F6BFDF02BFF79A000883169 /* Preview Content */,
@@ -452,6 +455,7 @@
 				1F2B96EB2C1661D900DB0B9F /* Snow2.metal in Sources */,
 				1F259EDE2C02399C00937D0A /* NTSCEffect+Defaults.swift in Sources */,
 				1F5B6CD02C0536600051A9ED /* Clamped.swift in Sources */,
+				1F2B96F12C17477200DB0B9F /* JustBlit.swift in Sources */,
 				1F5F93CA2C0F9DCA00EC29A2 /* YIQCompose.metal in Sources */,
 				1F1F9B692C03C3980085048F /* IIRTransferFunction.swift in Sources */,
 				1FA64F782C1468BF00E54D6F /* BoundaryHandling.swift in Sources */,

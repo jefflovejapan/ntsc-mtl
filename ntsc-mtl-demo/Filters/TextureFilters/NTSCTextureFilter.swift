@@ -87,13 +87,8 @@ class NTSCTextureFilter {
             scale: -effect.compositePreemphasis,
             delay: 0
         )
-<<<<<<< HEAD
         self.compositeNoiseFilter = CompositeNoiseTextureFilter(device: device, library: library, ciContext: context, pipelineCache: pipelineCache)
-        self.snowFilter = SnowTextureFilter(device: device, library: library, ciContext: context, pipelineCache: pipelineCache)
-=======
-        self.compositeNoiseFilter = CompositeNoiseTextureFilter(noise: effect.compositeNoise, device: device, library: library, ciContext: context, pipelineCache: pipelineCache)
         self.snowFilter = SnowTextureFilter2(device: device, library: library, ciContext: context, pipelineCache: pipelineCache)
->>>>>>> 61592af (Flickering but looks crazy)
         self.headSwitchingFilter = HeadSwitchingTextureFilter(device: device, library: library, ciContext: context, pipelineCache: pipelineCache)
         let lumaSmearFunction = IIRTransferFunction.lumaSmear(amount: effect.lumaSmear, bandwidthScale: effect.bandwidthScale)
         self.lumaSmearFilter = IIRTextureFilter(
@@ -189,18 +184,22 @@ class NTSCTextureFilter {
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
-    static func headSwitching(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: HeadSwitchingTextureFilter, headSwitching: HeadSwitchingSettings?, commandBuffer: MTLCommandBuffer) throws {
+    static func headSwitching(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: HeadSwitchingTextureFilter, headSwitching: HeadSwitchingSettings?,  commandBuffer: MTLCommandBuffer) throws {
         filter.headSwitchingSettings = headSwitching
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
+    static func trackingNoise(inputTexture: MTLTexture, outputTexture: MTLTexture, trackingNoise: TrackingNoiseSettings?, commandBuffer: MTLCommandBuffer) throws {
+        try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
+    }
+    
+    static func lumaIntoChroma(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
+    }
+    
     static func lumaSmear(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: IIRTextureFilter, lumaSmear: Float, commandBuffer: MTLCommandBuffer) throws {
         if lumaSmear.isZero {
-            guard let blitEncoder = commandBuffer.makeBlitCommandEncoder() else {
-                throw TextureFilterError.cantMakeBlitEncoder
-            }
-            blitEncoder.copy(from: inputTexture, to: outputTexture)
-            blitEncoder.endEncoding()
+            try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
             return
         }
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
@@ -209,7 +208,29 @@ class NTSCTextureFilter {
     static func ringing(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: IIRTextureFilter, ringing: RingingSettings?, commandBuffer: MTLCommandBuffer) throws {
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
-        
+    
+    static func lumaNoise(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
+    }
+    
+    static func chromaNoise(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
+    }
+    static func chromaPhaseError(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
+    }
+    static func chromaPhaseNoise(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
+    }
+    static func chromaDelay(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
+    }
+    static func vhs(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
+    }
+    static func chromaVertBlend(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
+    }
     static func convertToRGB(_ texture: (any MTLTexture), output: (any MTLTexture), commandBuffer: MTLCommandBuffer, library: MTLLibrary, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
         // Create a command buffer and encoder
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
@@ -287,33 +308,37 @@ class NTSCTextureFilter {
         let iter = IteratorThing(vals: textures)
         
         do {
+            // Step 0: convert to YIQ
             try Self.convertToYIQ(
-                iter.next()!,
-                output: iter.next()!,
+                try iter.next(),
+                output: try iter.next(),
                 library: library,
                 commandBuffer: commandBuffer,
                 device: device,
                 pipelineCache: pipelineCache
             )
+            // Step 1: luma in
             try Self.inputLuma(
-                iter.last!,
-                output: iter.next()!,
+                try iter.last,
+                output: try iter.next(),
                 commandBuffer: commandBuffer,
                 lumaLowpass: effect.inputLumaFilter, 
                 lumaBoxFilter: lumaBoxFilter,
                 lumaNotchFilter: lumaNotchFilter
             )
+            // Step 2: chroma lowpass in
             try Self.chromaLowpass(
-                iter.last!,
-                output: iter.next()!,
+                try iter.last,
+                output: try iter.next(),
                 commandBuffer: commandBuffer,
                 chromaLowpass: effect.chromaLowpassIn,
                 lightFilter: lightChromaLowpassFilter,
                 fullFilter: fullChromaLowpassFilter
             )
+            // Step 3: chroma into luma
             try Self.chromaIntoLuma(
-                inputTexture: iter.last!,
-                outputTexture: iter.next()!,
+                inputTexture: try iter.last,
+                outputTexture: try iter.next(),
                 timestamp: frameNum,
                 phaseShift: effect.videoScanlinePhaseShift,
                 phaseShiftOffset: effect.videoScanlinePhaseShiftOffset,
@@ -322,138 +347,123 @@ class NTSCTextureFilter {
                 device: device,
                 commandBuffer: commandBuffer
             )
+            // Step 4: composite preemphasis
             try Self.compositePreemphasis(
-                inputTexture: iter.last!,
-                outputTexture: iter.next()!,
+                inputTexture: try iter.last,
+                outputTexture: try iter.next(),
                 filter: compositePreemphasisFilter,
                 commandBuffer: commandBuffer
             )
+            // Step 5: composite noise
             try Self.compositeNoise(
-                inputTexture: iter.last!,
-                outputTexture: iter.next()!,
-                filter: compositeNoiseFilter, 
-                noise: effect.compositeNoise,
-                commandBuffer: commandBuffer
-            )
-//            try Self.inputLuma(
-//                iter.last!,
-//                output: iter.next()!,
-//                commandBuffer: commandBuffer,
-//                lumaLowpass: effect.inputLumaFilter, 
-//                lumaBoxFilter: lumaBoxFilter,
-//                lumaNotchFilter: lumaNotchFilter
-//            )
-//            try Self.chromaLowpass(
-//                iter.last!,
-//                output: iter.next()!,
-//                commandBuffer: commandBuffer,
-//                chromaLowpass: effect.chromaLowpassIn,
-//                lightFilter: lightChromaLowpassFilter,
-//                fullFilter: fullChromaLowpassFilter
-//            )
-//            try Self.chromaIntoLuma(
-//                inputTexture: iter.last!,
-//                outputTexture: iter.next()!,
-//                timestamp: frameNum,
-//                phaseShift: effect.videoScanlinePhaseShift,
-//                phaseShiftOffset: effect.videoScanlinePhaseShiftOffset,
-//                filter: self.chromaIntoLumaFilter,
-//                library: library,
-//                device: device,
-//                commandBuffer: commandBuffer
-//            )
-//            try Self.compositePreemphasis(
-//                inputTexture: iter.last!,
-//                outputTexture: iter.next()!,
-//                filter: compositePreemphasisFilter,
-//                commandBuffer: commandBuffer
-//            )
-//            try Self.compositeNoise(
-//                inputTexture: iter.last!,
-//                outputTexture: iter.next()!,
-//                filter: compositeNoiseFilter,
-//                commandBuffer: commandBuffer
-//            )
-            try Self.snow(
-                inputTexture: iter.last!,
-                outputTexture: iter.next()!,
-                filter: snowFilter,
-                snowIntensity: effect.snowIntensity,
-                snowAnisotropy: effect.snowAnisotropy,
-                commandBuffer: commandBuffer
-            )
-            try Self.headSwitching(
-                inputTexture: iter.last!,
-                outputTexture: iter.next()!,
-                filter: headSwitchingFilter, 
-                headSwitching: effect.headSwitching,
-                commandBuffer: commandBuffer
-            )
-            try Self.lumaSmear(
-                inputTexture: iter.last!,
-                outputTexture: iter.next()!,
-                filter: lumaSmearFilter,
-                lumaSmear: effect.lumaSmear,
-                commandBuffer: commandBuffer
-            )
-            try Self.ringing(
-                inputTexture: iter.last!,
-                outputTexture: iter.next()!,
-                filter: ringingFilter,
-                ringing: effect.ringing,
-                commandBuffer: commandBuffer
-            )
-            try Self.compositePreemphasis(
-                inputTexture: iter.last!,
-                outputTexture: iter.next()!,
-                filter: compositePreemphasisFilter,
-                commandBuffer: commandBuffer
-            )
-            try Self.compositeNoise(
-                inputTexture: iter.last!,
-                outputTexture: iter.next()!,
+                inputTexture: try iter.last,
+                outputTexture: try iter.next(),
                 filter: compositeNoiseFilter,
                 noise: effect.compositeNoise,
                 commandBuffer: commandBuffer
             )
-            try Self.snow(
-                inputTexture: iter.last!,
-                outputTexture: iter.next()!,
-                filter: snowFilter,
-                commandBuffer: commandBuffer
-            )
+            // Step 6: snow
+//            try Self.snow(
+//                inputTexture: try iter.last,
+//                outputTexture: try iter.next(),
+//                filter: snowFilter,
+//                snowIntensity: effect.snowIntensity,
+//                snowAnisotropy: effect.snowAnisotropy,
+//                commandBuffer: commandBuffer
+//            )
+            // Step 7: head switching
             try Self.headSwitching(
-                inputTexture: iter.last!,
-                outputTexture: iter.next()!,
-                filter: headSwitchingFilter, 
+                inputTexture: try iter.last,
+                outputTexture: try iter.next(),
+                filter: headSwitchingFilter,
                 headSwitching: effect.headSwitching,
                 commandBuffer: commandBuffer
             )
+            // Step 8: tracking noise
+            try Self.trackingNoise(
+                inputTexture: try iter.last,
+                outputTexture: try iter.next(),
+                trackingNoise: effect.trackingNoise,
+                commandBuffer: commandBuffer
+            )
+            // Step 9: luma into chroma
+            try Self.lumaIntoChroma(
+                inputTexture: try iter.last,
+                outputTexture: try iter.next(),
+                commandBuffer: commandBuffer
+            )
+            
+            // Step 10: luma smear
+            try Self.lumaSmear(
+                inputTexture: try iter.last,
+                outputTexture: try iter.next(),
+                filter: lumaSmearFilter,
+                lumaSmear: effect.lumaSmear,
+                commandBuffer: commandBuffer
+            )
+            // Step 11: ringing
             try Self.ringing(
-                inputTexture: iter.last!,
-                outputTexture: iter.next()!,
+                inputTexture: try iter.last,
+                outputTexture: try iter.next(),
                 filter: ringingFilter,
                 ringing: effect.ringing,
                 commandBuffer: commandBuffer
             )
+            // Step 12: luma noise
+            try Self.lumaNoise(
+                inputTexture: try iter.last,
+                outputTexture: try iter.next(),
+                commandBuffer: commandBuffer
+            )
+            // Step 13: chroma noise
+            try Self.chromaNoise(
+                inputTexture: try iter.last,
+                outputTexture: try iter.next(),
+                commandBuffer: commandBuffer
+            )
+            // Step 14: chroma phase error
+            try Self.chromaPhaseError(
+                inputTexture: try iter.last,
+                outputTexture: try iter.next(),
+                commandBuffer: commandBuffer
+            )
+            // Step 15: chroma phase noise
+            try Self.chromaPhaseNoise(
+                inputTexture: try iter.last,
+                outputTexture: try iter.next(),
+                commandBuffer: commandBuffer
+            )
+            
+            // Step 16: chroma delay
+            try Self.chromaDelay(
+                inputTexture: try iter.last,
+                outputTexture: try iter.next(),
+                commandBuffer: commandBuffer
+            )
+            // Step 17: vhs
+            try Self.vhs(
+                inputTexture: try iter.last,
+                outputTexture: try iter.next(),
+                commandBuffer: commandBuffer
+            )
+            // Step 18: chroma vert blend
+            try Self.chromaVertBlend(
+                inputTexture: try iter.last,
+                outputTexture: try iter.next(),
+                commandBuffer: commandBuffer
+            )
+            // Step 19: chroma lowpass out
             try Self.chromaLowpass(
-                iter.last!,
-                output: iter.next()!,
+                try iter.last,
+                output: try iter.next(),
                 commandBuffer: commandBuffer,
                 chromaLowpass: effect.chromaLowpassOut,
                 lightFilter: lightChromaLowpassFilter,
                 fullFilter: fullChromaLowpassFilter
             )
-//            try Self.headSwitching(
-//                inputTexture: iter.last!,
-//                outputTexture: iter.next()!,
-//                filter: headSwitchingFilter, 
-//                headSwitching: effect.headSwitching,
-//                commandBuffer: commandBuffer
-//            )
             try Self.convertToRGB(
-                iter.last!,
-                output: iter.next()!,
+                try iter.last,
+                output: try iter.next(),
                 commandBuffer: commandBuffer,
                 library: library,
                 device: device,
@@ -461,11 +471,10 @@ class NTSCTextureFilter {
             )
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()
+            return CIImage(mtlTexture: try iter.last)
         } catch {
             print("Error generating output image: \(error)")
             return nil
         }
-        let outImage = CIImage(mtlTexture: iter.last!)
-        return outImage
     }
 }
