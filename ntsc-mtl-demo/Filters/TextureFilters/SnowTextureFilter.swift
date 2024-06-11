@@ -26,15 +26,10 @@ class SnowTextureFilter {
         self.ciContext = ciContext
         self.pipelineCache = pipelineCache
     }
-    
-    private var rng = SystemRandomNumberGenerator()
-    private let randomFilter = CIFilter.randomGenerator()
+
     private var randomTexture: MTLTexture?
     
     func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        guard let randomImage = self.randomFilter.outputImage else {
-            throw Error.cantMakeTexture
-        }
         
         let needsUpdate: Bool
         if let randomTexture {
@@ -52,14 +47,22 @@ class SnowTextureFilter {
             throw Error.cantMakeTexture
         }
         
-        ciContext.render(randomImage, to: randomTexture, commandBuffer: commandBuffer, bounds: CGRect(x: 0, y: 0, width: inputTexture.width, height: inputTexture.height), colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
+        let geoPipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .geometricDistribution)
+        guard let geoEncoder = commandBuffer.makeComputeCommandEncoder() else {
+            throw Error.cantMakeComputeEncoder
+        }
+        geoEncoder.setComputePipelineState(geoPipelineState)
+        geoEncoder.setTexture(randomTexture, index: 0)
+        var probablility: Float16 = 0.5
+        geoEncoder.setBytes(&probablility, length: MemoryLayout<Float16>.size, index: 0)
+        geoEncoder.endEncoding()
         
-        let pipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .snow)
+        let snowPipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .snow)
         
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
-        commandEncoder.setComputePipelineState(pipelineState)
+        commandEncoder.setComputePipelineState(snowPipelineState)
         commandEncoder.setTexture(inputTexture, index: 0)
         commandEncoder.setTexture(randomTexture, index: 1)
         commandEncoder.setTexture(outputTexture, index: 2)

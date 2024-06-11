@@ -10,7 +10,7 @@ using namespace metal;
 
 kernel void geometricDistribution
 (
- texture1d<half, access::write> outTexture [[texture(0)]],
+ texture2d<half, access::write> outTexture [[texture(0)]],
  constant half &probability,
  uint2 gid [[thread_position_in_grid]]
  ) {
@@ -34,5 +34,5 @@ kernel void geometricDistribution
     half4 outVal = half4(geomValue);
 
     // Write the value to the texture
-    outTexture.write(outVal, gid.x);
+    outTexture.write(outVal, gid);
 }

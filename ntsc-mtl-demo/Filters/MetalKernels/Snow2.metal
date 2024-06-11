@@ -11,21 +11,16 @@ using namespace metal;
 kernel void snow2
 (
  texture2d<half, access::read> inTexture [[texture(0)]],
- texture1d<half, access::read> geoTexture [[texture(1)]],
+ texture2d<half, access::read> geoTexture [[texture(1)]],
  texture2d<half, access::write> outTexture [[texture(2)]],
  constant float &bandwidthScale [[buffer(0)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
-    if (gid.x >= outTexture.get_width() || gid.y >= outTexture.get_height()) {
-        return;
-    }
-
     // Read the current value from the output texture
     half4 currentValue = inTexture.read(gid);
 
     // Get the geometric distribution value for this thread
-    uint geoIndex = gid.x % geoTexture.get_width();
-    half4 geomValue = geoTexture.read(geoIndex);
+    half4 geomValue = geoTexture.read(gid);
 
     // Calculate the speckle effect
     half4 transientLen = geomValue * bandwidthScale;

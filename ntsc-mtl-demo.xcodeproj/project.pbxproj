@@ -28,6 +28,7 @@
 		1F4692D52C13CAA000CD7756 /* IteratorThing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4692D42C13CAA000CD7756 /* IteratorThing.swift */; };
 		1F4692D72C13CC4000CD7756 /* IteratorThingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4692D62C13CC4000CD7756 /* IteratorThingTests.swift */; };
 		1F4692D92C13D7E700CD7756 /* TransferFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4692D82C13D7E700CD7756 /* TransferFunctionTests.swift */; };
+		1F59AA7D2C18FA4F003510EC /* GeometricNoise.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F59AA7C2C18FA4F003510EC /* GeometricNoise.metal */; };
 		1F5B6CC22C04D4010051A9ED /* NTSC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CC12C04D4010051A9ED /* NTSC.swift */; };
 		1F5B6CC62C04FCA50051A9ED /* PolynomialMultiply.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CC52C04FCA50051A9ED /* PolynomialMultiply.swift */; };
 		1F5B6CD02C0536600051A9ED /* Clamped.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CCF2C0536600051A9ED /* Clamped.swift */; };
@@ -102,6 +103,7 @@
 		1F4692D42C13CAA000CD7756 /* IteratorThing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IteratorThing.swift; sourceTree = "<group>"; };
 		1F4692D62C13CC4000CD7756 /* IteratorThingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IteratorThingTests.swift; sourceTree = "<group>"; };
 		1F4692D82C13D7E700CD7756 /* TransferFunctionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferFunctionTests.swift; sourceTree = "<group>"; };
+		1F59AA7C2C18FA4F003510EC /* GeometricNoise.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = GeometricNoise.metal; sourceTree = "<group>"; };
 		1F5B6CC12C04D4010051A9ED /* NTSC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSC.swift; sourceTree = "<group>"; };
 		1F5B6CC52C04FCA50051A9ED /* PolynomialMultiply.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolynomialMultiply.swift; sourceTree = "<group>"; };
 		1F5B6CCF2C0536600051A9ED /* Clamped.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Clamped.swift; sourceTree = "<group>"; };
@@ -176,6 +178,7 @@
 				1FA29A8C2C112DBC00070F03 /* ChromaIntoLuma.metal */,
 				1F2159AF2C1154C100D2483B /* Snow.metal */,
 				1F2B96EA2C1661D900DB0B9F /* Snow2.metal */,
+				1F59AA7C2C18FA4F003510EC /* GeometricNoise.metal */,
 				1F2B96EC2C16680D00DB0B9F /* GeometricDistribution.metal */,
 				1F5F93C92C0F9DCA00EC29A2 /* YIQCompose.metal */,
 				1F2159AB2C11498700D2483B /* MultiplyLuma.metal */,
@@ -443,6 +446,7 @@
 				1F4692D32C13C4A100CD7756 /* HeadSwitchingTextureFilter.swift in Sources */,
 				1F6BFE2A2BFFBFC200883169 /* CameraView.swift in Sources */,
 				1FEE323E2C0A3FCC009F09BA /* YIQ.swift in Sources */,
+				1F59AA7D2C18FA4F003510EC /* GeometricNoise.metal in Sources */,
 				1F5F93D12C0FC84500EC29A2 /* IIRMultiply.metal in Sources */,
 				1F5F93CF2C0FC53E00EC29A2 /* IIRInitialCondition.metal in Sources */,
 				1F4692D52C13CAA000CD7756 /* IteratorThing.swift in Sources */,

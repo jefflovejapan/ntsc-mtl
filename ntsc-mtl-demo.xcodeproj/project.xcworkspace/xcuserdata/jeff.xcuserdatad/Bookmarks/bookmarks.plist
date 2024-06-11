@@ -34,16 +34,16 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string>        DispatchQueue.main.async {
+				<string>        self.lastImage = ciImage
 </string>
 				<key>leading</key>
-				<string>
-        self.lastImage = ciImage
+				<string>            .oriented(forExifOrientation: Int32(CGImagePropertyOrientation.right.rawValue))
+
 </string>
 				<key>trailing</key>
-				<string>            self.mtkView.setNeedsDisplay()
+				<string>        DispatchQueue.main.async {
+            self.mtkView.setNeedsDisplay()
         }
-    }
 </string>
 			</dict>
 			<key>title</key>
