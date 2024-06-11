@@ -41,7 +41,7 @@ class NTSCTextureFilter {
     private let chromaIntoLumaFilter: ChromaIntoLumaTextureFilter
     private let compositePreemphasisFilter: IIRTextureFilter
     private let compositeNoiseFilter: CompositeNoiseTextureFilter
-    private let snowFilter: SnowTextureFilter2
+    private let snowFilter: SnowTextureFilter
     private let headSwitchingFilter: HeadSwitchingTextureFilter
     private let lumaSmearFilter: IIRTextureFilter
     private let ringingFilter: IIRTextureFilter
@@ -88,7 +88,7 @@ class NTSCTextureFilter {
             delay: 0
         )
         self.compositeNoiseFilter = CompositeNoiseTextureFilter(device: device, library: library, ciContext: context, pipelineCache: pipelineCache)
-        self.snowFilter = SnowTextureFilter2(device: device, library: library, ciContext: context, pipelineCache: pipelineCache)
+        self.snowFilter = SnowTextureFilter(device: device, library: library, ciContext: context, pipelineCache: pipelineCache)
         self.headSwitchingFilter = HeadSwitchingTextureFilter(device: device, library: library, ciContext: context, pipelineCache: pipelineCache)
         let lumaSmearFunction = IIRTransferFunction.lumaSmear(amount: effect.lumaSmear, bandwidthScale: effect.bandwidthScale)
         self.lumaSmearFilter = IIRTextureFilter(
@@ -178,7 +178,7 @@ class NTSCTextureFilter {
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
-    static func snow(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: SnowTextureFilter2, snowIntensity: Float, snowAnisotropy: Float, commandBuffer: MTLCommandBuffer) throws {
+    static func snow(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: SnowTextureFilter, snowIntensity: Float, snowAnisotropy: Float, commandBuffer: MTLCommandBuffer) throws {
         filter.intensity = snowIntensity
         filter.anisotropy = snowAnisotropy
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
@@ -309,14 +309,14 @@ class NTSCTextureFilter {
         
         do {
             // Step 0: convert to YIQ
-            try Self.convertToYIQ(
-                try iter.next(),
-                output: try iter.next(),
-                library: library,
-                commandBuffer: commandBuffer,
-                device: device,
-                pipelineCache: pipelineCache
-            )
+//            try Self.convertToYIQ(
+//                try iter.next(),
+//                output: try iter.next(),
+//                library: library,
+//                commandBuffer: commandBuffer,
+//                device: device,
+//                pipelineCache: pipelineCache
+//            )
 //            // Step 1: luma in
 //            try Self.inputLuma(
 //                try iter.last,
@@ -461,14 +461,14 @@ class NTSCTextureFilter {
 //                lightFilter: lightChromaLowpassFilter,
 //                fullFilter: fullChromaLowpassFilter
 //            )
-            try Self.convertToRGB(
-                try iter.last,
-                output: try iter.next(),
-                commandBuffer: commandBuffer,
-                library: library,
-                device: device,
-                pipelineCache: pipelineCache
-            )
+//            try Self.convertToRGB(
+//                try iter.last,
+//                output: try iter.next(),
+//                commandBuffer: commandBuffer,
+//                library: library,
+//                device: device,
+//                pipelineCache: pipelineCache
+//            )
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()
             return CIImage(mtlTexture: try iter.last)

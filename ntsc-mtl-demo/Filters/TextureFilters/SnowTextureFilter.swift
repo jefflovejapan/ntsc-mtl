@@ -19,6 +19,7 @@ class SnowTextureFilter {
     private let library: MTLLibrary
     private let ciContext: CIContext
     private let pipelineCache: MetalPipelineCache
+    private let randomImageGenerator = CIFilter.randomGenerator()
     
     init(device: MTLDevice, library: MTLLibrary, ciContext: CIContext, pipelineCache: MetalPipelineCache) {
         self.device = device
@@ -27,52 +28,41 @@ class SnowTextureFilter {
         self.pipelineCache = pipelineCache
     }
 
-    private var randomTexture: MTLTexture?
+    private var uniformRandomTexture: MTLTexture?
+    private var geoRandomTexture: MTLTexture?
     
     func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         
         let needsUpdate: Bool
-        if let randomTexture {
-            needsUpdate = !(randomTexture.width == inputTexture.width && randomTexture.height == inputTexture.height)
+        if let uniformRandomTexture {
+            needsUpdate = !(uniformRandomTexture.width == inputTexture.width && uniformRandomTexture.height == inputTexture.height)
         } else {
             needsUpdate = true
         }
         if needsUpdate {
-            guard let randomTexture = IIRTextureFilter.texture(from: inputTexture, device: device) else {
-                throw Error.cantMakeTexture
-            }
-            self.randomTexture = randomTexture
+            let randomTextures = Array(IIRTextureFilter.textures(from: inputTexture, device: device).prefix(2))
+            self.uniformRandomTexture = randomTextures[0]
+            self.geoRandomTexture = randomTextures[1]
         }
-        guard let randomTexture else {
+        guard let uniformRandomTexture, let geoRandomTexture else {
             throw Error.cantMakeTexture
         }
+        
+        guard let uniformRandomImage = randomImageGenerator.outputImage?.cropped(to: CGRect(origin: .zero, size: CGSize(width: inputTexture.width, height: inputTexture.height))) else {
+            throw Error.cantMakeRandomImage
+        }
+        ciContext.render(uniformRandomImage, to: uniformRandomTexture, commandBuffer: commandBuffer, bounds: uniformRandomImage.extent, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
         
         let geoPipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .geometricDistribution)
         guard let geoEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
         geoEncoder.setComputePipelineState(geoPipelineState)
-        geoEncoder.setTexture(randomTexture, index: 0)
+        geoEncoder.setTexture(uniformRandomTexture, index: 0)
+        geoEncoder.setTexture(geoRandomTexture, index: 1)
         var probablility: Float16 = 0.5
         geoEncoder.setBytes(&probablility, length: MemoryLayout<Float16>.size, index: 0)
-        geoEncoder.endEncoding()
-        
-        let snowPipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .snow)
-        
-        guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
-            throw Error.cantMakeComputeEncoder
-        }
-        commandEncoder.setComputePipelineState(snowPipelineState)
-        commandEncoder.setTexture(inputTexture, index: 0)
-        commandEncoder.setTexture(randomTexture, index: 1)
-        commandEncoder.setTexture(outputTexture, index: 2)
-        var intensity = intensity
-        commandEncoder.setBytes(&intensity, length: MemoryLayout<Float>.size, index: 0)
-        var anisotropy = anisotropy
-        commandEncoder.setBytes(&anisotropy, length: MemoryLayout<Float>.size, index: 1)
-        var bandwidthScale = bandwidthScale
-        commandEncoder.setBytes(&bandwidthScale, length: MemoryLayout<Float>.size, index: 2)
-        commandEncoder.dispatchThreads(
+        geoEncoder.dispatchThreads(
             MTLSize(
                 width: inputTexture.width,
                 height: inputTexture.height,
@@ -84,7 +74,37 @@ class SnowTextureFilter {
                 depth: 1
             )
         )
-        commandEncoder.endEncoding()
+        geoEncoder.endEncoding()
+        try justBlit(from: geoRandomTexture, to: outputTexture, commandBuffer: commandBuffer)
+        
+//        let snowPipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .snow)
+//        
+//        guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
+//            throw Error.cantMakeComputeEncoder
+//        }
+//        commandEncoder.setComputePipelineState(snowPipelineState)
+//        commandEncoder.setTexture(inputTexture, index: 0)
+//        commandEncoder.setTexture(randomTexture, index: 1)
+//        commandEncoder.setTexture(outputTexture, index: 2)
+//        var intensity = intensity
+//        commandEncoder.setBytes(&intensity, length: MemoryLayout<Float>.size, index: 0)
+//        var anisotropy = anisotropy
+//        commandEncoder.setBytes(&anisotropy, length: MemoryLayout<Float>.size, index: 1)
+//        var bandwidthScale = bandwidthScale
+//        commandEncoder.setBytes(&bandwidthScale, length: MemoryLayout<Float>.size, index: 2)
+//        commandEncoder.dispatchThreads(
+//            MTLSize(
+//                width: inputTexture.width,
+//                height: inputTexture.height,
+//                depth: 1
+//            ),
+//            threadsPerThreadgroup: MTLSize(
+//                width: 8,
+//                height: 8,
+//                depth: 1
+//            )
+//        )
+//        commandEncoder.endEncoding()
     }
     
 }
