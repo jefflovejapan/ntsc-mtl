@@ -75,36 +75,35 @@ class SnowTextureFilter {
             )
         )
         geoEncoder.endEncoding()
-        try justBlit(from: geoRandomTexture, to: outputTexture, commandBuffer: commandBuffer)
         
-//        let snowPipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .snow)
-//        
-//        guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
-//            throw Error.cantMakeComputeEncoder
-//        }
-//        commandEncoder.setComputePipelineState(snowPipelineState)
-//        commandEncoder.setTexture(inputTexture, index: 0)
-//        commandEncoder.setTexture(randomTexture, index: 1)
-//        commandEncoder.setTexture(outputTexture, index: 2)
-//        var intensity = intensity
-//        commandEncoder.setBytes(&intensity, length: MemoryLayout<Float>.size, index: 0)
-//        var anisotropy = anisotropy
-//        commandEncoder.setBytes(&anisotropy, length: MemoryLayout<Float>.size, index: 1)
-//        var bandwidthScale = bandwidthScale
-//        commandEncoder.setBytes(&bandwidthScale, length: MemoryLayout<Float>.size, index: 2)
-//        commandEncoder.dispatchThreads(
-//            MTLSize(
-//                width: inputTexture.width,
-//                height: inputTexture.height,
-//                depth: 1
-//            ),
-//            threadsPerThreadgroup: MTLSize(
-//                width: 8,
-//                height: 8,
-//                depth: 1
-//            )
-//        )
-//        commandEncoder.endEncoding()
+        let snowPipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .snow)
+        
+        guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
+            throw Error.cantMakeComputeEncoder
+        }
+        commandEncoder.setComputePipelineState(snowPipelineState)
+        commandEncoder.setTexture(inputTexture, index: 0)
+        commandEncoder.setTexture(geoRandomTexture, index: 1)
+        commandEncoder.setTexture(outputTexture, index: 2)
+        var intensity = intensity
+        commandEncoder.setBytes(&intensity, length: MemoryLayout<Float>.size, index: 0)
+        var anisotropy = anisotropy
+        commandEncoder.setBytes(&anisotropy, length: MemoryLayout<Float>.size, index: 1)
+        var bandwidthScale = bandwidthScale
+        commandEncoder.setBytes(&bandwidthScale, length: MemoryLayout<Float>.size, index: 2)
+        commandEncoder.dispatchThreads(
+            MTLSize(
+                width: inputTexture.width,
+                height: inputTexture.height,
+                depth: 1
+            ),
+            threadsPerThreadgroup: MTLSize(
+                width: 8,
+                height: 8,
+                depth: 1
+            )
+        )
+        commandEncoder.endEncoding()
     }
     
 }
