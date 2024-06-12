@@ -156,9 +156,7 @@ class ChromaLowpassTextureFilter {
             computeEncoder.setTexture(outputTexture, index: 3)
         }
         
-        computeEncoder.dispatchThreads(
-            MTLSize(width: inputTexture.width, height: inputTexture.height, depth: 1),
-            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
+        computeEncoder.dispatchThreads(textureWidth: inputTexture.width, textureHeight: inputTexture.height)
         computeEncoder.endEncoding()
     }
 

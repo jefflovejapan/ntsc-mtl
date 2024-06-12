@@ -42,9 +42,7 @@ class ChromaIntoLumaTextureFilter {
         commandEncoder.setBytes(&phaseShiftRaw, length: MemoryLayout<UInt>.size, index: 1)
         var phaseShiftOffset = phaseShiftOffset
         commandEncoder.setBytes(&phaseShiftOffset, length: MemoryLayout<Int>.size, index: 2)
-        commandEncoder.dispatchThreads(
-            MTLSize(width: inputTexture.width, height: inputTexture.height, depth: 1),
-            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
+        commandEncoder.dispatchThreads(textureWidth: inputTexture.width, textureHeight: inputTexture.height)
         commandEncoder.endEncoding()
     }
 }

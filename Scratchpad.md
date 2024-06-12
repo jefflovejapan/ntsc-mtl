@@ -532,3 +532,12 @@ I think I can demonstrate the value of this to the rest of the team, and maybe c
 
 The web stuff is cool and I might not have another chance to work on it soon. Then again, with ChatGPT I can always grab enough web code to get by (right?)
 
+# June 10th
+
+Hopefully starting on web stuff today! Feels like I made great progress over the weekend even though at the time it might have felt slow.
+
+# June 12th
+
+Yesterday was impossibilities day -- had a great time hacking with Paul and was really impressed with his knowledge of audio stuff. Everyone here is so talented -- it seems like even very young pepole have a mastery over the subject that I don't know if I'll ever have. That said, it has been cool seeing people's reactions to the projects I'm working on -- it feels like people think they're legitimately cool and aren't just being nice.
+
+Today is all about getting snow to work. I think I've convinced myself that the approach can be a lot simpler, getting rid of all the looping that we have in Valerie's code. I can get geometric noise onscreen, but something is getting lost in the conversion from noise to snow. Should hopefully have something by the end of the day, then I can move on to things like the remaining noise stuff.

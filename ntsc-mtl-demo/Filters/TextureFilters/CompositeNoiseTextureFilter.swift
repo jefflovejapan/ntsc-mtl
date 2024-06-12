@@ -31,11 +31,7 @@ class CompositeNoiseTextureFilter {
     
     func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         guard var noise else {
-            guard let blitEncoder = commandBuffer.makeBlitCommandEncoder() else {
-                throw Error.cantMakeBlitEncoder
-            }
-            blitEncoder.copy(from: inputTexture, to: outputTexture)
-            blitEncoder.endEncoding()
+            try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
             return
         }
         let nextX: UInt8 = rng.next(upperBound: 100)
@@ -56,7 +52,7 @@ class CompositeNoiseTextureFilter {
             self.simplexNoiseTexture = IIRTextureFilter.texture(from: inputTexture, device: device)
         }
         guard let simplexNoiseTexture else {
-            throw Error.cantInstantiateTexture
+            throw Error.cantMakeTexture
         }
         
         ciContext.render(noiseImage, to: simplexNoiseTexture, commandBuffer: commandBuffer, bounds: noiseImage.extent, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
@@ -70,10 +66,7 @@ class CompositeNoiseTextureFilter {
         commandEncoder.setTexture(outputTexture, index: 2)
         var intensity = noise.intensity
         commandEncoder.setBytes(&intensity, length: MemoryLayout<Float16>.size, index: 0)
-        commandEncoder.dispatchThreads(
-            MTLSize(width: inputTexture.width, height: inputTexture.height, depth: 1),
-            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1)
-        )
+        commandEncoder.dispatchThreads(textureWidth: inputTexture.width, textureHeight: inputTexture.height)
         commandEncoder.endEncoding()
     }
     

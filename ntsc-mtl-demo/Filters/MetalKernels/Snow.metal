@@ -9,54 +9,62 @@
 #include <metal_stdlib>
 using namespace metal;
 
+constant half PI_16 = half(3.140625);
+
+half sampleGeometric
+(
+ half u,    // uniform random variable
+ half p     // line snow intensity
+ ) {
+    return log(u) / log(p);
+}
+
 kernel void snow
 (
  texture2d<half, access::read> inputTexture [[texture(0)]],
  texture2d<half, access::read> randomTexture [[texture(1)]],
- texture2d<half, access::write> outputTexture [[texture(2)]],
- constant half &intensity [[buffer(0)]],
- constant half &anisotropy [[buffer(1)]],
+ texture2d<half, access::read> snowIntensityTexture [[texture(2)]],
+ texture2d<half, access::write> outputTexture [[texture(3)]],
  constant half &bandwidthScale [[buffer(2)]],
- constant int &width [[buffer(3)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
-//    half minWidth = min(randomTexture.get_width(), min(inputTexture.get_width(), outputTexture.get_width()));
-//    half minHeight = min(randomTexture.get_height(), min(inputTexture.get_height(), outputTexture.get_height()));
-//    if (gid.x >= minWidth || gid.y >= minHeight) {
-//        return;
-//    }
+    
     half4 inputPixel = inputTexture.read(gid);
+//    half snowIntensity = snowIntensityTexture.read(gid).x;
     half4 randomPixel = randomTexture.read(gid);
-    half rand1 = mix(half(-1.0), half(1.0), randomPixel.x);
-    half rand2 = mix(half(-0.5957), half(0.5957), randomPixel.y);
-    half rand3 = mix(half(-0.5226), half(0.5226), randomPixel.z);
-    half logisticFactor = exp((rand1 - intensity) / (intensity * (1.0 - intensity) * (1.0 - anisotropy)));
-    half lineSnowIntensity = (anisotropy / (1.0 + logisticFactor)) + (intensity * (1.0 - anisotropy));
-    lineSnowIntensity *= 0.125;
-    lineSnowIntensity = clamp(lineSnowIntensity, half(0.0), half(1.0));
-    if (lineSnowIntensity <= 0.0) {
-        outputTexture.write(inputPixel, gid);
-        return;
-    }
     
-    half transientLen = mix(half(8.0), half(64.0), rand2) * bandwidthScale;
-    half transientFreqFloor = transientLen * 3.0;
-    half transientFreqCeil = transientLen * 5.0;
-    float transientFreq = mix(transientFreqFloor, transientFreqCeil, rand3);
-    half x = gid.x;
-    half mod = 0.0;
+    // Already used x to calculate snow intensity
+    half transientLenRnd = randomPixel.y;
+    half transientFreqRnd = randomPixel.z;
+    half finalTermRnd = randomPixel.w;
     
-    for (int i = 0; i < int(transientLen) && (x + i) < width; i++) {
-        half t = half(i) / transientLen;
-        half cosValue = cos(M_PI_H * t * transientFreq);
-        half intensityMod = (1.0 - t) * (1.0 - t) * (rand3 * 3.0 - 1.0);
-        mod += (cosValue * intensityMod);
-    }
+    float transientLen = mix(8.0, 64.0, float(transientLenRnd)) * float(bandwidthScale);
+    float transientFreq = mix(transientLen * 3.0, transientLen * 5.0, float(transientFreqRnd));
     
+    float x = float(gid.x);
+    // 3.14 * 0 *...) --> cos(0) is 1 (I think)
+    /*
+     row[i] += ((x * PI) / transient_freq).cos()
+     domain is -1 to 1
+     */
+    float cosTerm = cos((M_PI_F * x) / transientFreq);
+    /*
+     * (1.0 - x / transient_len).powi(2)
+     * transient_rng.gen_range(-1.0..2.0);
+     */
+    float transientLenTerm = pow(1.0 - (x / transientLen), 2);
+    
+    float finalTerm = mix(-1.0, 2.0, float(finalTermRnd));
+    
+    /*
+     row[i] += ((x * PI) / transient_freq).cos()
+         * (1.0 - x / transient_len).powi(2)
+         * transient_rng.gen_range(-1.0..2.0);
+     
+     cosTerm * transientLenTerm * finalTerm
+     */
+    half mod = half(cosTerm * transientLenTerm * finalTerm);
     half4 modPixel = inputPixel;
-    modPixel.x += mod;
-    half3 modYIQ = modPixel.xyz;
-//    modYIQ = clampYIQ(modYIQ);
-    half4 final = half4(modYIQ, 1.0);
-    outputTexture.write(final, gid);
+//    modPixel.x += mod;
+    outputTexture.write(modPixel, gid);
 }
