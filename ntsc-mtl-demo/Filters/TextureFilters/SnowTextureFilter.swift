@@ -20,6 +20,7 @@ class SnowTextureFilter {
     private let ciContext: CIContext
     private let pipelineCache: MetalPipelineCache
     private let randomImageGenerator = CIFilter.randomGenerator()
+    private var rng = SystemRandomNumberGenerator()
     
     init(device: MTLDevice, library: MTLLibrary, ciContext: CIContext, pipelineCache: MetalPipelineCache) {
         self.device = device
@@ -32,7 +33,8 @@ class SnowTextureFilter {
     private var geoRandomTexture: MTLTexture?
     
     func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        
+        let randX: UInt64 = rng.next(upperBound: 500)
+        let randY: UInt64 = rng.next(upperBound: 500)
         let needsUpdate: Bool
         if let uniformRandomTexture {
             needsUpdate = !(uniformRandomTexture.width == inputTexture.width && uniformRandomTexture.height == inputTexture.height)
@@ -48,7 +50,23 @@ class SnowTextureFilter {
             throw Error.cantMakeTexture
         }
         
-        guard let uniformRandomImage = randomImageGenerator.outputImage?.cropped(to: CGRect(origin: .zero, size: CGSize(width: inputTexture.width, height: inputTexture.height))) else {
+        guard let uniformRandomImage = randomImageGenerator
+            .outputImage?
+            .transformed(
+                by: .init(
+                    translationX: CGFloat(randX),
+                    y: CGFloat(randY)
+                )
+            )
+                .cropped(
+                    to: CGRect(
+                        origin: .zero,
+                        size: CGSize(
+                            width: inputTexture.width,
+                            height: inputTexture.height
+                        )
+                    )
+                ) else {
             throw Error.cantMakeRandomImage
         }
         ciContext.render(uniformRandomImage, to: uniformRandomTexture, commandBuffer: commandBuffer, bounds: uniformRandomImage.extent, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())

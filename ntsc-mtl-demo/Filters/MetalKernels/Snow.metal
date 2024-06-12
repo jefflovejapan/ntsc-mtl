@@ -49,7 +49,7 @@ kernel void snow
 //        mod += (cosValue * intensityMod);
 //    }
     
-    half4 modPixel = (inputPixel + randomPixel) * 0.5;
+    half4 modPixel = (inputPixel * 0.9) + (randomPixel * 0.1);
 //    modPixel.x += mod;
     outputTexture.write(modPixel, gid);
 }
