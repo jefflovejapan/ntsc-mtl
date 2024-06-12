@@ -24,10 +24,10 @@ kernel void snow
     
     half4 inputPixel = inputTexture.read(gid);
     half4 randomPixel = randomTexture.read(gid);
-    half rand1 = randomPixel.x;
-    half rand2 = randomPixel.y;
-    half rand3 = randomPixel.z;
-    
+//    half rand1 = randomPixel.x;
+//    half rand2 = randomPixel.y;
+//    half rand3 = randomPixel.z;
+//    
 //    /*
 //     let logistic_factor = ((rng.gen::<f64>() - intensity)
 //         / (intensity * (1.0 - intensity) * (1.0 - anisotropy)))
@@ -68,7 +68,7 @@ kernel void snow
 //     * (1.0 - x / transient_len).powi(2)
 //     * transient_rng.gen_range(-1.0..2.0);
 //     */
-//    half transientLenTerm = pow((half(1.0) - x)/ transientLen, 2);
+//    half transientLenTerm = pow(half(1.0) - (x / transientLen), 2);
 //    
 //    half finalTerm = mix(half(-1.0), half(2.0), rand3);
 //    
@@ -80,8 +80,7 @@ kernel void snow
 //     cosTerm * transientLenTerm * finalTerm
 //     */
 //    half mod = cosTerm * transientLenTerm * finalTerm;
-//    half4 modPixel = inputPixel;
-//    modPixel.x += (mod * half(1000));
-    half4 modPixel = (inputPixel + randomPixel) * 0.5;
+    half4 modPixel = inputPixel;
+    modPixel.x += (half(1.0) - randomPixel.x);
     outputTexture.write(modPixel, gid);
 }
