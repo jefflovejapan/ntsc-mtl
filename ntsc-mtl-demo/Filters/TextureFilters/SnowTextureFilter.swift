@@ -31,6 +31,7 @@ class SnowTextureFilter {
 
     private var uniformRandomTexture: MTLTexture?
     private var geoRandomTexture: MTLTexture?
+    private var snowIntensityTexture: MTLTexture?
     
     func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         let needsUpdate: Bool
@@ -40,17 +41,24 @@ class SnowTextureFilter {
             needsUpdate = true
         }
         if needsUpdate {
-            let randomTextures = Array(IIRTextureFilter.textures(from: inputTexture, device: device).prefix(2))
+            let randomTextures = Array(IIRTextureFilter.textures(from: inputTexture, device: device).prefix(3))
             self.uniformRandomTexture = randomTextures[0]
             self.geoRandomTexture = randomTextures[1]
+            self.snowIntensityTexture = randomTextures[2]
         }
-        guard let uniformRandomTexture, let geoRandomTexture else {
+        guard let uniformRandomTexture, let geoRandomTexture, let snowIntensityTexture else {
             throw Error.cantMakeTexture
         }
         
         try writeUniformRandom(to: uniformRandomTexture, commandBuffer: commandBuffer)
-//        try transform(uniform: uniformRandomTexture, toGeometric: geoRandomTexture, commandBuffer: commandBuffer)
-        try applySnow(inputTexture: inputTexture, yiqGeometricTexture: uniformRandomTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
+        try transformUniformRandom(uniformRandomTexture, toSnowIntensity: snowIntensityTexture, commandBuffer: commandBuffer)
+        try applySnow(
+            inputTexture: inputTexture,
+            uniformRandomTexture: uniformRandomTexture,
+            snowIntensityTexture: uniformRandomTexture,
+            outputTexture: outputTexture,
+            commandBuffer: commandBuffer
+        )
     }
     
     private func writeUniformRandom(to texture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
@@ -77,6 +85,22 @@ class SnowTextureFilter {
         }
         // render RGB uniform to uniformRandomTexture
         ciContext.render(uniformRandomImage, to: texture, commandBuffer: commandBuffer, bounds: uniformRandomImage.extent, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
+    }
+    
+    private func transformUniformRandom(_ uniformRandomTexture: MTLTexture, toSnowIntensity snowIntensityTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        let pipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .snowIntensity)
+        guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
+            throw Error.cantMakeComputeEncoder
+        }
+        encoder.setComputePipelineState(pipelineState)
+        encoder.setTexture(uniformRandomTexture, index: 0)
+        encoder.setTexture(snowIntensityTexture, index: 1)
+        var intensity = intensity
+        encoder.setBytes(&intensity, length: MemoryLayout<Float16>.size, index: 0)
+        var anisotropy = anisotropy
+        encoder.setBytes(&anisotropy, length: MemoryLayout<Float16>.size, index: 1)
+        encoder.dispatchThreads(textureWidth: uniformRandomTexture.width, textureHeight: uniformRandomTexture.height)
+        encoder.endEncoding()
     }
     
     private func transform(uniform: MTLTexture, toGeometric geometric: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
@@ -108,7 +132,8 @@ class SnowTextureFilter {
     
     private func applySnow(
         inputTexture: MTLTexture,
-        yiqGeometricTexture: MTLTexture,
+        uniformRandomTexture: MTLTexture,
+        snowIntensityTexture: MTLTexture,
         outputTexture: MTLTexture,
         commandBuffer: MTLCommandBuffer
     ) throws {
@@ -118,14 +143,11 @@ class SnowTextureFilter {
         }
         commandEncoder.setComputePipelineState(snowPipelineState)
         commandEncoder.setTexture(inputTexture, index: 0)
-        commandEncoder.setTexture(yiqGeometricTexture, index: 1)
-        commandEncoder.setTexture(outputTexture, index: 2)
-        var intensity = intensity
-        commandEncoder.setBytes(&intensity, length: MemoryLayout<Float>.size, index: 0)
-        var anisotropy = anisotropy
-        commandEncoder.setBytes(&anisotropy, length: MemoryLayout<Float>.size, index: 1)
+        commandEncoder.setTexture(uniformRandomTexture, index: 1)
+        commandEncoder.setTexture(snowIntensityTexture, index: 2)
+        commandEncoder.setTexture(outputTexture, index: 3)
         var bandwidthScale = bandwidthScale
-        commandEncoder.setBytes(&bandwidthScale, length: MemoryLayout<Float>.size, index: 2)
+        commandEncoder.setBytes(&bandwidthScale, length: MemoryLayout<Float>.size, index: 0)
         commandEncoder.dispatchThreads(textureWidth: inputTexture.width, textureHeight: inputTexture.height)
         commandEncoder.endEncoding()
     }

@@ -11,73 +11,50 @@ using namespace metal;
 
 constant half PI_16 = half(3.140625);
 
+half sampleGeometric
+(
+ half u,    // uniform random variable
+ half p     // line snow intensity
+ ) {
+    return log(u) / log(p);
+}
+
 kernel void snow
 (
  texture2d<half, access::read> inputTexture [[texture(0)]],
  texture2d<half, access::read> randomTexture [[texture(1)]],
- texture2d<half, access::write> outputTexture [[texture(2)]],
- constant half &intensity [[buffer(0)]],
- constant half &anisotropy [[buffer(1)]],
+ texture2d<half, access::read> snowIntensityTexture [[texture(2)]],
+ texture2d<half, access::write> outputTexture [[texture(3)]],
  constant half &bandwidthScale [[buffer(2)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
     
     half4 inputPixel = inputTexture.read(gid);
+//    half snowIntensity = snowIntensityTexture.read(gid).x;
     half4 randomPixel = randomTexture.read(gid);
-    half rand1 = randomPixel.x;
-    half rand2 = randomPixel.y;
-    half rand3 = randomPixel.z;
     
-    /*
-     let logistic_factor = ((rng.gen::<f64>() - intensity)
-         / (intensity * (1.0 - intensity) * (1.0 - anisotropy)))
-         .exp();
-     
-     logisticFactor range:
-     - assuming rand1 is 0.5, intensity is 0.003, anisotropy: 0.5
-     
-     logisticFactor = exp((0.497)/ (0.03 * (0.03 * 0.997) * 0.5)
-     logisticFactor = exp(0.497 /
-     */
-    half logisticFactor = exp((rand1 - intensity) / (intensity * (1.0 - intensity) * (1.0 - anisotropy)));
+    // Already used x to calculate snow intensity
+    half transientLenRnd = randomPixel.y;
+    half transientFreqRnd = randomPixel.z;
+    half finalTermRnd = randomPixel.w;
     
-    /*
-     let mut line_snow_intensity: f64 =
-         anisotropy / (1.0 + logistic_factor) + intensity * (1.0 - anisotropy);
-    */
-    half lineSnowIntensity = (anisotropy / (1.0 + logisticFactor)) + (intensity * (1.0 - anisotropy));
-    lineSnowIntensity *= 0.125;
+    float transientLen = mix(8.0, 64.0, float(transientLenRnd)) * float(bandwidthScale);
+    float transientFreq = mix(transientLen * 3.0, transientLen * 5.0, float(transientFreqRnd));
     
-    lineSnowIntensity = clamp(lineSnowIntensity, half(0.0), half(1.0));
-    if (lineSnowIntensity <= 0.0) {
-        outputTexture.write(half4(half(0.2), half(0.2), half(0.2), half(1.0)), gid);
-//        outputTexture.write(inputPixel, gid);
-        return;
-    }
-    
-    // Say transientLen is 30
-    half transientLen = mix(half(8.0), half(64.0), rand2) * bandwidthScale;
-    // floor is 90
-    half transientFreqFloor = transientLen * half(3.0);
-    // ceil is 150
-    half transientFreqCeil = transientLen * half(5.0);
-    // freq is 120
-    float transientFreq = mix(transientFreqFloor, transientFreqCeil, rand3);
-    // {0, 1000}
-    half x = half(gid.x);
+    float x = float(gid.x);
     // 3.14 * 0 *...) --> cos(0) is 1 (I think)
     /*
      row[i] += ((x * PI) / transient_freq).cos()
      domain is -1 to 1
      */
-    half cosTerm = cos((PI_16 * x) / transientFreq);
+    float cosTerm = cos((M_PI_F * x) / transientFreq);
     /*
      * (1.0 - x / transient_len).powi(2)
      * transient_rng.gen_range(-1.0..2.0);
      */
-    half transientLenTerm = pow(half(1.0) - (x / transientLen), 2);
+    float transientLenTerm = pow(1.0 - (x / transientLen), 2);
     
-    half finalTerm = mix(half(-1.0), half(2.0), rand3);
+    float finalTerm = mix(-1.0, 2.0, float(finalTermRnd));
     
     /*
      row[i] += ((x * PI) / transient_freq).cos()
@@ -86,12 +63,8 @@ kernel void snow
      
      cosTerm * transientLenTerm * finalTerm
      */
-    half mod = cosTerm * transientLenTerm * finalTerm;
-    half4 outPixel = half4(half(0.0), half(0.0), half(0.0), half(1.0));
-    if (mod > half(0.0)) {
-        outPixel.xyz = half3(half(0.2), half(0.4), half(0.6));
-    } else {
-        outPixel.xyz = half3(half(0.6), half(0.4), half(0.2));
-    }
-    outputTexture.write(outPixel, gid);
+    half mod = half(cosTerm * transientLenTerm * finalTerm);
+    half4 modPixel = inputPixel;
+    modPixel.x += mod;
+    outputTexture.write(modPixel, gid);
 }
