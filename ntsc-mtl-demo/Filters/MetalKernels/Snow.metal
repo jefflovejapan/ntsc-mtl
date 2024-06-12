@@ -24,7 +24,7 @@ kernel void snow
     
     half4 inputPixel = inputTexture.read(gid);
     half4 randomPixel = randomTexture.read(gid);
-//    half rand1 = randomPixel.x;
+    half rand1 = randomPixel.x;
 //    half rand2 = randomPixel.y;
 //    half rand3 = randomPixel.z;
 //    
@@ -32,6 +32,12 @@ kernel void snow
 //     let logistic_factor = ((rng.gen::<f64>() - intensity)
 //         / (intensity * (1.0 - intensity) * (1.0 - anisotropy)))
 //         .exp();
+//     
+//     logisticFactor range:
+//     - assuming rand1 is 0.5, intensity is 0.003, anisotropy: 0.5
+//     
+//     logisticFactor = exp((0.497)/ (0.03 * (0.03 * 0.997) * 0.5)
+//     logisticFactor = exp(0.497 /
 //     */
 //    half logisticFactor = exp((rand1 - intensity) / (intensity * (1.0 - intensity) * (1.0 - anisotropy)));
 //    
@@ -81,6 +87,7 @@ kernel void snow
 //     */
 //    half mod = cosTerm * transientLenTerm * finalTerm;
     half4 modPixel = inputPixel;
-    modPixel.x += (half(1.0) - randomPixel.x);
+//    half mod = mix(-intensity, intensity, rand1);
+    modPixel.x += rand1;
     outputTexture.write(modPixel, gid);
 }
