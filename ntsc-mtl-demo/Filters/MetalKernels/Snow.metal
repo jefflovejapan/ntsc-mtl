@@ -28,11 +28,11 @@ kernel void snow
     half rand2 = randomPixel.y;
     half rand3 = randomPixel.z;
     
-    /*
-     let logistic_factor = ((rng.gen::<f64>() - intensity)
-         / (intensity * (1.0 - intensity) * (1.0 - anisotropy)))
-         .exp();
-     */
+//    /*
+//     let logistic_factor = ((rng.gen::<f64>() - intensity)
+//         / (intensity * (1.0 - intensity) * (1.0 - anisotropy)))
+//         .exp();
+//     */
 //    half logisticFactor = exp((rand1 - intensity) / (intensity * (1.0 - intensity) * (1.0 - anisotropy)));
 //    
 //    /*
@@ -82,8 +82,6 @@ kernel void snow
 //    half mod = cosTerm * transientLenTerm * finalTerm;
 //    half4 modPixel = inputPixel;
 //    modPixel.x += (mod * half(1000));
-    half4 outPixel = inputPixel;
-    outPixel.x += 0.5;
-    half4 final = half4(outPixel);
-    outputTexture.write(final, gid);
+    half4 modPixel = (inputPixel + randomPixel) * 0.5;
+    outputTexture.write(modPixel, gid);
 }
