@@ -85,5 +85,5 @@ kernel void snow
     half4 outPixel = inputPixel;
     outPixel.x += 0.5;
     half4 final = half4(outPixel);
-    outputTexture.write(final, gid);
+    outputTexture.write(inputPixel, gid);
 }

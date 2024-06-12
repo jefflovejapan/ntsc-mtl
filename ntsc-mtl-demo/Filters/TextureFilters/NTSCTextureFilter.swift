@@ -359,8 +359,8 @@ class NTSCTextureFilter {
 //            )
             // Step 6: snow
             try Self.snow(
-                inputTexture: try iter.next(),
-                outputTexture: try iter.last,
+                inputTexture: try iter.last,
+                outputTexture: try iter.next(),
                 filter: snowFilter,
                 snowIntensity: effect.snowIntensity,
                 snowAnisotropy: effect.snowAnisotropy,
