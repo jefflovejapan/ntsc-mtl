@@ -33,8 +33,6 @@ class SnowTextureFilter {
     private var geoRandomTexture: MTLTexture?
     
     func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        let randX: UInt64 = rng.next(upperBound: 500)
-        let randY: UInt64 = rng.next(upperBound: 500)
         let needsUpdate: Bool
         if let uniformRandomTexture {
             needsUpdate = !(uniformRandomTexture.width == inputTexture.width && uniformRandomTexture.height == inputTexture.height)
@@ -50,6 +48,15 @@ class SnowTextureFilter {
             throw Error.cantMakeTexture
         }
         
+        try writeUniformRandom(to: uniformRandomTexture, commandBuffer: commandBuffer)
+        try transform(uniform: uniformRandomTexture, toGeometric: geoRandomTexture, commandBuffer: commandBuffer)
+        try transform(geometric: geoRandomTexture, toYIQ: uniformRandomTexture, commandBuffer: commandBuffer)
+        try applySnow(inputTexture: inputTexture, yiqGeometricTexture: uniformRandomTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
+    }
+    
+    private func writeUniformRandom(to texture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        let randX: UInt64 = rng.next(upperBound: 500)
+        let randY: UInt64 = rng.next(upperBound: 500)
         guard let uniformRandomImage = randomImageGenerator
             .outputImage?
             .transformed(
@@ -62,48 +69,57 @@ class SnowTextureFilter {
                     to: CGRect(
                         origin: .zero,
                         size: CGSize(
-                            width: inputTexture.width,
-                            height: inputTexture.height
+                            width: texture.width,
+                            height: texture.height
                         )
                     )
                 ) else {
             throw Error.cantMakeRandomImage
         }
         // render RGB uniform to uniformRandomTexture
-        ciContext.render(uniformRandomImage, to: uniformRandomTexture, commandBuffer: commandBuffer, bounds: uniformRandomImage.extent, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
-        
+        ciContext.render(uniformRandomImage, to: texture, commandBuffer: commandBuffer, bounds: uniformRandomImage.extent, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
+    }
+    
+    private func transform(uniform: MTLTexture, toGeometric geometric: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         let geoPipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .geometricDistribution)
         guard let geoEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
         geoEncoder.setComputePipelineState(geoPipelineState)
-        geoEncoder.setTexture(uniformRandomTexture, index: 0)
-        geoEncoder.setTexture(geoRandomTexture, index: 1)
+        geoEncoder.setTexture(uniform, index: 0)
+        geoEncoder.setTexture(geometric, index: 1)
         var probablility: Float16 = 0.5
         geoEncoder.setBytes(&probablility, length: MemoryLayout<Float16>.size, index: 0)
-        geoEncoder.dispatchThreads(textureWidth: inputTexture.width, textureHeight: inputTexture.height)
-        // render RGB geo to geo random texture
+        geoEncoder.dispatchThreads(textureWidth: uniform.width, textureHeight: uniform.height)
         geoEncoder.endEncoding()
-        
+    }
+    
+    private func transform(geometric: MTLTexture, toYIQ yiq: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         let convertToYIQPipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .convertToYIQ)
         guard let yiqEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
         yiqEncoder.setComputePipelineState(convertToYIQPipelineState)
-        yiqEncoder.setTexture(geoRandomTexture, index: 0)
-        yiqEncoder.setTexture(uniformRandomTexture, index: 1)
-        yiqEncoder.dispatchThreads(textureWidth: geoRandomTexture.width, textureHeight: geoRandomTexture.height)
+        yiqEncoder.setTexture(geometric, index: 0)
+        yiqEncoder.setTexture(yiq, index: 1)
+        yiqEncoder.dispatchThreads(textureWidth: geometric.width, textureHeight: geometric.height)
         // render yiq geo to uniform random texture
         yiqEncoder.endEncoding()
-        
+    }
+    
+    private func applySnow(
+        inputTexture: MTLTexture,
+        yiqGeometricTexture: MTLTexture,
+        outputTexture: MTLTexture,
+        commandBuffer: MTLCommandBuffer
+    ) throws {
         let snowPipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .snow)
-        
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
         commandEncoder.setComputePipelineState(snowPipelineState)
         commandEncoder.setTexture(inputTexture, index: 0)
-        commandEncoder.setTexture(uniformRandomTexture, index: 1)
+        commandEncoder.setTexture(yiqGeometricTexture, index: 1)
         commandEncoder.setTexture(outputTexture, index: 2)
         var intensity = intensity
         commandEncoder.setBytes(&intensity, length: MemoryLayout<Float>.size, index: 0)
@@ -114,5 +130,4 @@ class SnowTextureFilter {
         commandEncoder.dispatchThreads(textureWidth: inputTexture.width, textureHeight: inputTexture.height)
         commandEncoder.endEncoding()
     }
-    
 }
