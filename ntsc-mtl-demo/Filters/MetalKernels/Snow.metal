@@ -65,6 +65,6 @@ kernel void snow
      */
     half mod = half(cosTerm * transientLenTerm * finalTerm);
     half4 modPixel = inputPixel;
-    modPixel.x += mod;
+//    modPixel.x += mod;
     outputTexture.write(modPixel, gid);
 }
