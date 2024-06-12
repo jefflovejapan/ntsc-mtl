@@ -160,10 +160,7 @@ class HeadSwitchingTextureFilter {
         var bandwidthScale = bandwidthScale
         commandEncoder.setBytes(&bandwidthScale, length: MemoryLayout<Float>.size, index: 4)
         
-        commandEncoder.dispatchThreads(
-            MTLSize(width: inputTexture.width, height: inputTexture.height, depth: 1),
-            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1)
-        )
+        commandEncoder.dispatchThreads(textureWidth: inputTexture.width, textureHeight: inputTexture.height)
         commandEncoder.endEncoding()
     }
     
@@ -187,10 +184,7 @@ class HeadSwitchingTextureFilter {
         commandEncoder.setTexture(inputTexture, index: 0)
         commandEncoder.setTexture(randomTexture, index: 1)
         commandEncoder.setTexture(outputTexture, index: 2)
-        commandEncoder.dispatchThreads(
-            MTLSize(width: inputTexture.width, height: inputTexture.height, depth: 1),
-            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1)
-        )
+        commandEncoder.dispatchThreads(textureWidth: inputTexture.width, textureHeight: inputTexture.height)
         commandEncoder.endEncoding()
     }
 }

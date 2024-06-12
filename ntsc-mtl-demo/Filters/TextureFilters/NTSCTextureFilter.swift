@@ -120,10 +120,7 @@ class NTSCTextureFilter {
         // Set the texture and dispatch threads
         commandEncoder.setTexture(texture, index: 0)
         commandEncoder.setTexture(output, index: 1)
-        commandEncoder.dispatchThreads(
-            MTLSize(width: texture.width, height: texture.height, depth: 1),
-            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1)
-        )
+        commandEncoder.dispatchThreads(textureWidth: texture.width, textureHeight: texture.height)
         
         // Finalize encoding
         commandEncoder.endEncoding()
@@ -245,9 +242,7 @@ class NTSCTextureFilter {
         // Set the texture and dispatch threads
         commandEncoder.setTexture(texture, index: 0)
         commandEncoder.setTexture(output, index: 1)
-        commandEncoder.dispatchThreads(
-            MTLSize(width: texture.width, height: texture.height, depth: 1),
-            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
+        commandEncoder.dispatchThreads(textureWidth: texture.width, textureHeight: texture.height)
         
         commandEncoder.endEncoding()
     }

@@ -66,10 +66,7 @@ class CompositeNoiseTextureFilter {
         commandEncoder.setTexture(outputTexture, index: 2)
         var intensity = noise.intensity
         commandEncoder.setBytes(&intensity, length: MemoryLayout<Float16>.size, index: 0)
-        commandEncoder.dispatchThreads(
-            MTLSize(width: inputTexture.width, height: inputTexture.height, depth: 1),
-            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1)
-        )
+        commandEncoder.dispatchThreads(textureWidth: inputTexture.width, textureHeight: inputTexture.height)
         commandEncoder.endEncoding()
     }
     

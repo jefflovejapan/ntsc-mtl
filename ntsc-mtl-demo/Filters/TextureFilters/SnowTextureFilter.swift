@@ -69,6 +69,7 @@ class SnowTextureFilter {
                 ) else {
             throw Error.cantMakeRandomImage
         }
+        // render RGB uniform to uniformRandomTexture
         ciContext.render(uniformRandomImage, to: uniformRandomTexture, commandBuffer: commandBuffer, bounds: uniformRandomImage.extent, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
         
         let geoPipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .geometricDistribution)
@@ -80,19 +81,20 @@ class SnowTextureFilter {
         geoEncoder.setTexture(geoRandomTexture, index: 1)
         var probablility: Float16 = 0.5
         geoEncoder.setBytes(&probablility, length: MemoryLayout<Float16>.size, index: 0)
-        geoEncoder.dispatchThreads(
-            MTLSize(
-                width: inputTexture.width,
-                height: inputTexture.height,
-                depth: 1
-            ),
-            threadsPerThreadgroup: MTLSize(
-                width: 8,
-                height: 8,
-                depth: 1
-            )
-        )
+        geoEncoder.dispatchThreads(textureWidth: inputTexture.width, textureHeight: inputTexture.height)
+        // render RGB geo to geo random texture
         geoEncoder.endEncoding()
+        
+        let convertToYIQPipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .convertToYIQ)
+        guard let yiqEncoder = commandBuffer.makeComputeCommandEncoder() else {
+            throw Error.cantMakeComputeEncoder
+        }
+        yiqEncoder.setComputePipelineState(convertToYIQPipelineState)
+        yiqEncoder.setTexture(geoRandomTexture, index: 0)
+        yiqEncoder.setTexture(uniformRandomTexture, index: 1)
+        yiqEncoder.dispatchThreads(textureWidth: geoRandomTexture.width, textureHeight: geoRandomTexture.height)
+        // render yiq geo to uniform random texture
+        yiqEncoder.endEncoding()
         
         let snowPipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .snow)
         
@@ -101,7 +103,7 @@ class SnowTextureFilter {
         }
         commandEncoder.setComputePipelineState(snowPipelineState)
         commandEncoder.setTexture(inputTexture, index: 0)
-        commandEncoder.setTexture(geoRandomTexture, index: 1)
+        commandEncoder.setTexture(uniformRandomTexture, index: 1)
         commandEncoder.setTexture(outputTexture, index: 2)
         var intensity = intensity
         commandEncoder.setBytes(&intensity, length: MemoryLayout<Float>.size, index: 0)
@@ -109,18 +111,7 @@ class SnowTextureFilter {
         commandEncoder.setBytes(&anisotropy, length: MemoryLayout<Float>.size, index: 1)
         var bandwidthScale = bandwidthScale
         commandEncoder.setBytes(&bandwidthScale, length: MemoryLayout<Float>.size, index: 2)
-        commandEncoder.dispatchThreads(
-            MTLSize(
-                width: inputTexture.width,
-                height: inputTexture.height,
-                depth: 1
-            ),
-            threadsPerThreadgroup: MTLSize(
-                width: 8,
-                height: 8,
-                depth: 1
-            )
-        )
+        commandEncoder.dispatchThreads(textureWidth: inputTexture.width, textureHeight: inputTexture.height)
         commandEncoder.endEncoding()
     }
     

@@ -191,9 +191,7 @@ class IIRTextureFilter {
         commandEncoder.setTexture(texture, index: 0)
         var color = color
         commandEncoder.setBytes(&color, length: MemoryLayout<Float16>.size * 4, index: 0)
-        commandEncoder.dispatchThreads(
-            MTLSize(width: texture.width, height: texture.height, depth: 1),
-            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
+        commandEncoder.dispatchThreads(textureWidth: texture.width, textureHeight: texture.height)
         commandEncoder.endEncoding()
     }
     
@@ -221,9 +219,7 @@ class IIRTextureFilter {
         commandEncoder.setBytes(&aSum, length: MemoryLayout<Float>.size, index: 0)
         var cSum = cSum
         commandEncoder.setBytes(&cSum, length: MemoryLayout<Float>.size, index: 1)
-        commandEncoder.dispatchThreads(
-            MTLSize(width: zTexToFill.width, height: zTexToFill.height, depth: 1),
-            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
+        commandEncoder.dispatchThreads(textureWidth: zTexToFill.width, textureHeight: zTexToFill.height)
         commandEncoder.endEncoding()
     }
     
@@ -244,9 +240,7 @@ class IIRTextureFilter {
         commandEncoder.setTexture(z0InTexture, index: 0)
         commandEncoder.setTexture(initialConditionTexture, index: 1)
         commandEncoder.setTexture(z0OutTexture, index: 1)
-        commandEncoder.dispatchThreads(
-            MTLSize(width: z0InTexture.width, height: z0InTexture.height, depth: 1),
-            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
+        commandEncoder.dispatchThreads(textureWidth: z0InTexture.width, textureHeight: z0InTexture.height)
         commandEncoder.endEncoding()
     }
     
@@ -394,9 +388,7 @@ class IIRTextureFilter {
         commandEncoder.setTexture(outputTexture, index: 2)
         var scale = scale
         commandEncoder.setBytes(&scale, length: MemoryLayout<Float16>.size, index: 0)
-        commandEncoder.dispatchThreads(
-            MTLSize(width: inputImage.width, height: inputImage.height, depth: 1),
-            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
+        commandEncoder.dispatchThreads(textureWidth: inputImage.width, textureHeight: inputImage.height)
         commandEncoder.endEncoding()
     }
     
@@ -414,9 +406,7 @@ class IIRTextureFilter {
         commandEncoder.setBytes(&channelMix, length: MemoryLayout<Float16>.size * 4, index: 0)
         var delay = delay
         commandEncoder.setBytes(&delay, length: MemoryLayout<UInt>.size, index: 1)
-        commandEncoder.dispatchThreads(
-            MTLSize(width: inputImage.width, height: inputImage.height, depth: 1),
-            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
+        commandEncoder.dispatchThreads(textureWidth: inputImage.width, textureHeight: inputImage.height)
         commandEncoder.endEncoding()
     }
     
@@ -436,9 +426,7 @@ class IIRTextureFilter {
         var denom = denominator
         commandEncoder.setBytes(&num, length: MemoryLayout<Float>.size, index: 0)
         commandEncoder.setBytes(&denom, length: MemoryLayout<Float>.size, index: 1)
-        commandEncoder.dispatchThreads(
-            MTLSize(width: inputImage.width, height: inputImage.height, depth: 1),
-            threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
+        commandEncoder.dispatchThreads(textureWidth: inputImage.width, textureHeight: inputImage.height)
         commandEncoder.endEncoding()
     }
         
