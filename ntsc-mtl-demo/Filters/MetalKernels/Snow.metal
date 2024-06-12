@@ -82,8 +82,8 @@ kernel void snow
 //    half mod = cosTerm * transientLenTerm * finalTerm;
 //    half4 modPixel = inputPixel;
 //    modPixel.x += (mod * half(1000));
-    half4 outPixel = (inputPixel + randomPixel) * 0.5;
-    half3 clamped = clampYIQ(outPixel.xyz);
-    half4 final = half4(clamped.x, inputPixel.yz, half(1.0));
+    half4 outPixel = inputPixel;
+    outPixel.x += 0.5;
+    half4 final = half4(outPixel);
     outputTexture.write(final, gid);
 }

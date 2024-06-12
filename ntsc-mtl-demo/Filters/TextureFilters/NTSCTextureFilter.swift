@@ -303,15 +303,15 @@ class NTSCTextureFilter {
         let iter = IteratorThing(vals: textures)
         
         do {
-            // Step 0: convert to YIQ
-//            try Self.convertToYIQ(
-//                try iter.next(),
-//                output: try iter.next(),
-//                library: library,
-//                commandBuffer: commandBuffer,
-//                device: device,
-//                pipelineCache: pipelineCache
-//            )
+//             Step 0: convert to YIQ
+            try Self.convertToYIQ(
+                try iter.next(),
+                output: try iter.next(),
+                library: library,
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
 //            // Step 1: luma in
 //            try Self.inputLuma(
 //                try iter.last,
@@ -360,7 +360,7 @@ class NTSCTextureFilter {
             // Step 6: snow
             try Self.snow(
                 inputTexture: try iter.next(),
-                outputTexture: try iter.next(),
+                outputTexture: try iter.last,
                 filter: snowFilter,
                 snowIntensity: effect.snowIntensity,
                 snowAnisotropy: effect.snowAnisotropy,
@@ -456,14 +456,14 @@ class NTSCTextureFilter {
 //                lightFilter: lightChromaLowpassFilter,
 //                fullFilter: fullChromaLowpassFilter
 //            )
-//            try Self.convertToRGB(
-//                try iter.last,
-//                output: try iter.next(),
-//                commandBuffer: commandBuffer,
-//                library: library,
-//                device: device,
-//                pipelineCache: pipelineCache
-//            )
+            try Self.convertToRGB(
+                try iter.last,
+                output: try iter.next(),
+                commandBuffer: commandBuffer,
+                library: library,
+                device: device,
+                pipelineCache: pipelineCache
+            )
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()
             return CIImage(mtlTexture: try iter.last)
