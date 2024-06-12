@@ -17,5 +17,5 @@ kernel void geometricDistribution
  ) {
     half4 u = uniformRandomTexture.read(gid);
     half4 result = ceil(log(half4(1.0) - u) / log(half4(1.0) - half4(probability)));
-    outputTexture.write(half4(result.xyz, 1.0), gid);
+    outputTexture.write(result, gid);
 }
