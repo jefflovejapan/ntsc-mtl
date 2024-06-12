@@ -25,69 +25,73 @@ kernel void snow
     half4 inputPixel = inputTexture.read(gid);
     half4 randomPixel = randomTexture.read(gid);
     half rand1 = randomPixel.x;
-//    half rand2 = randomPixel.y;
-//    half rand3 = randomPixel.z;
-//    
-//    /*
-//     let logistic_factor = ((rng.gen::<f64>() - intensity)
-//         / (intensity * (1.0 - intensity) * (1.0 - anisotropy)))
-//         .exp();
-//     
-//     logisticFactor range:
-//     - assuming rand1 is 0.5, intensity is 0.003, anisotropy: 0.5
-//     
-//     logisticFactor = exp((0.497)/ (0.03 * (0.03 * 0.997) * 0.5)
-//     logisticFactor = exp(0.497 /
-//     */
-//    half logisticFactor = exp((rand1 - intensity) / (intensity * (1.0 - intensity) * (1.0 - anisotropy)));
-//    
-//    /*
-//     let mut line_snow_intensity: f64 =
-//         anisotropy / (1.0 + logistic_factor) + intensity * (1.0 - anisotropy);
-//    */
-//    half lineSnowIntensity = (anisotropy / (1.0 + logisticFactor)) + (intensity * (1.0 - anisotropy));
-//    lineSnowIntensity *= 0.125;
-//    
-//    lineSnowIntensity = clamp(lineSnowIntensity, half(0.0), half(1.0));
-//    if (lineSnowIntensity <= 0.0) {
+    half rand2 = randomPixel.y;
+    half rand3 = randomPixel.z;
+    
+    /*
+     let logistic_factor = ((rng.gen::<f64>() - intensity)
+         / (intensity * (1.0 - intensity) * (1.0 - anisotropy)))
+         .exp();
+     
+     logisticFactor range:
+     - assuming rand1 is 0.5, intensity is 0.003, anisotropy: 0.5
+     
+     logisticFactor = exp((0.497)/ (0.03 * (0.03 * 0.997) * 0.5)
+     logisticFactor = exp(0.497 /
+     */
+    half logisticFactor = exp((rand1 - intensity) / (intensity * (1.0 - intensity) * (1.0 - anisotropy)));
+    
+    /*
+     let mut line_snow_intensity: f64 =
+         anisotropy / (1.0 + logistic_factor) + intensity * (1.0 - anisotropy);
+    */
+    half lineSnowIntensity = (anisotropy / (1.0 + logisticFactor)) + (intensity * (1.0 - anisotropy));
+    lineSnowIntensity *= 0.125;
+    
+    lineSnowIntensity = clamp(lineSnowIntensity, half(0.0), half(1.0));
+    if (lineSnowIntensity <= 0.0) {
+        outputTexture.write(half4(half(0.2), half(0.2), half(0.2), half(1.0)), gid);
 //        outputTexture.write(inputPixel, gid);
-//        return;
-//    }
-//    
-//    // Say transientLen is 30
-//    half transientLen = mix(half(8.0), half(64.0), rand2) * bandwidthScale;
-//    // floor is 90
-//    half transientFreqFloor = transientLen * half(3.0);
-//    // ceil is 150
-//    half transientFreqCeil = transientLen * half(5.0);
-//    // freq is 120
-//    float transientFreq = mix(transientFreqFloor, transientFreqCeil, rand3);
-//    // {0, 1000}
-//    half x = half(gid.x);
-//    // 3.14 * 0 *...) --> cos(0) is 1 (I think)
-//    /*
-//     row[i] += ((x * PI) / transient_freq).cos()
-//     domain is -1 to 1
-//     */
-//    half cosTerm = cos((PI_16 * x) / transientFreq);
-//    /*
-//     * (1.0 - x / transient_len).powi(2)
-//     * transient_rng.gen_range(-1.0..2.0);
-//     */
-//    half transientLenTerm = pow(half(1.0) - (x / transientLen), 2);
-//    
-//    half finalTerm = mix(half(-1.0), half(2.0), rand3);
-//    
-//    /*
-//     row[i] += ((x * PI) / transient_freq).cos()
-//         * (1.0 - x / transient_len).powi(2)
-//         * transient_rng.gen_range(-1.0..2.0);
-//     
-//     cosTerm * transientLenTerm * finalTerm
-//     */
-//    half mod = cosTerm * transientLenTerm * finalTerm;
-    half4 modPixel = inputPixel;
-//    half mod = mix(-intensity, intensity, rand1);
-    modPixel.x += rand1;
-    outputTexture.write(modPixel, gid);
+        return;
+    }
+    
+    // Say transientLen is 30
+    half transientLen = mix(half(8.0), half(64.0), rand2) * bandwidthScale;
+    // floor is 90
+    half transientFreqFloor = transientLen * half(3.0);
+    // ceil is 150
+    half transientFreqCeil = transientLen * half(5.0);
+    // freq is 120
+    float transientFreq = mix(transientFreqFloor, transientFreqCeil, rand3);
+    // {0, 1000}
+    half x = half(gid.x);
+    // 3.14 * 0 *...) --> cos(0) is 1 (I think)
+    /*
+     row[i] += ((x * PI) / transient_freq).cos()
+     domain is -1 to 1
+     */
+    half cosTerm = cos((PI_16 * x) / transientFreq);
+    /*
+     * (1.0 - x / transient_len).powi(2)
+     * transient_rng.gen_range(-1.0..2.0);
+     */
+    half transientLenTerm = pow(half(1.0) - (x / transientLen), 2);
+    
+    half finalTerm = mix(half(-1.0), half(2.0), rand3);
+    
+    /*
+     row[i] += ((x * PI) / transient_freq).cos()
+         * (1.0 - x / transient_len).powi(2)
+         * transient_rng.gen_range(-1.0..2.0);
+     
+     cosTerm * transientLenTerm * finalTerm
+     */
+    half mod = cosTerm * transientLenTerm * finalTerm;
+    half4 outPixel = half4(half(0.0), half(0.0), half(0.0), half(1.0));
+    if (mod > half(0.0)) {
+        outPixel.xyz = half3(half(0.2), half(0.4), half(0.6));
+    } else {
+        outPixel.xyz = half3(half(0.6), half(0.4), half(0.2));
+    }
+    outputTexture.write(outPixel, gid);
 }

@@ -49,8 +49,8 @@ class SnowTextureFilter {
         }
         
         try writeUniformRandom(to: uniformRandomTexture, commandBuffer: commandBuffer)
-        try transform(uniform: uniformRandomTexture, toGeometric: geoRandomTexture, commandBuffer: commandBuffer)
-        try applySnow(inputTexture: inputTexture, yiqGeometricTexture: geoRandomTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
+//        try transform(uniform: uniformRandomTexture, toGeometric: geoRandomTexture, commandBuffer: commandBuffer)
+        try applySnow(inputTexture: inputTexture, yiqGeometricTexture: uniformRandomTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
     private func writeUniformRandom(to texture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
