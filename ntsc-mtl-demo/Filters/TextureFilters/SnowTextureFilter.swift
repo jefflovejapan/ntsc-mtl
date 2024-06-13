@@ -16,15 +16,13 @@ class SnowTextureFilter {
     var anisotropy: Float = 0.5
     var bandwidthScale: Float = 1.0
     private let device: MTLDevice
-    private let library: MTLLibrary
     private let ciContext: CIContext
     private let pipelineCache: MetalPipelineCache
     private let randomImageGenerator = CIFilter.randomGenerator()
     private var rng = SystemRandomNumberGenerator()
     
-    init(device: MTLDevice, library: MTLLibrary, ciContext: CIContext, pipelineCache: MetalPipelineCache) {
+    init(device: MTLDevice, ciContext: CIContext, pipelineCache: MetalPipelineCache) {
         self.device = device
-        self.library = library
         self.ciContext = ciContext
         self.pipelineCache = pipelineCache
     }

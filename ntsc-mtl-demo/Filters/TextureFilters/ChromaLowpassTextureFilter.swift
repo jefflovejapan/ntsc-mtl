@@ -21,13 +21,11 @@ class ChromaLowpassTextureFilter {
     }
     
     private let device: MTLDevice
-    private let library: MTLLibrary
     private let pipelineCache: MetalPipelineCache
     let filters: FiltersForIntensity
     
-    init(device: MTLDevice, library: MTLLibrary, pipelineCache: MetalPipelineCache, intensity: Intensity, bandwidthScale: Float, filterType: FilterType) {
+    init(device: MTLDevice, pipelineCache: MetalPipelineCache, intensity: Intensity, bandwidthScale: Float, filterType: FilterType) {
         self.device = device
-        self.library = library
         self.pipelineCache = pipelineCache
         let initialCondition: IIRTextureFilter.InitialCondition = .zero
         let rate = NTSC.rate * bandwidthScale
@@ -36,7 +34,6 @@ class ChromaLowpassTextureFilter {
             let iFunction = Self.lowpassFilter(cutoff: 1_300_000.0, rate: rate, filterType: filterType)
             let iFilter = IIRTextureFilter(
                 device: device,
-                library: library, 
                 pipelineCache: pipelineCache,
                 numerators: iFunction.numerators,
                 denominators: iFunction.denominators,
@@ -48,7 +45,6 @@ class ChromaLowpassTextureFilter {
             let qFunction = Self.lowpassFilter(cutoff: 600_000.0, rate: rate, filterType: filterType)
             let qFilter = IIRTextureFilter(
                 device: device,
-                library: library, 
                 pipelineCache: pipelineCache,
                 numerators: qFunction.numerators,
                 denominators: qFunction.denominators,
@@ -62,7 +58,6 @@ class ChromaLowpassTextureFilter {
             let function = Self.lowpassFilter(cutoff: 2_600_000.0, rate: rate, filterType: filterType)
             let iAndQFilter = IIRTextureFilter(
                 device: device,
-                library: library, 
                 pipelineCache: pipelineCache,
                 numerators: function.numerators,
                 denominators: function.denominators,

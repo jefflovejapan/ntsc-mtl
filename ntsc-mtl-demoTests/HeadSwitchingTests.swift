@@ -27,7 +27,7 @@ final class HeadSwitchingTests: XCTestCase {
         self.commandQueue = commandQueue
         let ciContext = CIContext(mtlCommandQueue: commandQueue)
         self.ciContext = ciContext
-        let filter = HeadSwitchingTextureFilter(device: device, library: library, ciContext: ciContext, pipelineCache: pipelineCache)
+        let filter = HeadSwitchingTextureFilter(device: device, ciContext: ciContext, pipelineCache: pipelineCache)
         self.filter = filter
     }
 

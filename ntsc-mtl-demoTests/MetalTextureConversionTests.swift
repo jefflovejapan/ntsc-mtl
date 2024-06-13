@@ -74,7 +74,6 @@ final class MetalTextureConversionTests: XCTestCase {
         try NTSCTextureFilter.convertToYIQ(
             texture, 
             output: outputTexture,
-            library: library,
             commandBuffer: commandBuffer,
             device: device, 
             pipelineCache: pipelineCache
@@ -92,13 +91,18 @@ final class MetalTextureConversionTests: XCTestCase {
         let outputTexture = try XCTUnwrap(IIRTextureFilter.texture(from: texture, device: device))
         let buf0 = try XCTUnwrap(commandQueue.makeCommandBuffer())
         let input: [Float16] = [0.5, 0.5, 0.5, 1]
-        try IIRTextureFilter.paint(texture: texture, with: input, library: library, device: device, pipelineCache: pipelineCache, commandBuffer: buf0)
+        try IIRTextureFilter.paint(
+            texture: texture,
+            with: input,
+            device: device,
+            pipelineCache: pipelineCache,
+            commandBuffer: buf0
+        )
         try NTSCTextureFilter.convertToRGB(
             texture,
             output: outputTexture,
             commandBuffer: buf0,
-            library: library,
-            device: device, 
+            device: device,
             pipelineCache: pipelineCache
         )
         buf0.commit()
@@ -118,8 +122,18 @@ final class MetalTextureConversionTests: XCTestCase {
         let region = MTLRegionMake2D(0, 0, 1, 1)
         let bytesPerRow: Int = MemoryLayout<Float16>.size * 4 * 1
         texture.replace(region: region, mipmapLevel: 0, withBytes: &rgba, bytesPerRow: bytesPerRow)
-        try NTSCTextureFilter.convertToYIQ(texture, output: yiqTexture, library: library, commandBuffer: commandBuffer, device: device, pipelineCache: pipelineCache)
-        try NTSCTextureFilter.convertToRGB(yiqTexture, output: rgbTexture, commandBuffer: commandBuffer, library: library, device: device, pipelineCache: pipelineCache)
+        try NTSCTextureFilter.convertToYIQ(
+            texture, output: yiqTexture,
+            commandBuffer: commandBuffer,
+            device: device,
+            pipelineCache: pipelineCache)
+        try NTSCTextureFilter.convertToRGB(
+            yiqTexture,
+            output: rgbTexture,
+            commandBuffer: commandBuffer,
+            device: device,
+            pipelineCache: pipelineCache
+        )
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
         // Expecting not to lose any precision when moving back and forth
@@ -153,12 +167,17 @@ final class MetalTextureConversionTests: XCTestCase {
         try NTSCTextureFilter.convertToYIQ(
             texture,
             output: yiqTexture,
-            library: try XCTUnwrap(library),
             commandBuffer: commandBuffer,
             device: device, 
             pipelineCache: pipelineCache
         )
-        try NTSCTextureFilter.convertToRGB(yiqTexture, output: rgbTexture, commandBuffer: commandBuffer, library: library, device: device, pipelineCache: pipelineCache)
+        try NTSCTextureFilter.convertToRGB(
+            yiqTexture,
+            output: rgbTexture,
+            commandBuffer: commandBuffer,
+            device: device,
+            pipelineCache: pipelineCache
+        )
         
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
@@ -188,11 +207,16 @@ final class MetalTextureConversionTests: XCTestCase {
         let outputTexture = try XCTUnwrap(IIRTextureFilter.texture(width: texture.width, height: texture.height, pixelFormat: texture.pixelFormat, device: device))
         for color in Self.randomColors.prefix(1_000) {
             let commandBuffer = try XCTUnwrap(commandQueue.makeCommandBuffer())
-            try IIRTextureFilter.paint(texture: texture, with: color, library: library, device: device, pipelineCache: pipelineCache, commandBuffer: commandBuffer)
+            try IIRTextureFilter.paint(
+                texture: texture,
+                with: color,
+                device: device,
+                pipelineCache: pipelineCache,
+                commandBuffer: commandBuffer
+            )
             try NTSCTextureFilter.convertToYIQ(
                 texture,
                 output: outputTexture,
-                library: library,
                 commandBuffer: commandBuffer,
                 device: device,
                 pipelineCache: pipelineCache
@@ -220,7 +244,6 @@ final class MetalTextureConversionTests: XCTestCase {
                                               
         let iFilter = IIRTextureFilter(
             device: device,
-            library: library, 
             pipelineCache: pipelineCache,
             numerators: numerators,
             denominators: denominators,
@@ -246,7 +269,13 @@ final class MetalTextureConversionTests: XCTestCase {
     func testIFullButterworthFullRun() throws {
         let buf0 = try XCTUnwrap(commandQueue.makeCommandBuffer())
         let initialFill: [Float16] = [0.498039246, 0, 0, 1]
-        try IIRTextureFilter.paint(texture: texture, with: initialFill, library: library, device: device, pipelineCache: pipelineCache, commandBuffer: buf0)
+        try IIRTextureFilter.paint(
+            texture: texture,
+            with: initialFill,
+            device: device,
+            pipelineCache: pipelineCache,
+            commandBuffer: buf0
+        )
         let initialConditionTexture = try XCTUnwrap(IIRTextureFilter.texture(
             from: texture,
             device: device
@@ -270,8 +299,7 @@ final class MetalTextureConversionTests: XCTestCase {
             zTextures: zTextures,
             numerators: numerators,
             denominators: denominators,
-            library: library,
-            device: device, 
+            device: device,
             pipelineCache: pipelineCache,
             commandBuffer: buf0
         )
@@ -297,8 +325,7 @@ final class MetalTextureConversionTests: XCTestCase {
             zTex0: zTextures[0],
             filteredSampleTexture: filteredSampleTex,
             num0: numerators[0],
-            library: library,
-            device: device, 
+            device: device,
             pipelineCache: pipelineCache,
             commandBuffer: buf1
         )
@@ -326,8 +353,7 @@ final class MetalTextureConversionTests: XCTestCase {
                 filteredSample: filteredSampleTex,
                 numerator: numerators[nextIdx],
                 denominator: denominators[nextIdx],
-                library: library,
-                device: device, 
+                device: device,
                 pipelineCache: pipelineCache,
                 commandBuffer: buf2
             )
@@ -358,8 +384,7 @@ final class MetalTextureConversionTests: XCTestCase {
             filteredSample: filteredSampleTex,
             outputTexture: filteredImageTexture,
             scale: 1,
-            library: library,
-            device: device, 
+            device: device,
             pipelineCache: pipelineCache,
             commandBuffer: buf3
         )
@@ -384,8 +409,7 @@ final class MetalTextureConversionTests: XCTestCase {
             writingTo: outputTexture,
             channels: .i, 
             delay: 0,
-            library: library,
-            device: device, 
+            device: device,
             pipelineCache: pipelineCache,
             commandBuffer: buf4
         )
@@ -416,8 +440,20 @@ final class MetalTextureConversionTests: XCTestCase {
         )
         
         let buf0 = try XCTUnwrap(commandQueue.makeCommandBuffer())
-        try IIRTextureFilter.paint(texture: texture, with: [0.0, 0.01, 0.02, 1], library: library, device: device, pipelineCache: pipelineCache, commandBuffer: buf0)
-        try IIRTextureFilter.paint(texture: anotherTexture, with: [0.04, 0.05, 0.06, 1], library: library, device: device, pipelineCache: pipelineCache, commandBuffer: buf0)
+        try IIRTextureFilter.paint(
+            texture: texture,
+            with: [0.0, 0.01, 0.02, 1],
+            device: device,
+            pipelineCache: pipelineCache,
+            commandBuffer: buf0
+        )
+        try IIRTextureFilter.paint(
+            texture: anotherTexture,
+            with: [0.04, 0.05, 0.06, 1],
+            device: device,
+            pipelineCache: pipelineCache,
+            commandBuffer: buf0
+        )
         buf0.commit()
         buf0.waitUntilCompleted()
         let buf1 = try XCTUnwrap(commandQueue.makeCommandBuffer())
@@ -427,7 +463,6 @@ final class MetalTextureConversionTests: XCTestCase {
             writingTo: outputTexture,
             channels: .i, 
             delay: 0,
-            library: library,
             device: device, 
             pipelineCache: pipelineCache,
             commandBuffer: buf1

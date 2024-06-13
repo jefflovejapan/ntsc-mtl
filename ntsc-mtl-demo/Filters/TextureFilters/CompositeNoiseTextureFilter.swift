@@ -17,14 +17,12 @@ class CompositeNoiseTextureFilter {
     var noise: FBMNoiseSettings?
     private var rng = SystemRandomNumberGenerator()
     private let device: MTLDevice
-    private let library: MTLLibrary
     private let ciContext: CIContext
     private let pipelineCache: MetalPipelineCache
     private static let defaultIntensity: Float16 = 0.05
     
-    init(device: MTLDevice, library: MTLLibrary, ciContext: CIContext, pipelineCache: MetalPipelineCache) {
+    init(device: MTLDevice, ciContext: CIContext, pipelineCache: MetalPipelineCache) {
         self.device = device
-        self.library = library
         self.ciContext = ciContext
         self.pipelineCache = pipelineCache
     }

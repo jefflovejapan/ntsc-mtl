@@ -12,15 +12,13 @@ import CoreImage
 class HeadSwitchingTextureFilter {
     typealias Error = TextureFilterError
     private let device: MTLDevice
-    private let library: MTLLibrary
     private let context: CIContext
     private let pipelineCache: MetalPipelineCache
     var headSwitchingSettings: HeadSwitchingSettings?
     var bandwidthScale: Float = NTSCEffect.default.bandwidthScale
     private var randomImageTexture: MTLTexture?
-    init(device: MTLDevice, library: MTLLibrary, ciContext: CIContext, pipelineCache: MetalPipelineCache) {
+    init(device: MTLDevice, ciContext: CIContext, pipelineCache: MetalPipelineCache) {
         self.device = device
-        self.library = library
         self.context = ciContext
         self.pipelineCache = pipelineCache
     }
