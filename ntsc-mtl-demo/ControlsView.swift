@@ -12,28 +12,39 @@ struct ControlsView: View {
     @Binding var enableFilter: Bool
     @Bindable var effect: NTSCEffect
     
-    private func name(for filterType: FilterType) -> String {
-        switch filterType {
-        case .constantK:
-            return "Constant K"
-        case .butterworth:
-            return "Butterworth"
-        }
-    }
     var body: some View {
         ScrollView {
             VStack {
                 Toggle(isOn: $enableFilter, label: {
                     Text("Enable filter?")
                 })
-                Picker(selection: $effect.filterType, content: {
-                    ForEach(FilterType.allCases) { filterType in
-                        Text(name(for: filterType))
-                            .tag(filterType)
-                    }
-                }, label: {
-                    Text("Filter Type")
-                })
+//                Picker(selection: $effect.filterType, content: {
+//                    ForEach(FilterType.allCases) { filterType in
+//                        Text(name(for: filterType))
+//                            .tag(filterType)
+//                    }
+//                }, label: {
+//                    Text("Filter Type")
+//                })
+                VStack(alignment: .leading) {
+                    Text("Bandwidth scale")
+                    Slider.init(value: $effect.bandwidthScale, in: 0.125...8, label: {
+                        Text(effect.bandwidthScale.formatted(.number))
+                    })
+                    .padding(.leading)
+                }
+                HStack {
+                    Text("Input luma")
+                    Spacer()
+                    Picker(selection: $effect.inputLumaFilter, content: {
+                        ForEach(LumaLowpass.allCases) { lowpass in
+                            Text(name(lumaLowpass: lowpass))
+                                .tag(lowpass)
+                        }
+                    }, label: {
+                        Text("Input Luma")
+                    })
+                }
                 /*
                  What should actually be supported?
                  
@@ -49,7 +60,26 @@ struct ControlsView: View {
                  */
             }
         }
-        .border(Color.red)
+    }
+    
+    private func name(filterType: FilterType) -> String {
+        switch filterType {
+        case .constantK:
+            return "Constant K"
+        case .butterworth:
+            return "Butterworth"
+        }
+    }
+    
+    private func name(lumaLowpass: LumaLowpass) -> String {
+        switch lumaLowpass {
+        case .none:
+            return "None"
+        case .box:
+            return "Box"
+        case .notch:
+            return "Notch"
+        }
     }
 }
 

@@ -161,7 +161,7 @@ class NTSCTextureFilter {
     ) throws {
         switch lumaLowpass {
         case .none:
-            return
+            try justBlit(from: texture, to: output, commandBuffer: commandBuffer)
         case .box:
             try lumaBoxFilter.run(inputTexture: texture, outputTexture: output, commandBuffer: commandBuffer)
         case .notch:
@@ -195,8 +195,9 @@ class NTSCTextureFilter {
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
-    static func compositeNoise(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: CompositeNoiseTextureFilter, noise: FBMNoiseSettings?, commandBuffer: MTLCommandBuffer) throws {
+    static func compositeNoise(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: CompositeNoiseTextureFilter, noise: FBMNoiseSettings?, bandwidthScale: Float, commandBuffer: MTLCommandBuffer) throws {
         filter.noise = noise
+        filter.bandwidthScale = bandwidthScale
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
@@ -206,8 +207,9 @@ class NTSCTextureFilter {
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
-    static func headSwitching(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: HeadSwitchingTextureFilter, headSwitching: HeadSwitchingSettings?,  commandBuffer: MTLCommandBuffer) throws {
+    static func headSwitching(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: HeadSwitchingTextureFilter, headSwitching: HeadSwitchingSettings?,  bandwidthScale: Float, commandBuffer: MTLCommandBuffer) throws {
         filter.headSwitchingSettings = headSwitching
+        filter.bandwidthScale = bandwidthScale
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
@@ -398,7 +400,8 @@ class NTSCTextureFilter {
                 inputTexture: try iter.last,
                 outputTexture: try iter.next(),
                 filter: compositeNoiseFilter,
-                noise: effect.compositeNoise,
+                noise: effect.compositeNoise, 
+                bandwidthScale: effect.bandwidthScale,
                 commandBuffer: commandBuffer
             )
             // Step 6: snow
@@ -415,7 +418,8 @@ class NTSCTextureFilter {
                 inputTexture: try iter.last,
                 outputTexture: try iter.next(),
                 filter: headSwitchingFilter,
-                headSwitching: effect.headSwitching,
+                headSwitching: effect.headSwitching, 
+                bandwidthScale: effect.bandwidthScale,
                 commandBuffer: commandBuffer
             )
             // Step 8: tracking noise

@@ -14,7 +14,8 @@ class CompositeNoiseTextureFilter {
     typealias Error = TextureFilterError
     private let simplexNoise = SimplexNoiseGenerator()
     private var simplexNoiseTexture: MTLTexture?
-    var noise: FBMNoiseSettings?
+    var noise: FBMNoiseSettings? = NTSCEffect.default.compositeNoise
+    var bandwidthScale: Float = NTSCEffect.default.bandwidthScale
     private var rng = SystemRandomNumberGenerator()
     private let device: MTLDevice
     private let ciContext: CIContext

@@ -118,7 +118,6 @@ struct CameraView: UIViewRepresentable {
     
     func updateUIView(_ uiView: CameraUIView, context: Context) {
         uiView.isFilterEnabled = enableFilter
-        uiView.filter.effect = effect
     }
 }
 

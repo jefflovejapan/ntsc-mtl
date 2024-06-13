@@ -115,10 +115,14 @@ enum FilterType: Int, Identifiable, CaseIterable {
     }
 }
 
-enum LumaLowpass {
+enum LumaLowpass: Int, Identifiable, CaseIterable {
     case none
     case box
     case notch
+    
+    var id: Int {
+        rawValue
+    }
 }
 
 enum ChromaLowpass {
