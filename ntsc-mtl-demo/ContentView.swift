@@ -14,23 +14,25 @@ struct ContentView: View {
     @State private var showControls: Bool = false
     var body: some View {
         ZStack {
+            CameraView(enableFilter: $enableFilter)
+                .padding()
             VStack {
+                Spacer()
+                if showControls {
+                    ControlsView(showControls: $showControls, enableFilter: $enableFilter)
+                        .frame(height: 300)
+                        .transition(.move(edge: .trailing))
+                }
                 HStack {
                     Spacer()
                     Button(showControls ? "hide controls" : "show controls", systemImage: "slider.horizontal.3", action: {
-                        showControls.toggle()
+                        withAnimation {
+                            showControls.toggle()
+                        }
                     })
-                }
-                CameraView(enableFilter: $enableFilter)
-            }
-            if showControls {
-                VStack {
-                    Spacer()
-                    ControlsView(showControls: $showControls)
                 }
             }
         }
-        .padding()
     }
 }
 

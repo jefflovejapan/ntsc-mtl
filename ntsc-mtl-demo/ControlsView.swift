@@ -9,16 +9,21 @@ import SwiftUI
 
 struct ControlsView: View {
     @Binding var showControls: Bool
+    @Binding var enableFilter: Bool
     var body: some View {
-        List(content: {
-            Button.init("Hide controls", systemImage: "xmark", action: {
-                showControls.toggle()
-            })
-        })
+        ScrollView {
+            VStack {
+                Toggle(isOn: $enableFilter, label: {
+                    Text("Enable filter?")
+                })
+            }
+        }
+        .border(Color.red)
     }
 }
 
 #Preview {
     @State var showControls: Bool = true
-    return ControlsView(showControls: $showControls)
+    @State var enableFilter: Bool = false
+    return ControlsView(showControls: $showControls, enableFilter: $enableFilter)
 }

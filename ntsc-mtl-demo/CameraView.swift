@@ -153,8 +153,9 @@ extension CameraUIView: MTKViewDelegate {
             return
         }
         
-        let aspectFitted = AVMakeRect(aspectRatio: outputImage.extent.size, insideRect: CGRect(origin: .zero, size: dSize))
-        let scaleFactor = aspectFitted.width / outputImage.extent.width
+        let widthMultiple = dSize.width / outputImage.extent.size.width
+        let heightMultiple = dSize.height / outputImage.extent.size.height
+        let scaleFactor = max(widthMultiple, heightMultiple)
         let scaledImage = outputImage.transformed(by: CGAffineTransform.init(scaleX: scaleFactor, y: scaleFactor))
         
         do {
