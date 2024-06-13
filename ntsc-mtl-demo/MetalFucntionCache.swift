@@ -28,6 +28,7 @@ enum KernelFunction: String, CaseIterable {
     case shiftRowMidline
     case chromaPhaseOffset
     case chromaPhaseNoise
+    case chromaDelay
 }
 
 class MetalPipelineCache {

@@ -46,6 +46,7 @@ class NTSCTextureFilter {
     private let ringingFilter: IIRTextureFilter
     private let chromaPhaseErrorFilter: PhaseErrorTextureFilter
     private let chromaPhaseNoiseFilter: PhaseNoiseTextureFilter
+    private let chromaDelayFilter: ChromaDelayTextureFilter
     
     init(effect: NTSCEffect, device: MTLDevice, context: CIContext) throws {
         self.effect = effect
@@ -129,6 +130,7 @@ class NTSCTextureFilter {
         self.ringingFilter = ringingFilter
         self.chromaPhaseErrorFilter = PhaseErrorTextureFilter(device: device, pipelineCache: pipelineCache)
         self.chromaPhaseNoiseFilter = PhaseNoiseTextureFilter(device: device, pipelineCache: pipelineCache, ciContext: context)
+        self.chromaDelayFilter = ChromaDelayTextureFilter(device: device, pipelineCache: pipelineCache)
     }
     
     var inputImage: CIImage?
