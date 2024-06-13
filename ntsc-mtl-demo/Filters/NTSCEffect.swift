@@ -29,7 +29,7 @@ struct NTSCEffect {
     var snowIntensity: Float
     var snowAnisotropy: Float
     var chromaPhaseNoiseIntensity: Float
-    var chromaPhaseError: Float
+    var chromaPhaseError: Float16
     var chromaDelay: (Float, Int)
     var vhsSettings: VHSSettings
     var chromaVertBlend: Bool
