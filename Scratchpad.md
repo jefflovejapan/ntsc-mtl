@@ -541,3 +541,9 @@ Hopefully starting on web stuff today! Feels like I made great progress over the
 Yesterday was impossibilities day -- had a great time hacking with Paul and was really impressed with his knowledge of audio stuff. Everyone here is so talented -- it seems like even very young pepole have a mastery over the subject that I don't know if I'll ever have. That said, it has been cool seeing people's reactions to the projects I'm working on -- it feels like people think they're legitimately cool and aren't just being nice.
 
 Today is all about getting snow to work. I think I've convinced myself that the approach can be a lot simpler, getting rid of all the looping that we have in Valerie's code. I can get geometric noise onscreen, but something is getting lost in the conversion from noise to snow. Should hopefully have something by the end of the day, then I can move on to things like the remaining noise stuff.
+
+# Jun 13
+
+- Had a great chat with Carsten about the project he's working on. It's way gnarlier than I thought -- he's using a kind of unsupported C++ thing and has had to teach himself enough C++ to dig around and try to make sense of it
+- Hoping to demo today but need to make the filter interactive. Not a lot of time to get that done so hoping to lock in for the next few hours
+- 

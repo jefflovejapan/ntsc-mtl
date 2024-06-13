@@ -11,12 +11,30 @@ import UIKit
 struct ContentView: View {
     @State private var intensity: CGFloat = 0
     @State private var enableFilter: Bool = false
+    @State private var showControls: Bool = false
+    @State private var effect = NTSCEffect()
     var body: some View {
-        VStack {
-            CameraView(enableFilter: $enableFilter)
-            Toggle("Enable filter?", isOn: $enableFilter)
+        ZStack {
+            CameraView(enableFilter: $enableFilter, effect: effect)
+                .padding()
+            VStack {
+                Spacer()
+                if showControls {
+                    ControlsView(showControls: $showControls, enableFilter: $enableFilter, effect: effect)
+                        .frame(height: 300)
+                        .transition(.move(edge: .trailing))
+                }
+                HStack {
+                    Spacer()
+                    Button(showControls ? "hide controls" : "show controls", systemImage: "slider.horizontal.3", action: {
+                        withAnimation {
+                            showControls.toggle()
+                        }
+                    })
+                }
+                .padding()
+            }
         }
-        .padding()
     }
 }
 

@@ -3,38 +3,4 @@
    uuid = "000B57F1-B038-41BD-80AA-AC3D71FD4AEE"
    type = "1"
    version = "2.0">
-   <Breakpoints>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "D399F846-61B4-4ED2-A9D8-8213A72ED97E"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "ntsc-mtl-demo/Filters/TextureFilters/NTSCTextureFilter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "257"
-            endingLineNumber = "257"
-            landmarkName = "chromaPhaseNoise(inputTexture:outputTexture:filter:chromaPhaseNoiseIntensity:commandBuffer:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "631FCA6D-F5A7-40E0-B02B-83EAB5F26769"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "ntsc-mtl-demo/Filters/TextureFilters/NTSCTextureFilter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "260"
-            endingLineNumber = "260"
-            landmarkName = "chromaPhaseNoise(inputTexture:outputTexture:filter:chromaPhaseNoiseIntensity:commandBuffer:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-   </Breakpoints>
 </Bucket>
