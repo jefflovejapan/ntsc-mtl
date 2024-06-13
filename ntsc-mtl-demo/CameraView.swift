@@ -17,23 +17,25 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     private let device: MTLDevice
     private let mtkView: MTKView
     private let commandQueue: MTLCommandQueue
-    private var filter: NTSCTextureFilter!
+    let filter: NTSCTextureFilter!
     
     var isFilterEnabled: Bool
     var lastImage: CIImage?
     
-    init(isFilterEnabled: Bool) {
+    init(isFilterEnabled: Bool, effect: NTSCEffect) throws {
         let device = MTLCreateSystemDefaultDevice()!
         self.device = device
         let commandQueue = device.makeCommandQueue()!
         self.commandQueue = commandQueue
-        self.ciContext = CIContext(mtlCommandQueue: commandQueue)
+        let context = CIContext(mtlCommandQueue: commandQueue)
+        self.ciContext = context
         let mtkView = MTKView(frame: .zero, device: device)
         mtkView.framebufferOnly = false
         mtkView.enableSetNeedsDisplay = true
         mtkView.isPaused = false
         self.mtkView = mtkView
         self.isFilterEnabled = isFilterEnabled
+        self.filter = try NTSCTextureFilter(effect: effect, device: device, context: context)
         super.init(frame: .zero)
         self.mtkView.delegate = self
         addSubview(self.mtkView)
@@ -41,7 +43,6 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         let hConstraints = NSLayoutConstraint.constraints(withVisualFormat: "H:|[mtk]|", metrics: nil, views: ["mtk": mtkView])
         let vConstraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|[mtk]|", metrics: nil, views: ["mtk": mtkView])
         NSLayoutConstraint.activate(hConstraints + vConstraints)
-        var effect: NTSCEffect = .default
         effect.inputLumaFilter = .notch
         effect.filterType = .butterworth
         effect.chromaLowpassIn = .full
@@ -53,7 +54,6 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         effect.snowIntensity = 10
         effect.snowAnisotropy = 10
         effect.chromaPhaseError = 5
-        self.filter = try! NTSCTextureFilter(effect: effect, device: device, context: ciContext)
         setupCamera()
     }
     
@@ -105,17 +105,20 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
 
 struct CameraView: UIViewRepresentable {
     @Binding var enableFilter: Bool
+    @Bindable var effect: NTSCEffect
     
-    init(enableFilter: Binding<Bool>) {
+    init(enableFilter: Binding<Bool>, effect: NTSCEffect) {
         _enableFilter = enableFilter
+        self.effect = effect
     }
     
     func makeUIView(context: Context) -> CameraUIView {
-        return CameraUIView(isFilterEnabled: enableFilter)
+        return try! CameraUIView(isFilterEnabled: enableFilter, effect: effect)
     }
     
     func updateUIView(_ uiView: CameraUIView, context: Context) {
         uiView.isFilterEnabled = enableFilter
+        uiView.filter.effect = effect
     }
 }
 

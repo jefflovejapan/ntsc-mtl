@@ -12,14 +12,15 @@ struct ContentView: View {
     @State private var intensity: CGFloat = 0
     @State private var enableFilter: Bool = false
     @State private var showControls: Bool = false
+    @State private var effect = NTSCEffect()
     var body: some View {
         ZStack {
-            CameraView(enableFilter: $enableFilter)
+            CameraView(enableFilter: $enableFilter, effect: effect)
                 .padding()
             VStack {
                 Spacer()
                 if showControls {
-                    ControlsView(showControls: $showControls, enableFilter: $enableFilter)
+                    ControlsView(showControls: $showControls, enableFilter: $enableFilter, effect: effect)
                         .frame(height: 300)
                         .transition(.move(edge: .trailing))
                 }

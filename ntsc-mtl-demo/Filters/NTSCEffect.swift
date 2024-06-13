@@ -7,7 +7,8 @@
 
 import Foundation
 
-struct NTSCEffect {
+@Observable
+class NTSCEffect {
     var randomSeed: Int
     var useField: UseField
     var filterType: FilterType
@@ -18,14 +19,12 @@ struct NTSCEffect {
     var compositePreemphasis: Float16
     var videoScanlinePhaseShift: PhaseShift
     var videoScanlinePhaseShiftOffset: Int
-    
     var headSwitching: HeadSwitchingSettings?
     var trackingNoise: TrackingNoiseSettings?
     var compositeNoise: FBMNoiseSettings?
     var ringing: RingingSettings?
     var lumaNoise: FBMNoiseSettings?
     var chromaNoise: FBMNoiseSettings?
-    
     var snowIntensity: Float
     var snowAnisotropy: Float
     var chromaPhaseNoiseIntensity: Float16
@@ -35,6 +34,60 @@ struct NTSCEffect {
     var chromaVertBlend: Bool
     var chromaLowpassOut: ChromaLowpass
     var bandwidthScale: Float
+    
+    init(
+        randomSeed: Int = 0,
+        useField: UseField = UseField.alternating,
+        filterType: FilterType = FilterType.constantK,
+        inputLumaFilter: LumaLowpass = LumaLowpass.notch,
+        chromaLowpassIn: ChromaLowpass = ChromaLowpass.full,
+        chromaDemodulation: ChromaDemodulationFilter = ChromaDemodulationFilter.box,
+        lumaSmear: Float = 0,
+        compositePreemphasis: Float16 = 1,
+        videoScanlinePhaseShift: PhaseShift = PhaseShift.degrees180,
+        videoScanlinePhaseShiftOffset: Int = 0,
+        headSwitching: HeadSwitchingSettings = HeadSwitchingSettings.default,
+        trackingNoise: TrackingNoiseSettings? = TrackingNoiseSettings.default,
+        compositeNoise: FBMNoiseSettings = FBMNoiseSettings.compositeNoiseDefault,
+        ringing: RingingSettings = RingingSettings.default,
+        lumaNoise: FBMNoiseSettings? = FBMNoiseSettings.lumaNoiseDefault,
+        chromaNoise: FBMNoiseSettings = FBMNoiseSettings.chromaNoiseDefault,
+        snowIntensity: Float = 0.003,
+        snowAnisotropy: Float = 0.5,
+        chromaPhaseNoiseIntensity: Float16 = 0.001,
+        chromaPhaseError: Float16 = 0,
+        chromaDelay: (Float, Int) = (0, 0),
+        vhsSettings: VHSSettings = VHSSettings.default,
+        chromaVertBlend: Bool = true,
+        chromaLowpassOut: ChromaLowpass = ChromaLowpass.full,
+        bandwidthScale: Float = 1
+    ) {
+        self.randomSeed = randomSeed
+        self.useField = useField
+        self.filterType = filterType
+        self.inputLumaFilter = inputLumaFilter
+        self.chromaLowpassIn = chromaLowpassIn
+        self.chromaDemodulation = chromaDemodulation
+        self.lumaSmear = lumaSmear
+        self.compositePreemphasis = compositePreemphasis
+        self.videoScanlinePhaseShift = videoScanlinePhaseShift
+        self.videoScanlinePhaseShiftOffset = videoScanlinePhaseShiftOffset
+        self.headSwitching = headSwitching
+        self.trackingNoise = trackingNoise
+        self.compositeNoise = compositeNoise
+        self.ringing = ringing
+        self.lumaNoise = lumaNoise
+        self.chromaNoise = chromaNoise
+        self.snowIntensity = snowIntensity
+        self.snowAnisotropy = snowAnisotropy
+        self.chromaPhaseNoiseIntensity = chromaPhaseNoiseIntensity
+        self.chromaPhaseError = chromaPhaseError
+        self.chromaDelay = chromaDelay
+        self.vhsSettings = vhsSettings
+        self.chromaVertBlend = chromaVertBlend
+        self.chromaLowpassOut = chromaLowpassOut
+        self.bandwidthScale = bandwidthScale
+    }
 }
 
 enum ChromaDemodulationFilter: Int {
@@ -53,9 +106,13 @@ enum UseField: Int {
     case interleavedLower
 }
 
-enum FilterType: Int {
+enum FilterType: Int, Identifiable, CaseIterable {
     case constantK
     case butterworth
+    
+    var id: Int {
+        rawValue
+    }
 }
 
 enum LumaLowpass {
@@ -101,6 +158,26 @@ struct FBMNoiseSettings {
     var frequency: Float
     var intensity: Float16
     var detail: UInt
+}
+
+extension FBMNoiseSettings {
+    static let compositeNoiseDefault = FBMNoiseSettings(
+        frequency: 0.5,
+        intensity: 0.01,
+        detail: 1
+    )
+    
+    static let lumaNoiseDefault = FBMNoiseSettings(
+        frequency: 0.5,
+        intensity: 0.05,
+        detail: 1
+    )
+    
+    static let chromaNoiseDefault = FBMNoiseSettings(
+        frequency: 0.05,
+        intensity: 0.1,
+        detail: 1
+    )
 }
 
 struct RingingSettings {

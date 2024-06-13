@@ -8,45 +8,36 @@
 import Foundation
 
 extension NTSCEffect {
-    static let `default` = NTSCEffect(
-            randomSeed: 0,
-            useField: .alternating,
-            filterType: .constantK,
-            inputLumaFilter: .notch,
-            chromaLowpassIn: .full,
-            chromaDemodulation: .box,
-            lumaSmear: 0,
-            compositePreemphasis: 1,
-            videoScanlinePhaseShift: .degrees180,
-            videoScanlinePhaseShiftOffset: 0,
-            headSwitching: .default,
-            trackingNoise: .default,
-            compositeNoise: FBMNoiseSettings(
-                frequency: 0.5,
-                intensity: 0.01,
-                detail: 1
-            ),
-            ringing: .default,
-            lumaNoise: FBMNoiseSettings(
-                frequency: 0.5,
-                intensity: 0.05,
-                detail: 1
-            ),
-            chromaNoise: FBMNoiseSettings(
-                frequency: 0.05,
-                intensity: 0.1,
-                detail: 1
-            ),
-            snowIntensity: 0.003,
-            snowAnisotropy: 0.5,
-            chromaPhaseNoiseIntensity: 0.001,
-            chromaPhaseError: 0.0,
-            chromaDelay: (0.0, 0),
-            vhsSettings: .default,
-            chromaVertBlend: true,
-            chromaLowpassOut: .full,
-            bandwidthScale: 1
-        )
+    static let `default` = defaultNTSCEffect()
+    private static func defaultNTSCEffect() -> NTSCEffect {
+        return NTSCEffect(
+                randomSeed: 0,
+                useField: UseField.alternating,
+                filterType: FilterType.constantK,
+                inputLumaFilter: LumaLowpass.notch,
+                chromaLowpassIn: ChromaLowpass.full,
+                chromaDemodulation: ChromaDemodulationFilter.box,
+                lumaSmear: 0,
+                compositePreemphasis: 1,
+                videoScanlinePhaseShift: PhaseShift.degrees180,
+                videoScanlinePhaseShiftOffset: 0,
+                headSwitching: HeadSwitchingSettings.default,
+                trackingNoise: TrackingNoiseSettings.default,
+                compositeNoise: FBMNoiseSettings.compositeNoiseDefault,
+                ringing: RingingSettings.default,
+                lumaNoise: FBMNoiseSettings.lumaNoiseDefault,
+                chromaNoise: FBMNoiseSettings.chromaNoiseDefault,
+                snowIntensity: 0.003,
+                snowAnisotropy: 0.5,
+                chromaPhaseNoiseIntensity: 0.001,
+                chromaPhaseError: 0.0,
+                chromaDelay: (0.0, 0),
+                vhsSettings: VHSSettings.default,
+                chromaVertBlend: true,
+                chromaLowpassOut: ChromaLowpass.full,
+                bandwidthScale: 1
+            )
+    }
 }
 
 extension HeadSwitchingSettings {
