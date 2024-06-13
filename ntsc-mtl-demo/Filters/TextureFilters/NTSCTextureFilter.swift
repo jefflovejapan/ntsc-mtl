@@ -188,7 +188,10 @@ class NTSCTextureFilter {
     }
     
     static func chromaIntoLuma(inputTexture: MTLTexture, outputTexture: MTLTexture, timestamp: UInt32, phaseShift: PhaseShift, phaseShiftOffset: Int, filter: ChromaIntoLumaTextureFilter, device: MTLDevice, commandBuffer: MTLCommandBuffer) throws {
-        try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, timestamp: timestamp, phaseShift: phaseShift, phaseShiftOffset: phaseShiftOffset, commandBuffer: commandBuffer)
+        filter.phaseShift = phaseShift
+        filter.phaseShiftOffset = phaseShiftOffset
+        filter.timestamp = timestamp
+        try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
     static func compositePreemphasis(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: IIRTextureFilter, commandBuffer: MTLCommandBuffer) throws {

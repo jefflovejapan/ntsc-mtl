@@ -131,11 +131,15 @@ enum ChromaLowpass {
     case full
 }
 
-enum PhaseShift: UInt {
+enum PhaseShift: UInt, Identifiable, CaseIterable {
     case degrees0 = 0
     case degrees90
     case degrees180
     case degrees270
+    
+    var id: UInt {
+        rawValue
+    }
 }
 
 struct HeadSwitchingSettings {

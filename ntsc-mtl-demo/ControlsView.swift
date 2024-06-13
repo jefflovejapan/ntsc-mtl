@@ -45,6 +45,27 @@ struct ControlsView: View {
                         Text("Input Luma")
                     })
                 }
+                HStack {
+                    Text("Chroma phase shift")
+                    Spacer()
+                    Picker(selection: $effect.videoScanlinePhaseShift, content: {
+                        ForEach(PhaseShift.allCases) { phaseShift in
+                            Text(name(phaseShift: phaseShift))
+                                .tag(phaseShift)
+                        }
+                    }, label: {
+                        Text("Video scanline phase shift")
+                    })
+                }
+                Stepper("Chroma phase shift offset: \(effect.videoScanlinePhaseShiftOffset)", value: $effect.videoScanlinePhaseShiftOffset, in: 0...4)
+//                VStack(alignment: .leading) {
+//                    Text("Luma smear")
+//                    Slider.init(value: $effect.lumaSmear, in: 0...1, label: {
+//                        Text(effect.lumaSmear.formatted(.number))
+//                    })
+//                    .padding(.leading)
+//                }
+                
                 /*
                  What should actually be supported?
                  
@@ -79,6 +100,19 @@ struct ControlsView: View {
             return "Box"
         case .notch:
             return "Notch"
+        }
+    }
+    
+    private func name(phaseShift: PhaseShift) -> String {
+        switch phaseShift {
+        case .degrees0:
+            "0"
+        case .degrees90:
+            "90"
+        case .degrees180:
+            "180"
+        case .degrees270:
+            "270"
         }
     }
 }

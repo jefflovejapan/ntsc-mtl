@@ -13,6 +13,10 @@ class ChromaIntoLumaTextureFilter {
     private let device: MTLDevice
     private let pipelineCache: MetalPipelineCache
     
+    var timestamp: UInt32 = 0
+    var phaseShift: PhaseShift = NTSCEffect.default.videoScanlinePhaseShift
+    var phaseShiftOffset: Int = NTSCEffect.default.videoScanlinePhaseShiftOffset
+    
     init(device: MTLDevice, pipelineCache: MetalPipelineCache) {
         self.device = device
         self.pipelineCache = pipelineCache
@@ -21,9 +25,6 @@ class ChromaIntoLumaTextureFilter {
     func run(
         inputTexture: MTLTexture,
         outputTexture: MTLTexture,
-        timestamp: UInt32,
-        phaseShift: PhaseShift,
-        phaseShiftOffset: Int,
         commandBuffer: MTLCommandBuffer
     ) throws {
         let pipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .chromaIntoLuma)
