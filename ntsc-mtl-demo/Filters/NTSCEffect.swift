@@ -31,7 +31,7 @@ class NTSCEffect {
     var snowAnisotropy: Float
     var chromaPhaseNoiseIntensity: Float16
     var chromaPhaseError: Float16
-    var chromaDelay: (Float, Int)
+    var chromaDelay: (Float16, Int)
     var vhsSettings: VHSSettings
     var chromaVertBlend: Bool
     var chromaLowpassOut: ChromaLowpass
