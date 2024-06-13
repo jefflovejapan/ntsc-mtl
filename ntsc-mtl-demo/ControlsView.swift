@@ -58,6 +58,15 @@ struct ControlsView: View {
                     })
                 }
                 Stepper("Chroma phase shift offset: \(effect.videoScanlinePhaseShiftOffset)", value: $effect.videoScanlinePhaseShiftOffset, in: 0...4)
+                VStack {
+                    Text("Chroma phase error")
+                    Slider(value: $effect.chromaPhaseError, in: 0...1)
+                        .padding(.leading)
+                }
+                VStack {
+                    Text("Chroma phase noise")
+                    Slider(value: $effect.chromaPhaseNoiseIntensity, in: 0...1)
+                }
 //                VStack(alignment: .leading) {
 //                    Text("Luma smear")
 //                    Slider.init(value: $effect.lumaSmear, in: 0...1, label: {
