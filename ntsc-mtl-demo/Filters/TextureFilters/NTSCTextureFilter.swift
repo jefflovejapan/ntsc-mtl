@@ -117,10 +117,6 @@ class NTSCTextureFilter {
         )
         let ringingSettings = RingingSettings.default
         let ringingFunction = try IIRTransferFunction.ringing(ringingSettings: ringingSettings, bandwidthScale: effect.bandwidthScale)
-<<<<<<< HEAD
-        self.ringingFilter = IIRTextureFilter(device: device, library: library, pipelineCache: pipelineCache, numerators: ringingFunction.numerators, denominators: ringingFunction.denominators, initialCondition: .firstSample, channels: .y, scale: ringingSettings.intensity, delay: 1)
-        self.chromaPhaseErrorFilter = PhaseErrorTextureFilter(device: device, pipelineCache: pipelineCache)
-=======
         self.ringingFilter = IIRTextureFilter(
             device: device,
             pipelineCache: pipelineCache,
@@ -131,7 +127,7 @@ class NTSCTextureFilter {
             scale: ringingSettings.intensity,
             delay: 1
         )
->>>>>>> e1a0e5a (Ditch library everywhere)
+        self.chromaPhaseErrorFilter = PhaseErrorTextureFilter(device: device, pipelineCache: pipelineCache)
     }
     
     var inputImage: CIImage?
@@ -375,10 +371,6 @@ class NTSCTextureFilter {
                 phaseShift: effect.videoScanlinePhaseShift,
                 phaseShiftOffset: effect.videoScanlinePhaseShiftOffset,
                 filter: self.chromaIntoLumaFilter,
-<<<<<<< HEAD
-                library: library,
-=======
->>>>>>> e1a0e5a (Ditch library everywhere)
                 device: device,
                 commandBuffer: commandBuffer
             )
@@ -459,7 +451,9 @@ class NTSCTextureFilter {
             // Step 14: chroma phase error
             try Self.chromaPhaseError(
                 inputTexture: try iter.last,
-                outputTexture: try iter.next(),
+                outputTexture: try iter.next(), 
+                filter: chromaPhaseErrorFilter,
+                chromaPhaseError: effect.chromaPhaseError,
                 commandBuffer: commandBuffer
             )
             // Step 15: chroma phase noise
