@@ -10,7 +10,7 @@ import UIKit
 
 struct ContentView: View {
     @State private var intensity: CGFloat = 0
-    @State private var enableFilter: Bool = false
+    @State private var enableFilter: Bool = true
     @State private var showControls: Bool = false
     @State private var effect = NTSCEffect()
     var body: some View {
