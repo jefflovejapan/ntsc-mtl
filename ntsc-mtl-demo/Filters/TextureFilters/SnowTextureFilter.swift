@@ -101,19 +101,19 @@ class SnowTextureFilter {
         encoder.endEncoding()
     }
     
-    private func transform(uniform: MTLTexture, toGeometric geometric: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        let geoPipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .geometricDistribution)
-        guard let geoEncoder = commandBuffer.makeComputeCommandEncoder() else {
-            throw Error.cantMakeComputeEncoder
-        }
-        geoEncoder.setComputePipelineState(geoPipelineState)
-        geoEncoder.setTexture(uniform, index: 0)
-        geoEncoder.setTexture(geometric, index: 1)
-        var probablility: Float16 = 0.5
-        geoEncoder.setBytes(&probablility, length: MemoryLayout<Float16>.size, index: 0)
-        geoEncoder.dispatchThreads(textureWidth: uniform.width, textureHeight: uniform.height)
-        geoEncoder.endEncoding()
-    }
+//    private func transform(uniform: MTLTexture, toGeometric geometric: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+//        let geoPipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .geometricDistribution)
+//        guard let geoEncoder = commandBuffer.makeComputeCommandEncoder() else {
+//            throw Error.cantMakeComputeEncoder
+//        }
+//        geoEncoder.setComputePipelineState(geoPipelineState)
+//        geoEncoder.setTexture(uniform, index: 0)
+//        geoEncoder.setTexture(geometric, index: 1)
+//        var probablility: Float16 = 0.5
+//        geoEncoder.setBytes(&probablility, length: MemoryLayout<Float16>.size, index: 0)
+//        geoEncoder.dispatchThreads(textureWidth: uniform.width, textureHeight: uniform.height)
+//        geoEncoder.endEncoding()
+//    }
     
     private func transform(geometric: MTLTexture, toYIQ yiq: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         let convertToYIQPipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .convertToYIQ)
