@@ -15,15 +15,13 @@ class LumaBoxTextureFilter {
     private let device: MTLDevice
     private let commandQueue: MTLCommandQueue
     private let blurKernel: MPSImageBox
-    private let library: MTLLibrary
     private let pipelineCache: MetalPipelineCache
     private var scratchTexture: MTLTexture?
     
-    init(device: MTLDevice, commandQueue: MTLCommandQueue, library: MTLLibrary, pipelineCache: MetalPipelineCache) {
+    init(device: MTLDevice, commandQueue: MTLCommandQueue, pipelineCache: MetalPipelineCache) {
         self.device = device
         self.commandQueue = commandQueue
         self.blurKernel = MPSImageBox(device: device, kernelWidth: 5, kernelHeight: 5)
-        self.library = library
         self.pipelineCache = pipelineCache
     }
         

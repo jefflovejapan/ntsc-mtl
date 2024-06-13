@@ -10,12 +10,10 @@ import Metal
 
 class ChromaIntoLumaTextureFilter {
     typealias Error = TextureFilterError
-    private let library: MTLLibrary
     private let device: MTLDevice
     private let pipelineCache: MetalPipelineCache
     
-    init(library: MTLLibrary, device: MTLDevice, pipelineCache: MetalPipelineCache) {
-        self.library = library
+    init(device: MTLDevice, pipelineCache: MetalPipelineCache) {
         self.device = device
         self.pipelineCache = pipelineCache
     }

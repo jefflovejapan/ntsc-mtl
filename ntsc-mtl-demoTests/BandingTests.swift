@@ -18,7 +18,7 @@ final class BandingTests: XCTestCase {
     var commandQueue: MTLCommandQueue!
     var ciContext: CIContext!
     var filter: NTSCTextureFilter!
-
+    
     override func setUpWithError() throws {
         self.image = try CIImage.videoFrame()
         let effect: NTSCEffect = .default
@@ -33,7 +33,7 @@ final class BandingTests: XCTestCase {
         self.ciContext = ciContext
         self.filter = try NTSCTextureFilter(effect: effect, device: device, context: ciContext)
     }
-
+    
     override func tearDownWithError() throws {
         self.filter = nil
         self.ciContext = nil
@@ -43,7 +43,7 @@ final class BandingTests: XCTestCase {
         self.device = nil
         self.image = nil
     }
-
+    
     func testApplyingFilter() throws {
         self.filter.inputImage = image
         // Got some banding already
@@ -57,12 +57,37 @@ final class BandingTests: XCTestCase {
         let textureB = try XCTUnwrap(IIRTextureFilter.texture(from: textureA, device: device))
         
         ciContext.render(inputImage, to: textureA, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
-        try NTSCTextureFilter.convertToYIQ(textureA, output: textureB, library: library, commandBuffer: commandBuffer, device: device, pipelineCache: pipelineCache)
+        try NTSCTextureFilter.convertToYIQ(
+            textureA,
+            output: textureB,
+            commandBuffer: commandBuffer,
+            device: device,
+            pipelineCache: pipelineCache
+        )
         
         let function = IIRTransferFunction.lowpassFilter(cutoff: 1_300_000, rate: NTSC.rate * 1)
-        let fullIButterworthFilter = IIRTextureFilter(device: device, library: library, pipelineCache: pipelineCache, numerators: function.numerators, denominators: function.denominators, initialCondition: .zero, channels: .i, scale: 1, delay: 2)
-        try fullIButterworthFilter.run(inputTexture: textureB, outputTexture: textureA, commandBuffer: commandBuffer)
-        try NTSCTextureFilter.convertToRGB(textureA, output: textureB, commandBuffer: commandBuffer, library: library, device: device, pipelineCache: pipelineCache)
+        let fullIButterworthFilter = IIRTextureFilter(
+            device: device,
+            pipelineCache: pipelineCache,
+            numerators: function.numerators,
+            denominators: function.denominators,
+            initialCondition: .zero,
+            channels: .i,
+            scale: 1,
+            delay: 2
+        )
+        try fullIButterworthFilter.run(
+            inputTexture: textureB,
+            outputTexture: textureA,
+            commandBuffer: commandBuffer
+        )
+        try NTSCTextureFilter.convertToRGB(
+            textureA, 
+            output: textureB,
+            commandBuffer: commandBuffer,
+            device: device,
+            pipelineCache: pipelineCache
+        )
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
         return try XCTUnwrap(CIImage(mtlTexture: textureB))
@@ -111,7 +136,16 @@ final class BandingTests: XCTestCase {
         let function = IIRTransferFunction.lowpassFilter(cutoff: 1_300_000, rate: NTSC.rate * 1)
         let zTextures = Array(IIRTextureFilter.textures(from: rgbInputTexture, device: device).prefix(function.numerators.count))
         
-        let fullIButterworthFilter = IIRTextureFilter(device: device, library: library, pipelineCache: pipelineCache, numerators: function.numerators, denominators: function.denominators, initialCondition: .zero, channels: .i, scale: 1, delay: 2)
+        let fullIButterworthFilter = IIRTextureFilter(
+            device: device,
+            pipelineCache: pipelineCache,
+            numerators: function.numerators,
+            denominators: function.denominators,
+            initialCondition: .zero,
+            channels: .i,
+            scale: 1,
+            delay: 2
+        )
         try IIRTextureFilter.fillTexturesForInitialCondition(
             inputTexture: rgbInputTexture,
             initialCondition: .zero,
@@ -120,8 +154,7 @@ final class BandingTests: XCTestCase {
             zTextures: zTextures,
             numerators: function.numerators,
             denominators: function.denominators,
-            library: library,
-            device: device, 
+            device: device,
             pipelineCache: pipelineCache,
             commandBuffer: commandBuffer)
         commandBuffer.commit()
@@ -160,9 +193,24 @@ final class BandingTests: XCTestCase {
         }
         let z0Fill = bSum / normalizedDenominators.reduce(0, +)
         var z0FillValues: [Float16] = [z0Fill, z0Fill, z0Fill, 1].map(Float16.init)
-        try IIRTextureFilter.paint(texture: zTex0, with: z0FillValues, library: library, device: device, pipelineCache: pipelineCache, commandBuffer: commandBuffer)
+        try IIRTextureFilter.paint(
+            texture: zTex0,
+            with: z0FillValues,
+            device: device,
+            pipelineCache: pipelineCache,
+            commandBuffer: commandBuffer
+        )
         
-        try IIRTextureFilter.initialConditionFill(initialConditionTex: initialConditionTexture, zTex0: zTex0, zTexToFill: zTexI, aSum: aSum, cSum: cSum, library: library, device: device, pipelineCache: pipelineCache, commandBuffer: commandBuffer)
+        try IIRTextureFilter.initialConditionFill(
+            initialConditionTex: initialConditionTexture,
+            zTex0: zTex0,
+            zTexToFill: zTexI,
+            aSum: aSum,
+            cSum: cSum,
+            device: device,
+            pipelineCache: pipelineCache,
+            commandBuffer: commandBuffer
+        )
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
         
@@ -196,7 +244,13 @@ final class BandingTests: XCTestCase {
         let z0Fill = bSum / normalizedDenominators.reduce(0, +)
         var z0FillValues: [Float16] = [z0Fill, z0Fill, z0Fill, 1].map(Float16.init)
         let commandBuffer = try XCTUnwrap(commandQueue.makeCommandBuffer())
-        try IIRTextureFilter.paint(texture: zTex0, with: z0FillValues, library: library, device: device, pipelineCache: pipelineCache, commandBuffer: commandBuffer)
+        try IIRTextureFilter.paint(
+            texture: zTex0,
+            with: z0FillValues,
+            device: device,
+            pipelineCache: pipelineCache,
+            commandBuffer: commandBuffer
+        )
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
         return try XCTUnwrap(CIImage(mtlTexture: zTex0))
