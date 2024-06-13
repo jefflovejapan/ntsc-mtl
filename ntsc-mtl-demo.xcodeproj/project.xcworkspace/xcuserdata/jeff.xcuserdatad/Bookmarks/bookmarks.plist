@@ -12,13 +12,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>99</string>
+					<string>100</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>98</string>
+					<string>99</string>
 					<key>Timestamp</key>
-					<string>739930694.469474</string>
+					<string>739934856.935464</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -34,16 +34,16 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string>        self.lastImage = ciImage
+				<string>        DispatchQueue.main.async {
 </string>
 				<key>leading</key>
-				<string>            .oriented(forExifOrientation: Int32(CGImagePropertyOrientation.right.rawValue))
-
+				<string>
+        self.lastImage = ciImage
 </string>
 				<key>trailing</key>
-				<string>        DispatchQueue.main.async {
-            self.mtkView.setNeedsDisplay()
+				<string>            self.mtkView.setNeedsDisplay()
         }
+    }
 </string>
 			</dict>
 			<key>title</key>

@@ -45,6 +45,7 @@ class NTSCTextureFilter {
     private let lumaSmearFilter: IIRTextureFilter
     private let ringingFilter: IIRTextureFilter
     private let chromaPhaseErrorFilter: PhaseErrorTextureFilter
+    private let chromaPhaseNoiseFilter: PhaseNoiseTextureFilter
     
     init(effect: NTSCEffect, device: MTLDevice, context: CIContext) throws {
         self.effect = effect
@@ -128,6 +129,7 @@ class NTSCTextureFilter {
             delay: 1
         )
         self.chromaPhaseErrorFilter = PhaseErrorTextureFilter(device: device, pipelineCache: pipelineCache)
+        self.chromaPhaseNoiseFilter = PhaseNoiseTextureFilter(device: device, pipelineCache: pipelineCache, ciContext: context)
     }
     
     var inputImage: CIImage?
@@ -244,8 +246,18 @@ class NTSCTextureFilter {
         filter.phaseError = chromaPhaseError
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
-    static func chromaPhaseNoise(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
+    static func chromaPhaseNoise(
+        inputTexture: MTLTexture,
+        outputTexture: MTLTexture,
+        filter: PhaseNoiseTextureFilter,
+        chromaPhaseNoiseIntensity: Float16,
+        commandBuffer: MTLCommandBuffer
+    ) throws {
+        if chromaPhaseNoiseIntensity.isZero {
+            try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
+        }
+        filter.phaseError = chromaPhaseNoiseIntensity
+        try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     static func chromaDelay(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
@@ -459,7 +471,9 @@ class NTSCTextureFilter {
             // Step 15: chroma phase noise
             try Self.chromaPhaseNoise(
                 inputTexture: try iter.last,
-                outputTexture: try iter.next(),
+                outputTexture: try iter.next(), 
+                filter: chromaPhaseNoiseFilter,
+                chromaPhaseNoiseIntensity: effect.chromaPhaseNoiseIntensity,
                 commandBuffer: commandBuffer
             )
             

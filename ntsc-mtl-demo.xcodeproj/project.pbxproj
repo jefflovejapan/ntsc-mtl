@@ -49,7 +49,9 @@
 		1F60A3DB2C1A205400024EAB /* MTLComputeCommandEncoder+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F60A3DA2C1A205400024EAB /* MTLComputeCommandEncoder+Extensions.swift */; };
 		1F60A3DD2C1A575C00024EAB /* SnowIntensity.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F60A3DC2C1A575C00024EAB /* SnowIntensity.metal */; };
 		1F60A3DF2C1A656F00024EAB /* PhaseErrorTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F60A3DE2C1A656F00024EAB /* PhaseErrorTextureFilter.swift */; };
-		1F60A3E12C1A6F8F00024EAB /* ChromaPhaseMetal.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F60A3E02C1A6F8F00024EAB /* ChromaPhaseMetal.metal */; };
+		1F60A3E12C1A6F8F00024EAB /* ChromaPhaseOffset.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F60A3E02C1A6F8F00024EAB /* ChromaPhaseOffset.metal */; };
+		1F60A3E32C1A7D1400024EAB /* PhaseNoiseTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F60A3E22C1A7D1400024EAB /* PhaseNoiseTextureFilter.swift */; };
+		1F60A3E52C1A7DE700024EAB /* ChromaPhaseNoise.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F60A3E42C1A7DE700024EAB /* ChromaPhaseNoise.metal */; };
 		1F6BFDEB2BFF799F00883169 /* ntsc_mtl_demoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */; };
 		1F6BFDED2BFF799F00883169 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEC2BFF799F00883169 /* ContentView.swift */; };
 		1F6BFDEF2BFF79A000883169 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEE2BFF79A000883169 /* Assets.xcassets */; };
@@ -125,7 +127,9 @@
 		1F60A3DA2C1A205400024EAB /* MTLComputeCommandEncoder+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MTLComputeCommandEncoder+Extensions.swift"; sourceTree = "<group>"; };
 		1F60A3DC2C1A575C00024EAB /* SnowIntensity.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = SnowIntensity.metal; sourceTree = "<group>"; };
 		1F60A3DE2C1A656F00024EAB /* PhaseErrorTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseErrorTextureFilter.swift; sourceTree = "<group>"; };
-		1F60A3E02C1A6F8F00024EAB /* ChromaPhaseMetal.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ChromaPhaseMetal.metal; sourceTree = "<group>"; };
+		1F60A3E02C1A6F8F00024EAB /* ChromaPhaseOffset.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ChromaPhaseOffset.metal; sourceTree = "<group>"; };
+		1F60A3E22C1A7D1400024EAB /* PhaseNoiseTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseNoiseTextureFilter.swift; sourceTree = "<group>"; };
+		1F60A3E42C1A7DE700024EAB /* ChromaPhaseNoise.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ChromaPhaseNoise.metal; sourceTree = "<group>"; };
 		1F6BFDE72BFF799F00883169 /* ntsc-mtl-demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ntsc-mtl-demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ntsc_mtl_demoApp.swift; sourceTree = "<group>"; };
 		1F6BFDEC2BFF799F00883169 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -179,7 +183,8 @@
 				1F5F93C02C0F585C00EC29A2 /* RGB.metal */,
 				1FA29A8C2C112DBC00070F03 /* ChromaIntoLuma.metal */,
 				1F2159AF2C1154C100D2483B /* Snow.metal */,
-				1F60A3E02C1A6F8F00024EAB /* ChromaPhaseMetal.metal */,
+				1F60A3E02C1A6F8F00024EAB /* ChromaPhaseOffset.metal */,
+				1F60A3E42C1A7DE700024EAB /* ChromaPhaseNoise.metal */,
 				1F60A3DC2C1A575C00024EAB /* SnowIntensity.metal */,
 				1F2B96EC2C16680D00DB0B9F /* GeometricDistribution.metal */,
 				1F5F93C92C0F9DCA00EC29A2 /* YIQCompose.metal */,
@@ -202,6 +207,7 @@
 			children = (
 				1F5F93BB2C0E83EC00EC29A2 /* NTSCTextureFilter.swift */,
 				1F60A3DE2C1A656F00024EAB /* PhaseErrorTextureFilter.swift */,
+				1F60A3E22C1A7D1400024EAB /* PhaseNoiseTextureFilter.swift */,
 				1F4692D42C13CAA000CD7756 /* IteratorThing.swift */,
 				1F2159A72C11476200D2483B /* CompositeNoiseTextureFilter.swift */,
 				1F2159AD2C11517700D2483B /* SnowTextureFilter.swift */,
@@ -424,6 +430,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1FA64F872C151C5600E54D6F /* MetalFucntionCache.swift in Sources */,
+				1F60A3E52C1A7DE700024EAB /* ChromaPhaseNoise.metal in Sources */,
 				1F2B96E92C16210700DB0B9F /* ShiftRowInline.metal in Sources */,
 				1F60A3DD2C1A575C00024EAB /* SnowIntensity.metal in Sources */,
 				1F5F93BC2C0E83EC00EC29A2 /* NTSCTextureFilter.swift in Sources */,
@@ -453,6 +460,7 @@
 				1FEE323E2C0A3FCC009F09BA /* YIQ.swift in Sources */,
 				1F5F93D12C0FC84500EC29A2 /* IIRMultiply.metal in Sources */,
 				1F5F93CF2C0FC53E00EC29A2 /* IIRInitialCondition.metal in Sources */,
+				1F60A3E32C1A7D1400024EAB /* PhaseNoiseTextureFilter.swift in Sources */,
 				1F60A3DB2C1A205400024EAB /* MTLComputeCommandEncoder+Extensions.swift in Sources */,
 				1F4692D52C13CAA000CD7756 /* IteratorThing.swift in Sources */,
 				1FA29A8F2C112E3E00070F03 /* ChromaIntoLumaTextureFilter.swift in Sources */,
@@ -464,7 +472,7 @@
 				1F5B6CD02C0536600051A9ED /* Clamped.swift in Sources */,
 				1F2B96F12C17477200DB0B9F /* JustBlit.swift in Sources */,
 				1F5F93CA2C0F9DCA00EC29A2 /* YIQCompose.metal in Sources */,
-				1F60A3E12C1A6F8F00024EAB /* ChromaPhaseMetal.metal in Sources */,
+				1F60A3E12C1A6F8F00024EAB /* ChromaPhaseOffset.metal in Sources */,
 				1F1F9B692C03C3980085048F /* IIRTransferFunction.swift in Sources */,
 				1FA64F782C1468BF00E54D6F /* BoundaryHandling.swift in Sources */,
 				1FA64F7A2C146AA800E54D6F /* ShiftRow.metal in Sources */,
