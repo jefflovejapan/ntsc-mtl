@@ -73,7 +73,7 @@ class PhaseNoiseTextureFilter {
             ),
             colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
         
-        let pipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .chromaPhaseOffset)
+        let pipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .chromaPhaseNoise)
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }

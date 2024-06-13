@@ -53,6 +53,7 @@
 		1F60A3E32C1A7D1400024EAB /* PhaseNoiseTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F60A3E22C1A7D1400024EAB /* PhaseNoiseTextureFilter.swift */; };
 		1F60A3E52C1A7DE700024EAB /* ChromaPhaseNoise.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F60A3E42C1A7DE700024EAB /* ChromaPhaseNoise.metal */; };
 		1F67A4F22C1B3FBD004BAA5F /* ControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F67A4F12C1B3FBD004BAA5F /* ControlsView.swift */; };
+		1F67A4F42C1BB01E004BAA5F /* Xoshiro256PlusPlus.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F67A4F32C1BB01E004BAA5F /* Xoshiro256PlusPlus.metal */; };
 		1F6BFDEB2BFF799F00883169 /* ntsc_mtl_demoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */; };
 		1F6BFDED2BFF799F00883169 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEC2BFF799F00883169 /* ContentView.swift */; };
 		1F6BFDEF2BFF79A000883169 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEE2BFF79A000883169 /* Assets.xcassets */; };
@@ -132,6 +133,7 @@
 		1F60A3E22C1A7D1400024EAB /* PhaseNoiseTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseNoiseTextureFilter.swift; sourceTree = "<group>"; };
 		1F60A3E42C1A7DE700024EAB /* ChromaPhaseNoise.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ChromaPhaseNoise.metal; sourceTree = "<group>"; };
 		1F67A4F12C1B3FBD004BAA5F /* ControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlsView.swift; sourceTree = "<group>"; };
+		1F67A4F32C1BB01E004BAA5F /* Xoshiro256PlusPlus.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Xoshiro256PlusPlus.metal; sourceTree = "<group>"; };
 		1F6BFDE72BFF799F00883169 /* ntsc-mtl-demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ntsc-mtl-demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ntsc_mtl_demoApp.swift; sourceTree = "<group>"; };
 		1F6BFDEC2BFF799F00883169 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -187,6 +189,7 @@
 				1F2159AF2C1154C100D2483B /* Snow.metal */,
 				1F60A3E02C1A6F8F00024EAB /* ChromaPhaseOffset.metal */,
 				1F60A3E42C1A7DE700024EAB /* ChromaPhaseNoise.metal */,
+				1F67A4F32C1BB01E004BAA5F /* Xoshiro256PlusPlus.metal */,
 				1F60A3DC2C1A575C00024EAB /* SnowIntensity.metal */,
 				1F2B96EC2C16680D00DB0B9F /* GeometricDistribution.metal */,
 				1F5F93C92C0F9DCA00EC29A2 /* YIQCompose.metal */,
@@ -476,6 +479,7 @@
 				1F2B96F12C17477200DB0B9F /* JustBlit.swift in Sources */,
 				1F5F93CA2C0F9DCA00EC29A2 /* YIQCompose.metal in Sources */,
 				1F60A3E12C1A6F8F00024EAB /* ChromaPhaseOffset.metal in Sources */,
+				1F67A4F42C1BB01E004BAA5F /* Xoshiro256PlusPlus.metal in Sources */,
 				1F1F9B692C03C3980085048F /* IIRTransferFunction.swift in Sources */,
 				1FA64F782C1468BF00E54D6F /* BoundaryHandling.swift in Sources */,
 				1FA64F7A2C146AA800E54D6F /* ShiftRow.metal in Sources */,

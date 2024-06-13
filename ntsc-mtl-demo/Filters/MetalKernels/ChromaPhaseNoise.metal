@@ -19,7 +19,7 @@ kernel void chromaPhaseNoise
  uint2 gid [[thread_position_in_grid]]
  ) {
     half4 inputPixel = inputTexture.read(gid);
-    half rand = randomTexture.read(gid).x;
+    half rand = randomTexture.read(uint2(0, gid.y)).x;
     half y = inputPixel.x;
     half i = inputPixel.y;
     half q = inputPixel.z;
