@@ -28,23 +28,23 @@ kernel void snow
  constant half &bandwidthScale [[buffer(0)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
-    
     half4 inputPixel = inputTexture.read(gid);
     half4 randomPixel = randomTexture.read(gid);    // uniform random values
-    half mixedX = mix(half(0.0), randomPixel.x, half(0.2));
+    half smoothedSnow = smoothstep(half(0.8), half(1.0), randomPixel.x) * half(0.125);
     half4 outPx = inputPixel;
-    outPx.x += mixedX;
+    outPx.x += smoothedSnow;
     outputTexture.write(outPx, gid);
     return;
+    
 //    half snowIntensity = snowIntensityTexture.read(gid).x;
     
     // Already used x to calculate snow intensity
-    half transientLenRnd = randomPixel.y;   // i
-    half transientFreqRnd = randomPixel.z;  // q
-    half finalTermRnd = randomPixel.w;      // alpha
+    half transientLenRnd = randomPixel.y;   // i    0.5
+    half transientFreqRnd = randomPixel.z;  // q    0.5
+    half finalTermRnd = randomPixel.w;      // alpha    0.5
     
-    float transientLen = mix(8.0, 64.0, float(transientLenRnd)) * float(bandwidthScale);
-    float transientFreq = mix(transientLen * 3.0, transientLen * 5.0, float(transientFreqRnd));
+    float transientLen = mix(8.0, 64.0, float(transientLenRnd)) * float(bandwidthScale);    // 30
+    float transientFreq = mix(transientLen * 3.0, transientLen * 5.0, float(transientFreqRnd)); // 120
     
     float x = float(gid.x);
     // 3.14 * 0 *...) --> cos(0) is 1 (I think)
@@ -52,13 +52,17 @@ kernel void snow
      row[i] += ((x * PI) / transient_freq).cos()
      domain is -1 to 1
      */
+    // cosTerm is 1 for x == 0
     float cosTerm = cos((M_PI_F * x) / transientFreq);
     /*
      * (1.0 - x / transient_len).powi(2)
      * transient_rng.gen_range(-1.0..2.0);
      */
-    float transientLenTerm = pow(1.0 - (x / transientLen), 2);
+    // transientLenTerm = 1 for x == 0
+    float transientLenTerm = pow(float(1.0) - (x / transientLen), float(2.0));
     
+    // final term can either be -1, 0, 1, or 2
+    // so product can either be -1, 0, 1, or 2
     float finalTerm = mix(-1.0, 2.0, float(finalTermRnd));
     
     /*
@@ -69,6 +73,10 @@ kernel void snow
      cosTerm * transientLenTerm * finalTerm
      */
     half mod = half(cosTerm * transientLenTerm * finalTerm);
+    if (mod < 0.0) {
+        outputTexture.write(half4(half(0.2), half(0.2), half(0.2), 1.0), gid);
+        return;
+    }
     half4 modPixel = inputPixel;
     modPixel.x += mod;
     outputTexture.write(modPixel, gid);
