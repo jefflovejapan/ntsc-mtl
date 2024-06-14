@@ -47,10 +47,6 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         effect.filterType = .butterworth
         effect.chromaLowpassIn = .full
         effect.chromaLowpassOut = .none
-        effect.headSwitching.midLine = nil
-        effect.headSwitching.offset = 32
-        effect.headSwitching.height = 64
-        effect.headSwitching.horizShift = 10
         effect.snowIntensity = 10
         effect.snowAnisotropy = 10
         effect.chromaPhaseError = 5
