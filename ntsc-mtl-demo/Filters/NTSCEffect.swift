@@ -125,10 +125,14 @@ enum LumaLowpass: Int, Identifiable, CaseIterable {
     }
 }
 
-enum ChromaLowpass {
+enum ChromaLowpass: Int, Identifiable, CaseIterable {
     case none
     case light
     case full
+    
+    var id: Int {
+        rawValue
+    }
 }
 
 enum PhaseShift: UInt, Identifiable, CaseIterable {

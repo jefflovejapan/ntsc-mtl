@@ -18,14 +18,6 @@ struct ControlsView: View {
                 Toggle(isOn: $enableFilter, label: {
                     Text("Enable filter?")
                 })
-//                Picker(selection: $effect.filterType, content: {
-//                    ForEach(FilterType.allCases) { filterType in
-//                        Text(name(for: filterType))
-//                            .tag(filterType)
-//                    }
-//                }, label: {
-//                    Text("Filter Type")
-//                })
                 VStack(alignment: .leading) {
                     Text("Bandwidth scale")
                     Slider.init(value: $effect.bandwidthScale, in: 0.125...8, label: {
@@ -45,6 +37,31 @@ struct ControlsView: View {
                         Text("Input Luma")
                     })
                 }
+                HStack {
+                    Text("Filter type")
+                    Spacer()
+                    Picker(selection: $effect.filterType, content: {
+                        ForEach(FilterType.allCases) { filterType in
+                            Text(name(filterType: filterType))
+                                .tag(filterType)
+                        }
+                    }, label: {
+                        Text("Filter Type")
+                    })
+                }
+                HStack {
+                    Text("Chroma lowpass in")
+                    Spacer()
+                    Picker(selection: $effect.chromaLowpassIn, content: {
+                        ForEach(ChromaLowpass.allCases) { lp in
+                            Text(name(chromaLowpass: lp))
+                                .tag(lp)
+                        }
+                    }, label: {
+                        Text("Chroma lowpass in")
+                    })
+                }
+                
                 HStack {
                     Text("Chroma phase shift")
                     Spacer()
@@ -122,6 +139,17 @@ struct ControlsView: View {
             "180"
         case .degrees270:
             "270"
+        }
+    }
+    
+    private func name(chromaLowpass: ChromaLowpass) -> String {
+        switch chromaLowpass {
+        case .none:
+            return "None"
+        case .light:
+            return "Light"
+        case .full:
+            return "Full"
         }
     }
 }

@@ -10,12 +10,7 @@ import Metal
 
 class ChromaLowpassTextureFilter {
     typealias Error = IIRTextureFilter.Error
-    enum Intensity {
-        case light
-        case full
-    }
-    
-    enum FiltersForIntensity {
+    enum Filters {
         case none
         case full(i: IIRTextureFilter, q: IIRTextureFilter)
         case light(iAndQ: IIRTextureFilter)
@@ -23,7 +18,7 @@ class ChromaLowpassTextureFilter {
     
     private let device: MTLDevice
     private let pipelineCache: MetalPipelineCache
-    var filters: FiltersForIntensity = .none
+    var filters: Filters = .none
     
     private var needsIIRUpdate = true
     var filterType: FilterType = NTSCEffect.default.filterType {
