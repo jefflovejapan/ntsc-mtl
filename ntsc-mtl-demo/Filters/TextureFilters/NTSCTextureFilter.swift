@@ -220,9 +220,10 @@ class NTSCTextureFilter {
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
-    static func snow(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: SnowTextureFilter, snowIntensity: Float, snowAnisotropy: Float, commandBuffer: MTLCommandBuffer) throws {
+    static func snow(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: SnowTextureFilter, snowIntensity: Float, snowAnisotropy: Float, bandwidthScale: Float, commandBuffer: MTLCommandBuffer) throws {
         filter.intensity = snowIntensity
         filter.anisotropy = snowAnisotropy
+        filter.bandwidthScale = bandwidthScale
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
@@ -484,7 +485,8 @@ class NTSCTextureFilter {
                 outputTexture: try iter.next(),
                 filter: snowFilter,
                 snowIntensity: effect.snowIntensity,
-                snowAnisotropy: effect.snowAnisotropy,
+                snowAnisotropy: effect.snowAnisotropy, 
+                bandwidthScale: effect.bandwidthScale,
                 commandBuffer: commandBuffer
             )
             // Step 7: head switching

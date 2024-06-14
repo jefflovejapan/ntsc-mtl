@@ -142,10 +142,13 @@ class SnowTextureFilter {
         commandEncoder.setComputePipelineState(snowPipelineState)
         commandEncoder.setTexture(inputTexture, index: 0)
         commandEncoder.setTexture(uniformRandomTexture, index: 1)
-//        commandEncoder.setTexture(snowIntensityTexture, index: 2)
         commandEncoder.setTexture(outputTexture, index: 2)
+        var intensity = intensity
+        commandEncoder.setBytes(&intensity, length: MemoryLayout<Float>.size, index: 0)
+        var anisotropy = anisotropy
+        commandEncoder.setBytes(&anisotropy, length: MemoryLayout<Float>.size, index: 1)
         var bandwidthScale = bandwidthScale
-        commandEncoder.setBytes(&bandwidthScale, length: MemoryLayout<Float>.size, index: 0)
+        commandEncoder.setBytes(&bandwidthScale, length: MemoryLayout<Float>.size, index: 2)
         commandEncoder.dispatchThreads(textureWidth: inputTexture.width, textureHeight: inputTexture.height)
         commandEncoder.endEncoding()
     }

@@ -106,6 +106,23 @@ struct ControlsView: View {
                     Slider(value: $effect.compositePreemphasis, in: -1...2)
                         .padding(.leading)
                 }
+                VStack {}
+                    Text("Chroma phase noise")
+                    Slider(value: $effect.chromaPhaseNoiseIntensity, in: 0...1)
+                        .padding(.leading)
+                }
+                Section("Snow") {
+                    VStack {
+                        Text("Snow intensity")
+                        Slider(value: $effect.snowIntensity, in: 0...100)
+                            .padding(.leading)
+                    }
+                    VStack {
+                        Text("Snow anisotropy")
+                        Slider(value: $effect.snowAnisotropy, in: 0...1)
+                            .padding(.leading)
+                    }
+                }
                 Toggle(isOn: $effect.headSwitchingEnabled, label: {
                     Text("Head switching")
                 })
@@ -185,6 +202,7 @@ struct ControlsView: View {
                  - ringing
                  */
             }
+            .background(Color.green.opacity(0.2))
         }
     }
     
