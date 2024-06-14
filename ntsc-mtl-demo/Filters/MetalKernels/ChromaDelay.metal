@@ -13,7 +13,7 @@ constant half PI_16 = half(3.140625);
 kernel void chromaDelay
 (
  texture2d<half, access::read> inputTexture [[texture(0)]],
- texture2d<half, access::write> outputTexture [[texture(2)]],
+ texture2d<half, access::write> outputTexture [[texture(1)]],
  constant half &horizShift [[buffer(0)]],
  constant int &vertShift [[buffer(1)]],
  uint2 gid [[thread_position_in_grid]]
