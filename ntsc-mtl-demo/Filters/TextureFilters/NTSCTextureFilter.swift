@@ -233,11 +233,14 @@ class NTSCTextureFilter {
         try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
     }
     
-    static func lumaSmear(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: IIRTextureFilter, lumaSmear: Float, commandBuffer: MTLCommandBuffer) throws {
+    static func lumaSmear(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: IIRTextureFilter, lumaSmear: Float, bandwidthScale: Float, commandBuffer: MTLCommandBuffer) throws {
         if lumaSmear.isZero {
             try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
             return
         }
+        let fn = IIRTransferFunction.lumaSmear(amount: lumaSmear, bandwidthScale: bandwidthScale)
+        filter.numerators = fn.numerators
+        filter.denominators = fn.denominators
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
@@ -457,6 +460,7 @@ class NTSCTextureFilter {
                 outputTexture: try iter.next(),
                 filter: lumaSmearFilter,
                 lumaSmear: effect.lumaSmear,
+                bandwidthScale: effect.bandwidthScale,
                 commandBuffer: commandBuffer
             )
             // Step 11: ringing
