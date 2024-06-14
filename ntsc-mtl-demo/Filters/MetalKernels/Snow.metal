@@ -31,11 +31,24 @@ kernel void snow
  ) {
     half4 inputPixel = inputTexture.read(gid);
     half4 randomPixel = randomTexture.read(gid);    // uniform random values
-    half thing = smoothstep(half(0.0), half(intensity) * (half(1.0) - half(anisotropy)), randomPixel.x);
-    half smoothedSnow = mix(half(intensity), half(1.0), (half(1.0) - half(anisotropy))) * thing;
+    // half thing = smoothstep(half(0.0), half(intensity) * (half(1.0) - half(anisotropy)), randomPixel.x);
+    // half smoothedSnow = mix(half(intensity), half(1.0), (half(1.0) - half(anisotropy))) * thing;
+//    half i = 1.0h - half(intensity);
+//    half a = 1.0h - half(anisotropy);
+//    half bottom = max(half(0.0), i - a);
+//    half snow = smoothstep(bottom, i, randomPixel.x);
+//    
+//    half p = half(intensity);
+//    half s = half(anisotropy);
+//    half bottom = (1.0h - p) - (.5h * (1.0h - s));
+//    half top = (1.0h - p) + (.5h * (1.0h - s));
+    half snow = step(half(intensity), randomPixel.x) * 0.125h;
+//    half snow = clamp(smoothstep(bottom, top, randomPixel.x), 0.0h, 1.0h);
+    
+    
     
     half4 outPx = inputPixel;
-    outPx.x += smoothedSnow;
+    outPx.x += snow;
     outputTexture.write(outPx, gid);
     
 //    half smoothedSnow = half(0.0);

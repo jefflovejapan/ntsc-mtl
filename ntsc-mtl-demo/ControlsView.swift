@@ -114,7 +114,7 @@ struct ControlsView: View {
                 Section("Snow") {
                     VStack {
                         Text("Snow intensity")
-                        Slider(value: $effect.snowIntensity, in: 0...100)
+                        Slider(value: $effect.snowIntensity, in: 0...1)
                             .padding(.leading)
                     }
                     VStack {
