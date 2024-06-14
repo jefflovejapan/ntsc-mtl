@@ -562,3 +562,6 @@ Today is all about getting snow to work. I think I've convinced myself that the 
 - `plane_noise`
     - `luma_noise`: Still just blit
     - `chroma_noise`: Still just blit
+- `snow` -- still WIP
+- `tracking_noise` -- haven't started
+- `chroma_delay` -- WIP
