@@ -157,37 +157,37 @@ class ChromaLowpassTextureFilter {
             let iFilter = IIRTextureFilter(
                 device: device,
                 pipelineCache: pipelineCache,
-                numerators: iFunction.numerators,
-                denominators: iFunction.denominators,
                 initialCondition: initialCondition,
                 channels: .i,
-                scale: 1,
                 delay: 2
             )
+            iFilter.numerators = iFunction.numerators
+            iFilter.denominators = iFunction.denominators
+            iFilter.scale = 1
             let qFunction = Self.lowpassFilter(cutoff: 600_000.0, rate: rate, filterType: filterType)
             let qFilter = IIRTextureFilter(
                 device: device,
                 pipelineCache: pipelineCache,
-                numerators: qFunction.numerators,
-                denominators: qFunction.denominators,
                 initialCondition: initialCondition,
                 channels: .q,
-                scale: 1,
                 delay: 4
             )
+            qFilter.numerators = qFunction.numerators
+            qFilter.denominators = qFunction.denominators
+            qFilter.scale = 1
             self.filters = .full(i: iFilter, q: qFilter)
         case .light:
             let function = Self.lowpassFilter(cutoff: 2_600_000.0, rate: rate, filterType: filterType)
             let iAndQFilter = IIRTextureFilter(
                 device: device,
                 pipelineCache: pipelineCache,
-                numerators: function.numerators,
-                denominators: function.denominators,
                 initialCondition: initialCondition,
                 channels: [.i, .q],
-                scale: 1,
                 delay: 1
             )
+            iAndQFilter.numerators = function.numerators
+            iAndQFilter.denominators = function.denominators
+            iAndQFilter.scale = 1
             self.filters = .light(iAndQ: iAndQFilter)
         }
     }

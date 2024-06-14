@@ -27,11 +27,24 @@ class IIRTextureFilter {
     
     private let device: MTLDevice
     private let pipelineCache: MetalPipelineCache
-    private let numerators: [Float]
-    private let denominators: [Float]
+    var numerators: [Float] = [] {
+        didSet {
+            if numerators != oldValue {
+                needsIIRUpdate = true
+            }
+        }
+    }
+    var denominators: [Float] = [] {
+        didSet {
+            if denominators != oldValue {
+                needsIIRUpdate = true
+            }
+        }
+    }
+    private var needsIIRUpdate: Bool = false
     private let initialCondition: InitialCondition
     private let channelMix: YIQChannels
-    private let scale: Float16
+    var scale: Float16 = 1
     private let delay: UInt
     private(set) var zTextures: [MTLTexture] = []
     private var initialConditionTexture: MTLTexture?
@@ -40,14 +53,11 @@ class IIRTextureFilter {
     private var filteredImageTexture: MTLTexture?
     private var outputTexture: MTLTexture?
     
-    init(device: MTLDevice, pipelineCache: MetalPipelineCache, numerators: [Float], denominators: [Float], initialCondition: InitialCondition, channels: YIQChannels, scale: Float16, delay: UInt) {
+    init(device: MTLDevice, pipelineCache: MetalPipelineCache, initialCondition: InitialCondition, channels: YIQChannels, delay: UInt) {
         self.device = device
         self.pipelineCache = pipelineCache
-        self.numerators = numerators
-        self.denominators = denominators
         self.initialCondition = initialCondition
         self.channelMix = channels
-        self.scale = scale
         self.delay = delay
     }
     
@@ -238,16 +248,16 @@ class IIRTextureFilter {
     }
     
     func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        let needsUpdate: Bool
+        let needsTextureUpdate: Bool
         if !(zTextures.count == numerators.count) {
-            needsUpdate = true
+            needsTextureUpdate = true
         } else {
-            needsUpdate = !zTextures.allSatisfy({ tex in
+            needsTextureUpdate = !zTextures.allSatisfy({ tex in
                 tex.width == inputTexture.width && tex.height == inputTexture.height
             })
         }
         
-        if needsUpdate {
+        if needsTextureUpdate || needsIIRUpdate {
             guard let initialConditionTexture = Self.texture(
                 from: inputTexture,
                 device: device
@@ -288,6 +298,7 @@ class IIRTextureFilter {
             self.initialConditionTexture = initialConditionTexture
             self.filteredSampleTexture = filteredSampleTexture
             self.filteredImageTexture = tempZ0Texture
+            self.needsIIRUpdate = false
         }
         
         let zTex0 = zTextures[0]
@@ -405,8 +416,6 @@ class IIRTextureFilter {
         commandEncoder.dispatchThreads(textureWidth: inputImage.width, textureHeight: inputImage.height)
         commandEncoder.endEncoding()
     }
-    
-
     
     static func sideEffect(
         inputImage: MTLTexture,

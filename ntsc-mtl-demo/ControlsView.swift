@@ -81,6 +81,10 @@ struct ControlsView: View {
                         .padding(.leading)
                 }
                 VStack {
+                    Text("Composite preemphasis")
+                    Slider(value: $effect.compositePreemphasis, in: -1...2)
+                }
+                VStack {
                     Text("Chroma phase noise")
                     Slider(value: $effect.chromaPhaseNoiseIntensity, in: 0...1)
                 }
