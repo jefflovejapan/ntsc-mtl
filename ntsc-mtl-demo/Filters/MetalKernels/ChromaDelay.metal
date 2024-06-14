@@ -19,24 +19,11 @@ kernel void chromaDelay
  uint2 gid [[thread_position_in_grid]]
  ) {
     half4 inputPixel = inputTexture.read(gid);
-//    half y = inputPixel.x;
-//    half i = inputPixel.y;
-//    half q = inputPixel.z;
-//    half a = inputPixel.w;
-//    
-//    /*
-//     - add horizShift to half(gid.x)
-//     - use divmod to merge the two pixels, handling boundary
-//     - result is
-//     */
-//    
-//    half
-//    
-//    half phaseShift = (rand - half(0.5)) * 4.0 * intensity * PI_16;
-//    half sinAngle = sin(phaseShift);
-//    half cosAngle = cos(phaseShift);
-//    half rotatedI = (i * cosAngle) - (q * sinAngle);
-//    half rotatedQ = (i * sinAngle) + (q * cosAngle);
-//    half4 final = half4(y, rotatedI, rotatedQ, a);
-    outputTexture.write(inputPixel, gid);
+    int vertShiftedY = int(gid.y);
+    vertShiftedY += vertShift;
+    vertShiftedY = clamp(vertShiftedY, 0, int(inputTexture.get_height()));
+    uint2 vertShiftedPos = uint2(gid.x, vertShiftedY);
+    half4 vertShiftedPixel = inputTexture.read(vertShiftedPos);
+    half4 combinedPixel = half4(inputPixel.x, vertShiftedPixel.yz, inputPixel.w);
+    outputTexture.write(combinedPixel, gid);
 }

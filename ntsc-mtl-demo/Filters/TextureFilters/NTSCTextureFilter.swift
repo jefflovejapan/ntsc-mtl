@@ -298,8 +298,9 @@ class NTSCTextureFilter {
         filter.phaseError = chromaPhaseNoiseIntensity
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
-    static func chromaDelay(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
+    static func chromaDelay(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: ChromaDelayTextureFilter, delay: (Float16, Int), commandBuffer: MTLCommandBuffer) throws {
+        filter.chromaDelay = delay
+        try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     static func vhs(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
@@ -529,6 +530,8 @@ class NTSCTextureFilter {
             try Self.chromaDelay(
                 inputTexture: try iter.last,
                 outputTexture: try iter.next(),
+                filter: chromaDelayFilter,
+                delay: effect.chromaDelay,
                 commandBuffer: commandBuffer
             )
             // Step 17: vhs
