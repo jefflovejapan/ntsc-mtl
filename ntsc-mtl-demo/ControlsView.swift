@@ -66,6 +66,17 @@ struct ControlsView: View {
                 VStack {
                     Text("Chroma phase noise")
                     Slider(value: $effect.chromaPhaseNoiseIntensity, in: 0...1)
+                        .padding(.leading)
+                }
+                VStack {
+                    Text("Snow intensity")
+                    Slider(value: $effect.snowIntensity, in: 0...100)
+                        .padding(.leading)
+                }
+                VStack {
+                    Text("Snow anisotropy")
+                    Slider(value: $effect.snowAnisotropy, in: 0...1)
+                        .padding(.leading)
                 }
 //                VStack(alignment: .leading) {
 //                    Text("Luma smear")

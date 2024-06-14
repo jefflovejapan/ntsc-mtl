@@ -23,48 +23,33 @@ kernel void snow
 (
  texture2d<half, access::read> inputTexture [[texture(0)]],
  texture2d<half, access::read> randomTexture [[texture(1)]],
- texture2d<half, access::read> snowIntensityTexture [[texture(2)]],
- texture2d<half, access::write> outputTexture [[texture(3)]],
+ texture2d<half, access::write> outputTexture [[texture(2)]],
+ constant float &intensity [[buffer(0)]],
+ constant float &anisotropy [[buffer(1)]],
  constant half &bandwidthScale [[buffer(2)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
     
     half4 inputPixel = inputTexture.read(gid);
-//    half snowIntensity = snowIntensityTexture.read(gid).x;
     half4 randomPixel = randomTexture.read(gid);
+    float randX = float(randomPixel.x);
+    float randY = float(randomPixel.y);
+    float logisticFactor = exp((randX - intensity) / (intensity * (1.0 - intensity) * (1.0 - anisotropy)));
+    float lineSnowIntensity = anisotropy / (1.0 + logisticFactor) + intensity * (1.0 - anisotropy);
+    lineSnowIntensity *= 0.125;
+    lineSnowIntensity = clamp(lineSnowIntensity, float(0.0), float(1.0));
+    if (lineSnowIntensity <= 0.0) {
+        outputTexture.write(inputPixel, gid);
+        return;
+    }
     
-    // Already used x to calculate snow intensity
-    half transientLenRnd = randomPixel.y;
-    half transientFreqRnd = randomPixel.z;
-    half finalTermRnd = randomPixel.w;
-    
-    float transientLen = mix(8.0, 64.0, float(transientLenRnd)) * float(bandwidthScale);
-    float transientFreq = mix(transientLen * 3.0, transientLen * 5.0, float(transientFreqRnd));
-    
-    float x = float(gid.x);
-    // 3.14 * 0 *...) --> cos(0) is 1 (I think)
-    /*
-     row[i] += ((x * PI) / transient_freq).cos()
-     domain is -1 to 1
-     */
-    float cosTerm = cos((M_PI_F * x) / transientFreq);
-    /*
-     * (1.0 - x / transient_len).powi(2)
-     * transient_rng.gen_range(-1.0..2.0);
-     */
-    float transientLenTerm = pow(1.0 - (x / transientLen), 2);
-    
-    float finalTerm = mix(-1.0, 2.0, float(finalTermRnd));
-    
-    /*
-     row[i] += ((x * PI) / transient_freq).cos()
-         * (1.0 - x / transient_len).powi(2)
-         * transient_rng.gen_range(-1.0..2.0);
-     
-     cosTerm * transientLenTerm * finalTerm
-     */
-    half mod = half(cosTerm * transientLenTerm * finalTerm);
-    half4 modPixel = inputPixel;
-//    modPixel.x += mod;
-    outputTexture.write(modPixel, gid);
+    float transientLen = mix(8.0, 64.0, randY) * float(bandwidthScale);
+    float transientFreq = mix((transientLen * 3.0), (transientLen * 5.0), randY);
+    float x = fmod(float(gid.x), transientLen);
+    float transientEffect = cos((x * M_PI_F) / transientFreq) * pow((1.0 - x / transientLen), 2.0);
+    half luma = inputPixel.x;
+    luma += half(transientEffect);
+    half4 outPixel = inputPixel;
+    outPixel.x = luma;
+    outputTexture.write(outPixel, gid);
 }

@@ -17,7 +17,7 @@ kernel void snowIntensity
  constant half &bandwidthScale [[buffer(2)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
-    half rnd = uniformRandomTexture.read(gid).x;
+    half rnd = uniformRandomTexture.read(uint2(0, gid.y)).x;
     float logisticFactor = exp(float(rnd - intensity) / float(intensity * (1.0 - intensity) * float(1.0 - anisotropy)));
     
     float lineSnowIntensity = (float(anisotropy) / (1.0 + logisticFactor)) + float(intensity * (1.0 - anisotropy));

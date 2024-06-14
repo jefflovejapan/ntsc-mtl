@@ -16,6 +16,11 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             CameraView(enableFilter: $enableFilter, effect: effect)
+                .onTapGesture {
+                    withAnimation {
+                        showControls.toggle()          
+                    }
+                }
                 .padding()
             VStack {
                 Spacer()
