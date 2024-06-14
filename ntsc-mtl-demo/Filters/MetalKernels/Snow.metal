@@ -37,13 +37,12 @@ kernel void snow
 //    half a = 1.0h - half(anisotropy);
 //    half bottom = max(half(0.0), i - a);
 //    half snow = smoothstep(bottom, i, randomPixel.x);
-//    
-//    half p = half(intensity);
-//    half s = half(anisotropy);
-//    half bottom = (1.0h - p) - (.5h * (1.0h - s));
-//    half top = (1.0h - p) + (.5h * (1.0h - s));
-    half snow = step(half(intensity), randomPixel.x) * 0.125h;
-//    half snow = clamp(smoothstep(bottom, top, randomPixel.x), 0.0h, 1.0h);
+//  half snow = step(half(intensity), randomPixel.x) * 0.125h;
+    half p = half(intensity);
+    half s = half(anisotropy);
+    half bottom = (1.0h - p) - (.5h * (1.0h - s));
+    half top = (1.0h - p) + (.5h * (1.0h - s));
+    half snow = clamp(smoothstep(bottom, top, randomPixel.x), 0.0h, 1.0h) * 0.125h;
     
     
     
