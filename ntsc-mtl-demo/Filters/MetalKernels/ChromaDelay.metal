@@ -22,8 +22,12 @@ kernel void chromaDelay
     int vertShiftedY = int(gid.y);
     vertShiftedY += vertShift;
     vertShiftedY = clamp(vertShiftedY, 0, int(inputTexture.get_height()));
-    uint2 vertShiftedPos = uint2(gid.x, vertShiftedY);
-    half4 vertShiftedPixel = inputTexture.read(vertShiftedPos);
-    half4 combinedPixel = half4(inputPixel.x, vertShiftedPixel.yz, inputPixel.w);
-    outputTexture.write(combinedPixel, gid);
+    
+    int horizShiftedX = int(gid.x);
+    horizShiftedX += int(horizShift);
+    horizShiftedX = clamp(horizShiftedX, 0, int(inputTexture.get_width()));
+    uint2 sampleGID = uint2(horizShiftedX, vertShiftedY);
+    half4 samplePx = inputTexture.read(sampleGID);
+    half4 final = half4(inputPixel.x, samplePx.yz, inputPixel.w);
+    outputTexture.write(final, gid);
 }
