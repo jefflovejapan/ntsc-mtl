@@ -14,7 +14,7 @@ class HeadSwitchingTextureFilter {
     private let device: MTLDevice
     private let context: CIContext
     private let pipelineCache: MetalPipelineCache
-    var headSwitchingSettings: HeadSwitchingSettings?
+    var settings: HeadSwitchingSettings = HeadSwitchingSettings.default
     var bandwidthScale: Float = NTSCEffect.default.bandwidthScale
     private var randomImageTexture: MTLTexture?
     init(device: MTLDevice, ciContext: CIContext, pipelineCache: MetalPipelineCache) {
@@ -24,11 +24,6 @@ class HeadSwitchingTextureFilter {
     }
     
     func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        guard let hs = headSwitchingSettings else {
-            try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
-            return
-        }
-        
         let needsUpdate: Bool
         if let randomImageTexture {
             needsUpdate = !(randomImageTexture.width == inputTexture.width && randomImageTexture.height == inputTexture.height)
@@ -71,7 +66,7 @@ class HeadSwitchingTextureFilter {
 //        }
 //        
 //        let shift = hs.horizShift
-        if let midLine = hs.midLine {
+        if let midLine = settings.midLine {
             try shiftRowMidline(
                 inputTexture: inputTexture,
                 randomTexture: randomImageTexture,
@@ -83,9 +78,9 @@ class HeadSwitchingTextureFilter {
                 inputTexture: inputTexture,
                 randomTexture: randomImageTexture,
                 outputTexture: outputTexture,
-                height: hs.height,
-                offset: hs.offset,
-                horizShift: hs.horizShift,
+                height: settings.height,
+                offset: settings.offset,
+                horizShift: settings.horizShift,
                 boundaryHandling: .constant(0),
                 bandwidthScale: bandwidthScale,
                 commandBuffer: commandBuffer

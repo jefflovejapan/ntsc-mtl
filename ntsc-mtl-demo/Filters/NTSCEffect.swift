@@ -19,7 +19,8 @@ class NTSCEffect {
     var compositePreemphasis: Float16
     var videoScanlinePhaseShift: PhaseShift
     var videoScanlinePhaseShiftOffset: Int
-    var headSwitching: HeadSwitchingSettings?
+    var headSwitchingEnabled: Bool
+    var headSwitching: HeadSwitchingSettings
     var trackingNoise: TrackingNoiseSettings?
     var compositeNoise: FBMNoiseSettings?
     var ringingEnabled: Bool
@@ -47,6 +48,7 @@ class NTSCEffect {
         compositePreemphasis: Float16 = 1,
         videoScanlinePhaseShift: PhaseShift = PhaseShift.degrees180,
         videoScanlinePhaseShiftOffset: Int = 0,
+        headSwitchingEnabled: Bool = true,
         headSwitching: HeadSwitchingSettings = HeadSwitchingSettings.default,
         trackingNoise: TrackingNoiseSettings? = TrackingNoiseSettings.default,
         compositeNoise: FBMNoiseSettings = FBMNoiseSettings.compositeNoiseDefault,
@@ -74,6 +76,7 @@ class NTSCEffect {
         self.compositePreemphasis = compositePreemphasis
         self.videoScanlinePhaseShift = videoScanlinePhaseShift
         self.videoScanlinePhaseShiftOffset = videoScanlinePhaseShiftOffset
+        self.headSwitchingEnabled = headSwitchingEnabled
         self.headSwitching = headSwitching
         self.trackingNoise = trackingNoise
         self.compositeNoise = compositeNoise

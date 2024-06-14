@@ -85,6 +85,23 @@ struct ControlsView: View {
                     Slider(value: $effect.compositePreemphasis, in: -1...2)
                         .padding(.leading)
                 }
+                Toggle(isOn: $effect.headSwitchingEnabled, label: {
+                    Text("Head switching")
+                })
+                if effect.headSwitchingEnabled {
+                    Section("Head switching", content: {
+                        Stepper(value: $effect.headSwitching.height, in: 0...24, label: {
+                            Text("Height")
+                        })
+                        Stepper(value: $effect.headSwitching.offset, in: 0...24, label: {
+                            Text("Offset")
+                        })
+                        VStack {
+                            Text("Horizontal shift")
+                            Slider(value: $effect.headSwitching.horizShift, in: -100...100)
+                        }
+                    })
+                }
                 VStack {
                     Text("Luma smear")
                     Slider(value: $effect.lumaSmear, in: 0...1)

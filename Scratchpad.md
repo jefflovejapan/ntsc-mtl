@@ -555,4 +555,10 @@ Today is all about getting snow to work. I think I've convinced myself that the 
 
 ## Bandwidth scale audit
 
-- `composite_chroma_lowpass`: 
+- `composite_chroma_lowpass`: ✅
+- `luma_smear`: ✅
+- `composite_noise`: ✅
+- `head_switching`: ✅ (still need midline)
+- `plane_noise`
+    - `luma_noise`: Still just blit
+    - `chroma_noise`: Still just blit
