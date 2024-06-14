@@ -31,6 +31,11 @@ kernel void snow
     
     half4 inputPixel = inputTexture.read(gid);
     half4 randomPixel = randomTexture.read(gid);    // uniform random values
+    half mixedX = mix(half(0.0), randomPixel.x, half(0.2));
+    half4 outPx = inputPixel;
+    outPx.x += mixedX;
+    outputTexture.write(outPx, gid);
+    return;
 //    half snowIntensity = snowIntensityTexture.read(gid).x;
     
     // Already used x to calculate snow intensity
