@@ -23,20 +23,20 @@ kernel void snow
 (
  texture2d<half, access::read> inputTexture [[texture(0)]],
  texture2d<half, access::read> randomTexture [[texture(1)]],
- texture2d<half, access::read> snowIntensityTexture [[texture(2)]],
- texture2d<half, access::write> outputTexture [[texture(3)]],
- constant half &bandwidthScale [[buffer(2)]],
+// texture2d<half, access::read> snowIntensityTexture [[texture(2)]],
+ texture2d<half, access::write> outputTexture [[texture(2)]],
+ constant half &bandwidthScale [[buffer(0)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
     
     half4 inputPixel = inputTexture.read(gid);
+    half4 randomPixel = randomTexture.read(gid);    // uniform random values
 //    half snowIntensity = snowIntensityTexture.read(gid).x;
-    half4 randomPixel = randomTexture.read(gid);
     
     // Already used x to calculate snow intensity
-    half transientLenRnd = randomPixel.y;
-    half transientFreqRnd = randomPixel.z;
-    half finalTermRnd = randomPixel.w;
+    half transientLenRnd = randomPixel.y;   // i
+    half transientFreqRnd = randomPixel.z;  // q
+    half finalTermRnd = randomPixel.w;      // alpha
     
     float transientLen = mix(8.0, 64.0, float(transientLenRnd)) * float(bandwidthScale);
     float transientFreq = mix(transientLen * 3.0, transientLen * 5.0, float(transientFreqRnd));
@@ -65,6 +65,6 @@ kernel void snow
      */
     half mod = half(cosTerm * transientLenTerm * finalTerm);
     half4 modPixel = inputPixel;
-//    modPixel.x += mod;
+    modPixel.x += mod;
     outputTexture.write(modPixel, gid);
 }
