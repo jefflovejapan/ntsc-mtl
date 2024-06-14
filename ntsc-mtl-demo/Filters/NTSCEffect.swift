@@ -19,10 +19,12 @@ class NTSCEffect {
     var compositePreemphasis: Float16
     var videoScanlinePhaseShift: PhaseShift
     var videoScanlinePhaseShiftOffset: Int
-    var headSwitching: HeadSwitchingSettings?
+    var headSwitchingEnabled: Bool
+    var headSwitching: HeadSwitchingSettings
     var trackingNoise: TrackingNoiseSettings?
     var compositeNoise: FBMNoiseSettings?
-    var ringing: RingingSettings?
+    var ringingEnabled: Bool
+    var ringing: RingingSettings
     var lumaNoise: FBMNoiseSettings?
     var chromaNoise: FBMNoiseSettings?
     var snowIntensity: Float
@@ -46,9 +48,11 @@ class NTSCEffect {
         compositePreemphasis: Float16 = 1,
         videoScanlinePhaseShift: PhaseShift = PhaseShift.degrees180,
         videoScanlinePhaseShiftOffset: Int = 0,
+        headSwitchingEnabled: Bool = true,
         headSwitching: HeadSwitchingSettings = HeadSwitchingSettings.default,
         trackingNoise: TrackingNoiseSettings? = TrackingNoiseSettings.default,
         compositeNoise: FBMNoiseSettings = FBMNoiseSettings.compositeNoiseDefault,
+        ringingEnabled: Bool = true,
         ringing: RingingSettings = RingingSettings.default,
         lumaNoise: FBMNoiseSettings? = FBMNoiseSettings.lumaNoiseDefault,
         chromaNoise: FBMNoiseSettings = FBMNoiseSettings.chromaNoiseDefault,
@@ -72,9 +76,11 @@ class NTSCEffect {
         self.compositePreemphasis = compositePreemphasis
         self.videoScanlinePhaseShift = videoScanlinePhaseShift
         self.videoScanlinePhaseShiftOffset = videoScanlinePhaseShiftOffset
+        self.headSwitchingEnabled = headSwitchingEnabled
         self.headSwitching = headSwitching
         self.trackingNoise = trackingNoise
         self.compositeNoise = compositeNoise
+        self.ringingEnabled = ringingEnabled
         self.ringing = ringing
         self.lumaNoise = lumaNoise
         self.chromaNoise = chromaNoise
@@ -125,10 +131,14 @@ enum LumaLowpass: Int, Identifiable, CaseIterable {
     }
 }
 
-enum ChromaLowpass {
+enum ChromaLowpass: Int, Identifiable, CaseIterable {
     case none
     case light
     case full
+    
+    var id: Int {
+        rawValue
+    }
 }
 
 enum PhaseShift: UInt, Identifiable, CaseIterable {

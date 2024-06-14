@@ -18,14 +18,6 @@ struct ControlsView: View {
                 Toggle(isOn: $enableFilter, label: {
                     Text("Enable filter?")
                 })
-//                Picker(selection: $effect.filterType, content: {
-//                    ForEach(FilterType.allCases) { filterType in
-//                        Text(name(for: filterType))
-//                            .tag(filterType)
-//                    }
-//                }, label: {
-//                    Text("Filter Type")
-//                })
                 VStack(alignment: .leading) {
                     Text("Bandwidth scale")
                     Slider.init(value: $effect.bandwidthScale, in: 0.125...8, label: {
@@ -46,6 +38,31 @@ struct ControlsView: View {
                     })
                 }
                 HStack {
+                    Text("Filter type")
+                    Spacer()
+                    Picker(selection: $effect.filterType, content: {
+                        ForEach(FilterType.allCases) { filterType in
+                            Text(name(filterType: filterType))
+                                .tag(filterType)
+                        }
+                    }, label: {
+                        Text("Filter Type")
+                    })
+                }
+                HStack {
+                    Text("Chroma lowpass in")
+                    Spacer()
+                    Picker(selection: $effect.chromaLowpassIn, content: {
+                        ForEach(ChromaLowpass.allCases) { lp in
+                            Text(name(chromaLowpass: lp))
+                                .tag(lp)
+                        }
+                    }, label: {
+                        Text("Chroma lowpass in")
+                    })
+                }
+                
+                HStack {
                     Text("Chroma phase shift")
                     Spacer()
                     Picker(selection: $effect.videoScanlinePhaseShift, content: {
@@ -64,8 +81,56 @@ struct ControlsView: View {
                         .padding(.leading)
                 }
                 VStack {
+                    Text("Composite preemphasis")
+                    Slider(value: $effect.compositePreemphasis, in: -1...2)
+                        .padding(.leading)
+                }
+                Toggle(isOn: $effect.headSwitchingEnabled, label: {
+                    Text("Head switching")
+                })
+                if effect.headSwitchingEnabled {
+                    Section("Head switching", content: {
+                        Stepper(value: $effect.headSwitching.height, in: 0...24, label: {
+                            Text("Height")
+                        })
+                        Stepper(value: $effect.headSwitching.offset, in: 0...24, label: {
+                            Text("Offset")
+                        })
+                        VStack {
+                            Text("Horizontal shift")
+                            Slider(value: $effect.headSwitching.horizShift, in: -100...100)
+                        }
+                    })
+                }
+                VStack {
+                    Text("Luma smear")
+                    Slider(value: $effect.lumaSmear, in: 0...1)
+                        .padding(.leading)
+                }
+                Toggle(isOn: $effect.ringingEnabled, label: {
+                    Text("Ringing")
+                })
+
+                if effect.ringingEnabled {
+                    Section("Ringing", content: {
+                        VStack {
+                            Text("Frequency")
+                            Slider(value: $effect.ringing.frequency, in: 0...1)
+                        }
+                        VStack {
+                            Text("Power")
+                            Slider(value: $effect.ringing.power, in: 1...10)
+                        }
+                        VStack {
+                            Text("Intensity")
+                            Slider(value: $effect.ringing.intensity, in: 0...10)
+                        }  
+                    })
+                }
+                VStack {
                     Text("Chroma phase noise")
                     Slider(value: $effect.chromaPhaseNoiseIntensity, in: 0...1)
+                        .padding(.leading)
                 }
 //                VStack(alignment: .leading) {
 //                    Text("Luma smear")
@@ -122,6 +187,17 @@ struct ControlsView: View {
             "180"
         case .degrees270:
             "270"
+        }
+    }
+    
+    private func name(chromaLowpass: ChromaLowpass) -> String {
+        switch chromaLowpass {
+        case .none:
+            return "None"
+        case .light:
+            return "Light"
+        case .full:
+            return "Full"
         }
     }
 }

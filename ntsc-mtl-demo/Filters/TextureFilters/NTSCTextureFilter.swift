@@ -61,29 +61,24 @@ class NTSCTextureFilter {
         self.pipelineCache = try MetalPipelineCache(device: device, library: library)
         self.lumaBoxFilter = LumaBoxTextureFilter(device: device, commandQueue: commandQueue, pipelineCache: pipelineCache)
         let lumaNotchTransferFunction = IIRTransferFunction.lumaNotch
-        self.lumaNotchFilter = IIRTextureFilter(
+        let lumaNotchFilter = IIRTextureFilter(
             device: device,
             pipelineCache: pipelineCache,
-            numerators: lumaNotchTransferFunction.numerators,
-            denominators: lumaNotchTransferFunction.denominators,
             initialCondition: .firstSample,
             channels: .y,
-            scale: 1,
             delay: 0
         )
+        lumaNotchFilter.numerators = lumaNotchTransferFunction.numerators
+        lumaNotchFilter.denominators = lumaNotchTransferFunction.denominators
+        lumaNotchFilter.scale = 1
+        self.lumaNotchFilter = lumaNotchFilter
         self.lightChromaLowpassFilter = ChromaLowpassTextureFilter(
             device: device,
-            pipelineCache: pipelineCache,
-            intensity: .light,
-            bandwidthScale: effect.bandwidthScale,
-            filterType: effect.filterType
+            pipelineCache: pipelineCache
         )
         self.fullChromaLowpassFilter = ChromaLowpassTextureFilter(
             device: device,
-            pipelineCache: pipelineCache,
-            intensity: .full,
-            bandwidthScale: effect.bandwidthScale,
-            filterType: effect.filterType
+            pipelineCache: pipelineCache
         )
         self.chromaIntoLumaFilter = ChromaIntoLumaTextureFilter(
             device: device,
@@ -92,42 +87,46 @@ class NTSCTextureFilter {
         let compositePreemphasisFunction = IIRTransferFunction.compositePreemphasis(
             bandwidthScale: effect.bandwidthScale
         )
-        self.compositePreemphasisFilter = IIRTextureFilter(
+        let compositePreemphasisFilter = IIRTextureFilter(
             device: device,
             pipelineCache: pipelineCache,
-            numerators: compositePreemphasisFunction.numerators,
-            denominators: compositePreemphasisFunction.denominators,
             initialCondition: .zero,
             channels: .y,
-            scale: -effect.compositePreemphasis,
             delay: 0
         )
+        compositePreemphasisFilter.numerators = compositePreemphasisFunction.numerators
+        compositePreemphasisFilter.denominators = compositePreemphasisFunction.denominators
+        compositePreemphasisFilter.scale = -effect.compositePreemphasis
+        self.compositePreemphasisFilter = compositePreemphasisFilter
         self.compositeNoiseFilter = CompositeNoiseTextureFilter(device: device, ciContext: context, pipelineCache: pipelineCache)
         self.snowFilter = SnowTextureFilter(device: device, ciContext: context, pipelineCache: pipelineCache)
         self.headSwitchingFilter = HeadSwitchingTextureFilter(device: device, ciContext: context, pipelineCache: pipelineCache)
         let lumaSmearFunction = IIRTransferFunction.lumaSmear(amount: effect.lumaSmear, bandwidthScale: effect.bandwidthScale)
-        self.lumaSmearFilter = IIRTextureFilter(
+        let lumaSmearFilter = IIRTextureFilter(
             device: device,
             pipelineCache: pipelineCache,
-            numerators: lumaSmearFunction.numerators,
-            denominators: lumaSmearFunction.denominators,
             initialCondition: .zero,
             channels: .y,
-            scale: 1,
             delay: 0
         )
+        lumaSmearFilter.numerators = lumaSmearFunction.numerators
+        lumaSmearFilter.denominators = lumaSmearFunction.denominators
+        lumaSmearFilter.scale = 1
+        self.lumaSmearFilter = lumaSmearFilter
+
         let ringingSettings = RingingSettings.default
         let ringingFunction = try IIRTransferFunction.ringing(ringingSettings: ringingSettings, bandwidthScale: effect.bandwidthScale)
-        self.ringingFilter = IIRTextureFilter(
+        let ringingFilter = IIRTextureFilter(
             device: device,
             pipelineCache: pipelineCache,
-            numerators: ringingFunction.numerators,
-            denominators: ringingFunction.denominators,
             initialCondition: .firstSample,
             channels: .y,
-            scale: ringingSettings.intensity,
             delay: 1
         )
+        ringingFilter.numerators = ringingFunction.numerators
+        ringingFilter.denominators = ringingFunction.denominators
+        ringingFilter.scale = ringingSettings.intensity
+        self.ringingFilter = ringingFilter
         self.chromaPhaseErrorFilter = PhaseErrorTextureFilter(device: device, pipelineCache: pipelineCache)
         self.chromaPhaseNoiseFilter = PhaseNoiseTextureFilter(device: device, pipelineCache: pipelineCache, ciContext: context)
     }
@@ -174,6 +173,7 @@ class NTSCTextureFilter {
         output: (any MTLTexture),
         commandBuffer: MTLCommandBuffer,
         chromaLowpass: ChromaLowpass,
+        bandwidthScale: Float,
         lightFilter: ChromaLowpassTextureFilter,
         fullFilter: ChromaLowpassTextureFilter
     ) throws {
@@ -181,8 +181,12 @@ class NTSCTextureFilter {
         case .none:
             return
         case .light:
+            lightFilter.bandwidthScale = bandwidthScale
+            lightFilter.chromaLowpass = chromaLowpass
             try lightFilter.run(inputTexture: texture, outputTexture: output, commandBuffer: commandBuffer)
         case .full:
+            fullFilter.bandwidthScale = bandwidthScale
+            fullFilter.chromaLowpass = chromaLowpass
             try fullFilter.run(inputTexture: texture, outputTexture: output, commandBuffer: commandBuffer)
         }
     }
@@ -194,7 +198,12 @@ class NTSCTextureFilter {
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
-    static func compositePreemphasis(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: IIRTextureFilter, commandBuffer: MTLCommandBuffer) throws {
+    static func compositePreemphasis(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: IIRTextureFilter, bandwidthScale: Float, compositePreemphasis: Float16,  commandBuffer: MTLCommandBuffer) throws {
+        let fn = IIRTransferFunction.compositePreemphasis(bandwidthScale: bandwidthScale)
+        filter.numerators = fn.numerators
+        filter.denominators = fn.denominators
+        filter.scale = -compositePreemphasis
+        
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
@@ -210,8 +219,20 @@ class NTSCTextureFilter {
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
-    static func headSwitching(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: HeadSwitchingTextureFilter, headSwitching: HeadSwitchingSettings?,  bandwidthScale: Float, commandBuffer: MTLCommandBuffer) throws {
-        filter.headSwitchingSettings = headSwitching
+    static func headSwitching(
+        inputTexture: MTLTexture,
+        outputTexture: MTLTexture,
+        filter: HeadSwitchingTextureFilter,
+        headSwitchingEnabled: Bool,
+        headSwitching: HeadSwitchingSettings,
+        bandwidthScale: Float,
+        commandBuffer: MTLCommandBuffer
+    ) throws {
+        guard headSwitchingEnabled else {
+            try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
+            return
+        }
+        filter.settings = headSwitching
         filter.bandwidthScale = bandwidthScale
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
@@ -224,15 +245,26 @@ class NTSCTextureFilter {
         try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
     }
     
-    static func lumaSmear(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: IIRTextureFilter, lumaSmear: Float, commandBuffer: MTLCommandBuffer) throws {
+    static func lumaSmear(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: IIRTextureFilter, lumaSmear: Float, bandwidthScale: Float, commandBuffer: MTLCommandBuffer) throws {
         if lumaSmear.isZero {
             try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
             return
         }
+        let fn = IIRTransferFunction.lumaSmear(amount: lumaSmear, bandwidthScale: bandwidthScale)
+        filter.numerators = fn.numerators
+        filter.denominators = fn.denominators
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
-    static func ringing(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: IIRTextureFilter, ringing: RingingSettings?, commandBuffer: MTLCommandBuffer) throws {
+    static func ringing(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: IIRTextureFilter, ringingEnabled: Bool, ringing: RingingSettings, bandwidthScale: Float, commandBuffer: MTLCommandBuffer) throws {
+        guard ringingEnabled else {
+            try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
+            return
+        }
+        let fn = try IIRTransferFunction.ringing(ringingSettings: ringing, bandwidthScale: bandwidthScale)
+        filter.numerators = fn.numerators
+        filter.denominators = fn.denominators
+        filter.scale = ringing.intensity
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
@@ -376,7 +408,8 @@ class NTSCTextureFilter {
                 try iter.last,
                 output: try iter.next(),
                 commandBuffer: commandBuffer,
-                chromaLowpass: effect.chromaLowpassIn,
+                chromaLowpass: effect.chromaLowpassIn, 
+                bandwidthScale: effect.bandwidthScale,
                 lightFilter: lightChromaLowpassFilter,
                 fullFilter: fullChromaLowpassFilter
             )
@@ -396,6 +429,8 @@ class NTSCTextureFilter {
                 inputTexture: try iter.last,
                 outputTexture: try iter.next(),
                 filter: compositePreemphasisFilter,
+                bandwidthScale: effect.bandwidthScale, 
+                compositePreemphasis: effect.compositePreemphasis,
                 commandBuffer: commandBuffer
             )
             // Step 5: composite noise
@@ -420,8 +455,9 @@ class NTSCTextureFilter {
             try Self.headSwitching(
                 inputTexture: try iter.last,
                 outputTexture: try iter.next(),
-                filter: headSwitchingFilter,
-                headSwitching: effect.headSwitching, 
+                filter: headSwitchingFilter, 
+                headSwitchingEnabled: effect.headSwitchingEnabled,
+                headSwitching: effect.headSwitching,
                 bandwidthScale: effect.bandwidthScale,
                 commandBuffer: commandBuffer
             )
@@ -445,14 +481,17 @@ class NTSCTextureFilter {
                 outputTexture: try iter.next(),
                 filter: lumaSmearFilter,
                 lumaSmear: effect.lumaSmear,
+                bandwidthScale: effect.bandwidthScale,
                 commandBuffer: commandBuffer
             )
             // Step 11: ringing
             try Self.ringing(
                 inputTexture: try iter.last,
                 outputTexture: try iter.next(),
-                filter: ringingFilter,
+                filter: ringingFilter, 
+                ringingEnabled: effect.ringingEnabled,
                 ringing: effect.ringing,
+                bandwidthScale: effect.bandwidthScale,
                 commandBuffer: commandBuffer
             )
             // Step 12: luma noise
@@ -507,7 +546,8 @@ class NTSCTextureFilter {
                 try iter.last,
                 output: try iter.next(),
                 commandBuffer: commandBuffer,
-                chromaLowpass: effect.chromaLowpassOut,
+                chromaLowpass: effect.chromaLowpassOut, 
+                bandwidthScale: effect.bandwidthScale,
                 lightFilter: lightChromaLowpassFilter,
                 fullFilter: fullChromaLowpassFilter
             )
