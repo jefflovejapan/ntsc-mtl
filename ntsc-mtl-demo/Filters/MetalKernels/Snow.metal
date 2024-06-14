@@ -34,6 +34,7 @@ kernel void snow
     half4 randomPixel = randomTexture.read(gid);
     float randX = float(randomPixel.x);
     float randY = float(randomPixel.y);
+    float randZ = float(randomPixel.z);
     float logisticFactor = exp((randX - intensity) / (intensity * (1.0 - intensity) * (1.0 - anisotropy)));
     float lineSnowIntensity = anisotropy / (1.0 + logisticFactor) + intensity * (1.0 - anisotropy);
     lineSnowIntensity *= 0.125;
@@ -44,7 +45,7 @@ kernel void snow
     }
     
     float transientLen = mix(8.0, 64.0, randY) * float(bandwidthScale);
-    float transientFreq = mix((transientLen * 3.0), (transientLen * 5.0), randY);
+    float transientFreq = mix((transientLen * 3.0), (transientLen * 5.0), randZ);
     float x = fmod(float(gid.x), transientLen);
     float transientEffect = cos((x * M_PI_F) / transientFreq) * pow((1.0 - x / transientLen), 2.0);
     half luma = inputPixel.x;
