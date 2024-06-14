@@ -547,3 +547,12 @@ Today is all about getting snow to work. I think I've convinced myself that the 
 - Had a great chat with Carsten about the project he's working on. It's way gnarlier than I thought -- he's using a kind of unsupported C++ thing and has had to teach himself enough C++ to dig around and try to make sense of it
 - Hoping to demo today but need to make the filter interactive. Not a lot of time to get that done so hoping to lock in for the next few hours
 - 
+
+# Jun 14
+
+- Had fun yesterday making the filter interactive. It was easier than I thought by making NTSCEffect an @Observable class and sharing it between different components. Showed it to Paul and Seamus and they were pretty stoked on it. Had fun playing with the Oscilloscope. Talked to Jeremy about ctf, which is so far out of my realm I have no idea.
+- Today I want to knock out interlacing, make sure bandwidth scale works correctly, and *hopefully* knock out snow
+
+## Bandwidth scale audit
+
+- `composite_chroma_lowpass`: 

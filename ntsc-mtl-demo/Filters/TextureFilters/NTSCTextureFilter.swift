@@ -73,17 +73,11 @@ class NTSCTextureFilter {
         )
         self.lightChromaLowpassFilter = ChromaLowpassTextureFilter(
             device: device,
-            pipelineCache: pipelineCache,
-            intensity: .light,
-            bandwidthScale: effect.bandwidthScale,
-            filterType: effect.filterType
+            pipelineCache: pipelineCache
         )
         self.fullChromaLowpassFilter = ChromaLowpassTextureFilter(
             device: device,
-            pipelineCache: pipelineCache,
-            intensity: .full,
-            bandwidthScale: effect.bandwidthScale,
-            filterType: effect.filterType
+            pipelineCache: pipelineCache
         )
         self.chromaIntoLumaFilter = ChromaIntoLumaTextureFilter(
             device: device,
@@ -174,6 +168,7 @@ class NTSCTextureFilter {
         output: (any MTLTexture),
         commandBuffer: MTLCommandBuffer,
         chromaLowpass: ChromaLowpass,
+        bandwidthScale: Float,
         lightFilter: ChromaLowpassTextureFilter,
         fullFilter: ChromaLowpassTextureFilter
     ) throws {
@@ -181,8 +176,12 @@ class NTSCTextureFilter {
         case .none:
             return
         case .light:
+            lightFilter.bandwidthScale = bandwidthScale
+            lightFilter.chromaLowpass = chromaLowpass
             try lightFilter.run(inputTexture: texture, outputTexture: output, commandBuffer: commandBuffer)
         case .full:
+            fullFilter.bandwidthScale = bandwidthScale
+            fullFilter.chromaLowpass = chromaLowpass
             try fullFilter.run(inputTexture: texture, outputTexture: output, commandBuffer: commandBuffer)
         }
     }
@@ -376,7 +375,8 @@ class NTSCTextureFilter {
                 try iter.last,
                 output: try iter.next(),
                 commandBuffer: commandBuffer,
-                chromaLowpass: effect.chromaLowpassIn,
+                chromaLowpass: effect.chromaLowpassIn, 
+                bandwidthScale: effect.bandwidthScale,
                 lightFilter: lightChromaLowpassFilter,
                 fullFilter: fullChromaLowpassFilter
             )
@@ -507,7 +507,8 @@ class NTSCTextureFilter {
                 try iter.last,
                 output: try iter.next(),
                 commandBuffer: commandBuffer,
-                chromaLowpass: effect.chromaLowpassOut,
+                chromaLowpass: effect.chromaLowpassOut, 
+                bandwidthScale: effect.bandwidthScale,
                 lightFilter: lightChromaLowpassFilter,
                 fullFilter: fullChromaLowpassFilter
             )

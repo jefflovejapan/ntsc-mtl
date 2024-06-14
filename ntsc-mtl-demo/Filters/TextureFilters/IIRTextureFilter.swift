@@ -14,6 +14,7 @@ enum IIRTextureFilterError: Error {
     case noNonZeroDenominators
     case cantInstantiateTexture
     case cantMakeFunction(String)
+    case invalidState(String)
 }
 
 class IIRTextureFilter {

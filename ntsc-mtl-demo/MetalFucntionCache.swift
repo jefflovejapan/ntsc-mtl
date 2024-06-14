@@ -34,6 +34,7 @@ class MetalPipelineCache {
     enum Error: Swift.Error {
         case cantMakeFunction(KernelFunction)
         case underlying(Swift.Error)
+        case noPipelineStateAvailable
     }
     let device: MTLDevice
     let library: MTLLibrary
