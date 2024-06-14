@@ -244,7 +244,15 @@ class NTSCTextureFilter {
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
-    static func ringing(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: IIRTextureFilter, ringing: RingingSettings?, commandBuffer: MTLCommandBuffer) throws {
+    static func ringing(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: IIRTextureFilter, ringingEnabled: Bool, ringing: RingingSettings, bandwidthScale: Float, commandBuffer: MTLCommandBuffer) throws {
+        guard ringingEnabled else {
+            try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
+            return
+        }
+        let fn = try IIRTransferFunction.ringing(ringingSettings: ringing, bandwidthScale: bandwidthScale)
+        filter.numerators = fn.numerators
+        filter.denominators = fn.denominators
+        filter.scale = ringing.intensity
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
@@ -467,8 +475,10 @@ class NTSCTextureFilter {
             try Self.ringing(
                 inputTexture: try iter.last,
                 outputTexture: try iter.next(),
-                filter: ringingFilter,
+                filter: ringingFilter, 
+                ringingEnabled: effect.ringingEnabled,
                 ringing: effect.ringing,
+                bandwidthScale: effect.bandwidthScale,
                 commandBuffer: commandBuffer
             )
             // Step 12: luma noise

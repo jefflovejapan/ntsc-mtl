@@ -22,7 +22,8 @@ class NTSCEffect {
     var headSwitching: HeadSwitchingSettings?
     var trackingNoise: TrackingNoiseSettings?
     var compositeNoise: FBMNoiseSettings?
-    var ringing: RingingSettings?
+    var ringingEnabled: Bool
+    var ringing: RingingSettings
     var lumaNoise: FBMNoiseSettings?
     var chromaNoise: FBMNoiseSettings?
     var snowIntensity: Float
@@ -49,6 +50,7 @@ class NTSCEffect {
         headSwitching: HeadSwitchingSettings = HeadSwitchingSettings.default,
         trackingNoise: TrackingNoiseSettings? = TrackingNoiseSettings.default,
         compositeNoise: FBMNoiseSettings = FBMNoiseSettings.compositeNoiseDefault,
+        ringingEnabled: Bool = true,
         ringing: RingingSettings = RingingSettings.default,
         lumaNoise: FBMNoiseSettings? = FBMNoiseSettings.lumaNoiseDefault,
         chromaNoise: FBMNoiseSettings = FBMNoiseSettings.chromaNoiseDefault,
@@ -75,6 +77,7 @@ class NTSCEffect {
         self.headSwitching = headSwitching
         self.trackingNoise = trackingNoise
         self.compositeNoise = compositeNoise
+        self.ringingEnabled = ringingEnabled
         self.ringing = ringing
         self.lumaNoise = lumaNoise
         self.chromaNoise = chromaNoise

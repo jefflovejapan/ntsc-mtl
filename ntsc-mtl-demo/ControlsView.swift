@@ -90,6 +90,26 @@ struct ControlsView: View {
                     Slider(value: $effect.lumaSmear, in: 0...1)
                         .padding(.leading)
                 }
+                Toggle(isOn: $effect.ringingEnabled, label: {
+                    Text("Ringing")
+                })
+
+                if effect.ringingEnabled {
+                    Section("Ringing", content: {
+                        VStack {
+                            Text("Frequency")
+                            Slider(value: $effect.ringing.frequency, in: 0...1)
+                        }
+                        VStack {
+                            Text("Power")
+                            Slider(value: $effect.ringing.power, in: 1...10)
+                        }
+                        VStack {
+                            Text("Intensity")
+                            Slider(value: $effect.ringing.intensity, in: 0...10)
+                        }  
+                    })
+                }
                 VStack {
                     Text("Chroma phase noise")
                     Slider(value: $effect.chromaPhaseNoiseIntensity, in: 0...1)
