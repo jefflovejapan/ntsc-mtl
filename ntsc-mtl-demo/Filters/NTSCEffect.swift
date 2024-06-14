@@ -60,7 +60,7 @@ class NTSCEffect {
         snowAnisotropy: Float = 0.5,
         chromaPhaseNoiseIntensity: Float16 = 0.001,
         chromaPhaseError: Float16 = 0,
-        chromaDelay: (Float, Int) = (0, 0),
+        chromaDelay: (Float16, Int) = (0, 0),
         vhsSettings: VHSSettings = VHSSettings.default,
         chromaVertBlend: Bool = true,
         chromaLowpassOut: ChromaLowpass = ChromaLowpass.full,
