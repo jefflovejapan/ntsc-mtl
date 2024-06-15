@@ -15,8 +15,11 @@ kernel void interleave
  texture2d<half, access::write> outputTexture [[texture(2)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
-//    bool isEven = (gid.y & 1) == 0;
-//    half4 sample = isEven ? textureA.read(gid) : textureB.read(gid);
-    half4 sample = textureB.read(gid);
+    half4 sample;
+    if (gid.y % 2 == 0) {
+        sample = textureA.read(gid);
+    } else {
+        sample = textureB.read(gid);
+    }
     outputTexture.write(sample, gid);
 }

@@ -372,24 +372,17 @@ class NTSCTextureFilter {
         device: MTLDevice,
         pipelineCache: MetalPipelineCache
     ) throws {
-        if frameNum % 2 == 0 {
-            try justBlit(from: inputTexture, to: interTexA, commandBuffer: commandBuffer)
-            try handle(mostRecentTexture: interTexA, previousTexture: interTexB, outTexture: outTex, useField: useField, commandBuffer: commandBuffer, device: device, pipelineCache: pipelineCache)
-        } else {
-            try justBlit(from: inputTexture, to: interTexB, commandBuffer: commandBuffer)
-            try handle(mostRecentTexture: interTexB, previousTexture: interTexA, outTexture: outTex, useField: useField, commandBuffer: commandBuffer, device: device, pipelineCache: pipelineCache)
-        }
+//        if frameNum % 2 == 0 {
+//            try justBlit(from: inputTexture, to: interTexA, commandBuffer: commandBuffer)
+//            try handle(mostRecentTexture: interTexA, previousTexture: interTexB, outTexture: outTex, useField: useField, commandBuffer: commandBuffer, device: device, pipelineCache: pipelineCache)
+//        } else {
+//            try justBlit(from: inputTexture, to: interTexB, commandBuffer: commandBuffer)
+//            try handle(mostRecentTexture: interTexB, previousTexture: interTexA, outTexture: outTex, useField: useField, commandBuffer: commandBuffer, device: device, pipelineCache: pipelineCache)
+//        }
+        try justBlit(from: inputTexture, to: outTex, commandBuffer: commandBuffer)
     }
     
-    private func setup(with inputImage: CIImage) throws {
-        guard let commandBuffer = commandQueue.makeCommandBuffer() else {
-            throw Error.cantMakeCommandBuffer
-        }
-        
-        defer {
-            commandBuffer.commit()
-        }
-
+    private func setup(with inputImage: CIImage, commandBuffer: MTLCommandBuffer) throws {
         if let textureA, textureA.width == Int(inputImage.extent.width), textureA.height == Int(inputImage.extent.height) {
             self.context.render(inputImage, to: textureA, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: self.context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
             return
@@ -401,7 +394,6 @@ class NTSCTextureFilter {
         self.outTexture1 = textures[3]
         self.outTexture2 = textures[4]
         self.outTexture3 = textures[5]
-        
         context.render(inputImage, to: textureA, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
     }
     
@@ -411,14 +403,14 @@ class NTSCTextureFilter {
         let frameNum = self.frameNum
         defer { self.frameNum += 1 }
         guard let inputImage else { return nil }
-        do {
-            try setup(with: inputImage)
-        } catch {
-            print("Error setting up texture with input image: \(error)")
-            return nil
-        }
         guard let commandBuffer = commandQueue.makeCommandBuffer() else {
             print("Couldn't make command buffer")
+            return nil
+        }
+        do {
+            try setup(with: inputImage, commandBuffer: commandBuffer)
+        } catch {
+            print("Error setting up texture with input image: \(error)")
             return nil
         }
         
@@ -426,182 +418,182 @@ class NTSCTextureFilter {
         let iter = IteratorThing(vals: textures)
         
         do {
-             // Step 0: convert to YIQ
-            try Self.convertToYIQ(
-                try iter.next(),
-                output: try iter.next(),
-                commandBuffer: commandBuffer,
-                device: device,
-                pipelineCache: pipelineCache
-            )
-            // Step 1: luma in
-            try Self.inputLuma(
-                try iter.last,
-                output: try iter.next(),
-                commandBuffer: commandBuffer,
-                lumaLowpass: effect.inputLumaFilter, 
-                lumaBoxFilter: lumaBoxFilter,
-                lumaNotchFilter: lumaNotchFilter
-            )
-            // Step 2: chroma lowpass in
-            try Self.chromaLowpass(
-                try iter.last,
-                output: try iter.next(),
-                commandBuffer: commandBuffer,
-                chromaLowpass: effect.chromaLowpassIn, 
-                bandwidthScale: effect.bandwidthScale,
-                lightFilter: lightChromaLowpassFilter,
-                fullFilter: fullChromaLowpassFilter
-            )
-            // Step 3: chroma into luma
-            try Self.chromaIntoLuma(
-                inputTexture: try iter.last,
-                outputTexture: try iter.next(),
-                timestamp: frameNum,
-                phaseShift: effect.videoScanlinePhaseShift,
-                phaseShiftOffset: effect.videoScanlinePhaseShiftOffset,
-                filter: self.chromaIntoLumaFilter,
-                device: device,
-                commandBuffer: commandBuffer
-            )
-            // Step 4: composite preemphasis
-            try Self.compositePreemphasis(
-                inputTexture: try iter.last,
-                outputTexture: try iter.next(),
-                filter: compositePreemphasisFilter,
-                bandwidthScale: effect.bandwidthScale, 
-                compositePreemphasis: effect.compositePreemphasis,
-                commandBuffer: commandBuffer
-            )
-            // Step 5: composite noise
-            try Self.compositeNoise(
-                inputTexture: try iter.last,
-                outputTexture: try iter.next(),
-                filter: compositeNoiseFilter,
-                noise: effect.compositeNoise, 
-                bandwidthScale: effect.bandwidthScale,
-                commandBuffer: commandBuffer
-            )
-            // Step 6: snow
-            try Self.snow(
-                inputTexture: try iter.last,
-                outputTexture: try iter.next(),
-                filter: snowFilter,
-                snowIntensity: effect.snowIntensity,
-                snowAnisotropy: effect.snowAnisotropy,
-                commandBuffer: commandBuffer
-            )
-            // Step 7: head switching
-            try Self.headSwitching(
-                inputTexture: try iter.last,
-                outputTexture: try iter.next(),
-                filter: headSwitchingFilter, 
-                headSwitchingEnabled: effect.headSwitchingEnabled,
-                headSwitching: effect.headSwitching,
-                bandwidthScale: effect.bandwidthScale,
-                commandBuffer: commandBuffer
-            )
-            // Step 8: tracking noise
-            try Self.trackingNoise(
-                inputTexture: try iter.last,
-                outputTexture: try iter.next(),
-                trackingNoise: effect.trackingNoise,
-                commandBuffer: commandBuffer
-            )
-            // Step 9: luma into chroma
-            try Self.lumaIntoChroma(
-                inputTexture: try iter.last,
-                outputTexture: try iter.next(),
-                commandBuffer: commandBuffer
-            )
-            
-            // Step 10: luma smear
-            try Self.lumaSmear(
-                inputTexture: try iter.last,
-                outputTexture: try iter.next(),
-                filter: lumaSmearFilter,
-                lumaSmear: effect.lumaSmear,
-                bandwidthScale: effect.bandwidthScale,
-                commandBuffer: commandBuffer
-            )
-            // Step 11: ringing
-            try Self.ringing(
-                inputTexture: try iter.last,
-                outputTexture: try iter.next(),
-                filter: ringingFilter, 
-                ringingEnabled: effect.ringingEnabled,
-                ringing: effect.ringing,
-                bandwidthScale: effect.bandwidthScale,
-                commandBuffer: commandBuffer
-            )
-            // Step 12: luma noise
-            try Self.lumaNoise(
-                inputTexture: try iter.last,
-                outputTexture: try iter.next(),
-                commandBuffer: commandBuffer
-            )
-            // Step 13: chroma noise
-            try Self.chromaNoise(
-                inputTexture: try iter.last,
-                outputTexture: try iter.next(),
-                commandBuffer: commandBuffer
-            )
-            // Step 14: chroma phase error
-            try Self.chromaPhaseError(
-                inputTexture: try iter.last,
-                outputTexture: try iter.next(), 
-                filter: chromaPhaseErrorFilter,
-                chromaPhaseError: effect.chromaPhaseError,
-                commandBuffer: commandBuffer
-            )
-            // Step 15: chroma phase noise
-            try Self.chromaPhaseNoise(
-                inputTexture: try iter.last,
-                outputTexture: try iter.next(), 
-                filter: chromaPhaseNoiseFilter,
-                chromaPhaseNoiseIntensity: effect.chromaPhaseNoiseIntensity,
-                commandBuffer: commandBuffer
-            )
-            
-            // Step 16: chroma delay
-            try Self.chromaDelay(
-                inputTexture: try iter.last,
-                outputTexture: try iter.next(),
-                filter: chromaDelayFilter,
-                delay: effect.chromaDelay,
-                commandBuffer: commandBuffer
-            )
-            // Step 17: vhs
-            try Self.vhs(
-                inputTexture: try iter.last,
-                outputTexture: try iter.next(),
-                commandBuffer: commandBuffer
-            )
-            // Step 18: chroma vert blend
-            try Self.chromaVertBlend(
-                inputTexture: try iter.last,
-                outputTexture: try iter.next(),
-                commandBuffer: commandBuffer
-            )
-            // Step 19: chroma lowpass out
-            try Self.chromaLowpass(
-                try iter.last,
-                output: try iter.next(),
-                commandBuffer: commandBuffer,
-                chromaLowpass: effect.chromaLowpassOut, 
-                bandwidthScale: effect.bandwidthScale,
-                lightFilter: lightChromaLowpassFilter,
-                fullFilter: fullChromaLowpassFilter
-            )
-            try Self.convertToRGB(
-                try iter.last,
-                output: try iter.next(),
-                commandBuffer: commandBuffer,
-                device: device,
-                pipelineCache: pipelineCache
-            )
+//             // Step 0: convert to YIQ
+//            try Self.convertToYIQ(
+//                try iter.next(),
+//                output: try iter.next(),
+//                commandBuffer: commandBuffer,
+//                device: device,
+//                pipelineCache: pipelineCache
+//            )
+//            // Step 1: luma in
+//            try Self.inputLuma(
+//                try iter.last,
+//                output: try iter.next(),
+//                commandBuffer: commandBuffer,
+//                lumaLowpass: effect.inputLumaFilter, 
+//                lumaBoxFilter: lumaBoxFilter,
+//                lumaNotchFilter: lumaNotchFilter
+//            )
+//            // Step 2: chroma lowpass in
+//            try Self.chromaLowpass(
+//                try iter.last,
+//                output: try iter.next(),
+//                commandBuffer: commandBuffer,
+//                chromaLowpass: effect.chromaLowpassIn, 
+//                bandwidthScale: effect.bandwidthScale,
+//                lightFilter: lightChromaLowpassFilter,
+//                fullFilter: fullChromaLowpassFilter
+//            )
+//            // Step 3: chroma into luma
+//            try Self.chromaIntoLuma(
+//                inputTexture: try iter.last,
+//                outputTexture: try iter.next(),
+//                timestamp: frameNum,
+//                phaseShift: effect.videoScanlinePhaseShift,
+//                phaseShiftOffset: effect.videoScanlinePhaseShiftOffset,
+//                filter: self.chromaIntoLumaFilter,
+//                device: device,
+//                commandBuffer: commandBuffer
+//            )
+//            // Step 4: composite preemphasis
+//            try Self.compositePreemphasis(
+//                inputTexture: try iter.last,
+//                outputTexture: try iter.next(),
+//                filter: compositePreemphasisFilter,
+//                bandwidthScale: effect.bandwidthScale, 
+//                compositePreemphasis: effect.compositePreemphasis,
+//                commandBuffer: commandBuffer
+//            )
+//            // Step 5: composite noise
+//            try Self.compositeNoise(
+//                inputTexture: try iter.last,
+//                outputTexture: try iter.next(),
+//                filter: compositeNoiseFilter,
+//                noise: effect.compositeNoise, 
+//                bandwidthScale: effect.bandwidthScale,
+//                commandBuffer: commandBuffer
+//            )
+//            // Step 6: snow
+//            try Self.snow(
+//                inputTexture: try iter.last,
+//                outputTexture: try iter.next(),
+//                filter: snowFilter,
+//                snowIntensity: effect.snowIntensity,
+//                snowAnisotropy: effect.snowAnisotropy,
+//                commandBuffer: commandBuffer
+//            )
+//            // Step 7: head switching
+//            try Self.headSwitching(
+//                inputTexture: try iter.last,
+//                outputTexture: try iter.next(),
+//                filter: headSwitchingFilter, 
+//                headSwitchingEnabled: effect.headSwitchingEnabled,
+//                headSwitching: effect.headSwitching,
+//                bandwidthScale: effect.bandwidthScale,
+//                commandBuffer: commandBuffer
+//            )
+//            // Step 8: tracking noise
+//            try Self.trackingNoise(
+//                inputTexture: try iter.last,
+//                outputTexture: try iter.next(),
+//                trackingNoise: effect.trackingNoise,
+//                commandBuffer: commandBuffer
+//            )
+//            // Step 9: luma into chroma
+//            try Self.lumaIntoChroma(
+//                inputTexture: try iter.last,
+//                outputTexture: try iter.next(),
+//                commandBuffer: commandBuffer
+//            )
+//            
+//            // Step 10: luma smear
+//            try Self.lumaSmear(
+//                inputTexture: try iter.last,
+//                outputTexture: try iter.next(),
+//                filter: lumaSmearFilter,
+//                lumaSmear: effect.lumaSmear,
+//                bandwidthScale: effect.bandwidthScale,
+//                commandBuffer: commandBuffer
+//            )
+//            // Step 11: ringing
+//            try Self.ringing(
+//                inputTexture: try iter.last,
+//                outputTexture: try iter.next(),
+//                filter: ringingFilter, 
+//                ringingEnabled: effect.ringingEnabled,
+//                ringing: effect.ringing,
+//                bandwidthScale: effect.bandwidthScale,
+//                commandBuffer: commandBuffer
+//            )
+//            // Step 12: luma noise
+//            try Self.lumaNoise(
+//                inputTexture: try iter.last,
+//                outputTexture: try iter.next(),
+//                commandBuffer: commandBuffer
+//            )
+//            // Step 13: chroma noise
+//            try Self.chromaNoise(
+//                inputTexture: try iter.last,
+//                outputTexture: try iter.next(),
+//                commandBuffer: commandBuffer
+//            )
+//            // Step 14: chroma phase error
+//            try Self.chromaPhaseError(
+//                inputTexture: try iter.last,
+//                outputTexture: try iter.next(), 
+//                filter: chromaPhaseErrorFilter,
+//                chromaPhaseError: effect.chromaPhaseError,
+//                commandBuffer: commandBuffer
+//            )
+//            // Step 15: chroma phase noise
+//            try Self.chromaPhaseNoise(
+//                inputTexture: try iter.last,
+//                outputTexture: try iter.next(), 
+//                filter: chromaPhaseNoiseFilter,
+//                chromaPhaseNoiseIntensity: effect.chromaPhaseNoiseIntensity,
+//                commandBuffer: commandBuffer
+//            )
+//            
+//            // Step 16: chroma delay
+//            try Self.chromaDelay(
+//                inputTexture: try iter.last,
+//                outputTexture: try iter.next(),
+//                filter: chromaDelayFilter,
+//                delay: effect.chromaDelay,
+//                commandBuffer: commandBuffer
+//            )
+//            // Step 17: vhs
+//            try Self.vhs(
+//                inputTexture: try iter.last,
+//                outputTexture: try iter.next(),
+//                commandBuffer: commandBuffer
+//            )
+//            // Step 18: chroma vert blend
+//            try Self.chromaVertBlend(
+//                inputTexture: try iter.last,
+//                outputTexture: try iter.next(),
+//                commandBuffer: commandBuffer
+//            )
+//            // Step 19: chroma lowpass out
+//            try Self.chromaLowpass(
+//                try iter.last,
+//                output: try iter.next(),
+//                commandBuffer: commandBuffer,
+//                chromaLowpass: effect.chromaLowpassOut, 
+//                bandwidthScale: effect.bandwidthScale,
+//                lightFilter: lightChromaLowpassFilter,
+//                fullFilter: fullChromaLowpassFilter
+//            )
+//            try Self.convertToRGB(
+//                try iter.last,
+//                output: try iter.next(),
+//                commandBuffer: commandBuffer,
+//                device: device,
+//                pipelineCache: pipelineCache
+//            )
             try Self.writeToFields(
-                inputTexture: try iter.last,
+                inputTexture: /*try iter.last*/textureA,
                 frameNum: frameNum,
                 useField: effect.useField,
                 interTexA: outTexture1,
