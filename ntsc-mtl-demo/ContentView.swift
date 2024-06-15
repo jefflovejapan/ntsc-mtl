@@ -13,9 +13,11 @@ struct ContentView: View {
     @State private var enableFilter: Bool = false
     @State private var showControls: Bool = false
     @State private var effect = NTSCEffect()
+    @State private var resolution: CameraView.Resolution = .resVGA
+    
     var body: some View {
         ZStack {
-            CameraView(enableFilter: $enableFilter, effect: effect)
+            CameraView(enableFilter: $enableFilter, resolution: $resolution, effect: effect)
                 .onTapGesture {
                     enableFilter.toggle()
                 }
@@ -23,7 +25,7 @@ struct ContentView: View {
             VStack {
                 Spacer()
                 if showControls {
-                    ControlsView(showControls: $showControls, enableFilter: $enableFilter, effect: effect)
+                    ControlsView(showControls: $showControls, enableFilter: $enableFilter, resolution: $resolution, effect: effect)
                         .frame(height: 300)
                         .transition(.move(edge: .trailing))
                 }
