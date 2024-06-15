@@ -13,7 +13,7 @@ struct ContentView: View {
     @State private var enableFilter: Bool = false
     @State private var showControls: Bool = false
     @State private var effect = NTSCEffect()
-    @State private var resolution: CameraView.Resolution = .resVGA
+    @State private var resolution: Resolution = .resVGA
     
     var body: some View {
         ZStack {
@@ -21,6 +21,11 @@ struct ContentView: View {
                 .onTapGesture {
                     enableFilter.toggle()
                 }
+                .onLongPressGesture(perform: {
+                    withAnimation {
+                        showControls.toggle()          
+                    }
+                })
                 .padding()
             VStack {
                 Spacer()

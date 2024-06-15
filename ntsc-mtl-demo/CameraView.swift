@@ -104,30 +104,6 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
 }
 
 struct CameraView: UIViewRepresentable {
-    enum Resolution: String, Identifiable, CaseIterable {
-        case res4K
-        case res1080p
-        case res720p
-        case resVGA
-        
-        var id: String {
-            rawValue
-        }
-        
-        var sessionPreset: AVCaptureSession.Preset {
-            switch self {
-            case .resVGA:
-                return .vga640x480
-            case .res1080p:
-                return .hd1920x1080
-            case .res720p:
-                return .hd1280x720
-            case .res4K:
-                return .hd4K3840x2160
-            }
-        }
-    }
-    
     @Binding var enableFilter: Bool
     @Binding var resolution: Resolution
     @Bindable var effect: NTSCEffect

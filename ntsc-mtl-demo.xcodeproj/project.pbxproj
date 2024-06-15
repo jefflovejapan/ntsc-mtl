@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1F1F9B692C03C3980085048F /* IIRTransferFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1F9B682C03C3980085048F /* IIRTransferFunction.swift */; };
+		1F2028942C1E23BA00DFB165 /* Resolution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2028932C1E23BA00DFB165 /* Resolution.swift */; };
 		1F2159A82C11476200D2483B /* CompositeNoiseTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2159A72C11476200D2483B /* CompositeNoiseTextureFilter.swift */; };
 		1F2159AC2C11498700D2483B /* MultiplyLuma.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F2159AB2C11498700D2483B /* MultiplyLuma.metal */; };
 		1F2159AE2C11517700D2483B /* SnowTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2159AD2C11517700D2483B /* SnowTextureFilter.swift */; };
@@ -89,6 +90,7 @@
 
 /* Begin PBXFileReference section */
 		1F1F9B682C03C3980085048F /* IIRTransferFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IIRTransferFunction.swift; sourceTree = "<group>"; };
+		1F2028932C1E23BA00DFB165 /* Resolution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resolution.swift; sourceTree = "<group>"; };
 		1F2159A72C11476200D2483B /* CompositeNoiseTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompositeNoiseTextureFilter.swift; sourceTree = "<group>"; };
 		1F2159AB2C11498700D2483B /* MultiplyLuma.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = MultiplyLuma.metal; sourceTree = "<group>"; };
 		1F2159AD2C11517700D2483B /* SnowTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnowTextureFilter.swift; sourceTree = "<group>"; };
@@ -311,6 +313,7 @@
 				1F1F9B682C03C3980085048F /* IIRTransferFunction.swift */,
 				1F5B6CC12C04D4010051A9ED /* NTSC.swift */,
 				1F259EDB2C022F7500937D0A /* NTSCEffect.swift */,
+				1F2028932C1E23BA00DFB165 /* Resolution.swift */,
 				1F259EDD2C02399C00937D0A /* NTSCEffect+Defaults.swift */,
 				1F5F93BF2C0F584E00EC29A2 /* MetalKernels */,
 			);
@@ -450,6 +453,7 @@
 				1F5F93D92C0FE70800EC29A2 /* ChromaLowpassTextureFilter.swift in Sources */,
 				1F4692CF2C138F9900CD7756 /* Array+PaddedToLength.swift in Sources */,
 				1F5F93C62C0F910300EC29A2 /* LumaBoxTextureFilter.swift in Sources */,
+				1F2028942C1E23BA00DFB165 /* Resolution.swift in Sources */,
 				1F60A3DF2C1A656F00024EAB /* PhaseErrorTextureFilter.swift in Sources */,
 				1F6BFDED2BFF799F00883169 /* ContentView.swift in Sources */,
 				1F6BFDEB2BFF799F00883169 /* ntsc_mtl_demoApp.swift in Sources */,

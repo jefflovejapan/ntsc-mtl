@@ -10,7 +10,7 @@ import SwiftUI
 struct ControlsView: View {
     @Binding var showControls: Bool
     @Binding var enableFilter: Bool
-    @Binding var resolution: CameraView.Resolution
+    @Binding var resolution: Resolution
     @Bindable var effect: NTSCEffect
     
     var body: some View {
@@ -22,7 +22,7 @@ struct ControlsView: View {
                 HStack {
                     Text("Resolution")
                     Picker(selection: $resolution, content: {
-                        ForEach(CameraView.Resolution.allCases) { res in
+                        ForEach(Resolution.allCases) { res in
                             Text(name(resolution: res))
                                 .tag(res)
                         }
@@ -253,7 +253,7 @@ struct ControlsView: View {
         }
     }
     
-    private func name(resolution: CameraView.Resolution) -> String {
+    private func name(resolution: Resolution) -> String {
         switch resolution {
         case .res4K:
             return "4K"
@@ -271,6 +271,6 @@ struct ControlsView: View {
     @State var showControls: Bool = true
     @State var enableFilter: Bool = false
     @State var effect: NTSCEffect = NTSCEffect()
-    @State var resolution: CameraView.Resolution = .resVGA
+    @State var resolution: Resolution = .resVGA
     return ControlsView(showControls: $showControls, enableFilter: $enableFilter, resolution: $resolution, effect: effect)
 }
