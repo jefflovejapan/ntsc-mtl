@@ -46,6 +46,7 @@ class NTSCTextureFilter {
     private let ringingFilter: IIRTextureFilter
     private let chromaPhaseErrorFilter: PhaseErrorTextureFilter
     private let chromaPhaseNoiseFilter: PhaseNoiseTextureFilter
+    private let chromaDelayFilter: ChromaDelayTextureFilter
     
     init(effect: NTSCEffect, device: MTLDevice, context: CIContext) throws {
         self.effect = effect
@@ -129,6 +130,7 @@ class NTSCTextureFilter {
         self.ringingFilter = ringingFilter
         self.chromaPhaseErrorFilter = PhaseErrorTextureFilter(device: device, pipelineCache: pipelineCache)
         self.chromaPhaseNoiseFilter = PhaseNoiseTextureFilter(device: device, pipelineCache: pipelineCache, ciContext: context)
+        self.chromaDelayFilter = ChromaDelayTextureFilter(device: device, pipelineCache: pipelineCache)
     }
     
     var inputImage: CIImage?
@@ -296,8 +298,9 @@ class NTSCTextureFilter {
         filter.phaseError = chromaPhaseNoiseIntensity
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
-    static func chromaDelay(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
+    static func chromaDelay(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: ChromaDelayTextureFilter, delay: (Float16, Int), commandBuffer: MTLCommandBuffer) throws {
+        filter.chromaDelay = delay
+        try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     static func vhs(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
@@ -527,6 +530,8 @@ class NTSCTextureFilter {
             try Self.chromaDelay(
                 inputTexture: try iter.last,
                 outputTexture: try iter.next(),
+                filter: chromaDelayFilter,
+                delay: effect.chromaDelay,
                 commandBuffer: commandBuffer
             )
             // Step 17: vhs
