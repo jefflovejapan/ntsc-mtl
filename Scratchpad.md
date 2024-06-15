@@ -564,4 +564,11 @@ Today is all about getting snow to work. I think I've convinced myself that the 
     - `chroma_noise`: Still just blit
 - `snow` -- still WIP
 - `tracking_noise` -- haven't started
-- `chroma_delay` -- WIP
+- `chroma_delay` -- ✅
+- ...
+
+## Prioritizing remaining work
+
+- Tracking noise would be the coolest but requires `row_speckles`
+- Would be great to get snow down so we have it. We're super close
+- 
