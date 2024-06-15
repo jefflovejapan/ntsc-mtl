@@ -30,7 +30,7 @@ kernel void chromaDelay
     float clampedShift = clampedX - float(gid.x);
     float proportion = fract(clampedShift);
     // wholeShift is the whole part of the shift
-    int wholeShift = int(proportion - clampedShift);
+    int wholeShift = int(clampedShift - proportion);
     
     // nextClampedX is gid.x + horizShift + sign(horizShift), clamped within bounds
     float nextClampedX = clamp(0.0, float(gid.x) + float(wholeShift) + float(sign(horizShift)), float(inputTexture.get_width()));
