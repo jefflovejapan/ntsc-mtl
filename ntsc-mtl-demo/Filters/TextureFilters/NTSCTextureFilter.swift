@@ -372,14 +372,15 @@ class NTSCTextureFilter {
         device: MTLDevice,
         pipelineCache: MetalPipelineCache
     ) throws {
-//        if frameNum % 2 == 0 {
-//            try justBlit(from: inputTexture, to: interTexA, commandBuffer: commandBuffer)
+        if frameNum % 2 == 0 {
+            try justBlit(from: inputTexture, to: interTexA, commandBuffer: commandBuffer)
+            try justBlit(from: interTexA, to: outTex, commandBuffer: commandBuffer)
 //            try handle(mostRecentTexture: interTexA, previousTexture: interTexB, outTexture: outTex, useField: useField, commandBuffer: commandBuffer, device: device, pipelineCache: pipelineCache)
-//        } else {
-//            try justBlit(from: inputTexture, to: interTexB, commandBuffer: commandBuffer)
+        } else {
+            try justBlit(from: inputTexture, to: interTexB, commandBuffer: commandBuffer)
+            try justBlit(from: interTexB, to: outTex, commandBuffer: commandBuffer)
 //            try handle(mostRecentTexture: interTexB, previousTexture: interTexA, outTexture: outTex, useField: useField, commandBuffer: commandBuffer, device: device, pipelineCache: pipelineCache)
-//        }
-        try justBlit(from: inputTexture, to: outTex, commandBuffer: commandBuffer)
+        }
     }
     
     private func setup(with inputImage: CIImage, commandBuffer: MTLCommandBuffer) throws {
