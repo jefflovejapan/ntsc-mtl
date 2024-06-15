@@ -39,7 +39,7 @@ class NTSCEffect {
     
     init(
         randomSeed: Int = 0,
-        useField: UseField = UseField.alternating,
+        useField: UseField = UseField.interleavedUpper,
         filterType: FilterType = FilterType.constantK,
         inputLumaFilter: LumaLowpass = LumaLowpass.notch,
         chromaLowpassIn: ChromaLowpass = ChromaLowpass.full,
