@@ -107,103 +107,102 @@ struct ControlsView: View {
                         .padding(.leading)
                 }
                 VStack {}
-                    Text("Chroma phase noise")
-                    Slider(value: $effect.chromaPhaseNoiseIntensity, in: 0...1)
-                        .padding(.leading)
-                }
-                Section("Snow") {
-                    VStack {
-                        Text("Snow intensity")
-                        Slider(value: $effect.snowIntensity, in: 0...1)
-                            .padding(.leading)
-                    }
-                    VStack {
-                        Text("Snow anisotropy")
-                        Slider(value: $effect.snowAnisotropy, in: 0...1)
-                            .padding(.leading)
-                    }
-                }
-                Toggle(isOn: $effect.headSwitchingEnabled, label: {
-                    Text("Head switching")
-                })
-                if effect.headSwitchingEnabled {
-                    Section("Head switching", content: {
-                        Stepper(value: $effect.headSwitching.height, in: 0...24, label: {
-                            Text("Height: \(effect.headSwitching.height)")
-                        })
-                        Stepper(value: $effect.headSwitching.offset, in: 0...24, label: {
-                            Text("Offset: \(effect.headSwitching.offset)")
-                        })
-                        VStack {
-                            Text("Horizontal shift: \(effect.headSwitching.horizShift.formatted(self.twoDecimalPoints))")
-                            Slider(value: $effect.headSwitching.horizShift, in: -100...100)
-                        }
-                    })
-                }
-                VStack {
-                    Text("Luma smear: \(effect.lumaSmear.formatted(self.twoDecimalPoints))")
-                    Slider(value: $effect.lumaSmear, in: 0...1)
-                        .padding(.leading)
-                }
-                Toggle(isOn: $effect.ringingEnabled, label: {
-                    Text("Ringing")
-                })
-
-                if effect.ringingEnabled {
-                    Section("Ringing", content: {
-                        VStack {
-                            Text("Frequency: \(effect.ringing.frequency.formatted(self.twoDecimalPoints))")
-                            Slider(value: $effect.ringing.frequency, in: 0...1)
-                        }
-                        VStack {
-                            Text("Power: \(effect.ringing.power.formatted(self.twoDecimalPoints))")
-                            Slider(value: $effect.ringing.power, in: 1...10)
-                        }
-                        VStack {
-                            Text("Intensity: \(effect.ringing.intensity.formatted(self.twoDecimalPoints))")
-                            Slider(value: $effect.ringing.intensity, in: 0...10)
-                        }  
-                    })
-                }
-                VStack {
-                    Text("Chroma phase noise: \(effect.chromaPhaseNoiseIntensity.formatted(self.twoDecimalPoints))")
-                    Slider(value: $effect.chromaPhaseNoiseIntensity, in: 0...1)
-                        .padding(.leading)
-                }
-                Section("Chroma delay", content: {
-                    VStack {
-                        Text("Horizontal offset: \(effect.chromaDelay.0.formatted(self.twoDecimalPoints))")
-                        Slider(value: $effect.chromaDelay.0, in: -40...40)
-                            .padding(.leading)
-                    }
-                    Stepper(value: $effect.chromaDelay.1, in: -20...20, label: {
-                        Text("Vertical offset: \(effect.chromaDelay.1)")
-                    })
-                })
-//                VStack(alignment: .leading) {
-//                    Text("Luma smear")
-//                    Slider.init(value: $effect.lumaSmear, in: 0...1, label: {
-//                        Text(effect.lumaSmear.formatted(.number))
-//                    })
-//                    .padding(.leading)
-//                }
-                
-                /*
-                 What should actually be supported?
-                 
-                 - bandwidth scale
-                 - input luma (LumaLowpass)
-                 - luma box filter: LumaBoxTextureFilter
-                - lumaNotchFilter: IIRTextureFilter
-                 - chroma lowpass (ChromaLowpass)
-                 - chroma into luma (PhaseShift, phaseShiftOffset)
-                 - compositePreemphasis (IIR)
-                 - compositeNoise
-                 - ringing
-                 */
+                Text("Chroma phase noise")
+                Slider(value: $effect.chromaPhaseNoiseIntensity, in: 0...1)
+                    .padding(.leading)
             }
-            .background(Color.green.opacity(0.2))
+            Section("Snow") {
+                VStack {
+                    Text("Snow intensity")
+                    Slider(value: $effect.snowIntensity, in: 0...1)
+                        .padding(.leading)
+                }
+                VStack {
+                    Text("Snow anisotropy")
+                    Slider(value: $effect.snowAnisotropy, in: 0...1)
+                        .padding(.leading)
+                }
+            }
+            Toggle(isOn: $effect.headSwitchingEnabled, label: {
+                Text("Head switching")
+            })
+            if effect.headSwitchingEnabled {
+                Section("Head switching", content: {
+                    Stepper(value: $effect.headSwitching.height, in: 0...24, label: {
+                        Text("Height: \(effect.headSwitching.height)")
+                    })
+                    Stepper(value: $effect.headSwitching.offset, in: 0...24, label: {
+                        Text("Offset: \(effect.headSwitching.offset)")
+                    })
+                    VStack {
+                        Text("Horizontal shift: \(effect.headSwitching.horizShift.formatted(self.twoDecimalPoints))")
+                        Slider(value: $effect.headSwitching.horizShift, in: -100...100)
+                    }
+                })
+            }
+            VStack {
+                Text("Luma smear: \(effect.lumaSmear.formatted(self.twoDecimalPoints))")
+                Slider(value: $effect.lumaSmear, in: 0...1)
+                    .padding(.leading)
+            }
+            Toggle(isOn: $effect.ringingEnabled, label: {
+                Text("Ringing")
+            })
+            
+            if effect.ringingEnabled {
+                Section("Ringing", content: {
+                    VStack {
+                        Text("Frequency: \(effect.ringing.frequency.formatted(self.twoDecimalPoints))")
+                        Slider(value: $effect.ringing.frequency, in: 0...1)
+                    }
+                    VStack {
+                        Text("Power: \(effect.ringing.power.formatted(self.twoDecimalPoints))")
+                        Slider(value: $effect.ringing.power, in: 1...10)
+                    }
+                    VStack {
+                        Text("Intensity: \(effect.ringing.intensity.formatted(self.twoDecimalPoints))")
+                        Slider(value: $effect.ringing.intensity, in: 0...10)
+                    }
+                })
+            }
+            VStack {
+                Text("Chroma phase noise: \(effect.chromaPhaseNoiseIntensity.formatted(self.twoDecimalPoints))")
+                Slider(value: $effect.chromaPhaseNoiseIntensity, in: 0...1)
+                    .padding(.leading)
+            }
+            Section("Chroma delay", content: {
+                VStack {
+                    Text("Horizontal offset: \(effect.chromaDelay.0.formatted(self.twoDecimalPoints))")
+                    Slider(value: $effect.chromaDelay.0, in: -40...40)
+                        .padding(.leading)
+                }
+                Stepper(value: $effect.chromaDelay.1, in: -20...20, label: {
+                    Text("Vertical offset: \(effect.chromaDelay.1)")
+                })
+            })
+            //                VStack(alignment: .leading) {
+            //                    Text("Luma smear")
+            //                    Slider.init(value: $effect.lumaSmear, in: 0...1, label: {
+            //                        Text(effect.lumaSmear.formatted(.number))
+            //                    })
+            //                    .padding(.leading)
+            //                }
+            
+            /*
+             What should actually be supported?
+             
+             - bandwidth scale
+             - input luma (LumaLowpass)
+             - luma box filter: LumaBoxTextureFilter
+             - lumaNotchFilter: IIRTextureFilter
+             - chroma lowpass (ChromaLowpass)
+             - chroma into luma (PhaseShift, phaseShiftOffset)
+             - compositePreemphasis (IIR)
+             - compositeNoise
+             - ringing
+             */
         }
+        .background(Color.green.opacity(0.2))
     }
     
     private var twoDecimalPoints: FloatingPointFormatStyle<Float> {
