@@ -571,4 +571,8 @@ Today is all about getting snow to work. I think I've convinced myself that the 
 
 - Tracking noise would be the coolest but requires `row_speckles`
 - Would be great to get snow down so we have it. We're super close
+- I think we're there
+
+## Tracking Noise
+
 - 

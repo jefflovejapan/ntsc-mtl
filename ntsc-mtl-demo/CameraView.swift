@@ -65,7 +65,7 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         do {
             try captureDevice.lockForConfiguration()
             captureDevice.automaticallyAdjustsVideoHDREnabled = false
-            captureDevice.isVideoHDREnabled = false
+            captureDevice.isVideoHDREnabled = true
             captureDevice.unlockForConfiguration()
         } catch {
             print("Couldn't turn off HDR: \(error)")
