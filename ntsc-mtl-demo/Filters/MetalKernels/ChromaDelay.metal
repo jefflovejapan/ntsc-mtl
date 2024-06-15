@@ -19,15 +19,25 @@ kernel void chromaDelay
  uint2 gid [[thread_position_in_grid]]
  ) {
     half4 inputPixel = inputTexture.read(gid);
+    
+    // vertShiftedY is gid.y + vertShift, clamped within bounds
     int vertShiftedY = int(gid.y);
     vertShiftedY += vertShift;
     vertShiftedY = clamp(vertShiftedY, 0, int(inputTexture.get_height()));
     
-    int horizShiftedX = int(gid.x);
-    horizShiftedX += int(horizShift);
-    horizShiftedX = clamp(horizShiftedX, 0, int(inputTexture.get_width()));
-    uint2 sampleGID = uint2(horizShiftedX, vertShiftedY);
-    half4 samplePx = inputTexture.read(sampleGID);
-    half4 final = half4(inputPixel.x, samplePx.yz, inputPixel.w);
-    outputTexture.write(final, gid);
+    // clampedX is gid.x + horizShift, clamped within bounds
+    float clampedX = clamp(0.0, float(gid.x) + horizShift, float(inputTexture.get_width()));
+    float clampedShift = clampedX - float(gid.x);
+    float proportion = fract(clampedShift);
+    // wholeShift is the whole part of the shift
+    int wholeShift = int(proportion - clampedShift);
+    
+    // nextClampedX is gid.x + horizShift + sign(horizShift), clamped within bounds
+    float nextClampedX = clamp(0.0, float(gid.x) + float(wholeShift) + float(sign(horizShift)), float(inputTexture.get_width()));
+    
+    half4 thisIQPixel = inputTexture.read(uint2(uint(clampedX), vertShiftedY));
+    half4 nextIQPixel = inputTexture.read(uint2(uint(nextClampedX), vertShiftedY));
+    half4 iqPixel = (half(1.0 - proportion) * thisIQPixel) + (half(proportion) * nextIQPixel);
+    half4 outPixel = half4(inputPixel.x, iqPixel.yz, inputPixel.w);
+    outputTexture.write(outPixel, gid);
 }
