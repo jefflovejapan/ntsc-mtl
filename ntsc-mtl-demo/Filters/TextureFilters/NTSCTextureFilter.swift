@@ -585,6 +585,17 @@ class NTSCTextureFilter {
                 lightFilter: lightChromaLowpassFilter,
                 fullFilter: fullChromaLowpassFilter
             )
+            try Self.writeToFields(
+                inputTexture: try iter.last,
+                frameNum: frameNum,
+                useField: effect.useField,
+                interTexA: outTexture1,
+                interTexB: outTexture2,
+                outTex: try iter.next(),
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
             try Self.convertToRGB(
                 try iter.last,
                 output: try iter.next(),
@@ -592,20 +603,9 @@ class NTSCTextureFilter {
                 device: device,
                 pipelineCache: pipelineCache
             )
-            try Self.writeToFields(
-                inputTexture: try iter.last,
-                frameNum: frameNum,
-                useField: effect.useField,
-                interTexA: outTexture1,
-                interTexB: outTexture2,
-                outTex: outTexture3,
-                commandBuffer: commandBuffer,
-                device: device,
-                pipelineCache: pipelineCache
-            )
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()
-            return CIImage(mtlTexture: outTexture3)
+            return CIImage(mtlTexture: try iter.last)
         } catch {
             print("Error generating output image: \(error)")
             return nil
