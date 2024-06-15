@@ -18,6 +18,15 @@ struct ControlsView: View {
                 Toggle(isOn: $enableFilter, label: {
                     Text("Enable filter?")
                 })
+                HStack {
+                    Text("Use field")
+                    Picker(selection: $effect.useField, content: {
+                        ForEach(UseField.allCases) { useField in
+                            Text(name(useField: useField))
+                                .tag(useField)
+                        }
+                    }, label: { Text("Use field") })
+                }
                 VStack(alignment: .leading) {
                     Text("Bandwidth scale: \(effect.bandwidthScale.formatted(self.twoDecimalPoints))")
                     Slider.init(value: $effect.bandwidthScale, in: 0.125...8, label: {
@@ -212,6 +221,23 @@ struct ControlsView: View {
             return "Light"
         case .full:
             return "Full"
+        }
+    }
+    
+    private func name(useField: UseField) -> String {
+        switch useField {
+        case .alternating:
+            return "Alternating (broken)"
+        case .upper:
+            return "Upper (broken)"
+        case .lower:
+            return "Lower (broken)"
+        case .both:
+            return "Both"
+        case .interleavedUpper:
+            return "Interleaved upper"
+        case .interleavedLower:
+            return "Interleaved lower"
         }
     }
 }

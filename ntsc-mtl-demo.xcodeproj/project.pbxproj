@@ -26,6 +26,7 @@
 		1F4692D52C13CAA000CD7756 /* IteratorThing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4692D42C13CAA000CD7756 /* IteratorThing.swift */; };
 		1F4692D72C13CC4000CD7756 /* IteratorThingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4692D62C13CC4000CD7756 /* IteratorThingTests.swift */; };
 		1F4692D92C13D7E700CD7756 /* TransferFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4692D82C13D7E700CD7756 /* TransferFunctionTests.swift */; };
+		1F5771AA2C1D2D5A002ED549 /* Interleave.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F5771A92C1D2D5A002ED549 /* Interleave.metal */; };
 		1F5B6CC22C04D4010051A9ED /* NTSC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CC12C04D4010051A9ED /* NTSC.swift */; };
 		1F5B6CC62C04FCA50051A9ED /* PolynomialMultiply.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CC52C04FCA50051A9ED /* PolynomialMultiply.swift */; };
 		1F5B6CD02C0536600051A9ED /* Clamped.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CCF2C0536600051A9ED /* Clamped.swift */; };
@@ -52,9 +53,9 @@
 		1F60A3E12C1A6F8F00024EAB /* ChromaPhaseOffset.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F60A3E02C1A6F8F00024EAB /* ChromaPhaseOffset.metal */; };
 		1F60A3E32C1A7D1400024EAB /* PhaseNoiseTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F60A3E22C1A7D1400024EAB /* PhaseNoiseTextureFilter.swift */; };
 		1F60A3E52C1A7DE700024EAB /* ChromaPhaseNoise.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F60A3E42C1A7DE700024EAB /* ChromaPhaseNoise.metal */; };
-		1F67A4F22C1B3FBD004BAA5F /* ControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F67A4F12C1B3FBD004BAA5F /* ControlsView.swift */; };
 		1F60A3E72C1A83E800024EAB /* ChromaDelayTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F60A3E62C1A83E800024EAB /* ChromaDelayTextureFilter.swift */; };
 		1F60A3E92C1A850600024EAB /* ChromaDelay.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F60A3E82C1A850600024EAB /* ChromaDelay.metal */; };
+		1F67A4F22C1B3FBD004BAA5F /* ControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F67A4F12C1B3FBD004BAA5F /* ControlsView.swift */; };
 		1F6BFDEB2BFF799F00883169 /* ntsc_mtl_demoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */; };
 		1F6BFDED2BFF799F00883169 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEC2BFF799F00883169 /* ContentView.swift */; };
 		1F6BFDEF2BFF79A000883169 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F6BFDEE2BFF79A000883169 /* Assets.xcassets */; };
@@ -107,6 +108,7 @@
 		1F4692D42C13CAA000CD7756 /* IteratorThing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IteratorThing.swift; sourceTree = "<group>"; };
 		1F4692D62C13CC4000CD7756 /* IteratorThingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IteratorThingTests.swift; sourceTree = "<group>"; };
 		1F4692D82C13D7E700CD7756 /* TransferFunctionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferFunctionTests.swift; sourceTree = "<group>"; };
+		1F5771A92C1D2D5A002ED549 /* Interleave.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Interleave.metal; sourceTree = "<group>"; };
 		1F5B6CC12C04D4010051A9ED /* NTSC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSC.swift; sourceTree = "<group>"; };
 		1F5B6CC52C04FCA50051A9ED /* PolynomialMultiply.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolynomialMultiply.swift; sourceTree = "<group>"; };
 		1F5B6CCF2C0536600051A9ED /* Clamped.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Clamped.swift; sourceTree = "<group>"; };
@@ -133,9 +135,9 @@
 		1F60A3E02C1A6F8F00024EAB /* ChromaPhaseOffset.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ChromaPhaseOffset.metal; sourceTree = "<group>"; };
 		1F60A3E22C1A7D1400024EAB /* PhaseNoiseTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseNoiseTextureFilter.swift; sourceTree = "<group>"; };
 		1F60A3E42C1A7DE700024EAB /* ChromaPhaseNoise.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ChromaPhaseNoise.metal; sourceTree = "<group>"; };
-		1F67A4F12C1B3FBD004BAA5F /* ControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlsView.swift; sourceTree = "<group>"; };
 		1F60A3E62C1A83E800024EAB /* ChromaDelayTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromaDelayTextureFilter.swift; sourceTree = "<group>"; };
 		1F60A3E82C1A850600024EAB /* ChromaDelay.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ChromaDelay.metal; sourceTree = "<group>"; };
+		1F67A4F12C1B3FBD004BAA5F /* ControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlsView.swift; sourceTree = "<group>"; };
 		1F6BFDE72BFF799F00883169 /* ntsc-mtl-demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ntsc-mtl-demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ntsc_mtl_demoApp.swift; sourceTree = "<group>"; };
 		1F6BFDEC2BFF799F00883169 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -192,6 +194,7 @@
 				1F60A3E02C1A6F8F00024EAB /* ChromaPhaseOffset.metal */,
 				1F60A3E42C1A7DE700024EAB /* ChromaPhaseNoise.metal */,
 				1F60A3E82C1A850600024EAB /* ChromaDelay.metal */,
+				1F5771A92C1D2D5A002ED549 /* Interleave.metal */,
 				1F60A3DC2C1A575C00024EAB /* SnowIntensity.metal */,
 				1F2B96EC2C16680D00DB0B9F /* GeometricDistribution.metal */,
 				1F5F93C92C0F9DCA00EC29A2 /* YIQCompose.metal */,
@@ -489,6 +492,7 @@
 				1FA64F7A2C146AA800E54D6F /* ShiftRow.metal in Sources */,
 				1FA64F7C2C146C3D00E54D6F /* ShiftRowMidline.metal in Sources */,
 				1F67A4F22C1B3FBD004BAA5F /* ControlsView.swift in Sources */,
+				1F5771AA2C1D2D5A002ED549 /* Interleave.metal in Sources */,
 				1F5B6CC22C04D4010051A9ED /* NTSC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

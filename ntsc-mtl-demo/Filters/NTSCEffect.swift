@@ -103,13 +103,17 @@ enum ChromaDemodulationFilter: Int {
     case twoLineComb
 }
 
-enum UseField: Int {
+enum UseField: Int, CaseIterable, Identifiable {
     case alternating = 0
     case upper
     case lower
     case both
     case interleavedUpper
     case interleavedLower
+    
+    var id: Int {
+        rawValue
+    }
 }
 
 enum FilterType: Int, Identifiable, CaseIterable {

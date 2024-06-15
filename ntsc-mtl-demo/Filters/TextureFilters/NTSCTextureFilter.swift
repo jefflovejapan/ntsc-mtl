@@ -19,6 +19,7 @@ enum TextureFilterError: Swift.Error {
     case cantMakeFunction(String)
     case cantMakeBlitEncoder
     case logicHole(String)
+    case notImplemented
 }
 
 class NTSCTextureFilter {
@@ -26,6 +27,10 @@ class NTSCTextureFilter {
     private var textureA: MTLTexture!
     private var textureB: MTLTexture!
     private var textureC: MTLTexture!
+    
+    private var outTexture1: MTLTexture!
+    private var outTexture2: MTLTexture!
+    private var outTexture3: MTLTexture!
     private let device: MTLDevice
     private let context: CIContext
     private let commandQueue: MTLCommandQueue
@@ -47,6 +52,8 @@ class NTSCTextureFilter {
     private let chromaPhaseErrorFilter: PhaseErrorTextureFilter
     private let chromaPhaseNoiseFilter: PhaseNoiseTextureFilter
     private let chromaDelayFilter: ChromaDelayTextureFilter
+    
+    var inputImage: CIImage?
     
     init(effect: NTSCEffect, device: MTLDevice, context: CIContext) throws {
         self.effect = effect
@@ -132,8 +139,6 @@ class NTSCTextureFilter {
         self.chromaPhaseNoiseFilter = PhaseNoiseTextureFilter(device: device, pipelineCache: pipelineCache, ciContext: context)
         self.chromaDelayFilter = ChromaDelayTextureFilter(device: device, pipelineCache: pipelineCache)
     }
-    
-    var inputImage: CIImage?
         
     static func convertToYIQ(_ texture: (any MTLTexture), output: (any MTLTexture), commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
         // Create a command buffer and encoder
@@ -333,6 +338,49 @@ class NTSCTextureFilter {
         commandEncoder.endEncoding()
     }
     
+    static func handle(mostRecentTexture: MTLTexture, previousTexture: MTLTexture, outTexture: MTLTexture, useField: UseField, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        switch useField {
+        case .alternating, .upper, .lower:
+            throw Error.notImplemented
+        case .both:
+            try justBlit(from: mostRecentTexture, to: outTexture, commandBuffer: commandBuffer)
+        case .interleavedUpper, .interleavedLower:
+            try interleave(mostRecentTexture: mostRecentTexture, previousTexture: previousTexture, outTexture: outTexture, commandBuffer: commandBuffer, device: device, pipelineCache: pipelineCache)
+        }
+    }
+    
+    static func interleave(mostRecentTexture: MTLTexture, previousTexture: MTLTexture, outTexture: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
+            throw Error.cantMakeComputeEncoder
+        }
+        let pipelineState = try pipelineCache.pipelineState(function: .interleave)
+        commandEncoder.setComputePipelineState(pipelineState)
+        commandEncoder.setTexture(mostRecentTexture, index: 0)
+        commandEncoder.setTexture(previousTexture, index: 1)
+        commandEncoder.dispatchThreads(textureWidth: mostRecentTexture.width, textureHeight: mostRecentTexture.height, threadgroupScale: 8)
+        commandEncoder.endEncoding()
+    }
+    
+    static func writeToFields(
+        inputTexture: MTLTexture,
+        frameNum: UInt32,
+        useField: UseField,
+        interTexA: MTLTexture,
+        interTexB: MTLTexture,
+        outTex: MTLTexture,
+        commandBuffer: MTLCommandBuffer,
+        device: MTLDevice,
+        pipelineCache: MetalPipelineCache
+    ) throws {
+        if frameNum % 2 == 0 {
+            try justBlit(from: inputTexture, to: interTexA, commandBuffer: commandBuffer)
+            try handle(mostRecentTexture: interTexA, previousTexture: interTexB, outTexture: outTex, useField: useField, commandBuffer: commandBuffer, device: device, pipelineCache: pipelineCache)
+        } else {
+            try justBlit(from: inputTexture, to: interTexB, commandBuffer: commandBuffer)
+            try handle(mostRecentTexture: interTexB, previousTexture: interTexA, outTexture: outTex, useField: useField, commandBuffer: commandBuffer, device: device, pipelineCache: pipelineCache)
+        }
+    }
+    
     private func setup(with inputImage: CIImage) throws {
         guard let commandBuffer = commandQueue.makeCommandBuffer() else {
             throw Error.cantMakeCommandBuffer
@@ -346,26 +394,15 @@ class NTSCTextureFilter {
             self.context.render(inputImage, to: textureA, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: self.context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
             return
         }
-        let descriptor = MTLTextureDescriptor.texture2DDescriptor(
-            pixelFormat: .rgba16Float,
-            width: Int(inputImage.extent.size.width),
-            height: Int(inputImage.extent.size.height),
-            mipmapped: false
-        )
-        descriptor.usage = [.shaderRead, .shaderWrite, .renderTarget]
-        guard let textureA = device.makeTexture(descriptor: descriptor) else {
-            throw Error.cantMakeTexture
-        }
+        let textures = Array(IIRTextureFilter.textures(width: Int(inputImage.extent.width), height: Int(inputImage.extent.height), pixelFormat: .rgba16Float, device: device).prefix(6))
+        self.textureA = textures[0]
+        self.textureB = textures[1]
+        self.textureC = textures[2]
+        self.outTexture1 = textures[3]
+        self.outTexture2 = textures[4]
+        self.outTexture3 = textures[5]
+        
         context.render(inputImage, to: textureA, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
-        self.textureA = textureA
-        guard let textureB = device.makeTexture(descriptor: descriptor) else {
-            throw Error.cantMakeTexture
-        }
-        self.textureB = textureB
-        guard let textureC = device.makeTexture(descriptor: descriptor) else {
-            throw Error.cantMakeTexture
-        }
-        self.textureC = textureC
     }
     
     private var frameNum: UInt32 = 0
@@ -563,9 +600,20 @@ class NTSCTextureFilter {
                 device: device,
                 pipelineCache: pipelineCache
             )
+            try Self.writeToFields(
+                inputTexture: try iter.last,
+                frameNum: frameNum,
+                useField: effect.useField,
+                interTexA: outTexture1,
+                interTexB: outTexture2,
+                outTex: outTexture3,
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()
-            return CIImage(mtlTexture: try iter.last)
+            return CIImage(mtlTexture: outTexture3)
         } catch {
             print("Error generating output image: \(error)")
             return nil
