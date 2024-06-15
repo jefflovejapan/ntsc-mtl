@@ -12,13 +12,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>100</string>
+					<string>85</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>99</string>
+					<string>84</string>
 					<key>Timestamp</key>
-					<string>740172092.916661</string>
+					<string>740089247.964923</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -34,16 +34,16 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string>        DispatchQueue.main.async {
+				<string>        let ciImage = CIImage(cvImageBuffer: pixelBuffer)
 </string>
 				<key>leading</key>
-				<string>
-        self.lastImage = ciImage
+				<string>            return
+        }
 </string>
 				<key>trailing</key>
-				<string>            self.mtkView.setNeedsDisplay()
-        }
-    }
+				<string>            .oriented(forExifOrientation: Int32(CGImagePropertyOrientation.right.rawValue))
+
+        self.lastImage = ciImage
 </string>
 			</dict>
 			<key>title</key>

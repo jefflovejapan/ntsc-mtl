@@ -48,13 +48,6 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         let hConstraints = NSLayoutConstraint.constraints(withVisualFormat: "H:|[mtk]|", metrics: nil, views: ["mtk": mtkView])
         let vConstraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|[mtk]|", metrics: nil, views: ["mtk": mtkView])
         NSLayoutConstraint.activate(hConstraints + vConstraints)
-        effect.inputLumaFilter = .notch
-        effect.filterType = .butterworth
-        effect.chromaLowpassIn = .full
-        effect.chromaLowpassOut = .none
-        effect.snowIntensity = 10
-        effect.snowAnisotropy = 10
-        effect.chromaPhaseError = 5
         setupCamera()
     }
     
