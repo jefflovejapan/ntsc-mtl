@@ -8,8 +8,6 @@
 #include <metal_stdlib>
 using namespace metal;
 
-constant half PI_16 = half(3.140625);
-
 kernel void chromaDelay
 (
  texture2d<half, access::read> inputTexture [[texture(0)]],

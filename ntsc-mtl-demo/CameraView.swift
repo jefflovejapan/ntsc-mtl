@@ -21,6 +21,11 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     var isFilterEnabled: Bool
     var lastImage: CIImage?
+    var sessionPreset: AVCaptureSession.Preset = .vga640x480 {
+        didSet {
+            captureSession.sessionPreset = sessionPreset
+        }
+    }
     
     init(isFilterEnabled: Bool, effect: NTSCEffect) throws {
         let device = MTLCreateSystemDefaultDevice()!
@@ -58,8 +63,7 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     }
     
     private func setupCamera() {
-//        captureSession.sessionPreset = .hd1920x1080
-        captureSession.sessionPreset = .vga640x480
+        captureSession.sessionPreset = sessionPreset
         let discoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: .video, position: /*.front*/.back)
         guard let captureDevice = discoverySession.devices.first else {
             return
@@ -101,10 +105,12 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
 
 struct CameraView: UIViewRepresentable {
     @Binding var enableFilter: Bool
+    @Binding var resolution: Resolution
     @Bindable var effect: NTSCEffect
     
-    init(enableFilter: Binding<Bool>, effect: NTSCEffect) {
+    init(enableFilter: Binding<Bool>, resolution: Binding<Resolution>, effect: NTSCEffect) {
         _enableFilter = enableFilter
+        _resolution = resolution
         self.effect = effect
     }
     
@@ -114,6 +120,7 @@ struct CameraView: UIViewRepresentable {
     
     func updateUIView(_ uiView: CameraUIView, context: Context) {
         uiView.isFilterEnabled = enableFilter
+        uiView.sessionPreset = resolution.sessionPreset
     }
 }
 

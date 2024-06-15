@@ -39,7 +39,7 @@ class NTSCEffect {
     
     init(
         randomSeed: Int = 0,
-        useField: UseField = UseField.alternating,
+        useField: UseField = UseField.interleavedUpper,
         filterType: FilterType = FilterType.constantK,
         inputLumaFilter: LumaLowpass = LumaLowpass.notch,
         chromaLowpassIn: ChromaLowpass = ChromaLowpass.full,
@@ -103,13 +103,17 @@ enum ChromaDemodulationFilter: Int {
     case twoLineComb
 }
 
-enum UseField: Int {
+enum UseField: Int, CaseIterable, Identifiable {
     case alternating = 0
     case upper
     case lower
     case both
     case interleavedUpper
     case interleavedLower
+    
+    var id: Int {
+        rawValue
+    }
 }
 
 enum FilterType: Int, Identifiable, CaseIterable {

@@ -12,7 +12,7 @@ extension NTSCEffect {
     private static func defaultNTSCEffect() -> NTSCEffect {
         return NTSCEffect(
                 randomSeed: 0,
-                useField: UseField.alternating,
+                useField: UseField.interleavedUpper,
                 filterType: FilterType.constantK,
                 inputLumaFilter: LumaLowpass.notch,
                 chromaLowpassIn: ChromaLowpass.full,

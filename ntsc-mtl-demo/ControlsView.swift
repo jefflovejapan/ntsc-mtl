@@ -10,6 +10,7 @@ import SwiftUI
 struct ControlsView: View {
     @Binding var showControls: Bool
     @Binding var enableFilter: Bool
+    @Binding var resolution: Resolution
     @Bindable var effect: NTSCEffect
     
     var body: some View {
@@ -18,6 +19,26 @@ struct ControlsView: View {
                 Toggle(isOn: $enableFilter, label: {
                     Text("Enable filter?")
                 })
+                HStack {
+                    Text("Resolution")
+                    Picker(selection: $resolution, content: {
+                        ForEach(Resolution.allCases) { res in
+                            Text(name(resolution: res))
+                                .tag(res)
+                        }
+                    }, label: {
+                        Text("Resolution")
+                    })
+                }
+                HStack {
+                    Text("Use field")
+                    Picker(selection: $effect.useField, content: {
+                        ForEach(UseField.allCases) { useField in
+                            Text(name(useField: useField))
+                                .tag(useField)
+                        }
+                    }, label: { Text("Use field") })
+                }
                 VStack(alignment: .leading) {
                     Text("Bandwidth scale: \(effect.bandwidthScale.formatted(self.twoDecimalPoints))")
                     Slider.init(value: $effect.bandwidthScale, in: 0.125...8, label: {
@@ -214,11 +235,42 @@ struct ControlsView: View {
             return "Full"
         }
     }
+    
+    private func name(useField: UseField) -> String {
+        switch useField {
+        case .alternating:
+            return "Alternating (broken)"
+        case .upper:
+            return "Upper (broken)"
+        case .lower:
+            return "Lower (broken)"
+        case .both:
+            return "Both"
+        case .interleavedUpper:
+            return "Interleaved upper"
+        case .interleavedLower:
+            return "Interleaved lower"
+        }
+    }
+    
+    private func name(resolution: Resolution) -> String {
+        switch resolution {
+        case .res4K:
+            return "4K"
+        case .res1080p:
+            return "1080p"
+        case .res720p:
+            return "720p"
+        case .resVGA:
+            return "VGA"
+        }
+    }
 }
 
 #Preview {
     @State var showControls: Bool = true
     @State var enableFilter: Bool = false
     @State var effect: NTSCEffect = NTSCEffect()
-    return ControlsView(showControls: $showControls, enableFilter: $enableFilter, effect: effect)
+    @State var resolution: Resolution = .resVGA
+    return ControlsView(showControls: $showControls, enableFilter: $enableFilter, resolution: $resolution, effect: effect)
 }
