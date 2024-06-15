@@ -382,7 +382,11 @@ class NTSCTextureFilter {
         }
     }
     
-    private func setup(with inputImage: CIImage, commandBuffer: MTLCommandBuffer) throws {
+    private func setup(with inputImage: CIImage) throws {
+        guard let commandBuffer = commandQueue.makeCommandBuffer() else {
+            throw Error.cantMakeCommandBuffer
+        }
+        defer { commandBuffer.commit() }
         if let textureA, textureA.width == Int(inputImage.extent.width), textureA.height == Int(inputImage.extent.height) {
             self.context.render(inputImage, to: textureA, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: self.context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
             return
@@ -391,9 +395,9 @@ class NTSCTextureFilter {
         self.textureA = textures[0]
         self.textureB = textures[1]
         self.textureC = textures[2]
-        self.outTexture1 = textures[3]
-        self.outTexture2 = textures[4]
-        self.outTexture3 = textures[5]
+//        self.outTexture1 = textures[3]
+//        self.outTexture2 = textures[4]
+//        self.outTexture3 = textures[5]
         context.render(inputImage, to: textureA, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
     }
     
@@ -403,17 +407,17 @@ class NTSCTextureFilter {
         let frameNum = self.frameNum
         defer { self.frameNum += 1 }
         guard let inputImage else { return nil }
-        guard let commandBuffer = commandQueue.makeCommandBuffer() else {
-            print("Couldn't make command buffer")
-            return nil
-        }
         do {
-            try setup(with: inputImage, commandBuffer: commandBuffer)
+            try setup(with: inputImage)
         } catch {
             print("Error setting up texture with input image: \(error)")
             return nil
         }
         
+        guard let commandBuffer = commandQueue.makeCommandBuffer() else {
+            print("Couldn't make command buffer")
+            return nil
+        }
         let textures: [MTLTexture] = [textureA, textureB, textureC]
         let iter = IteratorThing(vals: textures)
         
@@ -585,17 +589,17 @@ class NTSCTextureFilter {
                 lightFilter: lightChromaLowpassFilter,
                 fullFilter: fullChromaLowpassFilter
             )
-            try Self.writeToFields(
-                inputTexture: try iter.last,
-                frameNum: frameNum,
-                useField: effect.useField,
-                interTexA: outTexture1,
-                interTexB: outTexture2,
-                outTex: try iter.next(),
-                commandBuffer: commandBuffer,
-                device: device,
-                pipelineCache: pipelineCache
-            )
+//            try Self.writeToFields(
+//                inputTexture: try iter.last,
+//                frameNum: frameNum,
+//                useField: effect.useField,
+//                interTexA: outTexture1,
+//                interTexB: outTexture2,
+//                outTex: try iter.next(),
+//                commandBuffer: commandBuffer,
+//                device: device,
+//                pipelineCache: pipelineCache
+//            )
             try Self.convertToRGB(
                 try iter.last,
                 output: try iter.next(),
