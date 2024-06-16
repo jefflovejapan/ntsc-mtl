@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1F1F9B692C03C3980085048F /* IIRTransferFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1F9B682C03C3980085048F /* IIRTransferFunction.swift */; };
 		1F2028942C1E23BA00DFB165 /* Resolution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2028932C1E23BA00DFB165 /* Resolution.swift */; };
+		1F2028962C1E579E00DFB165 /* TrackingNoiseTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2028952C1E579E00DFB165 /* TrackingNoiseTextureFilter.swift */; };
 		1F2159A82C11476200D2483B /* CompositeNoiseTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2159A72C11476200D2483B /* CompositeNoiseTextureFilter.swift */; };
 		1F2159AC2C11498700D2483B /* MultiplyLuma.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F2159AB2C11498700D2483B /* MultiplyLuma.metal */; };
 		1F2159AE2C11517700D2483B /* SnowTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2159AD2C11517700D2483B /* SnowTextureFilter.swift */; };
@@ -93,6 +94,7 @@
 /* Begin PBXFileReference section */
 		1F1F9B682C03C3980085048F /* IIRTransferFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IIRTransferFunction.swift; sourceTree = "<group>"; };
 		1F2028932C1E23BA00DFB165 /* Resolution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resolution.swift; sourceTree = "<group>"; };
+		1F2028952C1E579E00DFB165 /* TrackingNoiseTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackingNoiseTextureFilter.swift; sourceTree = "<group>"; };
 		1F2159A72C11476200D2483B /* CompositeNoiseTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompositeNoiseTextureFilter.swift; sourceTree = "<group>"; };
 		1F2159AB2C11498700D2483B /* MultiplyLuma.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = MultiplyLuma.metal; sourceTree = "<group>"; };
 		1F2159AD2C11517700D2483B /* SnowTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnowTextureFilter.swift; sourceTree = "<group>"; };
@@ -228,6 +230,7 @@
 				1F60A3E62C1A83E800024EAB /* ChromaDelayTextureFilter.swift */,
 				1F4692D42C13CAA000CD7756 /* IteratorThing.swift */,
 				1F2159A72C11476200D2483B /* CompositeNoiseTextureFilter.swift */,
+				1F2028952C1E579E00DFB165 /* TrackingNoiseTextureFilter.swift */,
 				1F2159AD2C11517700D2483B /* SnowTextureFilter.swift */,
 				1F4692D22C13C4A100CD7756 /* HeadSwitchingTextureFilter.swift */,
 				1F5F93C52C0F910300EC29A2 /* LumaBoxTextureFilter.swift */,
@@ -506,6 +509,7 @@
 				1F67A4F22C1B3FBD004BAA5F /* ControlsView.swift in Sources */,
 				1F5771AA2C1D2D5A002ED549 /* Interleave.metal in Sources */,
 				1F5B6CC22C04D4010051A9ED /* NTSC.swift in Sources */,
+				1F2028962C1E579E00DFB165 /* TrackingNoiseTextureFilter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

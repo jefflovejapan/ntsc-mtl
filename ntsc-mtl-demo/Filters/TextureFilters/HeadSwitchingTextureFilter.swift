@@ -147,11 +147,8 @@ class HeadSwitchingTextureFilter {
         var shift = horizShift
         commandEncoder.setBytes(&shift, length: MemoryLayout<Float>.size, index: 2)
         
-        var boundaryColumnIndex: UInt = UInt(inputTexture.width - 1)
-        commandEncoder.setBytes(&boundaryColumnIndex, length: MemoryLayout<UInt>.size, index: 3)
-        
         var bandwidthScale = bandwidthScale
-        commandEncoder.setBytes(&bandwidthScale, length: MemoryLayout<Float>.size, index: 4)
+        commandEncoder.setBytes(&bandwidthScale, length: MemoryLayout<Float>.size, index: 3)
         
         commandEncoder.dispatchThreads(textureWidth: inputTexture.width, textureHeight: inputTexture.height)
         commandEncoder.endEncoding()
