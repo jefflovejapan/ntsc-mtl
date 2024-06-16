@@ -12,13 +12,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>85</string>
+					<string>100</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>84</string>
+					<string>99</string>
 					<key>Timestamp</key>
-					<string>740089247.964923</string>
+					<string>740172092.916661</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -34,16 +34,16 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string>        let ciImage = CIImage(cvImageBuffer: pixelBuffer)
+				<string>    @Binding var enableFilter: Bool
 </string>
 				<key>leading</key>
-				<string>            return
-        }
+				<string>
+struct CameraView: UIViewRepresentable {
 </string>
 				<key>trailing</key>
-				<string>            .oriented(forExifOrientation: Int32(CGImagePropertyOrientation.right.rawValue))
-
-        self.lastImage = ciImage
+				<string>    @Binding var resolution: Resolution
+    @Bindable var effect: NTSCEffect
+    
 </string>
 			</dict>
 			<key>title</key>
