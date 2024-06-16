@@ -21,7 +21,8 @@ kernel void shiftRow
  constant float &bandwidthScale [[buffer(4)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
-    outputTexture.write(inputTexture.read(gid), gid);
+    half4 outPx = inputTexture.read(gid);
+    outputTexture.write(outPx, gid);
     return;
     half4 thisPixel = inputTexture.read(gid);
     uint texHeight = inputTexture.get_height();

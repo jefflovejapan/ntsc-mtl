@@ -310,12 +310,13 @@ class NTSCTextureFilter {
         filter.chromaDelay = delay
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
-    static func vhs(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: VHSTextureFilter, isVHSEnabled: Bool, settings: VHSSettings, commandBuffer: MTLCommandBuffer) throws {
+    static func vhs(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: VHSTextureFilter, isVHSEnabled: Bool, settings: VHSSettings, bandwidthScale: Float, commandBuffer: MTLCommandBuffer) throws {
         guard isVHSEnabled else {
             try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
             return
         }
         filter.settings = settings
+        filter.bandwidthScale = bandwidthScale
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
@@ -577,15 +578,16 @@ class NTSCTextureFilter {
 //                delay: effect.chromaDelay,
 //                commandBuffer: commandBuffer
 //            )
-//            // Step 17: vhs
-//            try Self.vhs(
-//                inputTexture: try iter.last,
-//                outputTexture: try iter.next(),
-//                filter: vhsFilter,
-//                isVHSEnabled: effect.isVHSEnabled,
-//                settings: effect.vhsSettings,
-//                commandBuffer: commandBuffer
-//            )
+            // Step 17: vhs
+            try Self.vhs(
+                inputTexture: try iter.last,
+                outputTexture: try iter.next(),
+                filter: vhsFilter,
+                isVHSEnabled: effect.isVHSEnabled,
+                settings: effect.vhsSettings, 
+                bandwidthScale: effect.bandwidthScale,
+                commandBuffer: commandBuffer
+            )
 //            // Step 18: chroma vert blend
 //            try Self.chromaVertBlend(
 //                inputTexture: try iter.last,

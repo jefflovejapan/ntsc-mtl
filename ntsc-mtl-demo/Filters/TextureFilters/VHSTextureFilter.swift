@@ -49,8 +49,9 @@ class VHSTextureFilter {
         guard let textureA, let textureB else {
             throw Error.cantMakeTexture
         }
-        try writeRandom(to: textureA, commandBuffer: commandBuffer)
-        try edgeWave(from: inputTexture, randomTexture: textureA, to: textureB, commandBuffer: commandBuffer)
+////        try writeRandom(to: textureA, commandBuffer: commandBuffer)
+//        try edgeWave(from: inputTexture, randomTexture: textureA, to: textureB, commandBuffer: commandBuffer)
+        try justBlit(from: inputTexture, to: textureB, commandBuffer: commandBuffer)
         try justBlit(from: textureB, to: outputTexture, commandBuffer: commandBuffer)
     }
     
@@ -73,6 +74,7 @@ class VHSTextureFilter {
         commandEncoder.setTexture(inputTexture, index: 0)
         commandEncoder.setTexture(randomTexture, index: 1)
         commandEncoder.setTexture(outputTexture, index: 2)
+        
         var effectHeight: UInt = 200
         commandEncoder.setBytes(&effectHeight, length: MemoryLayout<UInt>.size, index: 0)
         var offsetRows: UInt = 100
