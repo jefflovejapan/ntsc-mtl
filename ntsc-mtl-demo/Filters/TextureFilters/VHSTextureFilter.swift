@@ -50,8 +50,7 @@ class VHSTextureFilter {
             throw Error.cantMakeTexture
         }
         try writeRandom(to: textureA, commandBuffer: commandBuffer)
-//        try edgeWave(from: inputTexture, randomTexture: textureA, to: textureB, commandBuffer: commandBuffer)
-        try justBlit(from: inputTexture, to: textureB, commandBuffer: commandBuffer)
+        try edgeWave(from: inputTexture, randomTexture: textureA, to: textureB, commandBuffer: commandBuffer)
         try justBlit(from: textureB, to: outputTexture, commandBuffer: commandBuffer)
     }
     
@@ -85,6 +84,7 @@ class VHSTextureFilter {
         commandEncoder.setBytes(&boundaryColumnIndex, length: MemoryLayout<UInt>.size, index: 3)
         var bandwidthScale = bandwidthScale
         commandEncoder.setBytes(&bandwidthScale, length: MemoryLayout<Float>.size, index: 4)
+        commandEncoder.dispatchThreads(textureWidth: inputTexture.width, textureHeight: inputTexture.height)
         commandEncoder.endEncoding()
     }
 }
