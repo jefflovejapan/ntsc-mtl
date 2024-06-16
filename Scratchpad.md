@@ -575,4 +575,8 @@ Today is all about getting snow to work. I think I've convinced myself that the 
 
 ## Tracking Noise
 
+- It looks like we'll be reusing shiftRow
+- shiftRow takes parameters for "effectHeight" and "offsetRows"
+    - wouldn't it be better to just apply the effect to the entire frame and combine them downstream?
+        - maybe not?   
 - 
