@@ -212,10 +212,13 @@ struct RingingSettings {
 }
 
 struct VHSSettings {
-    var tapeSpeed: VHSTapeSpeed?
+    var tapeSpeedEnabled: Bool
+    var tapeSpeed: VHSTapeSpeed
     var chromaLoss: Float
-    var sharpen: VHSSharpenSettings?
-    var edgeWave: VHSEdgeWaveSettings?
+    var sharpenEnabled: Bool
+    var sharpen: VHSSharpenSettings
+    var edgeWaveEnabled: Bool
+    var edgeWave: VHSEdgeWaveSettings
 }
 
 enum VHSTapeSpeed: Int {

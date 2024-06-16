@@ -49,8 +49,20 @@ class VHSTextureFilter {
         guard let textureA, let textureB else {
             throw Error.cantMakeTexture
         }
-        try writeRandom(to: textureA, commandBuffer: commandBuffer)
-        try edgeWave(from: inputTexture, randomTexture: textureA, to: textureB, commandBuffer: commandBuffer)
+        let iter = IteratorThing(vals: [textureA, textureB])
+        if settings.edgeWaveEnabled {
+            try writeRandom(
+                to: try iter.next(),
+                commandBuffer: commandBuffer
+            )
+            try edgeWave(
+                from: inputTexture,
+                randomTexture: try iter.last,
+                to: try iter.next(),
+                edgeWave: settings.edgeWave,
+                commandBuffer: commandBuffer
+            )
+        }
         try justBlit(from: textureB, to: outputTexture, commandBuffer: commandBuffer)
     }
     
@@ -64,8 +76,8 @@ class VHSTextureFilter {
         ciContext.render(randomImg, to: texture, commandBuffer: commandBuffer, bounds: randomImg.extent, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
     }
     
-    private func edgeWave(from inputTexture: MTLTexture, randomTexture: MTLTexture, to outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        let pipelineState = try pipelineCache.pipelineState(function: .shiftRow)
+    private func edgeWave(from inputTexture: MTLTexture, randomTexture: MTLTexture, to outputTexture: MTLTexture, edgeWave: VHSEdgeWaveSettings, commandBuffer: MTLCommandBuffer) throws {
+        let pipelineState = try pipelineCache.pipelineState(function: .edgeWave)
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
@@ -74,16 +86,10 @@ class VHSTextureFilter {
         commandEncoder.setTexture(randomTexture, index: 1)
         commandEncoder.setTexture(outputTexture, index: 2)
         
-        var effectHeight: UInt = 200
-        commandEncoder.setBytes(&effectHeight, length: MemoryLayout<UInt>.size, index: 0)
-        var offsetRows: UInt = 100
-        commandEncoder.setBytes(&offsetRows, length: MemoryLayout<UInt>.size, index: 1)
-        var shift: Float = 17
-        commandEncoder.setBytes(&shift, length: MemoryLayout<Float>.size, index: 2)
-        var boundaryColumnIndex: UInt = 0
-        commandEncoder.setBytes(&boundaryColumnIndex, length: MemoryLayout<UInt>.size, index: 3)
+        var intensity: Float = edgeWave.intensity
+        commandEncoder.setBytes(&intensity, length: MemoryLayout<Float>.size, index: 0)
         var bandwidthScale = bandwidthScale
-        commandEncoder.setBytes(&bandwidthScale, length: MemoryLayout<Float>.size, index: 4)
+        commandEncoder.setBytes(&bandwidthScale, length: MemoryLayout<Float>.size, index: 1)
         commandEncoder.dispatchThreads(textureWidth: inputTexture.width, textureHeight: inputTexture.height)
         commandEncoder.endEncoding()
     }
