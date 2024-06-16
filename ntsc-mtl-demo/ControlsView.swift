@@ -110,50 +110,23 @@ struct ControlsView: View {
                 Text("Chroma phase noise")
                 Slider(value: $effect.chromaPhaseNoiseIntensity, in: 0...1)
                     .padding(.leading)
-            }
-            Section("Snow") {
+                snowSection
+                headSwitchingSection
                 VStack {
-                    Text("Snow intensity")
-                    Slider(value: $effect.snowIntensity, in: 0...1)
+                    Text("Luma smear: \(effect.lumaSmear.formatted(self.twoDecimalPlaces))")
+                    Slider(value: $effect.lumaSmear, in: 0...1)
                         .padding(.leading)
                 }
+                
+                ringingSection
                 VStack {
-                    Text("Snow anisotropy")
-                    Slider(value: $effect.snowAnisotropy, in: 0...1)
+                    Text("Chroma phase noise: \(effect.chromaPhaseNoiseIntensity.formatted(self.twoDecimalPlaces))")
+                    Slider(value: $effect.chromaPhaseNoiseIntensity, in: 0...1)
                         .padding(.leading)
                 }
+                chromaDelaySection
+                vhsSection
             }
-            Toggle(isOn: $effect.headSwitchingEnabled, label: {
-                Text("Head switching")
-            })
-            if effect.headSwitchingEnabled {
-                Section("Head switching", content: {
-                    Stepper(value: $effect.headSwitching.height, in: 0...24, label: {
-                        Text("Height: \(effect.headSwitching.height)")
-                    })
-                    Stepper(value: $effect.headSwitching.offset, in: 0...24, label: {
-                        Text("Offset: \(effect.headSwitching.offset)")
-                    })
-                    VStack {
-                        Text("Horizontal shift: \(effect.headSwitching.horizShift.formatted(self.twoDecimalPlaces))")
-                        Slider(value: $effect.headSwitching.horizShift, in: -100...100)
-                    }
-                })
-            }
-            VStack {
-                Text("Luma smear: \(effect.lumaSmear.formatted(self.twoDecimalPlaces))")
-                Slider(value: $effect.lumaSmear, in: 0...1)
-                    .padding(.leading)
-            }
-            
-            ringingSection
-            VStack {
-                Text("Chroma phase noise: \(effect.chromaPhaseNoiseIntensity.formatted(self.twoDecimalPlaces))")
-                Slider(value: $effect.chromaPhaseNoiseIntensity, in: 0...1)
-                    .padding(.leading)
-            }
-            chromaDelaySection
-            vhsSection
 
             //                VStack(alignment: .leading) {
             //                    Text("Luma smear")
@@ -178,6 +151,41 @@ struct ControlsView: View {
              */
         }
         .background(Color.green.opacity(0.2))
+    }
+    
+    private var snowSection: some View {
+        Section("Snow") {
+            VStack {
+                Text("Snow intensity")
+                Slider(value: $effect.snowIntensity, in: 0...1)
+                    .padding(.leading)
+            }
+            VStack {
+                Text("Snow anisotropy")
+                Slider(value: $effect.snowAnisotropy, in: 0...1)
+                    .padding(.leading)
+            }
+        }
+    }
+    
+    private var headSwitchingSection: some View {
+        Section("Head switching", content: {
+            Toggle(isOn: $effect.headSwitchingEnabled, label: {
+                Text("Head switching")
+            })
+            if effect.headSwitchingEnabled {
+                Stepper(value: $effect.headSwitching.height, in: 0...24, label: {
+                    Text("Height: \(effect.headSwitching.height)")
+                })
+                Stepper(value: $effect.headSwitching.offset, in: 0...24, label: {
+                    Text("Offset: \(effect.headSwitching.offset)")
+                })
+                VStack {
+                    Text("Horizontal shift: \(effect.headSwitching.horizShift.formatted(self.twoDecimalPlaces))")
+                    Slider(value: $effect.headSwitching.horizShift, in: -100...100)
+                }
+            }
+        })
     }
     
     private var ringingSection: some View {
