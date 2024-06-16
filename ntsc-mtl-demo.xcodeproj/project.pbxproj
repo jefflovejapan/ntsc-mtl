@@ -63,6 +63,7 @@
 		1F6BFDF22BFF79A000883169 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F6BFDF12BFF79A000883169 /* Preview Assets.xcassets */; };
 		1F6BFE202BFF9EC500883169 /* michael.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 1F6BFE1F2BFF9EC500883169 /* michael.jpeg */; };
 		1F6BFE2A2BFFBFC200883169 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BFE292BFFBFC200883169 /* CameraView.swift */; };
+		1F827CFB2C1F759B0038AA00 /* VHSTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F827CFA2C1F759B0038AA00 /* VHSTextureFilter.swift */; };
 		1FA29A8B2C111B6000070F03 /* ClampFunctions.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FA29A8A2C111B6000070F03 /* ClampFunctions.metal */; };
 		1FA29A8D2C112DBC00070F03 /* ChromaIntoLuma.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FA29A8C2C112DBC00070F03 /* ChromaIntoLuma.metal */; };
 		1FA29A8F2C112E3E00070F03 /* ChromaIntoLumaTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA29A8E2C112E3E00070F03 /* ChromaIntoLumaTextureFilter.swift */; };
@@ -149,6 +150,7 @@
 		1F6BFE1F2BFF9EC500883169 /* michael.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = michael.jpeg; sourceTree = "<group>"; };
 		1F6BFE282BFFBCF000883169 /* Scratchpad.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Scratchpad.md; sourceTree = "<group>"; };
 		1F6BFE292BFFBFC200883169 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
+		1F827CFA2C1F759B0038AA00 /* VHSTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VHSTextureFilter.swift; sourceTree = "<group>"; };
 		1FA29A8A2C111B6000070F03 /* ClampFunctions.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ClampFunctions.metal; sourceTree = "<group>"; };
 		1FA29A8C2C112DBC00070F03 /* ChromaIntoLuma.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ChromaIntoLuma.metal; sourceTree = "<group>"; };
 		1FA29A8E2C112E3E00070F03 /* ChromaIntoLumaTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromaIntoLumaTextureFilter.swift; sourceTree = "<group>"; };
@@ -229,6 +231,7 @@
 				1FA29A8E2C112E3E00070F03 /* ChromaIntoLumaTextureFilter.swift */,
 				1F5F93CC2C0FA96C00EC29A2 /* IIRTextureFilter.swift */,
 				1F5F93D82C0FE70800EC29A2 /* ChromaLowpassTextureFilter.swift */,
+				1F827CFA2C1F759B0038AA00 /* VHSTextureFilter.swift */,
 			);
 			path = TextureFilters;
 			sourceTree = "<group>";
@@ -445,6 +448,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1FA64F872C151C5600E54D6F /* MetalFucntionCache.swift in Sources */,
+				1F827CFB2C1F759B0038AA00 /* VHSTextureFilter.swift in Sources */,
 				1F60A3E52C1A7DE700024EAB /* ChromaPhaseNoise.metal in Sources */,
 				1F2B96E92C16210700DB0B9F /* ShiftRowInline.metal in Sources */,
 				1F60A3DD2C1A575C00024EAB /* SnowIntensity.metal in Sources */,

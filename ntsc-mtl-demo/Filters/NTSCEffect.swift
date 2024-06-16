@@ -32,6 +32,7 @@ class NTSCEffect {
     var chromaPhaseNoiseIntensity: Float16
     var chromaPhaseError: Float16
     var chromaDelay: (Float16, Int)
+    var isVHSEnabled: Bool
     var vhsSettings: VHSSettings
     var chromaVertBlend: Bool
     var chromaLowpassOut: ChromaLowpass
@@ -61,6 +62,7 @@ class NTSCEffect {
         chromaPhaseNoiseIntensity: Float16 = 0.001,
         chromaPhaseError: Float16 = 0,
         chromaDelay: (Float16, Int) = (0, 0),
+        isVHSEnabled: Bool = true,
         vhsSettings: VHSSettings = VHSSettings.default,
         chromaVertBlend: Bool = true,
         chromaLowpassOut: ChromaLowpass = ChromaLowpass.full,
@@ -89,6 +91,7 @@ class NTSCEffect {
         self.chromaPhaseNoiseIntensity = chromaPhaseNoiseIntensity
         self.chromaPhaseError = chromaPhaseError
         self.chromaDelay = chromaDelay
+        self.isVHSEnabled = isVHSEnabled
         self.vhsSettings = vhsSettings
         self.chromaVertBlend = chromaVertBlend
         self.chromaLowpassOut = chromaLowpassOut

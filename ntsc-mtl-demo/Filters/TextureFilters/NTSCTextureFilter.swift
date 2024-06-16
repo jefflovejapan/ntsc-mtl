@@ -52,6 +52,7 @@ class NTSCTextureFilter {
     private let chromaPhaseErrorFilter: PhaseErrorTextureFilter
     private let chromaPhaseNoiseFilter: PhaseNoiseTextureFilter
     private let chromaDelayFilter: ChromaDelayTextureFilter
+    private let vhsFilter: VHSTextureFilter
     
     var inputImage: CIImage?
     
@@ -138,6 +139,7 @@ class NTSCTextureFilter {
         self.chromaPhaseErrorFilter = PhaseErrorTextureFilter(device: device, pipelineCache: pipelineCache)
         self.chromaPhaseNoiseFilter = PhaseNoiseTextureFilter(device: device, pipelineCache: pipelineCache, ciContext: context)
         self.chromaDelayFilter = ChromaDelayTextureFilter(device: device, pipelineCache: pipelineCache)
+        self.vhsFilter = VHSTextureFilter(device: device, pipelineCache: pipelineCache)
     }
         
     static func convertToYIQ(_ texture: (any MTLTexture), output: (any MTLTexture), commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
@@ -308,9 +310,15 @@ class NTSCTextureFilter {
         filter.chromaDelay = delay
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
-    static func vhs(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
+    static func vhs(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: VHSTextureFilter, isVHSEnabled: Bool, settings: VHSSettings, commandBuffer: MTLCommandBuffer) throws {
+        guard isVHSEnabled else {
+            try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
+            return
+        }
+        filter.settings = settings
+        try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
+    
     static func chromaVertBlend(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
     }
@@ -396,9 +404,9 @@ class NTSCTextureFilter {
         self.textureA = textures[0]
         self.textureB = textures[1]
         self.textureC = textures[2]
-//        self.outTexture1 = textures[3]
-//        self.outTexture2 = textures[4]
-//        self.outTexture3 = textures[5]
+        self.outTexture1 = textures[3]
+        self.outTexture2 = textures[4]
+        self.outTexture3 = textures[5]
         context.render(inputImage, to: textureA, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
     }
     
@@ -573,6 +581,9 @@ class NTSCTextureFilter {
             try Self.vhs(
                 inputTexture: try iter.last,
                 outputTexture: try iter.next(),
+                filter: vhsFilter,
+                isVHSEnabled: effect.isVHSEnabled,
+                settings: effect.vhsSettings,
                 commandBuffer: commandBuffer
             )
             // Step 18: chroma vert blend
@@ -591,17 +602,17 @@ class NTSCTextureFilter {
                 lightFilter: lightChromaLowpassFilter,
                 fullFilter: fullChromaLowpassFilter
             )
-//            try Self.writeToFields(
-//                inputTexture: try iter.last,
-//                frameNum: frameNum,
-//                useField: effect.useField,
-//                interTexA: outTexture1,
-//                interTexB: outTexture2,
-//                outTex: try iter.next(),
-//                commandBuffer: commandBuffer,
-//                device: device,
-//                pipelineCache: pipelineCache
-//            )
+            try Self.writeToFields(
+                inputTexture: try iter.last,
+                frameNum: frameNum,
+                useField: effect.useField,
+                interTexA: outTexture1,
+                interTexB: outTexture2,
+                outTex: try iter.next(),
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
             try Self.convertToRGB(
                 try iter.last,
                 output: try iter.next(),
