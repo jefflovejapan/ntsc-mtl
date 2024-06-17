@@ -579,15 +579,15 @@ class NTSCTextureFilter {
 //                commandBuffer: commandBuffer
 //            )
             // Step 17: vhs
-            try Self.vhs(
-                inputTexture: try iter.last,
-                outputTexture: try iter.next(),
-                filter: vhsFilter,
-                isVHSEnabled: effect.isVHSEnabled,
-                settings: effect.vhsSettings, 
-                bandwidthScale: effect.bandwidthScale,
-                commandBuffer: commandBuffer
-            )
+//            try Self.vhs(
+//                inputTexture: try iter.last,
+//                outputTexture: try iter.next(),
+//                filter: vhsFilter,
+//                isVHSEnabled: effect.isVHSEnabled,
+//                settings: effect.vhsSettings, 
+//                bandwidthScale: effect.bandwidthScale,
+//                commandBuffer: commandBuffer
+//            )
 //            // Step 18: chroma vert blend
 //            try Self.chromaVertBlend(
 //                inputTexture: try iter.last,
