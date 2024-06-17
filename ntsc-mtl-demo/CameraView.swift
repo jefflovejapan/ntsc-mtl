@@ -104,6 +104,7 @@ struct CameraView: UIViewRepresentable {
     init(enableFilter: Binding<Bool>, resolution: Binding<Resolution>, effect: NTSCEffect) {
         _enableFilter = enableFilter
         _resolution = resolution
+        effect.vhsSettings.edgeWaveEnabled = false
         self.effect = effect
     }
     

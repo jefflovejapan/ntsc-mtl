@@ -240,20 +240,20 @@ enum VHSTapeSpeed: Int, Identifiable, CaseIterable {
         switch self {
         case .sp:
             return Params(
-                lumaCut: 2400000,
-                chromaCut: 320000,
+                lumaCut: 2_400_000,
+                chromaCut: 320_000,
                 chromaDelay: 4
             )
         case .lp:
             return Params(
-                lumaCut: 1900000,
-                chromaCut: 300000,
+                lumaCut: 1_900_000,
+                chromaCut: 300_000,
                 chromaDelay: 5
             )
         case .ep:
             return Params(
-                lumaCut: 1400000,
-                chromaCut: 280000,
+                lumaCut: 1_400_000,
+                chromaCut: 280_000,
                 chromaDelay: 6
             )
         }

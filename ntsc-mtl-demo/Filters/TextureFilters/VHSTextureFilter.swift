@@ -69,9 +69,11 @@ class VHSTextureFilter {
                 edgeWave: settings.edgeWave,
                 commandBuffer: commandBuffer
             )
+        } else {
+            try justBlit(from: inputTexture, to: try iter.next(), commandBuffer: commandBuffer)
         }
         if settings.tapeSpeedEnabled {
-            try tapeSpeed(inputTexture: try iter.last, outputTexture: try iter.next(), textureA: try iter.next(), textureB: try iter.next(), textureC: try iter.next(), commandBuffer: commandBuffer)
+            try tapeSpeed(inputTexture: try iter.last, textureA: try iter.next(), textureB: try iter.next(), textureC: try iter.next(), outputTexture: try iter.next() ,commandBuffer: commandBuffer)
         }
         try justBlit(from: try iter.last, to: outputTexture, commandBuffer: commandBuffer)
     }
@@ -86,9 +88,7 @@ class VHSTextureFilter {
         ciContext.render(randomImg, to: texture, commandBuffer: commandBuffer, bounds: randomImg.extent, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
     }
     
-    private func tapeSpeed(inputTexture: MTLTexture, outputTexture: MTLTexture, textureA: MTLTexture, textureB: MTLTexture, textureC: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
-        return
+    private func tapeSpeed(inputTexture: MTLTexture, textureA: MTLTexture, textureB: MTLTexture, textureC: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         let params = settings.tapeSpeed.params
         let lumaFunction = ChromaLowpassTextureFilter.lowpassFilter(
             cutoff: params.lumaCut,
@@ -101,20 +101,20 @@ class VHSTextureFilter {
         self.chromaFilter.denominators = chromaFunction.denominators
         self.chromaFilter.delay = params.chromaDelay
         
-        try self.lumaFilter.run(inputTexture: inputTexture, outputTexture: textureA, commandBuffer: commandBuffer)
-        try self.lumaFilterSingle.run(inputTexture: textureA, outputTexture: textureB, commandBuffer: commandBuffer)
-        try self.chromaFilter.run(inputTexture: inputTexture, outputTexture: textureC, commandBuffer: commandBuffer)
-        let pipelineState = try self.pipelineCache.pipelineState(function: .yiqCompose)
-        guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
-            throw Error.cantMakeComputeEncoder
-        }
-        encoder.setComputePipelineState(pipelineState)
-        encoder.setTexture(textureB, index: 0)
-        encoder.setTexture(textureC, index: 1)
-        encoder.setTexture(textureC, index: 2)
-        encoder.setTexture(outputTexture, index: 3)
-        encoder.dispatchThreads(textureWidth: inputTexture.width, textureHeight: inputTexture.height)
-        encoder.endEncoding()
+//        try self.lumaFilter.run(inputTexture: inputTexture, outputTexture: textureA, commandBuffer: commandBuffer)
+//        try self.lumaFilterSingle.run(inputTexture: textureA, outputTexture: textureB, commandBuffer: commandBuffer)
+        try self.chromaFilter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
+//        let pipelineState = try self.pipelineCache.pipelineState(function: .yiqCompose)
+//        guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
+//            throw Error.cantMakeComputeEncoder
+//        }
+//        encoder.setComputePipelineState(pipelineState)
+//        encoder.setTexture(textureB, index: 0)
+//        encoder.setTexture(textureC, index: 1)
+//        encoder.setTexture(textureC, index: 2)
+//        encoder.setTexture(outputTexture, index: 3)
+//        encoder.dispatchThreads(textureWidth: inputTexture.width, textureHeight: inputTexture.height)
+//        encoder.endEncoding()
     }
     
     private func edgeWave(from inputTexture: MTLTexture, randomTexture: MTLTexture, to outputTexture: MTLTexture, edgeWave: VHSEdgeWaveSettings, commandBuffer: MTLCommandBuffer) throws {
