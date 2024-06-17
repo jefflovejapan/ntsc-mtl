@@ -52,13 +52,14 @@ class NTSCTextureFilter {
     private let chromaPhaseErrorFilter: PhaseErrorTextureFilter
     private let chromaPhaseNoiseFilter: PhaseNoiseTextureFilter
     private let chromaDelayFilter: ChromaDelayTextureFilter
+    private let vhsFilter: VHSTextureFilter
     
     var inputImage: CIImage?
     
-    init(effect: NTSCEffect, device: MTLDevice, context: CIContext) throws {
+    init(effect: NTSCEffect, device: MTLDevice, ciContext: CIContext) throws {
         self.effect = effect
         self.device = device
-        self.context = context
+        self.context = ciContext
         guard let commandQueue = device.makeCommandQueue() else {
             throw Error.cantMakeTexture
         }
@@ -106,9 +107,9 @@ class NTSCTextureFilter {
         compositePreemphasisFilter.denominators = compositePreemphasisFunction.denominators
         compositePreemphasisFilter.scale = -effect.compositePreemphasis
         self.compositePreemphasisFilter = compositePreemphasisFilter
-        self.compositeNoiseFilter = CompositeNoiseTextureFilter(device: device, ciContext: context, pipelineCache: pipelineCache)
-        self.snowFilter = SnowTextureFilter(device: device, ciContext: context, pipelineCache: pipelineCache)
-        self.headSwitchingFilter = HeadSwitchingTextureFilter(device: device, ciContext: context, pipelineCache: pipelineCache)
+        self.compositeNoiseFilter = CompositeNoiseTextureFilter(device: device, ciContext: ciContext, pipelineCache: pipelineCache)
+        self.snowFilter = SnowTextureFilter(device: device, ciContext: ciContext, pipelineCache: pipelineCache)
+        self.headSwitchingFilter = HeadSwitchingTextureFilter(device: device, ciContext: ciContext, pipelineCache: pipelineCache)
         let lumaSmearFunction = IIRTransferFunction.lumaSmear(amount: effect.lumaSmear, bandwidthScale: effect.bandwidthScale)
         let lumaSmearFilter = IIRTextureFilter(
             device: device,
@@ -136,8 +137,9 @@ class NTSCTextureFilter {
         ringingFilter.scale = ringingSettings.intensity
         self.ringingFilter = ringingFilter
         self.chromaPhaseErrorFilter = PhaseErrorTextureFilter(device: device, pipelineCache: pipelineCache)
-        self.chromaPhaseNoiseFilter = PhaseNoiseTextureFilter(device: device, pipelineCache: pipelineCache, ciContext: context)
+        self.chromaPhaseNoiseFilter = PhaseNoiseTextureFilter(device: device, pipelineCache: pipelineCache, ciContext: ciContext)
         self.chromaDelayFilter = ChromaDelayTextureFilter(device: device, pipelineCache: pipelineCache)
+        self.vhsFilter = VHSTextureFilter(device: device, pipelineCache: pipelineCache, ciContext: ciContext)
     }
         
     static func convertToYIQ(_ texture: (any MTLTexture), output: (any MTLTexture), commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
@@ -308,9 +310,16 @@ class NTSCTextureFilter {
         filter.chromaDelay = delay
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
-    static func vhs(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
+    static func vhs(inputTexture: MTLTexture, outputTexture: MTLTexture, filter: VHSTextureFilter, isVHSEnabled: Bool, settings: VHSSettings, bandwidthScale: Float, commandBuffer: MTLCommandBuffer) throws {
+        guard isVHSEnabled else {
+            try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
+            return
+        }
+        filter.settings = settings
+        filter.bandwidthScale = bandwidthScale
+        try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
+    
     static func chromaVertBlend(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
     }
@@ -396,9 +405,9 @@ class NTSCTextureFilter {
         self.textureA = textures[0]
         self.textureB = textures[1]
         self.textureC = textures[2]
-//        self.outTexture1 = textures[3]
-//        self.outTexture2 = textures[4]
-//        self.outTexture3 = textures[5]
+        self.outTexture1 = textures[3]
+        self.outTexture2 = textures[4]
+        self.outTexture3 = textures[5]
         context.render(inputImage, to: textureA, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
     }
     
@@ -573,6 +582,10 @@ class NTSCTextureFilter {
             try Self.vhs(
                 inputTexture: try iter.last,
                 outputTexture: try iter.next(),
+                filter: vhsFilter,
+                isVHSEnabled: effect.isVHSEnabled,
+                settings: effect.vhsSettings, 
+                bandwidthScale: effect.bandwidthScale,
                 commandBuffer: commandBuffer
             )
             // Step 18: chroma vert blend
@@ -591,17 +604,17 @@ class NTSCTextureFilter {
                 lightFilter: lightChromaLowpassFilter,
                 fullFilter: fullChromaLowpassFilter
             )
-//            try Self.writeToFields(
-//                inputTexture: try iter.last,
-//                frameNum: frameNum,
-//                useField: effect.useField,
-//                interTexA: outTexture1,
-//                interTexB: outTexture2,
-//                outTex: try iter.next(),
-//                commandBuffer: commandBuffer,
-//                device: device,
-//                pipelineCache: pipelineCache
-//            )
+            try Self.writeToFields(
+                inputTexture: try iter.last,
+                frameNum: frameNum,
+                useField: effect.useField,
+                interTexA: outTexture1,
+                interTexB: outTexture2,
+                outTex: try iter.next(),
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
             try Self.convertToRGB(
                 try iter.last,
                 output: try iter.next(),

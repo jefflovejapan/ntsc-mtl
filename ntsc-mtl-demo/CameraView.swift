@@ -40,7 +40,7 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         mtkView.isPaused = false
         self.mtkView = mtkView
         self.isFilterEnabled = isFilterEnabled
-        self.filter = try NTSCTextureFilter(effect: effect, device: device, context: context)
+        self.filter = try NTSCTextureFilter(effect: effect, device: device, ciContext: context)
         super.init(frame: .zero)
         self.mtkView.delegate = self
         addSubview(self.mtkView)

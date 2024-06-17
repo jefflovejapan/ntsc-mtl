@@ -32,6 +32,7 @@ class NTSCEffect {
     var chromaPhaseNoiseIntensity: Float16
     var chromaPhaseError: Float16
     var chromaDelay: (Float16, Int)
+    var isVHSEnabled: Bool
     var vhsSettings: VHSSettings
     var chromaVertBlend: Bool
     var chromaLowpassOut: ChromaLowpass
@@ -61,6 +62,7 @@ class NTSCEffect {
         chromaPhaseNoiseIntensity: Float16 = 0.001,
         chromaPhaseError: Float16 = 0,
         chromaDelay: (Float16, Int) = (0, 0),
+        isVHSEnabled: Bool = true,
         vhsSettings: VHSSettings = VHSSettings.default,
         chromaVertBlend: Bool = true,
         chromaLowpassOut: ChromaLowpass = ChromaLowpass.full,
@@ -89,6 +91,7 @@ class NTSCEffect {
         self.chromaPhaseNoiseIntensity = chromaPhaseNoiseIntensity
         self.chromaPhaseError = chromaPhaseError
         self.chromaDelay = chromaDelay
+        self.isVHSEnabled = isVHSEnabled
         self.vhsSettings = vhsSettings
         self.chromaVertBlend = chromaVertBlend
         self.chromaLowpassOut = chromaLowpassOut
@@ -209,16 +212,52 @@ struct RingingSettings {
 }
 
 struct VHSSettings {
-    var tapeSpeed: VHSTapeSpeed?
+    var tapeSpeedEnabled: Bool
+    var tapeSpeed: VHSTapeSpeed
     var chromaLoss: Float
-    var sharpen: VHSSharpenSettings?
-    var edgeWave: VHSEdgeWaveSettings?
+    var sharpenEnabled: Bool
+    var sharpen: VHSSharpenSettings
+    var edgeWaveEnabled: Bool
+    var edgeWave: VHSEdgeWaveSettings
 }
 
-enum VHSTapeSpeed: Int {
+enum VHSTapeSpeed: Int, Identifiable, CaseIterable {
     case sp = 1
     case lp
     case ep
+    
+    var id: Int {
+        rawValue
+    }
+    
+    struct Params {
+        var lumaCut: Float
+        var chromaCut: Float
+        var chromaDelay: UInt
+    }
+    
+    var params: Params {
+        switch self {
+        case .sp:
+            return Params(
+                lumaCut: 2_400_000,
+                chromaCut: 320_000,
+                chromaDelay: 4
+            )
+        case .lp:
+            return Params(
+                lumaCut: 1_900_000,
+                chromaCut: 300_000,
+                chromaDelay: 5
+            )
+        case .ep:
+            return Params(
+                lumaCut: 1_400_000,
+                chromaCut: 280_000,
+                chromaDelay: 6
+            )
+        }
+    }
 }
 
 struct VHSSharpenSettings {

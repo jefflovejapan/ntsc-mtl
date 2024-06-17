@@ -76,9 +76,12 @@ extension RingingSettings {
 
 extension VHSSettings {
     static let `default` = VHSSettings(
-        tapeSpeed: .lp, 
+        tapeSpeedEnabled: true,
+        tapeSpeed: .lp,
         chromaLoss: 0,
+        sharpenEnabled: true,
         sharpen: .default,
+        edgeWaveEnabled: true,
         edgeWave: .default
     )
 }
