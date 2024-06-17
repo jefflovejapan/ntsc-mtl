@@ -19,136 +19,114 @@ struct ControlsView: View {
                 Toggle(isOn: $enableFilter, label: {
                     Text("Enable filter?")
                 })
-//                HStack {
-//                    Text("Resolution")
-//                    Picker(selection: $resolution, content: {
-//                        ForEach(Resolution.allCases) { res in
-//                            Text(name(resolution: res))
-//                                .tag(res)
-//                        }
-//                    }, label: {
-//                        Text("Resolution")
-//                    })
-//                }
-//                HStack {
-//                    Text("Use field")
-//                    Picker(selection: $effect.useField, content: {
-//                        ForEach(UseField.allCases) { useField in
-//                            Text(name(useField: useField))
-//                                .tag(useField)
-//                        }
-//                    }, label: { Text("Use field") })
-//                }
-//                VStack(alignment: .leading) {
-//                    Text("Bandwidth scale: \(effect.bandwidthScale.formatted(self.twoDecimalPlaces))")
-//                    Slider.init(value: $effect.bandwidthScale, in: 0.125...8, label: {
-//                        Text(effect.bandwidthScale.formatted(.number))
-//                    })
-//                    .padding(.leading)
-//                }
-//                HStack {
-//                    Text("Input luma")
-//                    Spacer()
-//                    Picker(selection: $effect.inputLumaFilter, content: {
-//                        ForEach(LumaLowpass.allCases) { lowpass in
-//                            Text(name(lumaLowpass: lowpass))
-//                                .tag(lowpass)
-//                        }
-//                    }, label: {
-//                        Text("Input Luma")
-//                    })
-//                }
-//                HStack {
-//                    Text("Filter type")
-//                    Spacer()
-//                    Picker(selection: $effect.filterType, content: {
-//                        ForEach(FilterType.allCases) { filterType in
-//                            Text(name(filterType: filterType))
-//                                .tag(filterType)
-//                        }
-//                    }, label: {
-//                        Text("Filter Type")
-//                    })
-//                }
-//                HStack {
-//                    Text("Chroma lowpass in")
-//                    Spacer()
-//                    Picker(selection: $effect.chromaLowpassIn, content: {
-//                        ForEach(ChromaLowpass.allCases) { lp in
-//                            Text(name(chromaLowpass: lp))
-//                                .tag(lp)
-//                        }
-//                    }, label: {
-//                        Text("Chroma lowpass in")
-//                    })
-//                }
-//                
-//                HStack {
-//                    Text("Chroma phase shift")
-//                    Spacer()
-//                    Picker(selection: $effect.videoScanlinePhaseShift, content: {
-//                        ForEach(PhaseShift.allCases) { phaseShift in
-//                            Text(name(phaseShift: phaseShift))
-//                                .tag(phaseShift)
-//                        }
-//                    }, label: {
-//                        Text("Video scanline phase shift")
-//                    })
-//                }
-//                Stepper("Chroma phase shift offset: \(effect.videoScanlinePhaseShiftOffset)", value: $effect.videoScanlinePhaseShiftOffset, in: 0...4)
-//                VStack {
-//                    Text("Chroma phase error: \(effect.chromaPhaseError.formatted(self.twoDecimalPlaces))")
-//                    Slider(value: $effect.chromaPhaseError, in: 0...1)
-//                        .padding(.leading)
-//                }
-//                VStack {
-//                    Text("Composite preemphasis: \(effect.compositePreemphasis.formatted(self.twoDecimalPlaces))")
-//                    Slider(value: $effect.compositePreemphasis, in: -1...2)
-//                        .padding(.leading)
-//                }
-//                VStack {}
-//                Text("Chroma phase noise")
-//                Slider(value: $effect.chromaPhaseNoiseIntensity, in: 0...1)
-//                    .padding(.leading)
-//                snowSection
-//                headSwitchingSection
-//                VStack {
-//                    Text("Luma smear: \(effect.lumaSmear.formatted(self.twoDecimalPlaces))")
-//                    Slider(value: $effect.lumaSmear, in: 0...1)
-//                        .padding(.leading)
-//                }
-//                
-//                ringingSection
-//                VStack {
-//                    Text("Chroma phase noise: \(effect.chromaPhaseNoiseIntensity.formatted(self.twoDecimalPlaces))")
-//                    Slider(value: $effect.chromaPhaseNoiseIntensity, in: 0...1)
-//                        .padding(.leading)
-//                }
-//                chromaDelaySection
-//                vhsSection
+                HStack {
+                    Text("Resolution")
+                    Picker(selection: $resolution, content: {
+                        ForEach(Resolution.allCases) { res in
+                            Text(name(resolution: res))
+                                .tag(res)
+                        }
+                    }, label: {
+                        Text("Resolution")
+                    })
+                }
+                HStack {
+                    Text("Use field")
+                    Picker(selection: $effect.useField, content: {
+                        ForEach(UseField.allCases) { useField in
+                            Text(name(useField: useField))
+                                .tag(useField)
+                        }
+                    }, label: { Text("Use field") })
+                }
+                VStack(alignment: .leading) {
+                    Text("Bandwidth scale: \(effect.bandwidthScale.formatted(self.twoDecimalPlaces))")
+                    Slider.init(value: $effect.bandwidthScale, in: 0.125...8, label: {
+                        Text(effect.bandwidthScale.formatted(.number))
+                    })
+                    .padding(.leading)
+                }
+                HStack {
+                    Text("Input luma")
+                    Spacer()
+                    Picker(selection: $effect.inputLumaFilter, content: {
+                        ForEach(LumaLowpass.allCases) { lowpass in
+                            Text(name(lumaLowpass: lowpass))
+                                .tag(lowpass)
+                        }
+                    }, label: {
+                        Text("Input Luma")
+                    })
+                }
+                HStack {
+                    Text("Filter type")
+                    Spacer()
+                    Picker(selection: $effect.filterType, content: {
+                        ForEach(FilterType.allCases) { filterType in
+                            Text(name(filterType: filterType))
+                                .tag(filterType)
+                        }
+                    }, label: {
+                        Text("Filter Type")
+                    })
+                }
+                HStack {
+                    Text("Chroma lowpass in")
+                    Spacer()
+                    Picker(selection: $effect.chromaLowpassIn, content: {
+                        ForEach(ChromaLowpass.allCases) { lp in
+                            Text(name(chromaLowpass: lp))
+                                .tag(lp)
+                        }
+                    }, label: {
+                        Text("Chroma lowpass in")
+                    })
+                }
+                
+                HStack {
+                    Text("Chroma phase shift")
+                    Spacer()
+                    Picker(selection: $effect.videoScanlinePhaseShift, content: {
+                        ForEach(PhaseShift.allCases) { phaseShift in
+                            Text(name(phaseShift: phaseShift))
+                                .tag(phaseShift)
+                        }
+                    }, label: {
+                        Text("Video scanline phase shift")
+                    })
+                }
+                Stepper("Chroma phase shift offset: \(effect.videoScanlinePhaseShiftOffset)", value: $effect.videoScanlinePhaseShiftOffset, in: 0...4)
+                VStack {
+                    Text("Chroma phase error: \(effect.chromaPhaseError.formatted(self.twoDecimalPlaces))")
+                    Slider(value: $effect.chromaPhaseError, in: 0...1)
+                        .padding(.leading)
+                }
+                VStack {
+                    Text("Composite preemphasis: \(effect.compositePreemphasis.formatted(self.twoDecimalPlaces))")
+                    Slider(value: $effect.compositePreemphasis, in: -1...2)
+                        .padding(.leading)
+                }
+                VStack {}
+                Text("Chroma phase noise")
+                Slider(value: $effect.chromaPhaseNoiseIntensity, in: 0...1)
+                    .padding(.leading)
+                snowSection
+                headSwitchingSection
+                VStack {
+                    Text("Luma smear: \(effect.lumaSmear.formatted(self.twoDecimalPlaces))")
+                    Slider(value: $effect.lumaSmear, in: 0...1)
+                        .padding(.leading)
+                }
+                
+                ringingSection
+                VStack {
+                    Text("Chroma phase noise: \(effect.chromaPhaseNoiseIntensity.formatted(self.twoDecimalPlaces))")
+                    Slider(value: $effect.chromaPhaseNoiseIntensity, in: 0...1)
+                        .padding(.leading)
+                }
+                chromaDelaySection
+                vhsSection
             }
-
-            //                VStack(alignment: .leading) {
-            //                    Text("Luma smear")
-            //                    Slider.init(value: $effect.lumaSmear, in: 0...1, label: {
-            //                        Text(effect.lumaSmear.formatted(.number))
-            //                    })
-            //                    .padding(.leading)
-            //                }
-            
-            /*
-             What should actually be supported?
-             
-             - bandwidth scale
-             - input luma (LumaLowpass)
-             - luma box filter: LumaBoxTextureFilter
-             - lumaNotchFilter: IIRTextureFilter
-             - chroma lowpass (ChromaLowpass)
-             - chroma into luma (PhaseShift, phaseShiftOffset)
-             - compositePreemphasis (IIR)
-             - compositeNoise
-             - ringing
-             */
         }
         .background(Color.green.opacity(0.2))
     }
@@ -223,46 +201,46 @@ struct ControlsView: View {
         })
     }
     
-//    private var vhsSection: some View {
-//        Section("VHS", content: {
-//            VStack {
-//                Toggle(isOn: $effect.vhsSettings.edgeWaveEnabled, label: {
-//                    Text("Edge wave")
-//                })
-//                if effect.vhsSettings.edgeWaveEnabled {
-//                    VStack {
-//                        Text("Intensity: \(effect.vhsSettings.edgeWave.intensity.formatted(self.twoDecimalPlaces))")
-//                        Slider(value: $effect.vhsSettings.edgeWave.intensity, in: 0...20)
-//                    }
-//                    VStack {
-//                        Text("Speed: \(effect.vhsSettings.edgeWave.speed.formatted(self.twoDecimalPlaces))")
-//                        Slider(value: $effect.vhsSettings.edgeWave.speed, in: 0...10)
-//                    }
-//                    VStack {
-//                        Text("Frequency: \(effect.vhsSettings.edgeWave.frequency.formatted(self.twoDecimalPlaces))")
-//                        Slider(value: $effect.vhsSettings.edgeWave.frequency, in: 0...0.5)
-//                    }
-//                    VStack {
-//                        Text("Detail: \(effect.vhsSettings.edgeWave.detail)")
-//                        Stepper(value: $effect.vhsSettings.edgeWave.detail, in: 1...5, label: {
-//                            Text("Detail: \(effect.vhsSettings.edgeWave.detail)")
-//                        })
-//                    }
-//                }
-//                Toggle(isOn: $effect.vhsSettings.tapeSpeedEnabled, label: {
-//                    Text("Tape speed")
-//                })
-//                if effect.vhsSettings.tapeSpeedEnabled {
-//                    Picker.init(selection: $effect.vhsSettings.tapeSpeed, content: {
-//                        ForEach(VHSTapeSpeed.allCases) { speed in
-//                            Text(name(tapeSpeed: speed))
-//                                .tag(speed)
-//                        }
-//                    }, label: { Text("Tape speed") })
-//                }
-//            }
-//        })
-//    }
+    private var vhsSection: some View {
+        Section("VHS", content: {
+            VStack {
+                Toggle(isOn: $effect.vhsSettings.edgeWaveEnabled, label: {
+                    Text("Edge wave")
+                })
+                if effect.vhsSettings.edgeWaveEnabled {
+                    VStack {
+                        Text("Intensity: \(effect.vhsSettings.edgeWave.intensity.formatted(self.twoDecimalPlaces))")
+                        Slider(value: $effect.vhsSettings.edgeWave.intensity, in: 0...20)
+                    }
+                    VStack {
+                        Text("Speed: \(effect.vhsSettings.edgeWave.speed.formatted(self.twoDecimalPlaces))")
+                        Slider(value: $effect.vhsSettings.edgeWave.speed, in: 0...10)
+                    }
+                    VStack {
+                        Text("Frequency: \(effect.vhsSettings.edgeWave.frequency.formatted(self.twoDecimalPlaces))")
+                        Slider(value: $effect.vhsSettings.edgeWave.frequency, in: 0...0.5)
+                    }
+                    VStack {
+                        Text("Detail: \(effect.vhsSettings.edgeWave.detail)")
+                        Stepper(value: $effect.vhsSettings.edgeWave.detail, in: 1...5, label: {
+                            Text("Detail: \(effect.vhsSettings.edgeWave.detail)")
+                        })
+                    }
+                }
+                Toggle(isOn: $effect.vhsSettings.tapeSpeedEnabled, label: {
+                    Text("Tape speed")
+                })
+                if effect.vhsSettings.tapeSpeedEnabled {
+                    Picker.init(selection: $effect.vhsSettings.tapeSpeed, content: {
+                        ForEach(VHSTapeSpeed.allCases) { speed in
+                            Text(name(tapeSpeed: speed))
+                                .tag(speed)
+                        }
+                    }, label: { Text("Tape speed") })
+                }
+            }
+        })
+    }
     
     private var twoDecimalPlaces: FloatingPointFormatStyle<Float> {
         FloatingPointFormatStyle.number.precision(.fractionLength(2))
