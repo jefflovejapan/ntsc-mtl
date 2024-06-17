@@ -49,7 +49,7 @@ class TrackingNoiseTextureFilter {
          - run snow on it
          */
         try justBlit(from: inputTexture, to: iter.next(), commandBuffer: commandBuffer)
-        try shiftRow(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
+        try shiftRow(input: try iter.last, textureA: try iter.next(), output: try iter.next(), commandBuffer: commandBuffer)
 //        try addNoise(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
 //        try addSnow(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
 //        try blend(input: inputTexture, altered: try iter.last, output: outputTexture, commandBuffer: commandBuffer)
