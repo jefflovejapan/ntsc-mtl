@@ -225,27 +225,40 @@ struct ControlsView: View {
     
     private var vhsSection: some View {
         Section("VHS", content: {
-            Toggle(isOn: $effect.vhsSettings.edgeWaveEnabled, label: {
-                Text("Edge wave")
-            })
-            if effect.vhsSettings.edgeWaveEnabled {
-                VStack {
-                    Text("Intensity: \(effect.vhsSettings.edgeWave.intensity.formatted(self.twoDecimalPlaces))")
-                    Slider(value: $effect.vhsSettings.edgeWave.intensity, in: 0...20)
-                }
-                VStack {
-                    Text("Speed: \(effect.vhsSettings.edgeWave.speed.formatted(self.twoDecimalPlaces))")
-                    Slider(value: $effect.vhsSettings.edgeWave.speed, in: 0...10)
-                }
-                VStack {
-                    Text("Frequency: \(effect.vhsSettings.edgeWave.frequency.formatted(self.twoDecimalPlaces))")
-                    Slider(value: $effect.vhsSettings.edgeWave.frequency, in: 0...0.5)
-                }
-                VStack {
-                    Text("Detail: \(effect.vhsSettings.edgeWave.detail)")
-                    Stepper(value: $effect.vhsSettings.edgeWave.detail, in: 1...5, label: {
+            VStack {
+                Toggle(isOn: $effect.vhsSettings.edgeWaveEnabled, label: {
+                    Text("Edge wave")
+                })
+                if effect.vhsSettings.edgeWaveEnabled {
+                    VStack {
+                        Text("Intensity: \(effect.vhsSettings.edgeWave.intensity.formatted(self.twoDecimalPlaces))")
+                        Slider(value: $effect.vhsSettings.edgeWave.intensity, in: 0...20)
+                    }
+                    VStack {
+                        Text("Speed: \(effect.vhsSettings.edgeWave.speed.formatted(self.twoDecimalPlaces))")
+                        Slider(value: $effect.vhsSettings.edgeWave.speed, in: 0...10)
+                    }
+                    VStack {
+                        Text("Frequency: \(effect.vhsSettings.edgeWave.frequency.formatted(self.twoDecimalPlaces))")
+                        Slider(value: $effect.vhsSettings.edgeWave.frequency, in: 0...0.5)
+                    }
+                    VStack {
                         Text("Detail: \(effect.vhsSettings.edgeWave.detail)")
-                    })
+                        Stepper(value: $effect.vhsSettings.edgeWave.detail, in: 1...5, label: {
+                            Text("Detail: \(effect.vhsSettings.edgeWave.detail)")
+                        })
+                    }
+                }
+                Toggle(isOn: $effect.vhsSettings.tapeSpeedEnabled, label: {
+                    Text("Tape speed")
+                })
+                if effect.vhsSettings.tapeSpeedEnabled {
+                    Picker.init(selection: $effect.vhsSettings.tapeSpeed, content: {
+                        ForEach(VHSTapeSpeed.allCases) { speed in
+                            Text(name(tapeSpeed: speed))
+                                .tag(speed)
+                        }
+                    }, label: { Text("Tape speed") })
                 }
             }
         })
@@ -326,6 +339,17 @@ struct ControlsView: View {
             return "720p"
         case .resVGA:
             return "VGA"
+        }
+    }
+    
+    private func name(tapeSpeed: VHSTapeSpeed) -> String {
+        switch tapeSpeed {
+        case .sp:
+            return "SP"
+        case .lp:
+            return "LP"
+        case .ep:
+            return "EP"
         }
     }
 }

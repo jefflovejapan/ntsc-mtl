@@ -221,10 +221,43 @@ struct VHSSettings {
     var edgeWave: VHSEdgeWaveSettings
 }
 
-enum VHSTapeSpeed: Int {
+enum VHSTapeSpeed: Int, Identifiable, CaseIterable {
     case sp = 1
     case lp
     case ep
+    
+    var id: Int {
+        rawValue
+    }
+    
+    struct Params {
+        var lumaCut: Float
+        var chromaCut: Float
+        var chromaDelay: UInt
+    }
+    
+    var params: Params {
+        switch self {
+        case .sp:
+            return Params(
+                lumaCut: 2400000,
+                chromaCut: 320000,
+                chromaDelay: 4
+            )
+        case .lp:
+            return Params(
+                lumaCut: 1900000,
+                chromaCut: 300000,
+                chromaDelay: 5
+            )
+        case .ep:
+            return Params(
+                lumaCut: 1400000,
+                chromaCut: 280000,
+                chromaDelay: 6
+            )
+        }
+    }
 }
 
 struct VHSSharpenSettings {

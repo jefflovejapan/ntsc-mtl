@@ -45,7 +45,7 @@ class IIRTextureFilter {
     private let initialCondition: InitialCondition
     private let channelMix: YIQChannels
     var scale: Float16 = 1
-    private let delay: UInt
+    var delay: UInt
     private(set) var zTextures: [MTLTexture] = []
     private var initialConditionTexture: MTLTexture?
     private var filteredSampleTexture: MTLTexture?
@@ -248,6 +248,10 @@ class IIRTextureFilter {
     }
     
     func run(inputTexture: MTLTexture, outputTexture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        guard !(numerators.isEmpty || denominators.isEmpty) else {
+            try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
+            return
+        }
         let needsTextureUpdate: Bool
         if !(zTextures.count == numerators.count) {
             needsTextureUpdate = true
