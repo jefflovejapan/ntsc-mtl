@@ -19,12 +19,10 @@ kernel void trackingNoiseShiftRow
     constant float &bandwidthScale [[buffer(2)]],
     uint2 gid [[thread_position_in_grid]]
 ) {
-//    half noise = randomTexture.read(uint2(0, gid.y)).x;
-//    float intensityScale = float(noise) / float(effectHeight);
+    half noise = randomTexture.read(uint2(0, gid.y)).x;
+    float intensityScale = float(noise) / float(effectHeight);
 //    float noisyShift = noise * intensityScale * waveIntensity * 0.25 * bandwidthScale;
-//    shiftRowInline(inputTexture, outputTexture, noisyShift, gid);
-    uint2 newCoord = uint2(inputTexture.get_width() - gid.x - 1, gid.y);
-    half4 outPixel = inputTexture.read(newCoord);
-    outputTexture.write(outPixel, gid);
+    
+    shiftRowInline(inputTexture, outputTexture, noisyShift, gid);
 }
 
