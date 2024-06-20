@@ -73,13 +73,14 @@ class TrackingNoiseTextureFilter {
         encoder.endEncoding()
     }
     private func addNoise(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
-            throw Error.cantMakeComputeEncoder
-        }
-        let pipelineState = try pipelineCache.pipelineState(function: .noise)
-        encoder.setComputePipelineState(pipelineState)
-        encoder.dispatchThreads(textureWidth: input.width, textureHeight: input.height)
-        encoder.endEncoding()
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+//        guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
+//            throw Error.cantMakeComputeEncoder
+//        }
+//        let pipelineState = try pipelineCache.pipelineState(function: .noise)
+//        encoder.setComputePipelineState(pipelineState)
+//        encoder.dispatchThreads(textureWidth: input.width, textureHeight: input.height)
+//        encoder.endEncoding()
     }
     private func addSnow(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
@@ -91,12 +92,13 @@ class TrackingNoiseTextureFilter {
         encoder.endEncoding()
     }
     private func blend(input: MTLTexture, altered: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
-            throw Error.cantMakeComputeEncoder
-        }
-        let pipelineState = try pipelineCache.pipelineState(function: .blend)
-        encoder.setComputePipelineState(pipelineState)
-        encoder.dispatchThreads(textureWidth: input.width, textureHeight: input.height)
-        encoder.endEncoding()
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+//        guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
+//            throw Error.cantMakeComputeEncoder
+//        }
+//        let pipelineState = try pipelineCache.pipelineState(function: .blend)
+//        encoder.setComputePipelineState(pipelineState)
+//        encoder.dispatchThreads(textureWidth: input.width, textureHeight: input.height)
+//        encoder.endEncoding()
     }
 }
