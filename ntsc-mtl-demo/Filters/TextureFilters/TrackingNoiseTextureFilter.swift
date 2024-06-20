@@ -13,9 +13,12 @@ class TrackingNoiseTextureFilter {
     typealias Error = TextureFilterError
     private let device: MTLDevice
     private let ciContext: CIContext
+    private let randomGenerator = CIFilter.randomGenerator()
+    private var rng = SystemRandomNumberGenerator()
     private let pipelineCache: MetalPipelineCache
     private var wipTextureA: MTLTexture?
     private var wipTextureB: MTLTexture?
+    private var randomTexture: MTLTexture?
         
     var trackingNoiseSettings: TrackingNoiseSettings = .default
     var bandwidthScale: Float = NTSCEffect.default.bandwidthScale
@@ -33,12 +36,13 @@ class TrackingNoiseTextureFilter {
             needsUpdate = true
         }
         if needsUpdate {
-            let texs = Array(IIRTextureFilter.textures(from: inputTexture, device: device).prefix(2))
+            let texs = Array(IIRTextureFilter.textures(from: inputTexture, device: device).prefix(3))
             self.wipTextureA = texs[0]
             self.wipTextureB = texs[1]
+            self.randomTexture = texs[2]
         }
 
-        guard let wipTextureA, let wipTextureB else {
+        guard let wipTextureA, let wipTextureB, let randomTexture else {
             throw Error.cantMakeTexture
         }
         let iter = IteratorThing(vals: [wipTextureA, wipTextureB])
@@ -49,45 +53,43 @@ class TrackingNoiseTextureFilter {
          - run videoNoiseLine on it
          - run snow on it
          */
-        try justBlit(from: inputTexture, to: iter.next(), commandBuffer: commandBuffer)
+//        try justBlit(from: inputTexture, to: iter.next(), commandBuffer: commandBuffer)
 //        try justBlit(from: iter.last, to: outputTexture, commandBuffer: commandBuffer)
-        try shiftRow(input: try iter.last, textureA: try iter.next(), output: outputTexture, commandBuffer: commandBuffer)
-//        try addNoise(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
+        try writeNoise(to: randomTexture, commandBuffer: commandBuffer)
+        try shiftRow(input: inputTexture, randomTexture: randomTexture, output: outputTexture, commandBuffer: commandBuffer)
 //        try addSnow(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
 //        try blend(input: iter.last, altered: iter.last, output: outputTexture, commandBuffer: commandBuffer)
     }
     
-    private func shiftRow(input: MTLTexture, textureA: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+    private func shiftRow(input: MTLTexture, randomTexture: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
-        let pipelineState = try pipelineCache.pipelineState(function: .shiftRow)
+        let pipelineState = try pipelineCache.pipelineState(function: .trackingNoiseShiftRow)
         encoder.setComputePipelineState(pipelineState)
         encoder.setTexture(input, index: 0)
-        encoder.setTexture(textureA, index: 1)
+        encoder.setTexture(randomTexture, index: 1)
         encoder.setTexture(output, index: 2)
-        var effectHeight = trackingNoiseSettings.height
+        var effectHeight: UInt = 100
         encoder.setBytes(&effectHeight, length: MemoryLayout<UInt>.size, index: 0)
-        var offsetRows: UInt = 0
-        encoder.setBytes(&offsetRows, length: MemoryLayout<UInt>.size, index: 1)
-        var shift: Float = 60
-        encoder.setBytes(&shift, length: MemoryLayout<Float>.size, index: 2)
+        var waveIntensity = trackingNoiseSettings.waveIntensity
+        encoder.setBytes(&waveIntensity, length: MemoryLayout<Float>.size, index: 1)
         var bandwidthScale = bandwidthScale
-        encoder.setBytes(&bandwidthScale, length: MemoryLayout<Float>.size, index: 3)
-        
+        encoder.setBytes(&bandwidthScale, length: MemoryLayout<Float>.size, index: 2)
         encoder.dispatchThreads(textureWidth: input.width, textureHeight: input.height)
         encoder.endEncoding()
     }
-    private func addNoise(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
-//        guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
-//            throw Error.cantMakeComputeEncoder
-//        }
-//        let pipelineState = try pipelineCache.pipelineState(function: .noise)
-//        encoder.setComputePipelineState(pipelineState)
-//        encoder.dispatchThreads(textureWidth: input.width, textureHeight: input.height)
-//        encoder.endEncoding()
+    private func writeNoise(to texture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        let randomX: UInt = rng.next(upperBound: 500)
+        let randomY: UInt = rng.next(upperBound: 500)
+        guard let randomImage = randomGenerator.outputImage else {
+            throw Error.cantMakeRandomImage
+        }
+        let shiftedImage = randomImage.transformed(by: CGAffineTransform(translationX: CGFloat(randomX), y: CGFloat(randomY)))
+        let croppedImage = shiftedImage.cropped(to: CGRect(origin: .zero, size: CGSize(width: texture.width, height: texture.height)))
+        ciContext.render(croppedImage, to: texture, commandBuffer: commandBuffer, bounds: croppedImage.extent, colorSpace: ciContext.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
     }
+    
     private func addSnow(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder

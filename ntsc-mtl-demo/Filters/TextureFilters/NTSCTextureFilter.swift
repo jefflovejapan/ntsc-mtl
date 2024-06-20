@@ -249,12 +249,13 @@ class NTSCTextureFilter {
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
-    static func trackingNoise(inputTexture: MTLTexture, outputTexture: MTLTexture, isTrackingEnabled: Bool, trackingNoise: TrackingNoiseSettings, filter: TrackingNoiseTextureFilter, commandBuffer: MTLCommandBuffer) throws {
+    static func trackingNoise(inputTexture: MTLTexture, outputTexture: MTLTexture, isTrackingEnabled: Bool, trackingNoise: TrackingNoiseSettings, bandwidthScale: Float, filter: TrackingNoiseTextureFilter, commandBuffer: MTLCommandBuffer) throws {
         guard isTrackingEnabled else {
             try justBlit(from: inputTexture, to: outputTexture, commandBuffer: commandBuffer)
             return
         }
         filter.trackingNoiseSettings = trackingNoise
+        filter.bandwidthScale = bandwidthScale
         try filter.run(inputTexture: inputTexture, outputTexture: outputTexture, commandBuffer: commandBuffer)
     }
     
@@ -520,7 +521,8 @@ class NTSCTextureFilter {
                 inputTexture: try iter.last,
                 outputTexture: try iter.next(),
                 isTrackingEnabled: effect.isTrackingNoiseEnabled,
-                trackingNoise: effect.trackingNoise,
+                trackingNoise: effect.trackingNoise, 
+                bandwidthScale: effect.bandwidthScale,
                 filter: trackingNoiseFilter,
                 commandBuffer: commandBuffer
             )
