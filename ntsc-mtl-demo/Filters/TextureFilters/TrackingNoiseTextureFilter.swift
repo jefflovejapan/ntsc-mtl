@@ -18,6 +18,7 @@ class TrackingNoiseTextureFilter {
     private var wipTextureB: MTLTexture?
         
     var trackingNoiseSettings: TrackingNoiseSettings = .default
+    var bandwidthScale: Float = NTSCEffect.default.bandwidthScale
     init(device: MTLDevice, ciContext: CIContext, pipelineCache: MetalPipelineCache) {
         self.device = device
         self.ciContext = ciContext
@@ -49,10 +50,11 @@ class TrackingNoiseTextureFilter {
          - run snow on it
          */
         try justBlit(from: inputTexture, to: iter.next(), commandBuffer: commandBuffer)
-        try shiftRow(input: try iter.last, textureA: try iter.next(), output: try iter.next(), commandBuffer: commandBuffer)
+//        try justBlit(from: iter.last, to: outputTexture, commandBuffer: commandBuffer)
+        try shiftRow(input: try iter.last, textureA: try iter.next(), output: outputTexture, commandBuffer: commandBuffer)
 //        try addNoise(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
 //        try addSnow(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
-//        try blend(input: inputTexture, altered: try iter.last, output: outputTexture, commandBuffer: commandBuffer)
+//        try blend(input: iter.last, altered: iter.last, output: outputTexture, commandBuffer: commandBuffer)
     }
     
     private func shiftRow(input: MTLTexture, textureA: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
@@ -68,6 +70,10 @@ class TrackingNoiseTextureFilter {
         encoder.setBytes(&effectHeight, length: MemoryLayout<UInt>.size, index: 0)
         var offsetRows: UInt = 0
         encoder.setBytes(&offsetRows, length: MemoryLayout<UInt>.size, index: 1)
+        var shift: Float = 60
+        encoder.setBytes(&shift, length: MemoryLayout<Float>.size, index: 2)
+        var bandwidthScale = bandwidthScale
+        encoder.setBytes(&bandwidthScale, length: MemoryLayout<Float>.size, index: 3)
         
         encoder.dispatchThreads(textureWidth: input.width, textureHeight: input.height)
         encoder.endEncoding()
@@ -92,13 +98,15 @@ class TrackingNoiseTextureFilter {
         encoder.endEncoding()
     }
     private func blend(input: MTLTexture, altered: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
-//        guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
-//            throw Error.cantMakeComputeEncoder
-//        }
-//        let pipelineState = try pipelineCache.pipelineState(function: .blend)
-//        encoder.setComputePipelineState(pipelineState)
-//        encoder.dispatchThreads(textureWidth: input.width, textureHeight: input.height)
-//        encoder.endEncoding()
+        guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
+            throw Error.cantMakeComputeEncoder
+        }
+        let pipelineState = try pipelineCache.pipelineState(function: .yiqCompose3)
+        encoder.setComputePipelineState(pipelineState)
+        encoder.setTexture(input, index: 0)
+        encoder.setTexture(altered, index: 1)
+        encoder.setTexture(output, index: 2)
+        encoder.dispatchThreads(textureWidth: input.width, textureHeight: input.height)
+        encoder.endEncoding()
     }
 }
