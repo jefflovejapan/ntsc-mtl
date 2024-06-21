@@ -14,7 +14,6 @@
 		1F2159AE2C11517700D2483B /* SnowTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2159AD2C11517700D2483B /* SnowTextureFilter.swift */; };
 		1F2159B02C1154C100D2483B /* Snow.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F2159AF2C1154C100D2483B /* Snow.metal */; };
 		1F259EDC2C022F7500937D0A /* NTSCEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EDB2C022F7500937D0A /* NTSCEffect.swift */; };
-		1F259EDE2C02399C00937D0A /* NTSCEffect+Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EDD2C02399C00937D0A /* NTSCEffect+Defaults.swift */; };
 		1F2B96E92C16210700DB0B9F /* ShiftRowInline.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F2B96E82C16210700DB0B9F /* ShiftRowInline.metal */; };
 		1F2B96ED2C16680D00DB0B9F /* GeometricDistribution.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F2B96EC2C16680D00DB0B9F /* GeometricDistribution.metal */; };
 		1F2B96F12C17477200DB0B9F /* JustBlit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2B96F02C17477200DB0B9F /* JustBlit.swift */; };
@@ -31,7 +30,6 @@
 		1F5B6CC22C04D4010051A9ED /* NTSC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CC12C04D4010051A9ED /* NTSC.swift */; };
 		1F5B6CC62C04FCA50051A9ED /* PolynomialMultiply.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CC52C04FCA50051A9ED /* PolynomialMultiply.swift */; };
 		1F5B6CD02C0536600051A9ED /* Clamped.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5B6CCF2C0536600051A9ED /* Clamped.swift */; };
-		1F5B6CD82C05552B0051A9ED /* SimplexNoiseFilter in Frameworks */ = {isa = PBXBuildFile; productRef = 1F5B6CD72C05552B0051A9ED /* SimplexNoiseFilter */; };
 		1F5F93B82C0E02D400EC29A2 /* TestIIR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93B72C0E02D400EC29A2 /* TestIIR.swift */; };
 		1F5F93BA2C0E04A100EC29A2 /* SimpleIIRTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93B92C0E04A100EC29A2 /* SimpleIIRTests.swift */; };
 		1F5F93BC2C0E83EC00EC29A2 /* NTSCTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F93BB2C0E83EC00EC29A2 /* NTSCTextureFilter.swift */; };
@@ -99,7 +97,6 @@
 		1F2159AF2C1154C100D2483B /* Snow.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Snow.metal; sourceTree = "<group>"; };
 		1F259EDA2C0227E400937D0A /* SettingsAndDefaults.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = SettingsAndDefaults.md; sourceTree = "<group>"; };
 		1F259EDB2C022F7500937D0A /* NTSCEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSCEffect.swift; sourceTree = "<group>"; };
-		1F259EDD2C02399C00937D0A /* NTSCEffect+Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NTSCEffect+Defaults.swift"; sourceTree = "<group>"; };
 		1F2B96E82C16210700DB0B9F /* ShiftRowInline.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ShiftRowInline.metal; sourceTree = "<group>"; };
 		1F2B96EC2C16680D00DB0B9F /* GeometricDistribution.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = GeometricDistribution.metal; sourceTree = "<group>"; };
 		1F2B96F02C17477200DB0B9F /* JustBlit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JustBlit.swift; sourceTree = "<group>"; };
@@ -174,7 +171,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1F5B6CD82C05552B0051A9ED /* SimplexNoiseFilter in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -320,7 +316,6 @@
 				1F5B6CC12C04D4010051A9ED /* NTSC.swift */,
 				1F259EDB2C022F7500937D0A /* NTSCEffect.swift */,
 				1F2028932C1E23BA00DFB165 /* Resolution.swift */,
-				1F259EDD2C02399C00937D0A /* NTSCEffect+Defaults.swift */,
 				1F5F93BF2C0F584E00EC29A2 /* MetalKernels */,
 			);
 			path = Filters;
@@ -359,7 +354,6 @@
 			);
 			name = "ntsc-mtl-demo";
 			packageProductDependencies = (
-				1F5B6CD72C05552B0051A9ED /* SimplexNoiseFilter */,
 			);
 			productName = "ntsc-mtl-demo";
 			productReference = 1F6BFDE72BFF799F00883169 /* ntsc-mtl-demo.app */;
@@ -412,7 +406,6 @@
 			);
 			mainGroup = 1F6BFDDE2BFF799F00883169;
 			packageReferences = (
-				1F5B6CD62C05552B0051A9ED /* XCRemoteSwiftPackageReference "SimplexNoiseFilter" */,
 			);
 			productRefGroup = 1F6BFDE82BFF799F00883169 /* Products */;
 			projectDirPath = "";
@@ -493,7 +486,6 @@
 				1FA29A8D2C112DBC00070F03 /* ChromaIntoLuma.metal in Sources */,
 				1F2B96ED2C16680D00DB0B9F /* GeometricDistribution.metal in Sources */,
 				1F60A3E72C1A83E800024EAB /* ChromaDelayTextureFilter.swift in Sources */,
-				1F259EDE2C02399C00937D0A /* NTSCEffect+Defaults.swift in Sources */,
 				1F5B6CD02C0536600051A9ED /* Clamped.swift in Sources */,
 				1F2B96F12C17477200DB0B9F /* JustBlit.swift in Sources */,
 				1F5F93CA2C0F9DCA00EC29A2 /* YIQCompose.metal in Sources */,
@@ -906,25 +898,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		1F5B6CD62C05552B0051A9ED /* XCRemoteSwiftPackageReference "SimplexNoiseFilter" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/JoshuaSullivan/SimplexNoiseFilter";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		1F5B6CD72C05552B0051A9ED /* SimplexNoiseFilter */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 1F5B6CD62C05552B0051A9ED /* XCRemoteSwiftPackageReference "SimplexNoiseFilter" */;
-			productName = SimplexNoiseFilter;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1F6BFDDF2BFF799F00883169 /* Project object */;
 }
