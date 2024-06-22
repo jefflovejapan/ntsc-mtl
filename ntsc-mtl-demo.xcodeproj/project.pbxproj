@@ -66,6 +66,8 @@
 		1F97299D2C273E0D000BFCA8 /* BlackLineBorder.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F97299C2C273E0D000BFCA8 /* BlackLineBorder.metal */; };
 		1F9729A12C2745C6000BFCA8 /* ColorBleed.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F9729A02C2745C6000BFCA8 /* ColorBleed.metal */; };
 		1F9729A42C274B0D000BFCA8 /* ColorBleedFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F9729A32C274B0D000BFCA8 /* ColorBleedFilter.swift */; };
+		1F9729A62C27682F000BFCA8 /* LowpassFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F9729A52C27682F000BFCA8 /* LowpassFilter.swift */; };
+		1F9729A82C278848000BFCA8 /* Lowpass.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F9729A72C278848000BFCA8 /* Lowpass.metal */; };
 		1FA29A8B2C111B6000070F03 /* ClampFunctions.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FA29A8A2C111B6000070F03 /* ClampFunctions.metal */; };
 		1FA29A8D2C112DBC00070F03 /* ChromaIntoLuma.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FA29A8C2C112DBC00070F03 /* ChromaIntoLuma.metal */; };
 		1FA29A8F2C112E3E00070F03 /* ChromaIntoLumaTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA29A8E2C112E3E00070F03 /* ChromaIntoLumaTextureFilter.swift */; };
@@ -156,6 +158,8 @@
 		1F97299C2C273E0D000BFCA8 /* BlackLineBorder.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = BlackLineBorder.metal; sourceTree = "<group>"; };
 		1F9729A02C2745C6000BFCA8 /* ColorBleed.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ColorBleed.metal; sourceTree = "<group>"; };
 		1F9729A32C274B0D000BFCA8 /* ColorBleedFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorBleedFilter.swift; sourceTree = "<group>"; };
+		1F9729A52C27682F000BFCA8 /* LowpassFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LowpassFilter.swift; sourceTree = "<group>"; };
+		1F9729A72C278848000BFCA8 /* Lowpass.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Lowpass.metal; sourceTree = "<group>"; };
 		1FA29A8A2C111B6000070F03 /* ClampFunctions.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ClampFunctions.metal; sourceTree = "<group>"; };
 		1FA29A8C2C112DBC00070F03 /* ChromaIntoLuma.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ChromaIntoLuma.metal; sourceTree = "<group>"; };
 		1FA29A8E2C112E3E00070F03 /* ChromaIntoLumaTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromaIntoLumaTextureFilter.swift; sourceTree = "<group>"; };
@@ -350,6 +354,7 @@
 			children = (
 				1F97299C2C273E0D000BFCA8 /* BlackLineBorder.metal */,
 				1F9729A02C2745C6000BFCA8 /* ColorBleed.metal */,
+				1F9729A72C278848000BFCA8 /* Lowpass.metal */,
 			);
 			path = Python;
 			sourceTree = "<group>";
@@ -358,6 +363,7 @@
 			isa = PBXGroup;
 			children = (
 				1F9729A32C274B0D000BFCA8 /* ColorBleedFilter.swift */,
+				1F9729A52C27682F000BFCA8 /* LowpassFilter.swift */,
 			);
 			path = Python;
 			sourceTree = "<group>";
@@ -475,6 +481,7 @@
 				1F60A3DD2C1A575C00024EAB /* SnowIntensity.metal in Sources */,
 				1F5F93BC2C0E83EC00EC29A2 /* NTSCTextureFilter.swift in Sources */,
 				1F5F93D32C0FD03400EC29A2 /* IIRFilterSample.metal in Sources */,
+				1F9729A82C278848000BFCA8 /* Lowpass.metal in Sources */,
 				1F5F93D92C0FE70800EC29A2 /* ChromaLowpassTextureFilter.swift in Sources */,
 				1F4692CF2C138F9900CD7756 /* Array+PaddedToLength.swift in Sources */,
 				1F97299D2C273E0D000BFCA8 /* BlackLineBorder.metal in Sources */,
@@ -486,6 +493,7 @@
 				1F5F93DB2C0FEC3000EC29A2 /* YIQCompose3.metal in Sources */,
 				1FA29A8B2C111B6000070F03 /* ClampFunctions.metal in Sources */,
 				1F5B6CC62C04FCA50051A9ED /* PolynomialMultiply.swift in Sources */,
+				1F9729A62C27682F000BFCA8 /* LowpassFilter.swift in Sources */,
 				1F9729A42C274B0D000BFCA8 /* ColorBleedFilter.swift in Sources */,
 				1F3E38202C123D4700D16CF0 /* Float+Extensions.swift in Sources */,
 				1F9729A12C2745C6000BFCA8 /* ColorBleed.metal in Sources */,

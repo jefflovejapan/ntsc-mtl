@@ -14,10 +14,5 @@ kernel void paint
  constant half4 &color [[buffer(0)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
-//    half minWidth = min(textureToFill.get_width(), sideEffectedTexture.get_width());
-//    half minHeight = min(textureToFill.get_height(), sideEffectedTexture.get_height());
-//    if (gid.x >= minWidth || gid.y >= minHeight) {
-//        return;
-//    }
     texture.write(color, gid);
 }
