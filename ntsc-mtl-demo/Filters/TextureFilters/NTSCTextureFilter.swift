@@ -304,6 +304,13 @@ class NTSCTextureFilter {
                 device: device,
                 pipelineCache: pipelineCache
             )
+//            try Self.colorBleedIn(
+//                input: try iter.last,
+//                output: try iter.next(),
+//                commandBuffer: commandBuffer,
+//                device: device,
+//                pipelineCache: pipelineCache
+//            )
             try Self.colorBleedIn(
                 input: try iter.last,
                 output: try iter.next(),
