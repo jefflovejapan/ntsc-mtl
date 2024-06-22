@@ -56,8 +56,28 @@ class NTSCTextureFilter {
         self.pipelineCache = try MetalPipelineCache(device: device, library: library)
     }
     
-    static func cutBlackLineBorder(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
-        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    static func cutBlackLineBorder(input: MTLTexture, output: MTLTexture, blackLineEnabled: Bool, blackLineBorderPct: Float, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        guard blackLineEnabled else {
+            try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+            return
+        }
+        
+        // Create a command buffer and encoder
+        guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
+            throw Error.cantMakeComputeEncoder
+        }
+        let pipelineState = try pipelineCache.pipelineState(function: .blackLineBorder)
+        commandEncoder.setComputePipelineState(pipelineState)
+        
+        // Set the texture and dispatch threads
+        commandEncoder.setTexture(input, index: 0)
+        commandEncoder.setTexture(output, index: 1)
+        var blackLineBorderPct = blackLineBorderPct
+        commandEncoder.setBytes(&blackLineBorderPct, length: MemoryLayout<Float>.size, index: 0)
+        commandEncoder.dispatchThreads(textureWidth: input.width, textureHeight: input.height)
+        
+        // Finalize encoding
+        commandEncoder.endEncoding()
     }
         
     static func convertToYIQ(_ texture: (any MTLTexture), output: (any MTLTexture), commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
@@ -248,7 +268,15 @@ class NTSCTextureFilter {
         let iter = IteratorThing(vals: textures)
         
         do {
-            try Self.cutBlackLineBorder(input: try iter.next(), output: try iter.next(), commandBuffer: commandBuffer, device: device, pipelineCache: pipelineCache)
+            try Self.cutBlackLineBorder(
+                input: try iter.next(),
+                output: try iter.next(),
+                blackLineEnabled: effect.blackLineBorderEnabled,
+                blackLineBorderPct: effect.blackLineBorderPct,
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
              // Step 0: convert to YIQ
             try Self.convertToYIQ(
                 try iter.last,

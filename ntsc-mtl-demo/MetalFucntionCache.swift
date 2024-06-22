@@ -10,27 +10,9 @@ import Metal
 
 enum KernelFunction: String, CaseIterable {
     case convertToYIQ
-    case convertToRGB
-    case chromaIntoLuma
-    case snowIntensity
-    case snow
-    case geometricDistribution
-    case yiqCompose
-    case multiplyLuma
-    case yiqCompose3
-    case iirInitialCondition
-    case paint
-    case iirFilterSample
-    case iirSideEffect
-    case iirMultiply
-    case iirFinalImage
-    case shiftRow
-    case shiftRowMidline
-    case chromaPhaseOffset
-    case chromaPhaseNoise
-    case chromaDelay
+    case blackLineBorder
     case interleave
-    case edgeWave
+    case convertToRGB
 }
 
 class MetalPipelineCache {

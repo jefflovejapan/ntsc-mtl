@@ -19,29 +19,53 @@ struct ControlsView: View {
                 Toggle(isOn: $enableFilter, label: {
                     Text("Enable filter?")
                 })
-                HStack {
-                    Text("Resolution")
-                    Picker(selection: $resolution, content: {
-                        ForEach(Resolution.allCases) { res in
-                            Text(name(resolution: res))
-                                .tag(res)
-                        }
-                    }, label: {
-                        Text("Resolution")
-                    })
-                }
-                HStack {
-                    Text("Interlace Mode")
-                    Picker(selection: $effect.interlaceMode, content: {
-                        ForEach(InterlaceMode.allCases) { mode in
-                            Text(name(interlaceMode: mode))
-                                .tag(mode)
-                        }
-                    }, label: { Text("Interlace Mode") })
-                }
+                resolutionView
+                interlaceView
+                blackLineBorderView
             }
         }
         .background(Color.green.opacity(0.2))
+    }
+    
+    private var resolutionView: some View {
+        HStack {
+            Text("Resolution")
+            Picker(selection: $resolution, content: {
+                ForEach(Resolution.allCases) { res in
+                    Text(name(resolution: res))
+                        .tag(res)
+                }
+            }, label: {
+                Text("Resolution")
+            })
+        }
+    }
+    
+    private var interlaceView: some View {
+        HStack {
+            Text("Interlace Mode")
+            Picker(selection: $effect.interlaceMode, content: {
+                ForEach(InterlaceMode.allCases) { mode in
+                    Text(name(interlaceMode: mode))
+                        .tag(mode)
+                }
+            }, label: { Text("Interlace Mode") })
+        }
+    }
+    
+    private var blackLineBorderView: some View {
+        VStack {
+            Toggle(isOn: $effect.blackLineBorderEnabled, label: {
+                Text("Enable black line border")
+            })
+            if effect.blackLineBorderEnabled {
+                VStack {
+                    Text("Black line border percentage: \(Int(effect.blackLineBorderPct * 100))%")
+                    Slider(value: $effect.blackLineBorderPct, in: 0...1)
+                }
+            }
+
+        }
     }
         
     private var twoDecimalPlaces: FloatingPointFormatStyle<Float> {
