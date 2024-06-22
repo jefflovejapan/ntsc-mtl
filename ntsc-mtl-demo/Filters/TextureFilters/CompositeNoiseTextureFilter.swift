@@ -7,7 +7,7 @@
 
 import CoreImage
 import Foundation
-import SimplexNoiseFilter
+//import SimplexNoiseFilter
 import Metal
 
 class CompositeNoiseTextureFilter {

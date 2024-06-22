@@ -11,6 +11,7 @@ import Metal
 enum KernelFunction: String, CaseIterable {
     case convertToYIQ
     case blackLineBorder
+    case colorBleed
     case interleave
     case convertToRGB
 }
