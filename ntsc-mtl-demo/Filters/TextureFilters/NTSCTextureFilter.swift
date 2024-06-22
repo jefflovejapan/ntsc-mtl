@@ -55,6 +55,10 @@ class NTSCTextureFilter {
         }
         self.pipelineCache = try MetalPipelineCache(device: device, library: library)
     }
+    
+    static func cutBlackLineBorder(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    }
         
     static func convertToYIQ(_ texture: (any MTLTexture), output: (any MTLTexture), commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
         // Create a command buffer and encoder
@@ -71,6 +75,66 @@ class NTSCTextureFilter {
         
         // Finalize encoding
         commandEncoder.endEncoding()
+    }
+    
+    static func colorBleedIn(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    }
+    
+    static func compositeLowpass(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    }
+    
+    static func ringing(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    }
+    
+    static func chromaIntoLuma(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    }
+    
+    static func compositePreemphasis(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    }
+    
+    static func videoNoise(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    }
+    
+    static func vhsHeadSwitching(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    }
+    
+    static func chromaFromLuma(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    }
+    
+    static func videoChromaNoise(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    }
+    
+    static func videoChromaPhaseNoise(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    }
+    
+    static func emulateVHS(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    }
+    
+    static func vhsChromaLoss(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    }
+    
+    static func compositeLowpass(input: MTLTexture, output: MTLTexture, forTV: Bool, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    }
+    
+    static func colorBleedOut(input: MTLTexture, output: MTLTexture, forTV: Bool, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    }
+    
+    static func blurChroma(input: MTLTexture, output: MTLTexture, forTV: Bool, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
     }
     
     static func convertToRGB(
@@ -184,14 +248,137 @@ class NTSCTextureFilter {
         let iter = IteratorThing(vals: textures)
         
         do {
+            try Self.cutBlackLineBorder(input: try iter.next(), output: try iter.next(), commandBuffer: commandBuffer, device: device, pipelineCache: pipelineCache)
              // Step 0: convert to YIQ
             try Self.convertToYIQ(
-                try iter.next(),
+                try iter.last,
                 output: try iter.next(),
                 commandBuffer: commandBuffer,
                 device: device,
                 pipelineCache: pipelineCache
             )
+            try Self.colorBleedIn(
+                input: try iter.last,
+                output: try iter.next(),
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
+            
+            try Self.compositeLowpass(
+                input: try iter.last,
+                output: try iter.next(),
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
+            
+            try Self.ringing(
+                input: try iter.last,
+                output: try iter.next(),
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
+            
+            try Self.chromaIntoLuma(
+                input: try iter.last,
+                output: try iter.next(),
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
+            
+            try Self.compositePreemphasis(
+                input: try iter.last,
+                output: try iter.next(),
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
+            
+            try Self.videoNoise(
+                input: try iter.last,
+                output: try iter.next(),
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
+            
+            try Self.vhsHeadSwitching(
+                input: try iter.last,
+                output: try iter.next(),
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
+            
+            try Self.chromaFromLuma(
+                input: try iter.last,
+                output: try iter.next(),
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
+            
+            try Self.videoChromaNoise(
+                input: try iter.last,
+                output: try iter.next(),
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
+            
+            try Self.videoChromaPhaseNoise(
+                input: try iter.last,
+                output: try iter.next(),
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
+            
+            try Self.emulateVHS(
+                input: try iter.last,
+                output: try iter.next(),
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
+            
+            try Self.vhsChromaLoss(
+                input: try iter.last,
+                output: try iter.next(),
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
+
+            try Self.compositeLowpass(
+                input: try iter.last,
+                output: try iter.next(),
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
+            
+            try Self.colorBleedOut(
+                input: try iter.last,
+                output: try iter.next(),
+                forTV: effect.colorBleedOutForTV,
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
+            
+            try Self.blurChroma(
+                input: try iter.last,
+                output: try iter.next(),
+                forTV: effect.colorBleedOutForTV,
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
+
             try Self.convertToRGB(
                 try iter.last,
                 output: try iter.next(),

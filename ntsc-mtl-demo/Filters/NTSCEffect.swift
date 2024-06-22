@@ -10,10 +10,13 @@ import Foundation
 @Observable
 class NTSCEffect {
     var interlaceMode: InterlaceMode
+    var colorBleedOutForTV: Bool
     init(
-        interlaceMode: InterlaceMode = .full
+        interlaceMode: InterlaceMode = .full,
+        colorBleedOutForTV: Bool = false
     ) {
         self.interlaceMode = interlaceMode
+        self.colorBleedOutForTV = colorBleedOutForTV
     }
 }
 

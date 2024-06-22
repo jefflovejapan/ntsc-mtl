@@ -32,8 +32,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "57"
             endingLineNumber = "57"
-            landmarkName = "run(inputTexture:outputTexture:commandBuffer:)"
-            landmarkType = "7">
+            landmarkName = "VHSTextureFilter"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -48,8 +48,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "92"
             endingLineNumber = "92"
-            landmarkName = "tapeSpeed(inputTexture:textureA:textureB:textureC:outputTexture:commandBuffer:)"
-            landmarkType = "7">
+            landmarkName = "VHSTextureFilter"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
