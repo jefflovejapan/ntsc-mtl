@@ -59,19 +59,13 @@ class EmulateVHSFilter {
         }
         let needsLowpassUpdate: Bool
         if let lowpassFilter {
-            needsLowpassUpdate = lowpassFilter.frequencyHz != lowpassCutoff
+            needsLowpassUpdate = lowpassFilter.frequencyCutoff != lowpassCutoff
         } else {
             needsLowpassUpdate = true
         }
         
         if needsLowpassUpdate {
-            lowpassFilter = try LowpassFilter(
-                rate: NTSC.rate,
-                frequencyHz: lowpassCutoff,
-                initialValue: 0, 
-                device: device,
-                pipelineCache: pipelineCache
-            )
+            lowpassFilter = LowpassFilter(frequencyCutoff: lowpassCutoff, device: device)
         }
         guard let lowpassFilter else {
             throw Error.cantMakeFilter(String(describing: LowpassFilter.self))
@@ -85,7 +79,7 @@ class EmulateVHSFilter {
         
         try writeRandom(to: try iter.next(), commandBuffer: commandBuffer)
         try mixRandom(from: try iter.last, to: try iter.next(), commandBuffer: commandBuffer)
-        try lowpassFilter.run(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
+        lowpassFilter.run(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
         try edgeWave(input: input, random: try iter.last, output: output, commandBuffer: commandBuffer)
     }
     
