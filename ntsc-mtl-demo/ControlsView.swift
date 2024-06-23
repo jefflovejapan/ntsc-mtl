@@ -22,6 +22,7 @@ struct ControlsView: View {
                 resolutionView
                 interlaceView
                 blackLineBorderView
+                colorBleedView
             }
         }
         .background(Color.green.opacity(0.2))
@@ -65,6 +66,18 @@ struct ControlsView: View {
                 }
             }
 
+        }
+    }
+    
+    private var colorBleedView: some View {
+        VStack {
+            Toggle(isOn: $effect.colorBleedEnabled, label: {
+                Text("Enable color bleed?")
+            })
+            Text("Color bleed x: \(Int(effect.colorBleedXOffset))")
+            Slider(value: $effect.colorBleedXOffset, in: -100...100)
+            Text("Color bleed y: \(Int(effect.colorBleedYOffset))")
+            Slider(value: $effect.colorBleedYOffset, in: -100...100)
         }
     }
         

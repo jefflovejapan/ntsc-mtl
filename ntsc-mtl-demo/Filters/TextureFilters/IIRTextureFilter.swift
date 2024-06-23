@@ -18,6 +18,7 @@ enum IIRTextureFilterError: Error {
 }
 
 extension IIRTextureFilter {
+    typealias Error = TextureFilterError
     static func texture(from texture: (any MTLTexture), device: MTLDevice) -> MTLTexture? {
         return Self.texture(width: texture.width, height: texture.height, pixelFormat: texture.pixelFormat, device: device)
     }
@@ -50,6 +51,26 @@ extension IIRTextureFilter {
                 return Self.texture(width: width, height: height, pixelFormat: pixelFormat, device: device)
             }
         }
+    }
+    
+    static func paint(
+        texture: MTLTexture,
+        with color: [Float16],
+        device: MTLDevice,
+        pipelineCache: MetalPipelineCache,
+        commandBuffer: MTLCommandBuffer
+    ) throws {
+        let pipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .paint)
+        
+        guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
+            throw Error.cantMakeComputeEncoder
+        }
+        commandEncoder.setComputePipelineState(pipelineState)
+        commandEncoder.setTexture(texture, index: 0)
+        var color = color
+        commandEncoder.setBytes(&color, length: MemoryLayout<Float16>.size * 4, index: 0)
+        commandEncoder.dispatchThreads(textureWidth: texture.width, textureHeight: texture.height)
+        commandEncoder.endEncoding()
     }
 }
 

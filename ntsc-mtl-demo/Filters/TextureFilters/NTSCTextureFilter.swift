@@ -37,6 +37,9 @@ class NTSCTextureFilter {
     private var outTexture2: MTLTexture?
     private var outTexture3: MTLTexture?
     
+    private let colorBleedFilter: ColorBleedFilter
+    private let compositeLowpassFilter: CompositeLowpassFilter
+    
     // MARK: -Filters
 
     
@@ -54,6 +57,8 @@ class NTSCTextureFilter {
             throw Error.cantMakeLibrary
         }
         self.pipelineCache = try MetalPipelineCache(device: device, library: library)
+        self.colorBleedFilter = ColorBleedFilter(device: device, pipelineCache: pipelineCache)
+        self.compositeLowpassFilter = try CompositeLowpassFilter(device: device, pipelineCache: pipelineCache)
     }
     
     static func cutBlackLineBorder(input: MTLTexture, output: MTLTexture, blackLineEnabled: Bool, blackLineBorderPct: Float, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
@@ -97,12 +102,26 @@ class NTSCTextureFilter {
         commandEncoder.endEncoding()
     }
     
-    static func colorBleedIn(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
-        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    static func colorBleedIn(
+        input: MTLTexture,
+        output: MTLTexture,
+        colorBleedEnabled: Bool,
+        colorBleedX: Float,
+        colorBleedY: Float,
+        filter: ColorBleedFilter,
+        commandBuffer: MTLCommandBuffer
+    ) throws {
+        guard colorBleedEnabled else {
+            try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+            return
+        }
+        filter.xOffset = Int(colorBleedX)
+        filter.yOffset = Int(colorBleedY)
+        try filter.run(input: input, output: output, commandBuffer: commandBuffer)
     }
     
-    static func compositeLowpass(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
-        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    static func compositeLowpass(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, filter: CompositeLowpassFilter, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        try filter.run(input: input, output: output, commandBuffer: commandBuffer)
     }
     
     static func ringing(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
@@ -288,15 +307,18 @@ class NTSCTextureFilter {
             try Self.colorBleedIn(
                 input: try iter.last,
                 output: try iter.next(),
-                commandBuffer: commandBuffer,
-                device: device,
-                pipelineCache: pipelineCache
+                colorBleedEnabled: effect.colorBleedEnabled,
+                colorBleedX: effect.colorBleedXOffset,
+                colorBleedY: effect.colorBleedYOffset,
+                filter: colorBleedFilter,
+                commandBuffer: commandBuffer
             )
             
             try Self.compositeLowpass(
                 input: try iter.last,
                 output: try iter.next(),
-                commandBuffer: commandBuffer,
+                commandBuffer: commandBuffer, 
+                filter: compositeLowpassFilter,
                 device: device,
                 pipelineCache: pipelineCache
             )
@@ -385,6 +407,7 @@ class NTSCTextureFilter {
                 input: try iter.last,
                 output: try iter.next(),
                 commandBuffer: commandBuffer,
+                filter: compositeLowpassFilter,
                 device: device,
                 pipelineCache: pipelineCache
             )
