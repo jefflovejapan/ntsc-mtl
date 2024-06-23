@@ -57,7 +57,7 @@ class CompositeLowpassFilter {
             needsUpdate = true
         }
         if needsUpdate {
-            let textures = Array(IIRTextureFilter.textures(from: input, device: device).prefix(2))
+            let textures = Array(Texture.textures(from: input, device: device).prefix(2))
             self.iTex = textures[0]
             self.qTex = textures[1]
         }

@@ -5,7 +5,6 @@
 //  Created by Jeffrey Blagdon on 2024-06-04.
 //
 
-#include "ClampFunctions.metal"
 #include <metal_stdlib>
 using namespace metal;
 

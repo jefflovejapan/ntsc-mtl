@@ -10,7 +10,7 @@ import Metal
 import CoreImage
 import CoreImage.CIFilterBuiltins
 
-class VHSTextureFilter {
+//class VHSTextureFilter {
 //    typealias Error = TextureFilterError
 //    
 //    private let device: MTLDevice
@@ -50,7 +50,7 @@ class VHSTextureFilter {
 //            needsUpdate = true
 //        }
 //        if needsUpdate {
-//            let textures = Array(IIRTextureFilter.textures(from: inputTexture, device: device).prefix(Self.texturesCount))
+//            let textures = Array(Texture.textures(from: inputTexture, device: device).prefix(Self.texturesCount))
 //            self.textures = textures
 //        }
 //        guard textures.count == Self.texturesCount else {
@@ -134,4 +134,4 @@ class VHSTextureFilter {
 //        commandEncoder.dispatchThreads(textureWidth: inputTexture.width, textureHeight: inputTexture.height)
 //        commandEncoder.endEncoding()
 //    }
-}
+//}

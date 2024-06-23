@@ -282,7 +282,7 @@ final class MetalTextureConversionTests: XCTestCase {
         ))
         let tempZ0Texture = try XCTUnwrap(IIRTextureFilter.texture(from: texture, device: device))
         let zTextures = Array(
-            IIRTextureFilter.textures(
+            Texture.textures(
                 from: texture,
                 device: device
             )

@@ -49,7 +49,7 @@ class EmulateVHSFilter {
             needsTextureUpdate = true
         }
         if needsTextureUpdate {
-            let texs = Array(IIRTextureFilter.textures(from: input, device: device).prefix(3))
+            let texs = Array(Texture.textures(from: input, device: device).prefix(3))
             guard texs.count == 3 else {
                 throw Error.cantMakeTexture
             }

@@ -53,10 +53,10 @@ class LowpassFilter {
             needsUpdate = true
         }
         if needsUpdate {
-            guard let prev = IIRTextureFilter.texture(from: input, device: device) else {
+            guard let prev = Texture.texture(from: input, device: device) else {
                 throw Error.cantMakeTexture
             }
-            try IIRTextureFilter.paint(
+            try Texture.paint(
                 texture: prev,
                 with: [initialValue, initialValue, initialValue, 1],
                 device: device,

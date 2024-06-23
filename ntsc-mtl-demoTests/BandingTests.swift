@@ -134,7 +134,7 @@ final class BandingTests: XCTestCase {
         let initialConditionTexture = try XCTUnwrap(IIRTextureFilter.texture(from: rgbInputTexture, device: device))
         let tempZ0Texture = try XCTUnwrap(IIRTextureFilter.texture(from: rgbInputTexture, device: device))
         let function = IIRTransferFunction.lowpassFilter(cutoff: 1_300_000, rate: NTSC.rate * 1)
-        let zTextures = Array(IIRTextureFilter.textures(from: rgbInputTexture, device: device).prefix(function.numerators.count))
+        let zTextures = Array(Texture.textures(from: rgbInputTexture, device: device).prefix(function.numerators.count))
         
         let fullIButterworthFilter = IIRTextureFilter(
             device: device,

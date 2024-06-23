@@ -8,7 +8,7 @@
 import Foundation
 import Metal
 
-class ChromaLowpassTextureFilter {
+//class ChromaLowpassTextureFilter {
 //    typealias Error = IIRTextureFilter.Error
 //    enum Filters {
 //        case none
@@ -97,7 +97,7 @@ class ChromaLowpassTextureFilter {
 //        
 //        if needsTextureUpdate {
 //            needsIIRUpdate = true
-//            let textures = Array(IIRTextureFilter.textures(width: inputTexture.width, height: inputTexture.height, pixelFormat: inputTexture.pixelFormat, device: device).prefix(2))
+//            let textures = Array(Texture.textures(width: inputTexture.width, height: inputTexture.height, pixelFormat: inputTexture.pixelFormat, device: device).prefix(2))
 //            self.iTexture = textures[0]
 //            self.qTexture = textures[1]
 //        }
@@ -191,4 +191,4 @@ class ChromaLowpassTextureFilter {
 //            self.filters = .light(iAndQ: iAndQFilter)
 //        }
 //    }
-}
+//}

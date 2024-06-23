@@ -9,20 +9,6 @@ import Foundation
 import CoreImage
 import Metal
 
-enum TextureFilterError: Swift.Error {
-    case cantMakeTexture
-    case cantMakeCommandQueue
-    case cantMakeCommandBuffer
-    case cantMakeComputeEncoder
-    case cantMakeLibrary
-    case cantMakeRandomImage
-    case cantMakeFilter(String)
-    case cantMakeFunction(String)
-    case cantMakeBlitEncoder
-    case logicHole(String)
-    case notImplemented
-}
-
 class NTSCTextureFilter {
     typealias Error = TextureFilterError
 
@@ -257,7 +243,7 @@ class NTSCTextureFilter {
             self.context.render(inputImage, to: textureA, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: self.context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
             return
         }
-        let textures = Array(IIRTextureFilter.textures(width: Int(inputImage.extent.width), height: Int(inputImage.extent.height), pixelFormat: .rgba16Float, device: device).prefix(6))
+        let textures = Array(Texture.textures(width: Int(inputImage.extent.width), height: Int(inputImage.extent.height), pixelFormat: .rgba16Float, device: device).prefix(6))
         guard textures.count == 6 else {
             throw Error.cantMakeTexture
         }
