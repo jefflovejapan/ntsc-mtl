@@ -23,6 +23,7 @@ struct ControlsView: View {
                 interlaceView
                 blackLineBorderView
                 colorBleedView
+                vhsView
             }
         }
         .background(Color.green.opacity(0.2))
@@ -74,6 +75,26 @@ struct ControlsView: View {
             Toggle(isOn: $effect.colorBleedEnabled, label: {
                 Text("Enable color bleed?")
             })
+            Text("Color bleed x: \(Int(effect.colorBleedXOffset))")
+            Slider(value: $effect.colorBleedXOffset, in: -100...100)
+            Text("Color bleed y: \(Int(effect.colorBleedYOffset))")
+            Slider(value: $effect.colorBleedYOffset, in: -100...100)
+        }
+    }
+    
+    private var vhsView: some View {
+        VStack {
+            Toggle(isOn: $effect.enableVHSEmulation, label: {
+                Text("Enable VHS emulation?")
+            })
+            if effect.enableVHSEmulation {
+                VStack {
+                    Text("VHS edge wave: \(Int(effect.vhsEdgeWave))")
+                    Slider(value: $effect.vhsEdgeWave, in: 0...10, label: {
+                        Text("VHS edge wave")
+                    })
+                }
+            }
             Text("Color bleed x: \(Int(effect.colorBleedXOffset))")
             Slider(value: $effect.colorBleedXOffset, in: -100...100)
             Text("Color bleed y: \(Int(effect.colorBleedYOffset))")

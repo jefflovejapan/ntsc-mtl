@@ -19,6 +19,10 @@ class NTSCEffect {
     var colorBleedYOffset: Float
     var interlaceMode: InterlaceMode
     var colorBleedOutForTV: Bool
+    var enableVHSEmulation: Bool
+    var vhsEdgeWave: Float
+    var vhsTapeSpeed: VHSSpeed
+    
     init(
         blackLineBorderEnabled: Bool = false,
         blackLineBorderPct: Float? = nil,
@@ -27,7 +31,10 @@ class NTSCEffect {
         colorBleedXOffset: Float? = nil,
         colorBleedYOffset: Float? = nil,
         interlaceMode: InterlaceMode? = nil,
-        colorBleedOutForTV: Bool = false
+        colorBleedOutForTV: Bool = false,
+        enableVHSEmulation: Bool = true,
+        vhsEdgeWave: Float? = nil,
+        vhsTapeSpeed: VHSSpeed? = nil
     ) {
         self.blackLineBorderEnabled = blackLineBorderEnabled
         self.blackLineBorderPct = blackLineBorderPct ?? 0.17
@@ -37,6 +44,9 @@ class NTSCEffect {
         self.colorBleedXOffset = colorBleedXOffset ?? 0
         self.colorBleedYOffset = colorBleedYOffset ?? 0
         self.colorBleedOutForTV = colorBleedOutForTV
+        self.enableVHSEmulation = enableVHSEmulation
+        self.vhsEdgeWave = vhsEdgeWave ?? 0
+        self.vhsTapeSpeed = vhsTapeSpeed ?? .sp
     }
 }
 
@@ -46,5 +56,47 @@ enum InterlaceMode: String, Identifiable, CaseIterable {
     
     var id: String {
         rawValue
+    }
+}
+
+enum VHSSpeed: String, Identifiable, CaseIterable {
+    case sp
+    case lp
+    case ep
+    
+    var id: String {
+        rawValue
+    }
+    
+    var lumaCut: Float {
+        switch self {
+        case .sp:
+            2_400_000
+        case .lp:
+            1_900_000
+        case .ep:
+            1_400_000
+        }
+    }
+    var chromaCut: Float {
+        switch self {
+        case .sp:
+            320_000
+        case .lp:
+            300_000
+        case .ep:
+            280_000
+        }
+    }
+    
+    var chromaDelay: Int {
+        switch self {
+        case .sp:
+            9
+        case .lp:
+            12
+        case .ep:
+            14
+        }
     }
 }

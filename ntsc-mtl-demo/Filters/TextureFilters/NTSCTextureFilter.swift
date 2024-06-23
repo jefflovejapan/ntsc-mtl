@@ -16,6 +16,7 @@ enum TextureFilterError: Swift.Error {
     case cantMakeComputeEncoder
     case cantMakeLibrary
     case cantMakeRandomImage
+    case cantMakeFilter(String)
     case cantMakeFunction(String)
     case cantMakeBlitEncoder
     case logicHole(String)
@@ -39,6 +40,7 @@ class NTSCTextureFilter {
     
     private let colorBleedFilter: ColorBleedFilter
     private let compositeLowpassFilter: CompositeLowpassFilter
+    private let emulateVHSFilter: EmulateVHSFilter
     
     // MARK: -Filters
 
@@ -59,6 +61,7 @@ class NTSCTextureFilter {
         self.pipelineCache = try MetalPipelineCache(device: device, library: library)
         self.colorBleedFilter = ColorBleedFilter(device: device, pipelineCache: pipelineCache)
         self.compositeLowpassFilter = try CompositeLowpassFilter(device: device, pipelineCache: pipelineCache)
+        self.emulateVHSFilter = EmulateVHSFilter(device: device, pipelineCache: pipelineCache, ciContext: ciContext)
     }
     
     static func cutBlackLineBorder(input: MTLTexture, output: MTLTexture, blackLineEnabled: Bool, blackLineBorderPct: Float, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
@@ -156,8 +159,9 @@ class NTSCTextureFilter {
         try justBlit(from: input, to: output, commandBuffer: commandBuffer)
     }
     
-    static func emulateVHS(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
-        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    static func emulateVHS(input: MTLTexture, output: MTLTexture, filter: EmulateVHSFilter, edgeWave: UInt, commandBuffer: MTLCommandBuffer) throws {
+        filter.edgeWave = edgeWave
+        try filter.run(input: input, output: output, commandBuffer: commandBuffer)
     }
     
     static func vhsChromaLoss(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
@@ -390,9 +394,9 @@ class NTSCTextureFilter {
             try Self.emulateVHS(
                 input: try iter.last,
                 output: try iter.next(),
-                commandBuffer: commandBuffer,
-                device: device,
-                pipelineCache: pipelineCache
+                filter: emulateVHSFilter, 
+                edgeWave: UInt(effect.vhsEdgeWave),
+                commandBuffer: commandBuffer
             )
             
             try Self.vhsChromaLoss(
