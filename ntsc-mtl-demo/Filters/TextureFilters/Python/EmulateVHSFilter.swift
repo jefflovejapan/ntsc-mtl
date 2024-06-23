@@ -49,12 +49,13 @@ class EmulateVHSFilter {
             needsTextureUpdate = true
         }
         if needsTextureUpdate {
-            let texs = Array(IIRTextureFilter.textures(from: input, device: device).prefix(2))
-            guard texs.count == 2 else {
+            let texs = Array(IIRTextureFilter.textures(from: input, device: device).prefix(3))
+            guard texs.count == 3 else {
                 throw Error.cantMakeTexture
             }
             self.texA = texs[0]
             self.texB = texs[1]
+            self.texC = texs[2]
         }
         let needsLowpassUpdate: Bool
         if let lowpassFilter {
@@ -76,14 +77,16 @@ class EmulateVHSFilter {
             throw Error.cantMakeFilter(String(describing: LowpassFilter.self))
         }
         
-        guard let texA, let texB else {
+        guard let texA, let texB, let texC else {
             throw Error.cantMakeTexture
         }
         
-        try writeRandom(to: texA, commandBuffer: commandBuffer)
-        try mixRandom(from: texA, to: texB, commandBuffer: commandBuffer)
-        try lowpassFilter.run(input: texB, output: texA, commandBuffer: commandBuffer)
-        try edgeWave(input: input, random: texA, output: output, commandBuffer: commandBuffer)
+        let iter = IteratorThing(vals: [texA, texB, texC])
+        
+        try writeRandom(to: try iter.next(), commandBuffer: commandBuffer)
+        try mixRandom(from: try iter.last, to: try iter.next(), commandBuffer: commandBuffer)
+        try lowpassFilter.run(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
+        try edgeWave(input: input, random: try iter.last, output: output, commandBuffer: commandBuffer)
     }
     
     private func writeRandom(to texture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
