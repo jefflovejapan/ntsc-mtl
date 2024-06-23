@@ -7,37 +7,16 @@
 
 import Foundation
 import Metal
+import MetalPerformanceShaders
 
 class CompositeLowpassFilter {
     typealias Error = TextureFilterError
     private let device: MTLDevice
     private let pipelineCache: MetalPipelineCache
-    
-    private let iFilters: [LowpassFilter]
-    private let qFilters: [LowpassFilter]
-    private var textureA: MTLTexture?
-    private var textureB: MTLTexture?
-    private var textureC: MTLTexture?
-    
-    /*
-     cutoff = 1300000.0 if p == 1 else 600000.0
-            # "delay" meaning shifting chroma -- 2 for I and 4 for Q
-            delay = 2 if (p == 1) else 4
-
-            # operating on I if 1, Q if 2
-            P = fI if (p == 1) else fQ
-
-            # selecting every other line (don't need to do this)
-            P = P[field::2]
-            lp = lowpassFilters(cutoff, reset=0.0)
-     
-     def lowpassFilters(cutoff: float, reset: float, rate: float = Ntsc.NTSC_RATE) -> List[LowpassFilter]:
-         return [LowpassFilter(rate, cutoff, reset) for x in range(0, 3)]
-     cutoff = hz
-     reset = value
-     
-     
-     */
+    private let iBlurShader: MPSImageGaussianBlur
+    private let qBlurShader: MPSImageGaussianBlur
+    private var iTex: MTLTexture?
+    private var qTex: MTLTexture?
     
     private static let iFrequencyCutoff: Float = 1_300_000
     private static let qFrequencyCutoff: Float = 600_000
@@ -46,24 +25,13 @@ class CompositeLowpassFilter {
     
     
     init(device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
-        self.iFilters = try (0..<3).map { _ in
-            try LowpassFilter(
-                rate: NTSC.rate,
-                frequencyHz: Self.iFrequencyCutoff,
-                initialValue: 0,
-                device: device,
-                pipelineCache: pipelineCache
-            )
-        }
-        self.qFilters = try (0..<3).map { _ in
-            try LowpassFilter(
-                rate: NTSC.rate,
-                frequencyHz: Self.qFrequencyCutoff,
-                initialValue: 0,
-                device: device,
-                pipelineCache: pipelineCache
-            )
-        }
+        /*
+         ntsc-qt uses a lowpass filter with the frequency cutoffs above for i and q
+         These sigma values correspond to sampling frequency / 2 * pi * cutoff
+         Applying it three (n) times in succession is equivalent to multiplying sigma by sqrt(3) (sqrt(n))
+         */
+        self.iBlurShader = MPSImageGaussianBlur(device: device, sigma: sqrtf(3) * NTSC.rate / (2 * .pi * Self.iFrequencyCutoff))
+        self.qBlurShader = MPSImageGaussianBlur(device: device, sigma: sqrtf(3) * (NTSC.rate / (2 * .pi * Self.qFrequencyCutoff)))
         self.device = device
         self.pipelineCache = pipelineCache
     }
@@ -83,32 +51,24 @@ class CompositeLowpassFilter {
         commandBuffer: MTLCommandBuffer
     ) throws {
         let needsUpdate: Bool
-        if let textureA {
-            needsUpdate = !(textureA.width == input.width && textureA.height == input.height)
+        if let iTex {
+            needsUpdate = !(iTex.width == input.width && iTex.height == input.height)
         } else {
             needsUpdate = true
         }
         if needsUpdate {
-            let textures = Array(IIRTextureFilter.textures(from: input, device: device).prefix(3))
-            self.textureA = textures[0]
-            self.textureB = textures[1]
-            self.textureC = textures[2]
+            let textures = Array(IIRTextureFilter.textures(from: input, device: device).prefix(2))
+            self.iTex = textures[0]
+            self.qTex = textures[1]
         }
         
-        guard let textureA, let textureB, let textureC else {
+        guard let iTex, let qTex else {
             throw Error.cantMakeTexture
         }
         
-        try iFilters[0].run(input: input, output: textureA, commandBuffer: commandBuffer)
-        try iFilters[1].run(input: textureA, output: textureB, commandBuffer: commandBuffer)
-        try iFilters[2].run(input: textureB, output: textureA, commandBuffer: commandBuffer)
-        let i = textureA
-        
-        try qFilters[0].run(input: input, output: textureB, commandBuffer: commandBuffer)
-        try qFilters[1].run(input: textureB, output: textureC, commandBuffer: commandBuffer)
-        try qFilters[2].run(input: textureC, output: textureB, commandBuffer: commandBuffer)
-        let q = textureB
-        try composeAndDelay(y: input, i: textureA, q: textureB, output: output, commandBuffer: commandBuffer)
+        iBlurShader.encode(commandBuffer: commandBuffer, sourceTexture: input, destinationTexture: iTex)
+        qBlurShader.encode(commandBuffer: commandBuffer, sourceTexture: input, destinationTexture: qTex)
+        try composeAndDelay(y: input, i: iTex, q: qTex, output: output, commandBuffer: commandBuffer)
     }
     
     private func composeAndDelay(y: MTLTexture, i: MTLTexture, q: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
