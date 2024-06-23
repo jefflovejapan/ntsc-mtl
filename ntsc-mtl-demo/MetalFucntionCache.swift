@@ -14,6 +14,7 @@ enum KernelFunction: String, CaseIterable {
     case colorBleed
     case paint
     case lowpass
+    case composeAndDelay
     case interleave
     case convertToRGB
 }

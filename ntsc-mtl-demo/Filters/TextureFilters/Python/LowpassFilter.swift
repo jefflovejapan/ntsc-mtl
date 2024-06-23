@@ -10,8 +10,6 @@ import Metal
 
 class LowpassFilter {
     typealias Error = TextureFilterError
-    private let timeInterval: Float16
-    private let tau: Float16
     private let alpha: Float16
     private let initialValue: Float16
     private let device: MTLDevice
@@ -20,10 +18,11 @@ class LowpassFilter {
     private var prev: MTLTexture?
     
     
-    init(rate: Float16, frequencyHz: Float16, initialValue: Float16, device: MTLDevice, pipelineCache: MetalPipelineCache) {
-        self.timeInterval = 1.0 / rate
-        self.tau = 1.0 / (frequencyHz * 2 * .pi)
-        self.alpha = self.timeInterval / (self.tau + self.timeInterval)
+    init(rate: Float, frequencyHz: Float, initialValue: Float16, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        let timeInterval = (1.0 / rate)
+        let tau = 1.0 / (frequencyHz * 2 * .pi)
+        let alpha = timeInterval / (tau + timeInterval)
+        self.alpha = Float16(alpha)
         self.initialValue = initialValue
         self.device = device
         self.pipelineCache = pipelineCache
