@@ -15,6 +15,8 @@ class EmulateVHSFilter {
     let tapeSpeed: VHSSpeed
     let sharpening: Float16
     var edgeWave: UInt = UInt(NTSCEffect.default.vhsEdgeWave)
+    var phaseShift: ChromaPhaseShift
+    var phaseShiftOffset: Int
     private let randomGenerator = CIFilter.randomGenerator()
     private var rng = SystemRandomNumberGenerator()
     private let device: MTLDevice
@@ -29,9 +31,11 @@ class EmulateVHSFilter {
     private let chromaLowpassFilter: VHSChromaLowpassFilter
     private let sharpenLowpassFilter: VHSSharpenLowpassFilter
     
-    init(tapeSpeed: VHSSpeed, sharpening: Float16, device: MTLDevice, pipelineCache: MetalPipelineCache, ciContext: CIContext) {
+    init(tapeSpeed: VHSSpeed, sharpening: Float16, phaseShift: ChromaPhaseShift, phaseShiftOffset: Int, device: MTLDevice, pipelineCache: MetalPipelineCache, ciContext: CIContext) {
         self.tapeSpeed = tapeSpeed
         self.sharpening = sharpening
+        self.phaseShift = phaseShift
+        self.phaseShiftOffset = phaseShiftOffset
         self.device = device
         self.pipelineCache = pipelineCache
         self.ciContext = ciContext
@@ -87,7 +91,7 @@ class EmulateVHSFilter {
         try chromaVertBlend(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
         
         try sharpen(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
-//        try chromaIntoLuma(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
+        try chromaIntoLuma(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
 //        try chromaFromLuma(input: try iter.last, output: output, commandBuffer: commandBuffer)
         try justBlit(from: try iter.last, to: output, commandBuffer: commandBuffer)
     }
@@ -153,8 +157,16 @@ class EmulateVHSFilter {
     }
     
     func chromaIntoLuma(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+        try encodeKernelFunction(.chromaIntoLuma, pipelineCache: pipelineCache, textureWidth: input.width, textureHeight: input.height, commandBuffer: commandBuffer, encode: { encoder in
+            encoder.setTexture(input, index: 0)
+            encoder.setTexture(output, index: 1)
+            var phaseShift = phaseShift
+            encoder.setBytes(&phaseShift, length: MemoryLayout<Int>.size, index: 0)
+            var phaseShiftOffset = phaseShiftOffset
+            encoder.setBytes(&phaseShiftOffset, length: MemoryLayout<Int>.size, index: 1)
+        })
     }
+    
     func chromaFromLuma(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         try justBlit(from: input, to: output, commandBuffer: commandBuffer)
     }

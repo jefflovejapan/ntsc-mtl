@@ -47,7 +47,15 @@ class NTSCTextureFilter {
         self.pipelineCache = try MetalPipelineCache(device: device, library: library)
         self.colorBleedFilter = ColorBleedFilter(device: device, pipelineCache: pipelineCache)
         self.compositeLowpassFilter = try CompositeLowpassFilter(device: device, pipelineCache: pipelineCache)
-        self.emulateVHSFilter = EmulateVHSFilter(tapeSpeed: effect.vhsTapeSpeed, sharpening: effect.vhsSharpening, device: device, pipelineCache: pipelineCache, ciContext: ciContext)
+        self.emulateVHSFilter = EmulateVHSFilter(
+            tapeSpeed: effect.vhsTapeSpeed,
+            sharpening: effect.vhsSharpening,
+            phaseShift: effect.scanlinePhaseShift,
+            phaseShiftOffset: effect.scanlinePhaseShiftOffset,
+            device: device,
+            pipelineCache: pipelineCache,
+            ciContext: ciContext
+        )
     }
     
     static func cutBlackLineBorder(input: MTLTexture, output: MTLTexture, blackLineEnabled: Bool, blackLineBorderPct: Float, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
@@ -126,8 +134,10 @@ class NTSCTextureFilter {
         try justBlit(from: input, to: output, commandBuffer: commandBuffer)
     }
     
-    static func emulateVHS(input: MTLTexture, output: MTLTexture, filter: EmulateVHSFilter, edgeWave: UInt, commandBuffer: MTLCommandBuffer) throws {
+    static func emulateVHS(input: MTLTexture, output: MTLTexture, filter: EmulateVHSFilter, edgeWave: UInt, phaseShift: ChromaPhaseShift, phaseShiftOffset: Int, commandBuffer: MTLCommandBuffer) throws {
         filter.edgeWave = edgeWave
+        filter.phaseShift = phaseShift
+        filter.phaseShiftOffset = phaseShiftOffset
         try filter.run(input: input, output: output, commandBuffer: commandBuffer)
     }
     
@@ -345,6 +355,8 @@ class NTSCTextureFilter {
                 emulateVHSFilter = EmulateVHSFilter(
                     tapeSpeed: effect.vhsTapeSpeed,
                     sharpening: effect.vhsSharpening, 
+                    phaseShift: effect.scanlinePhaseShift,
+                    phaseShiftOffset: effect.scanlinePhaseShiftOffset,
                     device: device,
                     pipelineCache: pipelineCache,
                     ciContext: context
@@ -357,6 +369,8 @@ class NTSCTextureFilter {
                     output: try iter.next(),
                     filter: emulateVHSFilter,
                     edgeWave: UInt(effect.vhsEdgeWave),
+                    phaseShift: effect.scanlinePhaseShift,
+                    phaseShiftOffset: effect.scanlinePhaseShiftOffset,
                     commandBuffer: commandBuffer
                 )
             }

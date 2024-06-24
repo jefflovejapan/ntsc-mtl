@@ -23,6 +23,8 @@ class NTSCEffect {
     var vhsEdgeWave: Float
     var vhsTapeSpeed: VHSSpeed
     var vhsSharpening: Float16
+    var scanlinePhaseShift: ChromaPhaseShift
+    var scanlinePhaseShiftOffset: Int
     
     init(
         blackLineBorderEnabled: Bool = false,
@@ -36,7 +38,9 @@ class NTSCEffect {
         enableVHSEmulation: Bool = true,
         vhsEdgeWave: Float? = nil,
         vhsTapeSpeed: VHSSpeed? = nil,
-        vhsSharpening: Float16? = nil
+        vhsSharpening: Float16? = nil,
+        scanlinePhaseShift: ChromaPhaseShift? = nil,
+        scanlinePhaseShiftOffset: Int? = nil
     ) {
         self.blackLineBorderEnabled = blackLineBorderEnabled
         self.blackLineBorderPct = blackLineBorderPct ?? 0.17
@@ -50,6 +54,8 @@ class NTSCEffect {
         self.vhsEdgeWave = vhsEdgeWave ?? 0
         self.vhsTapeSpeed = vhsTapeSpeed ?? .sp
         self.vhsSharpening = vhsSharpening ?? 1.5
+        self.scanlinePhaseShift = scanlinePhaseShift ?? .degrees180
+        self.scanlinePhaseShiftOffset = scanlinePhaseShiftOffset ?? 0
     }
 }
 
