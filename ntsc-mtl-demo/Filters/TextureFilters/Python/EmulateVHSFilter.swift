@@ -13,6 +13,7 @@ import CoreImage.CIFilterBuiltins
 class EmulateVHSFilter {
     typealias Error = TextureFilterError
     let tapeSpeed: VHSSpeed
+    let sharpening: Float16
     var edgeWave: UInt = UInt(NTSCEffect.default.vhsEdgeWave)
     private let randomGenerator = CIFilter.randomGenerator()
     private var rng = SystemRandomNumberGenerator()
@@ -30,6 +31,7 @@ class EmulateVHSFilter {
     
     init(tapeSpeed: VHSSpeed, sharpening: Float16, device: MTLDevice, pipelineCache: MetalPipelineCache, ciContext: CIContext) {
         self.tapeSpeed = tapeSpeed
+        self.sharpening = sharpening
         self.device = device
         self.pipelineCache = pipelineCache
         self.ciContext = ciContext

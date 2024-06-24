@@ -26,7 +26,9 @@ class LowpassFilter {
     init(frequencyCutoff: Float, countInSeries: Float? = nil, device: MTLDevice) {
         self.frequencyCutoff = frequencyCutoff
         self.countInSeries = countInSeries ?? 1
-        self.blurShader = MPSImageGaussianBlur(device: device, sigma: sqrtf(self.countInSeries) * NTSC.rate / (2 * .pi * frequencyCutoff))
+        let sigma = NTSC.rate / (2 * .pi * frequencyCutoff)
+        let sigmaInSeries = sigma / sqrtf(self.countInSeries)
+        self.blurShader = MPSImageGaussianBlur(device: device, sigma: sigmaInSeries)
     }
     
     func run(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) {

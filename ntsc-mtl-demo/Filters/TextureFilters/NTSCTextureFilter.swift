@@ -377,7 +377,7 @@ class NTSCTextureFilter {
                 pipelineCache: pipelineCache
             )
             
-            if emulateVHSFilter.tapeSpeed != effect.vhsTapeSpeed {
+            if !(emulateVHSFilter.tapeSpeed == effect.vhsTapeSpeed && emulateVHSFilter.sharpening == effect.vhsSharpening) {
                 emulateVHSFilter = EmulateVHSFilter(
                     tapeSpeed: effect.vhsTapeSpeed,
                     sharpening: effect.vhsSharpening, 
