@@ -11,6 +11,10 @@ import MetalPerformanceShaders
 
 class LowpassFilter {
     let frequencyCutoff: Float
+    
+    
+    /// How many lowpass filters at frequencyCutoff do you want to apply in series?
+    let countInSeries: Float
     private let blurShader: MPSImageGaussianBlur
     
     /*
@@ -19,9 +23,10 @@ class LowpassFilter {
      Applying it three (n) times in succession is equivalent to multiplying sigma by sqrt(3) (sqrt(n))
      */
     
-    init(frequencyCutoff: Float, device: MTLDevice) {
+    init(frequencyCutoff: Float, countInSeries: Float? = nil, device: MTLDevice) {
         self.frequencyCutoff = frequencyCutoff
-        self.blurShader = MPSImageGaussianBlur(device: device, sigma: sqrtf(3) * NTSC.rate / (2 * .pi * frequencyCutoff))
+        self.countInSeries = countInSeries ?? 1
+        self.blurShader = MPSImageGaussianBlur(device: device, sigma: sqrtf(self.countInSeries) * NTSC.rate / (2 * .pi * frequencyCutoff))
     }
     
     func run(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) {

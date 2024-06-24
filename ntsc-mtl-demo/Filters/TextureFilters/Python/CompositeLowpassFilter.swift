@@ -25,8 +25,8 @@ class CompositeLowpassFilter {
     
     
     init(device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
-        self.iLowpassFilter = LowpassFilter(frequencyCutoff: Self.iFrequencyCutoff, device: device)
-        self.qLowpassFilter = LowpassFilter(frequencyCutoff: Self.qFrequencyCutoff, device: device)
+        self.iLowpassFilter = LowpassFilter(frequencyCutoff: Self.iFrequencyCutoff, countInSeries: 3, device: device)
+        self.qLowpassFilter = LowpassFilter(frequencyCutoff: Self.qFrequencyCutoff, countInSeries: 3, device: device)
         self.device = device
         self.pipelineCache = pipelineCache
     }

@@ -51,6 +51,8 @@
 		1F9729A82C278848000BFCA8 /* Lowpass.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F9729A72C278848000BFCA8 /* Lowpass.metal */; };
 		1F9729AA2C278E11000BFCA8 /* CompositeLowpassFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F9729A92C278E11000BFCA8 /* CompositeLowpassFilter.swift */; };
 		1F9729AC2C27A4B0000BFCA8 /* ComposeAndDelay.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F9729AB2C27A4B0000BFCA8 /* ComposeAndDelay.metal */; };
+		1FA2C28C2C29AB7800D9B99B /* VHSLumaLowpassFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA2C28B2C29AB7800D9B99B /* VHSLumaLowpassFilter.swift */; };
+		1FA2C28E2C29AE8C00D9B99B /* VHSSumAndScale.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FA2C28D2C29AE8C00D9B99B /* VHSSumAndScale.metal */; };
 		1FA64F782C1468BF00E54D6F /* BoundaryHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA64F772C1468BF00E54D6F /* BoundaryHandling.swift */; };
 		1FA64F802C14F5B800E54D6F /* HeadSwitchingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA64F7F2C14F5B800E54D6F /* HeadSwitchingTests.swift */; };
 		1FA64F822C15066100E54D6F /* CIImage+TestImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA64F812C15066100E54D6F /* CIImage+TestImage.swift */; };
@@ -121,6 +123,8 @@
 		1F9729A72C278848000BFCA8 /* Lowpass.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Lowpass.metal; sourceTree = "<group>"; };
 		1F9729A92C278E11000BFCA8 /* CompositeLowpassFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompositeLowpassFilter.swift; sourceTree = "<group>"; };
 		1F9729AB2C27A4B0000BFCA8 /* ComposeAndDelay.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ComposeAndDelay.metal; sourceTree = "<group>"; };
+		1FA2C28B2C29AB7800D9B99B /* VHSLumaLowpassFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VHSLumaLowpassFilter.swift; sourceTree = "<group>"; };
+		1FA2C28D2C29AE8C00D9B99B /* VHSSumAndScale.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = VHSSumAndScale.metal; sourceTree = "<group>"; };
 		1FA64F772C1468BF00E54D6F /* BoundaryHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoundaryHandling.swift; sourceTree = "<group>"; };
 		1FA64F7F2C14F5B800E54D6F /* HeadSwitchingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadSwitchingTests.swift; sourceTree = "<group>"; };
 		1FA64F812C15066100E54D6F /* CIImage+TestImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CIImage+TestImage.swift"; sourceTree = "<group>"; };
@@ -276,6 +280,7 @@
 				1F97299C2C273E0D000BFCA8 /* BlackLineBorder.metal */,
 				1F9729A02C2745C6000BFCA8 /* ColorBleed.metal */,
 				1F9729A72C278848000BFCA8 /* Lowpass.metal */,
+				1FA2C28D2C29AE8C00D9B99B /* VHSSumAndScale.metal */,
 				1F9729AB2C27A4B0000BFCA8 /* ComposeAndDelay.metal */,
 				1F52D06D2C28B7A700135EAE /* VHSEdgeWave.metal */,
 				1F52D0712C28BC4F00135EAE /* Mix.metal */,
@@ -295,6 +300,7 @@
 				1F9729A32C274B0D000BFCA8 /* ColorBleedFilter.swift */,
 				1F52D0732C28E44600135EAE /* TextureFilterError.swift */,
 				1F9729A52C27682F000BFCA8 /* LowpassFilter.swift */,
+				1FA2C28B2C29AB7800D9B99B /* VHSLumaLowpassFilter.swift */,
 				1F9729A92C278E11000BFCA8 /* CompositeLowpassFilter.swift */,
 				1F52D06B2C28A98400135EAE /* EmulateVHSFilter.swift */,
 				1F52D06F2C28B94600135EAE /* MixFilter.swift */,
@@ -414,6 +420,7 @@
 				1F5F93BC2C0E83EC00EC29A2 /* NTSCTextureFilter.swift in Sources */,
 				1F9729A82C278848000BFCA8 /* Lowpass.metal in Sources */,
 				1F9729AC2C27A4B0000BFCA8 /* ComposeAndDelay.metal in Sources */,
+				1FA2C28E2C29AE8C00D9B99B /* VHSSumAndScale.metal in Sources */,
 				1F9729AA2C278E11000BFCA8 /* CompositeLowpassFilter.swift in Sources */,
 				1F4692CF2C138F9900CD7756 /* Array+PaddedToLength.swift in Sources */,
 				1F97299D2C273E0D000BFCA8 /* BlackLineBorder.metal in Sources */,
@@ -434,6 +441,7 @@
 				1F6BFE2A2BFFBFC200883169 /* CameraView.swift in Sources */,
 				1FEE323E2C0A3FCC009F09BA /* YIQ.swift in Sources */,
 				1F52D06E2C28B7A700135EAE /* VHSEdgeWave.metal in Sources */,
+				1FA2C28C2C29AB7800D9B99B /* VHSLumaLowpassFilter.swift in Sources */,
 				1F52D0702C28B94600135EAE /* MixFilter.swift in Sources */,
 				1F60A3DB2C1A205400024EAB /* MTLComputeCommandEncoder+Extensions.swift in Sources */,
 				1F4692D52C13CAA000CD7756 /* IteratorThing.swift in Sources */,

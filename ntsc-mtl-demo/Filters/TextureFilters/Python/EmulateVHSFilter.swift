@@ -12,9 +12,10 @@ import CoreImage.CIFilterBuiltins
 
 class EmulateVHSFilter {
     typealias Error = TextureFilterError
-    var lowpassCutoff: Float = NTSCEffect.default.vhsTapeSpeed.lumaCut
+    let tapeSpeed: VHSSpeed
     var edgeWave: UInt = UInt(NTSCEffect.default.vhsEdgeWave)
     private let mixFilter: MixFilter
+    private let lumaLowpassFilter: VHSLumaLowpassFilter
     private let randomGenerator = CIFilter.randomGenerator()
     private var rng = SystemRandomNumberGenerator()
     private let device: MTLDevice
@@ -23,13 +24,16 @@ class EmulateVHSFilter {
     private var texA: MTLTexture?
     private var texB: MTLTexture?
     private var texC: MTLTexture?
-    private var lowpassFilter: LowpassFilter?
+    private var lowpassFilter: LowpassFilter
     
-    init(device: MTLDevice, pipelineCache: MetalPipelineCache, ciContext: CIContext) {
+    init(tapeSpeed: VHSSpeed, device: MTLDevice, pipelineCache: MetalPipelineCache, ciContext: CIContext) {
+        self.tapeSpeed = tapeSpeed
         self.device = device
         self.pipelineCache = pipelineCache
         self.ciContext = ciContext
         self.mixFilter = MixFilter(device: device, pipelineCache: pipelineCache)
+        self.lowpassFilter = LowpassFilter(frequencyCutoff: tapeSpeed.lumaCut, countInSeries: 3, device: device)
+        self.lumaLowpassFilter = VHSLumaLowpassFilter(frequencyCutoff: tapeSpeed.lumaCut, device: device, pipelineCache: pipelineCache)
     }
     
     func run(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
@@ -57,19 +61,6 @@ class EmulateVHSFilter {
             self.texB = texs[1]
             self.texC = texs[2]
         }
-        let needsLowpassUpdate: Bool
-        if let lowpassFilter {
-            needsLowpassUpdate = lowpassFilter.frequencyCutoff != lowpassCutoff
-        } else {
-            needsLowpassUpdate = true
-        }
-        
-        if needsLowpassUpdate {
-            lowpassFilter = LowpassFilter(frequencyCutoff: lowpassCutoff, device: device)
-        }
-        guard let lowpassFilter else {
-            throw Error.cantMakeFilter(String(describing: LowpassFilter.self))
-        }
         
         guard let texA, let texB, let texC else {
             throw Error.cantMakeTexture
@@ -80,7 +71,19 @@ class EmulateVHSFilter {
         try writeRandom(to: try iter.next(), commandBuffer: commandBuffer)
         try mixRandom(from: try iter.last, to: try iter.next(), commandBuffer: commandBuffer)
         lowpassFilter.run(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
-        try edgeWave(input: input, random: try iter.last, output: output, commandBuffer: commandBuffer)
+        try edgeWave(input: input, random: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
+        
+        // updates Y
+        try lumaLowpass(input: try iter.last, output: try iter.next(), filter: lumaLowpassFilter, commandBuffer: commandBuffer)
+        // updates I and Q
+        try chromaLowpass(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
+        
+        try chromaVertBlend(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
+        
+        try sharpen(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
+        try chromaIntoLuma(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
+        try chromaFromLuma(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
+        
     }
     
     private func writeRandom(to texture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
@@ -133,5 +136,24 @@ class EmulateVHSFilter {
         )
         encoder.endEncoding()
     }
-
+    
+    private func lumaLowpass(input: MTLTexture, output: MTLTexture, filter: VHSLumaLowpassFilter, commandBuffer: MTLCommandBuffer) throws {
+        try filter.run(input: input, output: output, commandBuffer: commandBuffer)
+    }
+    
+    func chromaLowpass(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    }
+    func chromaVertBlend(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    }
+    func sharpen(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    }
+    func chromaIntoLuma(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    }
+    func chromaFromLuma(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    }
 }
