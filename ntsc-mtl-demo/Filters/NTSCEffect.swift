@@ -22,6 +22,11 @@ class NTSCEffect {
     var enableVHSEmulation: Bool
     var vhsEdgeWave: Float
     var vhsTapeSpeed: VHSSpeed
+    var vhsSharpening: Float16
+    var scanlinePhaseShift: ScanlinePhaseShift
+    var scanlinePhaseShiftOffset: Int
+    let subcarrierAmplitude: Float16 = 50
+    var vhsSVideoOut: Bool
     
     init(
         blackLineBorderEnabled: Bool = false,
@@ -34,7 +39,11 @@ class NTSCEffect {
         colorBleedOutForTV: Bool = false,
         enableVHSEmulation: Bool = true,
         vhsEdgeWave: Float? = nil,
-        vhsTapeSpeed: VHSSpeed? = nil
+        vhsTapeSpeed: VHSSpeed? = nil,
+        vhsSharpening: Float16? = nil,
+        scanlinePhaseShift: ScanlinePhaseShift? = nil,
+        scanlinePhaseShiftOffset: Int? = nil,
+        vhsSVideoOut: Bool = false
     ) {
         self.blackLineBorderEnabled = blackLineBorderEnabled
         self.blackLineBorderPct = blackLineBorderPct ?? 0.17
@@ -47,6 +56,10 @@ class NTSCEffect {
         self.enableVHSEmulation = enableVHSEmulation
         self.vhsEdgeWave = vhsEdgeWave ?? 0
         self.vhsTapeSpeed = vhsTapeSpeed ?? .sp
+        self.vhsSharpening = vhsSharpening ?? 1.5
+        self.scanlinePhaseShift = scanlinePhaseShift ?? .degrees180
+        self.scanlinePhaseShiftOffset = scanlinePhaseShiftOffset ?? 0
+        self.vhsSVideoOut = vhsSVideoOut
     }
 }
 
@@ -89,7 +102,7 @@ enum VHSSpeed: String, Identifiable, CaseIterable {
         }
     }
     
-    var chromaDelay: Int {
+    var chromaDelay: UInt {
         switch self {
         case .sp:
             9

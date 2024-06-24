@@ -66,7 +66,7 @@ struct ControlsView: View {
                     Slider(value: $effect.blackLineBorderPct, in: 0...1)
                 }
             }
-
+            
         }
     }
     
@@ -89,19 +89,40 @@ struct ControlsView: View {
             })
             if effect.enableVHSEmulation {
                 VStack {
+                    Picker(selection: $effect.vhsTapeSpeed, content: {
+                        ForEach(VHSSpeed.allCases) { speed in
+                            Text(speed.rawValue)
+                                .tag(speed)
+                        }
+                    }, label: {
+                        Text("VHS tape speed")
+                    })
                     Text("VHS edge wave: \(Int(effect.vhsEdgeWave))")
                     Slider(value: $effect.vhsEdgeWave, in: 0...10, label: {
                         Text("VHS edge wave")
                     })
+                    Text("Color bleed x: \(Int(effect.colorBleedXOffset))")
+                    Slider(value: $effect.colorBleedXOffset, in: -100...100)
+                    Text("Color bleed y: \(Int(effect.colorBleedYOffset))")
+                    Slider(value: $effect.colorBleedYOffset, in: -100...100)
+                    Text("VHS sharpening: \(effect.vhsSharpening.formatted(self.twoDecimalPlaces))")
+                    Slider(value: $effect.vhsSharpening, in: 1.0...5.0)
+                    Picker(selection: $effect.scanlinePhaseShift, content: {
+                        ForEach(ScanlinePhaseShift.allCases) { phaseShift in
+                            Text(name(phaseShift: phaseShift))
+                                .tag(phaseShift)
+                        }
+                    }, label: {
+                        Text("Chroma phase shift")
+                    })
+                    Stepper(value: $effect.scanlinePhaseShiftOffset, in: 0...4, label: {
+                        Text("Scanline phase shift offset: \(effect.scanlinePhaseShiftOffset)")
+                    })
                 }
             }
-            Text("Color bleed x: \(Int(effect.colorBleedXOffset))")
-            Slider(value: $effect.colorBleedXOffset, in: -100...100)
-            Text("Color bleed y: \(Int(effect.colorBleedYOffset))")
-            Slider(value: $effect.colorBleedYOffset, in: -100...100)
         }
     }
-        
+    
     private var twoDecimalPlaces: FloatingPointFormatStyle<Float> {
         FloatingPointFormatStyle.number.precision(.fractionLength(2))
     }
@@ -121,6 +142,19 @@ struct ControlsView: View {
             return "720p"
         case .resVGA:
             return "VGA"
+        }
+    }
+    
+    private func name(phaseShift: ScanlinePhaseShift) -> String {
+        switch phaseShift {
+        case .degrees0:
+            return "0"
+        case .degrees90:
+            return "90"
+        case .degrees180:
+            return "180"
+        case .degrees270:
+            return "270"
         }
     }
 }

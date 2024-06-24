@@ -13,8 +13,8 @@ class CompositeLowpassFilter {
     typealias Error = TextureFilterError
     private let device: MTLDevice
     private let pipelineCache: MetalPipelineCache
-    private let iBlurShader: MPSImageGaussianBlur
-    private let qBlurShader: MPSImageGaussianBlur
+    private let iLowpassFilter: LowpassFilter
+    private let qLowpassFilter: LowpassFilter
     private var iTex: MTLTexture?
     private var qTex: MTLTexture?
     
@@ -25,13 +25,8 @@ class CompositeLowpassFilter {
     
     
     init(device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
-        /*
-         ntsc-qt uses a lowpass filter with the frequency cutoffs above for i and q
-         These sigma values correspond to sampling frequency / 2 * pi * cutoff
-         Applying it three (n) times in succession is equivalent to multiplying sigma by sqrt(3) (sqrt(n))
-         */
-        self.iBlurShader = MPSImageGaussianBlur(device: device, sigma: sqrtf(3) * NTSC.rate / (2 * .pi * Self.iFrequencyCutoff))
-        self.qBlurShader = MPSImageGaussianBlur(device: device, sigma: sqrtf(3) * (NTSC.rate / (2 * .pi * Self.qFrequencyCutoff)))
+        self.iLowpassFilter = LowpassFilter(frequencyCutoff: Self.iFrequencyCutoff, countInSeries: 3, device: device)
+        self.qLowpassFilter = LowpassFilter(frequencyCutoff: Self.qFrequencyCutoff, countInSeries: 3, device: device)
         self.device = device
         self.pipelineCache = pipelineCache
     }
@@ -66,26 +61,21 @@ class CompositeLowpassFilter {
             throw Error.cantMakeTexture
         }
         
-        iBlurShader.encode(commandBuffer: commandBuffer, sourceTexture: input, destinationTexture: iTex)
-        qBlurShader.encode(commandBuffer: commandBuffer, sourceTexture: input, destinationTexture: qTex)
+        iLowpassFilter.run(input: input, output: iTex, commandBuffer: commandBuffer)
+        qLowpassFilter.run(input: input, output: qTex, commandBuffer: commandBuffer)
         try composeAndDelay(y: input, i: iTex, q: qTex, output: output, commandBuffer: commandBuffer)
     }
     
     private func composeAndDelay(y: MTLTexture, i: MTLTexture, q: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        let pipelineState = try pipelineCache.pipelineState(function: .composeAndDelay)
-        guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
-            throw Error.cantMakeComputeEncoder
-        }
-        encoder.setComputePipelineState(pipelineState)
-        encoder.setTexture(y, index: 0)
-        encoder.setTexture(i, index: 1)
-        encoder.setTexture(q, index: 2)
-        encoder.setTexture(output, index: 3)
-        var iDelay = Self.iDelay
-        encoder.setBytes(&iDelay, length: MemoryLayout<UInt>.size, index: 0)
-        var qDelay = Self.qDelay
-        encoder.setBytes(&qDelay, length: MemoryLayout<UInt>.size, index: 0)
-        encoder.dispatchThreads(textureWidth: y.width, textureHeight: y.height)
-        encoder.endEncoding()
+        try encodeKernelFunction(.composeAndDelay, pipelineCache: pipelineCache, textureWidth: y.width, textureHeight: y.height, commandBuffer: commandBuffer, encode: { encoder in
+            encoder.setTexture(y, index: 0)
+            encoder.setTexture(i, index: 1)
+            encoder.setTexture(q, index: 2)
+            encoder.setTexture(output, index: 3)
+            var iDelay = Self.iDelay
+            encoder.setBytes(&iDelay, length: MemoryLayout<UInt>.size, index: 0)
+            var qDelay = Self.qDelay
+            encoder.setBytes(&qDelay, length: MemoryLayout<UInt>.size, index: 0)
+        })
     }
 }

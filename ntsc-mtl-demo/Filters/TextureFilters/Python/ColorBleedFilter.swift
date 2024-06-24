@@ -23,18 +23,13 @@ class ColorBleedFilter {
     }
     
     func run(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        let pipelineState: MTLComputePipelineState = try pipelineCache.pipelineState(function: .colorBleed)
-        guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
-            throw Error.cantMakeComputeEncoder
-        }
-        commandEncoder.setComputePipelineState(pipelineState)
-        commandEncoder.setTexture(input, index: 0)
-        commandEncoder.setTexture(output, index: 1)
-        var xOffset = xOffset
-        commandEncoder.setBytes(&xOffset, length: MemoryLayout<Int>.size, index: 0)
-        var yOffset = yOffset
-        commandEncoder.setBytes(&yOffset, length: MemoryLayout<Int>.size, index: 1)
-        commandEncoder.dispatchThreads(textureWidth: input.width, textureHeight: input.height)
-        commandEncoder.endEncoding()
+        try encodeKernelFunction(.colorBleed, pipelineCache: pipelineCache, textureWidth: input.width, textureHeight: input.height, commandBuffer: commandBuffer, encode: { encoder in
+            encoder.setTexture(input, index: 0)
+            encoder.setTexture(output, index: 1)
+            var xOffset = xOffset
+            encoder.setBytes(&xOffset, length: MemoryLayout<Int>.size, index: 0)
+            var yOffset = yOffset
+            encoder.setBytes(&yOffset, length: MemoryLayout<Int>.size, index: 1)
+        })
     }
 }

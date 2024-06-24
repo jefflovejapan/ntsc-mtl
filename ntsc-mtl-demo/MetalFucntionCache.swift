@@ -13,10 +13,17 @@ enum KernelFunction: String, CaseIterable {
     case blackLineBorder
     case colorBleed
     case paint
-    case lowpass
+    case highpass
     case composeAndDelay
     case mix
     case vhsEdgeWave
+    case vhsSumAndScale
+    case vhsComposeAndDelay
+    case chromaVertBlend
+    case vhsSharpen
+    case chromaIntoLuma
+    case chromaFromLuma
+    case chromaFromLumaAccumulator
     case interleave
     case convertToRGB
 }
