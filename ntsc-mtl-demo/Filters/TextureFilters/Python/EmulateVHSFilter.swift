@@ -74,16 +74,15 @@ class EmulateVHSFilter {
         try edgeWave(input: input, random: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
         
         // updates Y
-        try lumaLowpass(input: try iter.last, output: try iter.next(), filter: lumaLowpassFilter, commandBuffer: commandBuffer)
+        try lumaLowpass(input: try iter.last, output: output, filter: lumaLowpassFilter, commandBuffer: commandBuffer)
         // updates I and Q
-        try chromaLowpass(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
-        
-        try chromaVertBlend(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
-        
-        try sharpen(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
-        try chromaIntoLuma(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
-        try chromaFromLuma(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
-        
+//        try chromaLowpass(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
+//        
+//        try chromaVertBlend(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
+//        
+//        try sharpen(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
+//        try chromaIntoLuma(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
+//        try chromaFromLuma(input: try iter.last, output: output, commandBuffer: commandBuffer)
     }
     
     private func writeRandom(to texture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
