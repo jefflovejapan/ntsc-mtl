@@ -66,7 +66,7 @@ struct ControlsView: View {
                     Slider(value: $effect.blackLineBorderPct, in: 0...1)
                 }
             }
-
+            
         }
     }
     
@@ -89,21 +89,29 @@ struct ControlsView: View {
             })
             if effect.enableVHSEmulation {
                 VStack {
+                    Picker(selection: $effect.vhsTapeSpeed, content: {
+                        ForEach(VHSSpeed.allCases) { speed in
+                            Text(speed.rawValue)
+                                .tag(speed)
+                        }
+                    }, label: {
+                        Text("VHS tape speed")
+                    })
                     Text("VHS edge wave: \(Int(effect.vhsEdgeWave))")
                     Slider(value: $effect.vhsEdgeWave, in: 0...10, label: {
                         Text("VHS edge wave")
                     })
+                    Text("Color bleed x: \(Int(effect.colorBleedXOffset))")
+                    Slider(value: $effect.colorBleedXOffset, in: -100...100)
+                    Text("Color bleed y: \(Int(effect.colorBleedYOffset))")
+                    Slider(value: $effect.colorBleedYOffset, in: -100...100)
+                    Text("VHS sharpening: \(effect.vhsSharpening.formatted(self.twoDecimalPlaces))")
+                    Slider(value: $effect.vhsSharpening, in: 1.0...5.0)
                 }
             }
-            Text("Color bleed x: \(Int(effect.colorBleedXOffset))")
-            Slider(value: $effect.colorBleedXOffset, in: -100...100)
-            Text("Color bleed y: \(Int(effect.colorBleedYOffset))")
-            Slider(value: $effect.colorBleedYOffset, in: -100...100)
-            Text("VHS sharpening: \(effect.vhsSharpening.formatted(self.twoDecimalPlaces))")
-            Slider(value: $effect.vhsSharpening, in: 1.0...5.0)
         }
     }
-        
+    
     private var twoDecimalPlaces: FloatingPointFormatStyle<Float> {
         FloatingPointFormatStyle.number.precision(.fractionLength(2))
     }
