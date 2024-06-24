@@ -571,4 +571,12 @@ Today is all about getting snow to work. I think I've convinced myself that the 
 
 - Tracking noise would be the coolest but requires `row_speckles`
 - Would be great to get snow down so we have it. We're super close
-- 
+- I think we're there
+
+## Tracking Noise
+
+- It looks like we'll be reusing shiftRow
+- shiftRow takes parameters for "effectHeight" and "offsetRows"
+    - wouldn't it be better to just apply the effect to the entire frame and combine them downstream?
+        - maybe not?   
+- I think the reason we're not seeing anything for shiftRow is that the noise field in Rust is a gradient, so it's getting more intense over its range.

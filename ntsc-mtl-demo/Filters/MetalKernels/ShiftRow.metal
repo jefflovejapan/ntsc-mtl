@@ -17,8 +17,7 @@ kernel void shiftRow
  constant uint &effectHeight [[buffer(0)]],
  constant uint &offsetRows [[buffer(1)]],
  constant float &shift [[buffer(2)]],
- constant uint &boundaryColumnIndex [[buffer(3)]],
- constant float &bandwidthScale [[buffer(4)]],
+ constant float &bandwidthScale [[buffer(3)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
     half4 thisPixel = inputTexture.read(gid);
@@ -40,5 +39,5 @@ kernel void shiftRow
     float rowShift = shift * pow((float(rowWithinAffected) / float(numAffectedRows)), 1.5);
     half rand = randomTexture.read(uint2(0, gid.y)).x;
     float noisyShift = (rowShift + (rand - 0.5)) * bandwidthScale;
-    shiftRowInline(inputTexture, outputTexture, noisyShift, boundaryColumnIndex, gid);
+    shiftRowInline(inputTexture, outputTexture, noisyShift, gid);
 }

@@ -21,7 +21,8 @@ class NTSCEffect {
     var videoScanlinePhaseShiftOffset: Int
     var headSwitchingEnabled: Bool
     var headSwitching: HeadSwitchingSettings
-    var trackingNoise: TrackingNoiseSettings?
+    var isTrackingNoiseEnabled: Bool
+    var trackingNoise: TrackingNoiseSettings
     var compositeNoise: FBMNoiseSettings?
     var ringingEnabled: Bool
     var ringing: RingingSettings
@@ -51,7 +52,8 @@ class NTSCEffect {
         videoScanlinePhaseShiftOffset: Int = 0,
         headSwitchingEnabled: Bool = true,
         headSwitching: HeadSwitchingSettings = HeadSwitchingSettings.default,
-        trackingNoise: TrackingNoiseSettings? = TrackingNoiseSettings.default,
+        isTrackingNoiseEnabled: Bool = true,
+        trackingNoise: TrackingNoiseSettings = TrackingNoiseSettings.default,
         compositeNoise: FBMNoiseSettings = FBMNoiseSettings.compositeNoiseDefault,
         ringingEnabled: Bool = true,
         ringing: RingingSettings = RingingSettings.default,
@@ -80,6 +82,7 @@ class NTSCEffect {
         self.videoScanlinePhaseShiftOffset = videoScanlinePhaseShiftOffset
         self.headSwitchingEnabled = headSwitchingEnabled
         self.headSwitching = headSwitching
+        self.isTrackingNoiseEnabled = isTrackingNoiseEnabled
         self.trackingNoise = trackingNoise
         self.compositeNoise = compositeNoise
         self.ringingEnabled = ringingEnabled

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1F1F9B692C03C3980085048F /* IIRTransferFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1F9B682C03C3980085048F /* IIRTransferFunction.swift */; };
 		1F2028942C1E23BA00DFB165 /* Resolution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2028932C1E23BA00DFB165 /* Resolution.swift */; };
+		1F2028962C1E579E00DFB165 /* TrackingNoiseTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2028952C1E579E00DFB165 /* TrackingNoiseTextureFilter.swift */; };
 		1F2159A82C11476200D2483B /* CompositeNoiseTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2159A72C11476200D2483B /* CompositeNoiseTextureFilter.swift */; };
 		1F2159AC2C11498700D2483B /* MultiplyLuma.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F2159AB2C11498700D2483B /* MultiplyLuma.metal */; };
 		1F2159AE2C11517700D2483B /* SnowTextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2159AD2C11517700D2483B /* SnowTextureFilter.swift */; };
@@ -76,6 +77,7 @@
 		1FA64F832C15123700E54D6F /* MTLTexture+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FC887362C10A62400EE14A7 /* MTLTexture+Extensions.swift */; };
 		1FA64F852C1512F200E54D6F /* TextureForImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA64F842C1512F200E54D6F /* TextureForImage.swift */; };
 		1FA64F872C151C5600E54D6F /* MetalFucntionCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA64F862C151C5600E54D6F /* MetalFucntionCache.swift */; };
+		1FBBD6482C23B9DA00C7E9F9 /* TrackingNoiseShiftRow.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FBBD6472C23B9DA00C7E9F9 /* TrackingNoiseShiftRow.metal */; };
 		1FCC1D312C0A0C2700943847 /* YIQChannels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FCC1D302C0A0C2700943847 /* YIQChannels.swift */; };
 		1FEE323E2C0A3FCC009F09BA /* YIQ.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FEE323D2C0A3FCC009F09BA /* YIQ.swift */; };
 /* End PBXBuildFile section */
@@ -93,6 +95,7 @@
 /* Begin PBXFileReference section */
 		1F1F9B682C03C3980085048F /* IIRTransferFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IIRTransferFunction.swift; sourceTree = "<group>"; };
 		1F2028932C1E23BA00DFB165 /* Resolution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resolution.swift; sourceTree = "<group>"; };
+		1F2028952C1E579E00DFB165 /* TrackingNoiseTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackingNoiseTextureFilter.swift; sourceTree = "<group>"; };
 		1F2159A72C11476200D2483B /* CompositeNoiseTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompositeNoiseTextureFilter.swift; sourceTree = "<group>"; };
 		1F2159AB2C11498700D2483B /* MultiplyLuma.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = MultiplyLuma.metal; sourceTree = "<group>"; };
 		1F2159AD2C11517700D2483B /* SnowTextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnowTextureFilter.swift; sourceTree = "<group>"; };
@@ -163,6 +166,7 @@
 		1FA64F812C15066100E54D6F /* CIImage+TestImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CIImage+TestImage.swift"; sourceTree = "<group>"; };
 		1FA64F842C1512F200E54D6F /* TextureForImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureForImage.swift; sourceTree = "<group>"; };
 		1FA64F862C151C5600E54D6F /* MetalFucntionCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalFucntionCache.swift; sourceTree = "<group>"; };
+		1FBBD6472C23B9DA00C7E9F9 /* TrackingNoiseShiftRow.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = TrackingNoiseShiftRow.metal; sourceTree = "<group>"; };
 		1FC887362C10A62400EE14A7 /* MTLTexture+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MTLTexture+Extensions.swift"; sourceTree = "<group>"; };
 		1FCC1D302C0A0C2700943847 /* YIQChannels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YIQChannels.swift; sourceTree = "<group>"; };
 		1FEE323D2C0A3FCC009F09BA /* YIQ.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YIQ.swift; sourceTree = "<group>"; };
@@ -213,6 +217,7 @@
 				1F5F93D02C0FC84500EC29A2 /* IIRMultiply.metal */,
 				1F5F93D62C0FDB8700EC29A2 /* IIRFinalImage.metal */,
 				1FA64F792C146AA800E54D6F /* ShiftRow.metal */,
+				1FBBD6472C23B9DA00C7E9F9 /* TrackingNoiseShiftRow.metal */,
 				1F827CFC2C1F9F0F0038AA00 /* EdgeWave.metal */,
 				1FA64F7B2C146C3D00E54D6F /* ShiftRowMidline.metal */,
 			);
@@ -228,6 +233,7 @@
 				1F60A3E62C1A83E800024EAB /* ChromaDelayTextureFilter.swift */,
 				1F4692D42C13CAA000CD7756 /* IteratorThing.swift */,
 				1F2159A72C11476200D2483B /* CompositeNoiseTextureFilter.swift */,
+				1F2028952C1E579E00DFB165 /* TrackingNoiseTextureFilter.swift */,
 				1F2159AD2C11517700D2483B /* SnowTextureFilter.swift */,
 				1F4692D22C13C4A100CD7756 /* HeadSwitchingTextureFilter.swift */,
 				1F5F93C52C0F910300EC29A2 /* LumaBoxTextureFilter.swift */,
@@ -459,6 +465,7 @@
 				1F5F93D32C0FD03400EC29A2 /* IIRFilterSample.metal in Sources */,
 				1F5F93D92C0FE70800EC29A2 /* ChromaLowpassTextureFilter.swift in Sources */,
 				1F4692CF2C138F9900CD7756 /* Array+PaddedToLength.swift in Sources */,
+				1FBBD6482C23B9DA00C7E9F9 /* TrackingNoiseShiftRow.metal in Sources */,
 				1F5F93C62C0F910300EC29A2 /* LumaBoxTextureFilter.swift in Sources */,
 				1F2028942C1E23BA00DFB165 /* Resolution.swift in Sources */,
 				1F60A3DF2C1A656F00024EAB /* PhaseErrorTextureFilter.swift in Sources */,
@@ -506,6 +513,7 @@
 				1F67A4F22C1B3FBD004BAA5F /* ControlsView.swift in Sources */,
 				1F5771AA2C1D2D5A002ED549 /* Interleave.metal in Sources */,
 				1F5B6CC22C04D4010051A9ED /* NTSC.swift in Sources */,
+				1F2028962C1E579E00DFB165 /* TrackingNoiseTextureFilter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
