@@ -16,6 +16,7 @@ class EmulateVHSFilter {
     var edgeWave: UInt = UInt(NTSCEffect.default.vhsEdgeWave)
     private let mixFilter: MixFilter
     private let lumaLowpassFilter: VHSLumaLowpassFilter
+    private let chromaLowpassFilter: VHSChromaLowpassFilter
     private let randomGenerator = CIFilter.randomGenerator()
     private var rng = SystemRandomNumberGenerator()
     private let device: MTLDevice
@@ -34,6 +35,7 @@ class EmulateVHSFilter {
         self.mixFilter = MixFilter(device: device, pipelineCache: pipelineCache)
         self.lowpassFilter = LowpassFilter(frequencyCutoff: tapeSpeed.lumaCut, countInSeries: 3, device: device)
         self.lumaLowpassFilter = VHSLumaLowpassFilter(frequencyCutoff: tapeSpeed.lumaCut, device: device, pipelineCache: pipelineCache)
+        self.chromaLowpassFilter = VHSChromaLowpassFilter(frequencyCutoff: tapeSpeed.chromaCut, chromaDelay: tapeSpeed.chromaDelay, device: device, pipelineCache: pipelineCache)
     }
     
     func run(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
@@ -74,10 +76,11 @@ class EmulateVHSFilter {
         try edgeWave(input: input, random: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
         
         // updates Y
-        try lumaLowpass(input: try iter.last, output: output, filter: lumaLowpassFilter, commandBuffer: commandBuffer)
+        try lumaLowpass(input: try iter.last, output: try iter.next(), filter: lumaLowpassFilter, commandBuffer: commandBuffer)
         // updates I and Q
-//        try chromaLowpass(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
-//        
+        try chromaLowpass(input: try iter.last, output: try iter.next(), filter: chromaLowpassFilter, commandBuffer: commandBuffer)
+        try justBlit(from: iter.last, to: output, commandBuffer: commandBuffer)
+//
 //        try chromaVertBlend(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
 //        
 //        try sharpen(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
@@ -140,8 +143,8 @@ class EmulateVHSFilter {
         try filter.run(input: input, output: output, commandBuffer: commandBuffer)
     }
     
-    func chromaLowpass(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    func chromaLowpass(input: MTLTexture, output: MTLTexture, filter: VHSChromaLowpassFilter, commandBuffer: MTLCommandBuffer) throws {
+        try filter.run(input: input, output: output, commandBuffer: commandBuffer)
     }
     func chromaVertBlend(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         try justBlit(from: input, to: output, commandBuffer: commandBuffer)

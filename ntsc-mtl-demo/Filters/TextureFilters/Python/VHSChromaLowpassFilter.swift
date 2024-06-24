@@ -1,0 +1,80 @@
+//
+//  VHSChromaLowpassFilter.swift
+//  ntsc-mtl-demo
+//
+//  Created by Jeffrey Blagdon on 2024-06-24.
+//
+
+import Foundation
+import Metal
+import MetalPerformanceShaders
+
+class VHSChromaLowpassFilter {
+    typealias Error = TextureFilterError
+    let frequencyCutoff: Float
+    let chromaDelay: UInt
+    private let tripleLowpass: LowpassFilter
+    private let device: MTLDevice
+    private let pipelineCache: MetalPipelineCache
+    private var texA: MTLTexture?
+    private var texB: MTLTexture?
+    
+    init(frequencyCutoff: Float, chromaDelay: UInt, device: MTLDevice, pipelineCache: MetalPipelineCache) {
+        self.frequencyCutoff = frequencyCutoff
+        self.chromaDelay = chromaDelay
+        self.device = device
+        self.pipelineCache = pipelineCache
+        self.tripleLowpass = LowpassFilter(frequencyCutoff: frequencyCutoff, countInSeries: 3, device: device)
+    }
+    
+    func run(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        let needsUpdate: Bool
+        if let texA {
+            needsUpdate = !(texA.width == input.width && texA.height == input.height)
+        } else {
+            needsUpdate = true
+        }
+        if needsUpdate {
+            guard let tex = Texture.texture(from: input, device: device) else {
+                throw Error.cantMakeTexture
+            }
+            
+            texA = tex
+        }
+        guard let texA else {
+            throw Error.cantMakeTexture
+        }
+        tripleLowpass.run(input: input, output: texA, commandBuffer: commandBuffer)
+        try vhsComposeAndDelay(input: input, lowpassed: texA, output: output, commandBuffer: commandBuffer)
+    }
+    
+    private func vhsComposeAndDelay(input: MTLTexture, lowpassed: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        let pipelineState = try pipelineCache.pipelineState(function: .vhsComposeAndDelay)
+        guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
+            throw Error.cantMakeComputeEncoder
+        }
+        commandEncoder.setComputePipelineState(pipelineState)
+        commandEncoder.setTexture(input, index: 0)
+        commandEncoder.setTexture(lowpassed, index: 1)
+        commandEncoder.setTexture(output, index: 2)
+        var delay = chromaDelay
+        commandEncoder.setBytes(&delay, length: MemoryLayout<UInt>.size, index: 0)
+        commandEncoder.dispatchThreads(textureWidth: input.width, textureHeight: input.height)
+        commandEncoder.endEncoding()
+
+    }
+    
+    private func vhsSumAndScale(input: MTLTexture, triple: MTLTexture, pre: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        let pipelineState = try pipelineCache.pipelineState(function: .vhsSumAndScale)
+        guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
+            throw Error.cantMakeComputeEncoder
+        }
+        commandEncoder.setComputePipelineState(pipelineState)
+        commandEncoder.setTexture(input, index: 0)
+        commandEncoder.setTexture(pre, index: 1)
+        commandEncoder.setTexture(triple, index: 2)
+        commandEncoder.setTexture(output, index: 3)
+        commandEncoder.dispatchThreads(textureWidth: input.width, textureHeight: input.height)
+        commandEncoder.endEncoding()
+    }
+}

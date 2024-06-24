@@ -89,7 +89,7 @@ enum VHSSpeed: String, Identifiable, CaseIterable {
         }
     }
     
-    var chromaDelay: Int {
+    var chromaDelay: UInt {
         switch self {
         case .sp:
             9
