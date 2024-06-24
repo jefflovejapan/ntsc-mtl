@@ -12,7 +12,7 @@ import MetalPerformanceShaders
 class VHSLumaLowpassFilter {
     typealias Error = TextureFilterError
     let frequencyCutoff: Float
-    private let preLowpass: LowpassFilter
+    private let preHighpass: HighpassFilter
     private let tripleLowpass: LowpassFilter
     private let device: MTLDevice
     private let pipelineCache: MetalPipelineCache
@@ -23,7 +23,9 @@ class VHSLumaLowpassFilter {
         self.frequencyCutoff = frequencyCutoff
         self.device = device
         self.pipelineCache = pipelineCache
-        self.preLowpass = LowpassFilter(frequencyCutoff: frequencyCutoff, countInSeries: 1, device: device)
+        let preLowpass = LowpassFilter(frequencyCutoff: frequencyCutoff, countInSeries: 1, device: device)
+        self.preHighpass = HighpassFilter(
+            lowpassFilter: preLowpass, device: device, pipelineCache: pipelineCache)
         self.tripleLowpass = LowpassFilter(frequencyCutoff: frequencyCutoff, countInSeries: 3, device: device)
     }
     
@@ -47,8 +49,7 @@ class VHSLumaLowpassFilter {
             throw Error.cantMakeTexture
         }
         tripleLowpass.run(input: input, output: texA, commandBuffer: commandBuffer)
-        preLowpass.run(input: input, output: texB, commandBuffer: commandBuffer)
-        
+        try preHighpass.run(input: input, output: texB, commandBuffer: commandBuffer)
         try vhsSumAndScale(input: input, triple: texA, pre: texB, output: output, commandBuffer: commandBuffer)
     }
     

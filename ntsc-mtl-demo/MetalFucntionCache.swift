@@ -13,7 +13,7 @@ enum KernelFunction: String, CaseIterable {
     case blackLineBorder
     case colorBleed
     case paint
-    case lowpass
+    case highpass
     case composeAndDelay
     case mix
     case vhsEdgeWave
