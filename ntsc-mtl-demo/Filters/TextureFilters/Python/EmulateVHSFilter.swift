@@ -94,7 +94,8 @@ class EmulateVHSFilter {
         
         try sharpen(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
         try chromaIntoLuma(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
-//        try chromaFromLuma(input: try iter.last, output: output, commandBuffer: commandBuffer)
+        try accumulateLuma(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
+        try chromaFromLuma(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
         try justBlit(from: try iter.last, to: output, commandBuffer: commandBuffer)
     }
     
@@ -170,8 +171,32 @@ class EmulateVHSFilter {
             encoder.setBytes(&subcarrierAmplitude, length: MemoryLayout<Float16>.size, index: 2)
         })
     }
+        
+    private func accumulateLuma(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        let pipelineState = try pipelineCache.pipelineState(function: .chromaFromLumaAccumulator)
+        guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
+            throw TextureFilterError.cantMakeComputeEncoder
+        }
+        
+        encoder.setComputePipelineState(pipelineState)
+        encoder.setTexture(input, index: 0)
+        encoder.setTexture(output, index: 1)
+        let threadgroups = MTLSize(width: 1, height: 1, depth: 1)
+        let threadsPerThreadgroup = MTLSize(width: 1, height: input.height, depth: 1)
+        encoder.dispatchThreadgroups(threadgroups, threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.endEncoding()
+    }
     
     func chromaFromLuma(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+        try encodeKernelFunction(.chromaFromLuma, pipelineCache: pipelineCache, textureWidth: input.width, textureHeight: input.height, commandBuffer: commandBuffer, encode: { encoder in
+            encoder.setTexture(input, index: 0)
+            encoder.setTexture(output, index: 1)
+            var phaseShift = phaseShift.rawValue
+            encoder.setBytes(&phaseShift, length: MemoryLayout<Int>.size, index: 0)
+            var phaseShiftOffset = phaseShiftOffset
+            encoder.setBytes(&phaseShiftOffset, length: MemoryLayout<Int>.size, index: 1)
+            var subcarrierAmplitude = subcarrierAmplitude
+            encoder.setBytes(&subcarrierAmplitude, length: MemoryLayout<Float16>.size, index: 2)
+        })
     }
 }
