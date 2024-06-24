@@ -15,8 +15,9 @@ class EmulateVHSFilter {
     let tapeSpeed: VHSSpeed
     let sharpening: Float16
     var edgeWave: UInt = UInt(NTSCEffect.default.vhsEdgeWave)
-    var phaseShift: ChromaPhaseShift
+    var phaseShift: ScanlinePhaseShift
     var phaseShiftOffset: Int
+    var subcarrierAmplitude: Float16
     private let randomGenerator = CIFilter.randomGenerator()
     private var rng = SystemRandomNumberGenerator()
     private let device: MTLDevice
@@ -31,11 +32,12 @@ class EmulateVHSFilter {
     private let chromaLowpassFilter: VHSChromaLowpassFilter
     private let sharpenLowpassFilter: VHSSharpenLowpassFilter
     
-    init(tapeSpeed: VHSSpeed, sharpening: Float16, phaseShift: ChromaPhaseShift, phaseShiftOffset: Int, device: MTLDevice, pipelineCache: MetalPipelineCache, ciContext: CIContext) {
+    init(tapeSpeed: VHSSpeed, sharpening: Float16, phaseShift: ScanlinePhaseShift, phaseShiftOffset: Int, subcarrierAmplitude: Float16, device: MTLDevice, pipelineCache: MetalPipelineCache, ciContext: CIContext) {
         self.tapeSpeed = tapeSpeed
         self.sharpening = sharpening
         self.phaseShift = phaseShift
         self.phaseShiftOffset = phaseShiftOffset
+        self.subcarrierAmplitude = subcarrierAmplitude
         self.device = device
         self.pipelineCache = pipelineCache
         self.ciContext = ciContext
@@ -164,6 +166,8 @@ class EmulateVHSFilter {
             encoder.setBytes(&phaseShift, length: MemoryLayout<Int>.size, index: 0)
             var phaseShiftOffset = phaseShiftOffset
             encoder.setBytes(&phaseShiftOffset, length: MemoryLayout<Int>.size, index: 1)
+            var subcarrierAmplitude = subcarrierAmplitude
+            encoder.setBytes(&subcarrierAmplitude, length: MemoryLayout<Float16>.size, index: 2)
         })
     }
     
