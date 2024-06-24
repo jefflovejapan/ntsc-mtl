@@ -99,6 +99,8 @@ struct ControlsView: View {
             Slider(value: $effect.colorBleedXOffset, in: -100...100)
             Text("Color bleed y: \(Int(effect.colorBleedYOffset))")
             Slider(value: $effect.colorBleedYOffset, in: -100...100)
+            Text("VHS sharpening: \(effect.vhsSharpening.formatted(self.twoDecimalPlaces))")
+            Slider(value: $effect.vhsSharpening, in: 1.0...5.0)
         }
     }
         

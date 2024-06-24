@@ -47,7 +47,7 @@ class NTSCTextureFilter {
         self.pipelineCache = try MetalPipelineCache(device: device, library: library)
         self.colorBleedFilter = ColorBleedFilter(device: device, pipelineCache: pipelineCache)
         self.compositeLowpassFilter = try CompositeLowpassFilter(device: device, pipelineCache: pipelineCache)
-        self.emulateVHSFilter = EmulateVHSFilter(tapeSpeed: effect.vhsTapeSpeed, device: device, pipelineCache: pipelineCache, ciContext: ciContext)
+        self.emulateVHSFilter = EmulateVHSFilter(tapeSpeed: effect.vhsTapeSpeed, sharpening: effect.vhsSharpening, device: device, pipelineCache: pipelineCache, ciContext: ciContext)
     }
     
     static func cutBlackLineBorder(input: MTLTexture, output: MTLTexture, blackLineEnabled: Bool, blackLineBorderPct: Float, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
@@ -378,16 +378,25 @@ class NTSCTextureFilter {
             )
             
             if emulateVHSFilter.tapeSpeed != effect.vhsTapeSpeed {
-                emulateVHSFilter = EmulateVHSFilter(tapeSpeed: effect.vhsTapeSpeed, device: device, pipelineCache: pipelineCache, ciContext: context)
+                emulateVHSFilter = EmulateVHSFilter(
+                    tapeSpeed: effect.vhsTapeSpeed,
+                    sharpening: effect.vhsSharpening, 
+                    device: device,
+                    pipelineCache: pipelineCache,
+                    ciContext: context
+                )
             }
             
-            try Self.emulateVHS(
-                input: try iter.last,
-                output: try iter.next(),
-                filter: emulateVHSFilter, 
-                edgeWave: UInt(effect.vhsEdgeWave),
-                commandBuffer: commandBuffer
-            )
+            if effect.enableVHSEmulation {
+                try Self.emulateVHS(
+                    input: try iter.last,
+                    output: try iter.next(),
+                    filter: emulateVHSFilter,
+                    edgeWave: UInt(effect.vhsEdgeWave),
+                    commandBuffer: commandBuffer
+                )
+            }
+            
             
             try Self.vhsChromaLoss(
                 input: try iter.last,
