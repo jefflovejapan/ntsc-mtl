@@ -108,7 +108,7 @@ struct ControlsView: View {
                     Text("VHS sharpening: \(effect.vhsSharpening.formatted(self.twoDecimalPlaces))")
                     Slider(value: $effect.vhsSharpening, in: 1.0...5.0)
                     Picker(selection: $effect.scanlinePhaseShift, content: {
-                        ForEach(ScanlinePhaseShift.allCases) { phaseShift in
+                        ForEach(ChromaPhaseShift.allCases) { phaseShift in
                             Text(name(phaseShift: phaseShift))
                                 .tag(phaseShift)
                         }
@@ -145,7 +145,7 @@ struct ControlsView: View {
         }
     }
     
-    private func name(phaseShift: ScanlinePhaseShift) -> String {
+    private func name(phaseShift: ChromaPhaseShift) -> String {
         switch phaseShift {
         case .degrees0:
             return "0"

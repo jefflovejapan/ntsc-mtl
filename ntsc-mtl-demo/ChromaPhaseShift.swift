@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum ScanlinePhaseShift: Int, Identifiable, CaseIterable {
+enum ChromaPhaseShift: Int, Identifiable, CaseIterable {
     case degrees0 = 0
     case degrees90 = 1
     case degrees180 = 2
