@@ -54,16 +54,11 @@ class VHSLumaLowpassFilter {
     }
     
     private func vhsSumAndScale(input: MTLTexture, triple: MTLTexture, pre: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        let pipelineState = try pipelineCache.pipelineState(function: .vhsSumAndScale)
-        guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
-            throw Error.cantMakeComputeEncoder
-        }
-        commandEncoder.setComputePipelineState(pipelineState)
-        commandEncoder.setTexture(input, index: 0)
-        commandEncoder.setTexture(pre, index: 1)
-        commandEncoder.setTexture(triple, index: 2)
-        commandEncoder.setTexture(output, index: 3)
-        commandEncoder.dispatchThreads(textureWidth: input.width, textureHeight: input.height)
-        commandEncoder.endEncoding()
+        try encodeKernelFunction(.vhsSumAndScale, pipelineCache: pipelineCache, textureWidth: input.width, textureHeight: input.height, commandBuffer: commandBuffer, encode: { encoder in
+            encoder.setTexture(input, index: 0)
+            encoder.setTexture(pre, index: 1)
+            encoder.setTexture(triple, index: 2)
+            encoder.setTexture(output, index: 3)
+        })
     }
 }

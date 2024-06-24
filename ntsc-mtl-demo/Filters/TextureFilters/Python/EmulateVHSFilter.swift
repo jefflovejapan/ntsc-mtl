@@ -126,21 +126,13 @@ class EmulateVHSFilter {
     }
     
     private func edgeWave(input: MTLTexture, random: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        let pipelineState = try pipelineCache.pipelineState(function: .vhsEdgeWave)
-        guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
-            throw Error.cantMakeComputeEncoder
-        }
-        encoder.setComputePipelineState(pipelineState)
-        encoder.setTexture(input, index: 0)
-        encoder.setTexture(random, index: 1)
-        encoder.setTexture(output, index: 2)
-        var edgeWave = edgeWave
-        encoder.setBytes(&edgeWave, length: MemoryLayout<UInt>.size, index: 0)
-        encoder.dispatchThreads(
-            textureWidth: input.width,
-            textureHeight: input.height
-        )
-        encoder.endEncoding()
+        try encodeKernelFunction(.vhsEdgeWave, pipelineCache: pipelineCache, textureWidth: input.width, textureHeight: input.height, commandBuffer: commandBuffer, encode: { encoder in
+            encoder.setTexture(input, index: 0)
+            encoder.setTexture(random, index: 1)
+            encoder.setTexture(output, index: 2)
+            var edgeWave = edgeWave
+            encoder.setBytes(&edgeWave, length: MemoryLayout<UInt>.size, index: 0)
+        })
     }
     
     private func lumaLowpass(input: MTLTexture, output: MTLTexture, filter: VHSLumaLowpassFilter, commandBuffer: MTLCommandBuffer) throws {
@@ -151,15 +143,10 @@ class EmulateVHSFilter {
         try filter.run(input: input, output: output, commandBuffer: commandBuffer)
     }
     func chromaVertBlend(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
-            throw Error.cantMakeComputeEncoder
-        }
-        let pipelineState = try pipelineCache.pipelineState(function: .chromaVertBlend)
-        commandEncoder.setComputePipelineState(pipelineState)
-        commandEncoder.setTexture(input, index: 0)
-        commandEncoder.setTexture(output, index: 1)
-        commandEncoder.dispatchThreads(textureWidth: input.width, textureHeight: input.height)
-        commandEncoder.endEncoding()
+        try encodeKernelFunction(.chromaVertBlend, pipelineCache: pipelineCache, textureWidth: input.width, textureHeight: input.height, commandBuffer: commandBuffer, encode: { encoder in
+            encoder.setTexture(input, index: 0)
+            encoder.setTexture(output, index: 1)
+        })
     }
     func sharpen(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         try sharpenLowpassFilter.run(input: input, output: output, commandBuffer: commandBuffer)

@@ -67,20 +67,15 @@ class CompositeLowpassFilter {
     }
     
     private func composeAndDelay(y: MTLTexture, i: MTLTexture, q: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        let pipelineState = try pipelineCache.pipelineState(function: .composeAndDelay)
-        guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
-            throw Error.cantMakeComputeEncoder
-        }
-        encoder.setComputePipelineState(pipelineState)
-        encoder.setTexture(y, index: 0)
-        encoder.setTexture(i, index: 1)
-        encoder.setTexture(q, index: 2)
-        encoder.setTexture(output, index: 3)
-        var iDelay = Self.iDelay
-        encoder.setBytes(&iDelay, length: MemoryLayout<UInt>.size, index: 0)
-        var qDelay = Self.qDelay
-        encoder.setBytes(&qDelay, length: MemoryLayout<UInt>.size, index: 0)
-        encoder.dispatchThreads(textureWidth: y.width, textureHeight: y.height)
-        encoder.endEncoding()
+        try encodeKernelFunction(.composeAndDelay, pipelineCache: pipelineCache, textureWidth: y.width, textureHeight: y.height, commandBuffer: commandBuffer, encode: { encoder in
+            encoder.setTexture(y, index: 0)
+            encoder.setTexture(i, index: 1)
+            encoder.setTexture(q, index: 2)
+            encoder.setTexture(output, index: 3)
+            var iDelay = Self.iDelay
+            encoder.setBytes(&iDelay, length: MemoryLayout<UInt>.size, index: 0)
+            var qDelay = Self.qDelay
+            encoder.setBytes(&qDelay, length: MemoryLayout<UInt>.size, index: 0)
+        })
     }
 }

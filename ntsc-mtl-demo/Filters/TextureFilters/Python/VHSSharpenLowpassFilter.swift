@@ -48,15 +48,10 @@ class VHSSharpenLowpassFilter {
     }
     
     private func vhsSharpen(input: MTLTexture, lowpassed: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        let pipelineState = try pipelineCache.pipelineState(function: .vhsSharpen)
-        guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
-            throw Error.cantMakeComputeEncoder
-        }
-        commandEncoder.setComputePipelineState(pipelineState)
-        commandEncoder.setTexture(input, index: 0)
-        commandEncoder.setTexture(lowpassed, index: 1)
-        commandEncoder.setTexture(output, index: 2)
-        commandEncoder.dispatchThreads(textureWidth: input.width, textureHeight: input.height)
-        commandEncoder.endEncoding()
+        try encodeKernelFunction(.vhsSharpen, pipelineCache: pipelineCache, textureWidth: input.width, textureHeight: input.height, commandBuffer: commandBuffer, encode: { encoder in
+            encoder.setTexture(input, index: 0)
+            encoder.setTexture(lowpassed, index: 1)
+            encoder.setTexture(output, index: 2)
+        })
     }
 }

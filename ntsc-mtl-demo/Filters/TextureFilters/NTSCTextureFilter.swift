@@ -56,39 +56,20 @@ class NTSCTextureFilter {
             return
         }
         
-        // Create a command buffer and encoder
-        guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
-            throw Error.cantMakeComputeEncoder
-        }
-        let pipelineState = try pipelineCache.pipelineState(function: .blackLineBorder)
-        commandEncoder.setComputePipelineState(pipelineState)
-        
-        // Set the texture and dispatch threads
-        commandEncoder.setTexture(input, index: 0)
-        commandEncoder.setTexture(output, index: 1)
-        var blackLineBorderPct = blackLineBorderPct
-        commandEncoder.setBytes(&blackLineBorderPct, length: MemoryLayout<Float>.size, index: 0)
-        commandEncoder.dispatchThreads(textureWidth: input.width, textureHeight: input.height)
-        
-        // Finalize encoding
-        commandEncoder.endEncoding()
+        try encodeKernelFunction(.blackLineBorder, pipelineCache: pipelineCache, textureWidth: input.width, textureHeight: input.height, commandBuffer: commandBuffer, encode: { encoder in
+            encoder.setTexture(input, index: 0)
+            encoder.setTexture(output, index: 1)
+            var blackLineBorderPct = blackLineBorderPct
+            encoder.setBytes(&blackLineBorderPct, length: MemoryLayout<Float>.size, index: 0)
+        })
     }
         
     static func convertToYIQ(_ texture: (any MTLTexture), output: (any MTLTexture), commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
         // Create a command buffer and encoder
-        guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
-            throw Error.cantMakeComputeEncoder
-        }
-        let pipelineState = try pipelineCache.pipelineState(function: .convertToYIQ)
-        commandEncoder.setComputePipelineState(pipelineState)
-        
-        // Set the texture and dispatch threads
-        commandEncoder.setTexture(texture, index: 0)
-        commandEncoder.setTexture(output, index: 1)
-        commandEncoder.dispatchThreads(textureWidth: texture.width, textureHeight: texture.height)
-        
-        // Finalize encoding
-        commandEncoder.endEncoding()
+        try encodeKernelFunction(.convertToYIQ, pipelineCache: pipelineCache, textureWidth: texture.width, textureHeight: texture.height, commandBuffer: commandBuffer, encode: { encoder in
+            encoder.setTexture(texture, index: 0)
+            encoder.setTexture(output, index: 1)
+        })
     }
     
     static func colorBleedIn(
@@ -173,22 +154,10 @@ class NTSCTextureFilter {
         device: MTLDevice, 
         pipelineCache: MetalPipelineCache
     ) throws {
-        // Create a command buffer and encoder
-        guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
-            throw Error.cantMakeComputeEncoder
-        }
-        
-        let pipelineState = try pipelineCache.pipelineState(function: .convertToRGB)
-        
-        // Set up the compute pipeline
-        commandEncoder.setComputePipelineState(pipelineState)
-        
-        // Set the texture and dispatch threads
-        commandEncoder.setTexture(texture, index: 0)
-        commandEncoder.setTexture(output, index: 1)
-        commandEncoder.dispatchThreads(textureWidth: texture.width, textureHeight: texture.height)
-        
-        commandEncoder.endEncoding()
+        try encodeKernelFunction(.convertToRGB, pipelineCache: pipelineCache, textureWidth: texture.width, textureHeight: texture.height, commandBuffer: commandBuffer, encode: { encoder in
+            encoder.setTexture(texture, index: 0)
+            encoder.setTexture(output, index: 1)
+        })
     }
     
     static func handle(mostRecentTexture: MTLTexture, previousTexture: MTLTexture, outTexture: MTLTexture, interlaceMode: InterlaceMode, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
@@ -202,16 +171,11 @@ class NTSCTextureFilter {
     }
     
     static func interleave(mostRecentTexture: MTLTexture, previousTexture: MTLTexture, outTexture: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
-        guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
-            throw Error.cantMakeComputeEncoder
-        }
-        let pipelineState = try pipelineCache.pipelineState(function: .interleave)
-        commandEncoder.setComputePipelineState(pipelineState)
-        commandEncoder.setTexture(mostRecentTexture, index: 0)
-        commandEncoder.setTexture(previousTexture, index: 1)
-        commandEncoder.setTexture(outTexture, index: 2)
-        commandEncoder.dispatchThreads(textureWidth: mostRecentTexture.width, textureHeight: mostRecentTexture.height, threadgroupScale: 8)
-        commandEncoder.endEncoding()
+        try encodeKernelFunction(.interleave, pipelineCache: pipelineCache, textureWidth: mostRecentTexture.width, textureHeight: mostRecentTexture.height, commandBuffer: commandBuffer, encode: { encoder in
+            encoder.setTexture(mostRecentTexture, index: 0)
+            encoder.setTexture(previousTexture, index: 1)
+            encoder.setTexture(outTexture, index: 2)
+        })
     }
     
     static func writeToFields(
