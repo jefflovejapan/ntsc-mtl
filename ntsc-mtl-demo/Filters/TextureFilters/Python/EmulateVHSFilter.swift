@@ -80,8 +80,8 @@ class EmulateVHSFilter {
         // updates I and Q
         try chromaLowpass(input: try iter.last, output: try iter.next(), filter: chromaLowpassFilter, commandBuffer: commandBuffer)
         try justBlit(from: iter.last, to: output, commandBuffer: commandBuffer)
-//
-//        try chromaVertBlend(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
+
+        try chromaVertBlend(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
 //        
 //        try sharpen(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
 //        try chromaIntoLuma(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
@@ -147,7 +147,15 @@ class EmulateVHSFilter {
         try filter.run(input: input, output: output, commandBuffer: commandBuffer)
     }
     func chromaVertBlend(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+        guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
+            throw Error.cantMakeComputeEncoder
+        }
+        let pipelineState = try pipelineCache.pipelineState(function: .chromaVertBlend)
+        commandEncoder.setComputePipelineState(pipelineState)
+        commandEncoder.setTexture(input, index: 0)
+        commandEncoder.setTexture(output, index: 1)
+        commandEncoder.dispatchThreads(textureWidth: input.width, textureHeight: input.height)
+        commandEncoder.endEncoding()
     }
     func sharpen(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         try justBlit(from: input, to: output, commandBuffer: commandBuffer)
