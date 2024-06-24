@@ -18,7 +18,6 @@ class VHSLumaLowpassFilter {
     private let pipelineCache: MetalPipelineCache
     private var texA: MTLTexture?
     private var texB: MTLTexture?
-    private var texC: MTLTexture?
     
     init(frequencyCutoff: Float, device: MTLDevice, pipelineCache: MetalPipelineCache) {
         self.frequencyCutoff = frequencyCutoff
@@ -43,9 +42,8 @@ class VHSLumaLowpassFilter {
             
             texA = texs[0]
             texB = texs[1]
-            texC = texs[2]
         }
-        guard let texA, let texB, let texC else {
+        guard let texA, let texB else {
             throw Error.cantMakeTexture
         }
         tripleLowpass.run(input: input, output: texA, commandBuffer: commandBuffer)
@@ -59,7 +57,7 @@ class VHSLumaLowpassFilter {
         guard let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             throw Error.cantMakeComputeEncoder
         }
-        
+        commandEncoder.setComputePipelineState(pipelineState)
         commandEncoder.setTexture(input, index: 0)
         commandEncoder.setTexture(pre, index: 1)
         commandEncoder.setTexture(triple, index: 2)
