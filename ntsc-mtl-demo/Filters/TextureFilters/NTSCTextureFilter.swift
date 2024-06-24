@@ -51,7 +51,8 @@ class NTSCTextureFilter {
             tapeSpeed: effect.vhsTapeSpeed,
             sharpening: effect.vhsSharpening,
             phaseShift: effect.scanlinePhaseShift,
-            phaseShiftOffset: effect.scanlinePhaseShiftOffset,
+            phaseShiftOffset: effect.scanlinePhaseShiftOffset, 
+            subcarrierAmplitude: effect.subcarrierAmplitude,
             device: device,
             pipelineCache: pipelineCache,
             ciContext: ciContext
@@ -134,7 +135,7 @@ class NTSCTextureFilter {
         try justBlit(from: input, to: output, commandBuffer: commandBuffer)
     }
     
-    static func emulateVHS(input: MTLTexture, output: MTLTexture, filter: EmulateVHSFilter, edgeWave: UInt, phaseShift: ChromaPhaseShift, phaseShiftOffset: Int, commandBuffer: MTLCommandBuffer) throws {
+    static func emulateVHS(input: MTLTexture, output: MTLTexture, filter: EmulateVHSFilter, edgeWave: UInt, phaseShift: ScanlinePhaseShift, phaseShiftOffset: Int, commandBuffer: MTLCommandBuffer) throws {
         filter.edgeWave = edgeWave
         filter.phaseShift = phaseShift
         filter.phaseShiftOffset = phaseShiftOffset
@@ -356,7 +357,7 @@ class NTSCTextureFilter {
                     tapeSpeed: effect.vhsTapeSpeed,
                     sharpening: effect.vhsSharpening, 
                     phaseShift: effect.scanlinePhaseShift,
-                    phaseShiftOffset: effect.scanlinePhaseShiftOffset,
+                    phaseShiftOffset: effect.scanlinePhaseShiftOffset, subcarrierAmplitude: effect.subcarrierAmplitude,
                     device: device,
                     pipelineCache: pipelineCache,
                     ciContext: context
