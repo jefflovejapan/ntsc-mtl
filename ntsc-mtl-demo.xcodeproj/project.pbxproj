@@ -64,7 +64,7 @@
 		1FA2C2A02C29D7D700D9B99B /* ChromaIntoLuma.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FA2C29F2C29D7D700D9B99B /* ChromaIntoLuma.metal */; };
 		1FA2C2A22C29F3FD00D9B99B /* ScanlinePhaseShift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA2C2A12C29F3FC00D9B99B /* ScanlinePhaseShift.swift */; };
 		1FA2C2A82C2A01C600D9B99B /* ChromaAndLumaOffsets.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FA2C2A72C2A01C600D9B99B /* ChromaAndLumaOffsets.metal */; };
-		1FA2C2AA2C2A036000D9B99B /* LumaIntoChroma.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FA2C2A92C2A036000D9B99B /* LumaIntoChroma.metal */; };
+		1FA2C2AE2C2A158400D9B99B /* ChromaFromLumaRowSums.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1FA2C2AD2C2A158400D9B99B /* ChromaFromLumaRowSums.metal */; };
 		1FA64F782C1468BF00E54D6F /* BoundaryHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA64F772C1468BF00E54D6F /* BoundaryHandling.swift */; };
 		1FA64F802C14F5B800E54D6F /* HeadSwitchingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA64F7F2C14F5B800E54D6F /* HeadSwitchingTests.swift */; };
 		1FA64F822C15066100E54D6F /* CIImage+TestImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA64F812C15066100E54D6F /* CIImage+TestImage.swift */; };
@@ -148,7 +148,7 @@
 		1FA2C29F2C29D7D700D9B99B /* ChromaIntoLuma.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ChromaIntoLuma.metal; sourceTree = "<group>"; };
 		1FA2C2A12C29F3FC00D9B99B /* ScanlinePhaseShift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanlinePhaseShift.swift; sourceTree = "<group>"; };
 		1FA2C2A72C2A01C600D9B99B /* ChromaAndLumaOffsets.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ChromaAndLumaOffsets.metal; sourceTree = "<group>"; };
-		1FA2C2A92C2A036000D9B99B /* LumaIntoChroma.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = LumaIntoChroma.metal; sourceTree = "<group>"; };
+		1FA2C2AD2C2A158400D9B99B /* ChromaFromLumaRowSums.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ChromaFromLumaRowSums.metal; sourceTree = "<group>"; };
 		1FA64F772C1468BF00E54D6F /* BoundaryHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoundaryHandling.swift; sourceTree = "<group>"; };
 		1FA64F7F2C14F5B800E54D6F /* HeadSwitchingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadSwitchingTests.swift; sourceTree = "<group>"; };
 		1FA64F812C15066100E54D6F /* CIImage+TestImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CIImage+TestImage.swift"; sourceTree = "<group>"; };
@@ -312,7 +312,7 @@
 				1FA2C2932C29BF4300D9B99B /* ChromaVertBlend.metal */,
 				1FA2C2972C29C30800D9B99B /* VHSSharpen.metal */,
 				1FA2C29F2C29D7D700D9B99B /* ChromaIntoLuma.metal */,
-				1FA2C2A92C2A036000D9B99B /* LumaIntoChroma.metal */,
+				1FA2C2AD2C2A158400D9B99B /* ChromaFromLumaRowSums.metal */,
 				1FA2C2A72C2A01C600D9B99B /* ChromaAndLumaOffsets.metal */,
 				1F9729AB2C27A4B0000BFCA8 /* ComposeAndDelay.metal */,
 				1F52D06D2C28B7A700135EAE /* VHSEdgeWave.metal */,
@@ -479,6 +479,7 @@
 				1F4692D12C13A27700CD7756 /* Paint.metal in Sources */,
 				1F6BFE2A2BFFBFC200883169 /* CameraView.swift in Sources */,
 				1FEE323E2C0A3FCC009F09BA /* YIQ.swift in Sources */,
+				1FA2C2AE2C2A158400D9B99B /* ChromaFromLumaRowSums.metal in Sources */,
 				1F52D06E2C28B7A700135EAE /* VHSEdgeWave.metal in Sources */,
 				1FA2C2A22C29F3FD00D9B99B /* ScanlinePhaseShift.swift in Sources */,
 				1FA2C28C2C29AB7800D9B99B /* VHSLumaLowpassFilter.swift in Sources */,
@@ -498,7 +499,6 @@
 				1FA2C29E2C29D05800D9B99B /* EncodeKernelFunction.swift in Sources */,
 				1FA2C2982C29C30800D9B99B /* VHSSharpen.metal in Sources */,
 				1F67A4F22C1B3FBD004BAA5F /* ControlsView.swift in Sources */,
-				1FA2C2AA2C2A036000D9B99B /* LumaIntoChroma.metal in Sources */,
 				1FA2C2962C29C15400D9B99B /* VHSSharpenLowpassFilter.swift in Sources */,
 				1F5771AA2C1D2D5A002ED549 /* Interleave.metal in Sources */,
 				1F5B6CC22C04D4010051A9ED /* NTSC.swift in Sources */,
