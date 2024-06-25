@@ -415,7 +415,17 @@ class NTSCTextureFilter {
                 pipelineCache: pipelineCache
             )
             
-            try Self.writeToFields(inputTexture: try iter.last, frameNum: frameNum, interlaceMode: .interlaced, interTexA: outTexture1!, interTexB: outTexture2!, outTex: try iter.next(), commandBuffer: commandBuffer, device: device, pipelineCache: pipelineCache)
+            try Self.writeToFields(
+                inputTexture: try iter.last,
+                frameNum: frameNum,
+                interlaceMode: .interlaced,
+                interTexA: outTexture1!,
+                interTexB: outTexture2!,
+                outTex: try iter.next(),
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
 
             try Self.convertToRGB(
                 try iter.last,
