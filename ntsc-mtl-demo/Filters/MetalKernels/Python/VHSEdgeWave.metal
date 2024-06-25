@@ -16,7 +16,7 @@ kernel void vhsEdgeWave
  constant uint &edgeWave [[buffer(0)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
-    uint rnd = uint(randomLowpassed.read(uint2(0, gid.y)).x);
-    half4 px = input.read(uint2(gid.x - rnd, gid.y));
+//    uint rnd = uint(randomLowpassed.read(uint2(0, gid.y)).x);
+    half4 px = input.read(uint2(gid.x/* - rnd*/, gid.y));
     out.write(px, gid);
 }

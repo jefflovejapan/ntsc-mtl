@@ -269,88 +269,88 @@ class NTSCTextureFilter {
                 device: device,
                 pipelineCache: pipelineCache
             )
-            try Self.colorBleedIn(
-                input: try iter.last,
-                output: try iter.next(),
-                colorBleedEnabled: effect.colorBleedEnabled,
-                colorBleedX: effect.colorBleedXOffset,
-                colorBleedY: effect.colorBleedYOffset,
-                filter: colorBleedFilter,
-                commandBuffer: commandBuffer
-            )
-            
-            try Self.compositeLowpass(
-                input: try iter.last,
-                output: try iter.next(),
-                commandBuffer: commandBuffer, 
-                filter: compositeLowpassFilter,
-                device: device,
-                pipelineCache: pipelineCache
-            )
-            
-            try Self.ringing(
-                input: try iter.last,
-                output: try iter.next(),
-                commandBuffer: commandBuffer,
-                device: device,
-                pipelineCache: pipelineCache
-            )
-            
-            try Self.chromaIntoLuma(
-                input: try iter.last,
-                output: try iter.next(),
-                commandBuffer: commandBuffer,
-                device: device,
-                pipelineCache: pipelineCache
-            )
-            
-            try Self.compositePreemphasis(
-                input: try iter.last,
-                output: try iter.next(),
-                commandBuffer: commandBuffer,
-                device: device,
-                pipelineCache: pipelineCache
-            )
-            
-            try Self.videoNoise(
-                input: try iter.last,
-                output: try iter.next(),
-                commandBuffer: commandBuffer,
-                device: device,
-                pipelineCache: pipelineCache
-            )
-            
-            try Self.vhsHeadSwitching(
-                input: try iter.last,
-                output: try iter.next(),
-                commandBuffer: commandBuffer,
-                device: device,
-                pipelineCache: pipelineCache
-            )
-            
-            try Self.chromaFromLuma(
-                input: try iter.last,
-                output: try iter.next(),
-                commandBuffer: commandBuffer,
-                device: device,
-                pipelineCache: pipelineCache
-            )
-            
-            try Self.videoChromaNoise(
-                input: try iter.last,
-                output: try iter.next(),
-                commandBuffer: commandBuffer,
-                device: device,
-                pipelineCache: pipelineCache
-            )
-            
-            try Self.videoChromaPhaseNoise(
-                input: try iter.last,
-                output: try iter.next(),
-                commandBuffer: commandBuffer,
-                device: device,
-                pipelineCache: pipelineCache
-            )
+//            try Self.colorBleedIn(
+//                input: try iter.last,
+//                output: try iter.next(),
+//                colorBleedEnabled: effect.colorBleedEnabled,
+//                colorBleedX: effect.colorBleedXOffset,
+//                colorBleedY: effect.colorBleedYOffset,
+//                filter: colorBleedFilter,
+//                commandBuffer: commandBuffer
+//            )
+//            
+//            try Self.compositeLowpass(
+//                input: try iter.last,
+//                output: try iter.next(),
+//                commandBuffer: commandBuffer, 
+//                filter: compositeLowpassFilter,
+//                device: device,
+//                pipelineCache: pipelineCache
+//            )
+//            
+//            try Self.ringing(
+//                input: try iter.last,
+//                output: try iter.next(),
+//                commandBuffer: commandBuffer,
+//                device: device,
+//                pipelineCache: pipelineCache
+//            )
+//            
+//            try Self.chromaIntoLuma(
+//                input: try iter.last,
+//                output: try iter.next(),
+//                commandBuffer: commandBuffer,
+//                device: device,
+//                pipelineCache: pipelineCache
+//            )
+//            
+//            try Self.compositePreemphasis(
+//                input: try iter.last,
+//                output: try iter.next(),
+//                commandBuffer: commandBuffer,
+//                device: device,
+//                pipelineCache: pipelineCache
+//            )
+//            
+//            try Self.videoNoise(
+//                input: try iter.last,
+//                output: try iter.next(),
+//                commandBuffer: commandBuffer,
+//                device: device,
+//                pipelineCache: pipelineCache
+//            )
+//            
+//            try Self.vhsHeadSwitching(
+//                input: try iter.last,
+//                output: try iter.next(),
+//                commandBuffer: commandBuffer,
+//                device: device,
+//                pipelineCache: pipelineCache
+//            )
+//            
+//            try Self.chromaFromLuma(
+//                input: try iter.last,
+//                output: try iter.next(),
+//                commandBuffer: commandBuffer,
+//                device: device,
+//                pipelineCache: pipelineCache
+//            )
+//            
+//            try Self.videoChromaNoise(
+//                input: try iter.last,
+//                output: try iter.next(),
+//                commandBuffer: commandBuffer,
+//                device: device,
+//                pipelineCache: pipelineCache
+//            )
+//            
+//            try Self.videoChromaPhaseNoise(
+//                input: try iter.last,
+//                output: try iter.next(),
+//                commandBuffer: commandBuffer,
+//                device: device,
+//                pipelineCache: pipelineCache
+//            )
             
             if !(emulateVHSFilter.tapeSpeed == effect.vhsTapeSpeed && emulateVHSFilter.sharpening == effect.vhsSharpening) {
                 emulateVHSFilter = EmulateVHSFilter(
@@ -377,40 +377,42 @@ class NTSCTextureFilter {
             }
             
             
-            try Self.vhsChromaLoss(
-                input: try iter.last,
-                output: try iter.next(),
-                commandBuffer: commandBuffer,
-                device: device,
-                pipelineCache: pipelineCache
-            )
-
-            try Self.compositeLowpass(
-                input: try iter.last,
-                output: try iter.next(),
-                commandBuffer: commandBuffer,
-                filter: compositeLowpassFilter,
-                device: device,
-                pipelineCache: pipelineCache
-            )
+//            try Self.vhsChromaLoss(
+//                input: try iter.last,
+//                output: try iter.next(),
+//                commandBuffer: commandBuffer,
+//                device: device,
+//                pipelineCache: pipelineCache
+//            )
+//
+//            try Self.compositeLowpass(
+//                input: try iter.last,
+//                output: try iter.next(),
+//                commandBuffer: commandBuffer,
+//                filter: compositeLowpassFilter,
+//                device: device,
+//                pipelineCache: pipelineCache
+//            )
+//            
+//            try Self.colorBleedOut(
+//                input: try iter.last,
+//                output: try iter.next(),
+//                forTV: effect.colorBleedOutForTV,
+//                commandBuffer: commandBuffer,
+//                device: device,
+//                pipelineCache: pipelineCache
+//            )
+//            
+//            try Self.blurChroma(
+//                input: try iter.last,
+//                output: try iter.next(),
+//                forTV: effect.colorBleedOutForTV,
+//                commandBuffer: commandBuffer,
+//                device: device,
+//                pipelineCache: pipelineCache
+//            )
             
-            try Self.colorBleedOut(
-                input: try iter.last,
-                output: try iter.next(),
-                forTV: effect.colorBleedOutForTV,
-                commandBuffer: commandBuffer,
-                device: device,
-                pipelineCache: pipelineCache
-            )
-            
-            try Self.blurChroma(
-                input: try iter.last,
-                output: try iter.next(),
-                forTV: effect.colorBleedOutForTV,
-                commandBuffer: commandBuffer,
-                device: device,
-                pipelineCache: pipelineCache
-            )
+            try Self.writeToFields(inputTexture: try iter.last, frameNum: frameNum, interlaceMode: .interlaced, interTexA: outTexture1!, interTexB: outTexture2!, outTex: try iter.next(), commandBuffer: commandBuffer, device: device, pipelineCache: pipelineCache)
 
             try Self.convertToRGB(
                 try iter.last,
