@@ -61,7 +61,7 @@ class NTSCTextureFilter {
             pipelineCache: pipelineCache,
             ciContext: ciContext
         )
-        self.headSwitchingFilter = HeadSwitchingFilter(device: device, pipelineCache: pipelineCache)
+        self.headSwitchingFilter = HeadSwitchingFilter(device: device, pipelineCache: pipelineCache, ciContext: ciContext)
     }
     
     static func cutBlackLineBorder(input: MTLTexture, output: MTLTexture, blackLineEnabled: Bool, blackLineBorderPct: Float, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {

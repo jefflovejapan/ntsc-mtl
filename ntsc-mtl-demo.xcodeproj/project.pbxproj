@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		1F0D93582C2B0E16003FF553 /* HeadSwitchingFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0D93572C2B0E16003FF553 /* HeadSwitchingFilter.swift */; };
+		1F0D935A2C2B1747003FF553 /* HeadSwitching.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1F0D93592C2B1747003FF553 /* HeadSwitching.metal */; };
+		1F0D935C2C2B1949003FF553 /* CIRandomGenerator+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0D935B2C2B1949003FF553 /* CIRandomGenerator+Extensions.swift */; };
 		1F2028942C1E23BA00DFB165 /* Resolution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2028932C1E23BA00DFB165 /* Resolution.swift */; };
 		1F259EDC2C022F7500937D0A /* NTSCEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EDB2C022F7500937D0A /* NTSCEffect.swift */; };
 		1F2B96F12C17477200DB0B9F /* JustBlit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2B96F02C17477200DB0B9F /* JustBlit.swift */; };
@@ -89,6 +91,8 @@
 
 /* Begin PBXFileReference section */
 		1F0D93572C2B0E16003FF553 /* HeadSwitchingFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadSwitchingFilter.swift; sourceTree = "<group>"; };
+		1F0D93592C2B1747003FF553 /* HeadSwitching.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = HeadSwitching.metal; sourceTree = "<group>"; };
+		1F0D935B2C2B1949003FF553 /* CIRandomGenerator+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CIRandomGenerator+Extensions.swift"; sourceTree = "<group>"; };
 		1F2028932C1E23BA00DFB165 /* Resolution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resolution.swift; sourceTree = "<group>"; };
 		1F259EDA2C0227E400937D0A /* SettingsAndDefaults.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = SettingsAndDefaults.md; sourceTree = "<group>"; };
 		1F259EDB2C022F7500937D0A /* NTSCEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSCEffect.swift; sourceTree = "<group>"; };
@@ -228,6 +232,7 @@
 				1F5B6CD22C0546870051A9ED /* Info.plist */,
 				1F6BFE212BFF9EC900883169 /* Resources */,
 				1F6BFDEA2BFF799F00883169 /* ntsc_mtl_demoApp.swift */,
+				1F0D935B2C2B1949003FF553 /* CIRandomGenerator+Extensions.swift */,
 				1F3E381F2C123D4700D16CF0 /* Float+Extensions.swift */,
 				1FA64F772C1468BF00E54D6F /* BoundaryHandling.swift */,
 				1FA64F862C151C5600E54D6F /* MetalFucntionCache.swift */,
@@ -316,6 +321,7 @@
 				1FA2C2932C29BF4300D9B99B /* ChromaVertBlend.metal */,
 				1FA2C2972C29C30800D9B99B /* VHSSharpen.metal */,
 				1FA2C29F2C29D7D700D9B99B /* ChromaIntoLuma.metal */,
+				1F0D93592C2B1747003FF553 /* HeadSwitching.metal */,
 				1FA2C2AD2C2A158400D9B99B /* ChromaFromLumaAccumulator.metal */,
 				1FA2C2AF2C2A196C00D9B99B /* ChromaFromLuma.metal */,
 				1FA2C2A72C2A01C600D9B99B /* ChromaAndLumaOffsets.metal */,
@@ -500,6 +506,7 @@
 				1FA2C2942C29BF4300D9B99B /* ChromaVertBlend.metal in Sources */,
 				1F5B6CD02C0536600051A9ED /* Clamped.swift in Sources */,
 				1F2B96F12C17477200DB0B9F /* JustBlit.swift in Sources */,
+				1F0D935C2C2B1949003FF553 /* CIRandomGenerator+Extensions.swift in Sources */,
 				1F5F93CA2C0F9DCA00EC29A2 /* YIQCompose.metal in Sources */,
 				1FA2C29C2C29CF3E00D9B99B /* Highpass.metal in Sources */,
 				1FA2C2A82C2A01C600D9B99B /* ChromaAndLumaOffsets.metal in Sources */,
@@ -508,6 +515,7 @@
 				1FA2C2982C29C30800D9B99B /* VHSSharpen.metal in Sources */,
 				1F67A4F22C1B3FBD004BAA5F /* ControlsView.swift in Sources */,
 				1FA2C2962C29C15400D9B99B /* VHSSharpenLowpassFilter.swift in Sources */,
+				1F0D935A2C2B1747003FF553 /* HeadSwitching.metal in Sources */,
 				1F5771AA2C1D2D5A002ED549 /* Interleave.metal in Sources */,
 				1F5B6CC22C04D4010051A9ED /* NTSC.swift in Sources */,
 			);

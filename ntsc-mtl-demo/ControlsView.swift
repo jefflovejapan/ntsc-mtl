@@ -22,6 +22,7 @@ struct ControlsView: View {
                 resolutionView
                 interlaceView
                 blackLineBorderView
+                headSwitchingView
                 colorBleedView
                 vhsView
             }
@@ -67,6 +68,17 @@ struct ControlsView: View {
                 }
             }
             
+        }
+    }
+    
+    private var headSwitchingView: some View {
+        VStack {
+            Toggle(isOn: $effect.enableHeadSwitching, label: {
+                Text("Enable head switching?")
+            })
+            if effect.enableHeadSwitching {
+                Slider(value: $effect.headSwitchingSpeed, in: 0...100)
+            }
         }
     }
     

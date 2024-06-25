@@ -24,6 +24,7 @@ enum KernelFunction: String, CaseIterable {
     case chromaIntoLuma
     case chromaFromLuma
     case chromaFromLumaAccumulator
+    case headSwitching
     case interleave
     case convertToRGB
 }
