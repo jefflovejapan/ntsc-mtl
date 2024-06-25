@@ -52,7 +52,10 @@ class NTSCTextureFilter {
             sharpening: effect.vhsSharpening,
             phaseShift: effect.scanlinePhaseShift,
             phaseShiftOffset: effect.scanlinePhaseShiftOffset, 
-            subcarrierAmplitude: effect.subcarrierAmplitude,
+            subcarrierAmplitude: effect.subcarrierAmplitude, 
+            chromaVertBlend: effect.vhsChromaVertBlend,
+            sVideoOut: effect.vhsSVideoOut, 
+            outputNTSC: effect.outputNTSC,
             device: device,
             pipelineCache: pipelineCache,
             ciContext: ciContext
@@ -135,18 +138,16 @@ class NTSCTextureFilter {
         try justBlit(from: input, to: output, commandBuffer: commandBuffer)
     }
     
-    static func emulateVHS(input: MTLTexture, output: MTLTexture, filter: EmulateVHSFilter, edgeWave: UInt, phaseShift: ScanlinePhaseShift, phaseShiftOffset: Int, commandBuffer: MTLCommandBuffer) throws {
+    static func emulateVHS(input: MTLTexture, output: MTLTexture, filter: EmulateVHSFilter, edgeWave: UInt, phaseShift: ScanlinePhaseShift, phaseShiftOffset: Int, sVideoOut: Bool, outputNTSC: Bool, commandBuffer: MTLCommandBuffer) throws {
         filter.edgeWave = edgeWave
         filter.phaseShift = phaseShift
         filter.phaseShiftOffset = phaseShiftOffset
+        filter.sVideoOut = sVideoOut
+        filter.outputNTSC = outputNTSC
         try filter.run(input: input, output: output, commandBuffer: commandBuffer)
     }
     
     static func vhsChromaLoss(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
-        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
-    }
-    
-    static func compositeLowpass(input: MTLTexture, output: MTLTexture, forTV: Bool, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
         try justBlit(from: input, to: output, commandBuffer: commandBuffer)
     }
     
@@ -188,7 +189,7 @@ class NTSCTextureFilter {
             encoder.setTexture(outTexture, index: 2)
         })
     }
-    
+
     static func writeToFields(
         inputTexture: MTLTexture,
         frameNum: UInt32,
@@ -357,7 +358,10 @@ class NTSCTextureFilter {
                     tapeSpeed: effect.vhsTapeSpeed,
                     sharpening: effect.vhsSharpening, 
                     phaseShift: effect.scanlinePhaseShift,
-                    phaseShiftOffset: effect.scanlinePhaseShiftOffset, subcarrierAmplitude: effect.subcarrierAmplitude,
+                    phaseShiftOffset: effect.scanlinePhaseShiftOffset, subcarrierAmplitude: effect.subcarrierAmplitude, 
+                    chromaVertBlend: effect.vhsChromaVertBlend, 
+                    sVideoOut: effect.vhsSVideoOut, 
+                    outputNTSC: effect.outputNTSC,
                     device: device,
                     pipelineCache: pipelineCache,
                     ciContext: context
@@ -371,11 +375,12 @@ class NTSCTextureFilter {
                     filter: emulateVHSFilter,
                     edgeWave: UInt(effect.vhsEdgeWave),
                     phaseShift: effect.scanlinePhaseShift,
-                    phaseShiftOffset: effect.scanlinePhaseShiftOffset,
+                    phaseShiftOffset: effect.scanlinePhaseShiftOffset, 
+                    sVideoOut: effect.vhsSVideoOut, 
+                    outputNTSC: effect.outputNTSC,
                     commandBuffer: commandBuffer
                 )
             }
-            
             
             try Self.vhsChromaLoss(
                 input: try iter.last,
@@ -407,6 +412,18 @@ class NTSCTextureFilter {
                 input: try iter.last,
                 output: try iter.next(),
                 forTV: effect.colorBleedOutForTV,
+                commandBuffer: commandBuffer,
+                device: device,
+                pipelineCache: pipelineCache
+            )
+            
+            try Self.writeToFields(
+                inputTexture: try iter.last,
+                frameNum: frameNum,
+                interlaceMode: .interlaced,
+                interTexA: outTexture1!,
+                interTexB: outTexture2!,
+                outTex: try iter.next(),
                 commandBuffer: commandBuffer,
                 device: device,
                 pipelineCache: pipelineCache
