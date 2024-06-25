@@ -53,7 +53,7 @@ class NTSCTextureFilter {
             phaseShift: effect.scanlinePhaseShift,
             phaseShiftOffset: effect.scanlinePhaseShiftOffset, 
             subcarrierAmplitude: effect.subcarrierAmplitude, 
-            compositeVideoOut: effect.vhsCompositeVideoOut,
+            sVideoOut: effect.vhsSVideoOut,
             device: device,
             pipelineCache: pipelineCache,
             ciContext: ciContext
@@ -140,7 +140,7 @@ class NTSCTextureFilter {
         filter.edgeWave = edgeWave
         filter.phaseShift = phaseShift
         filter.phaseShiftOffset = phaseShiftOffset
-        filter.compositeVideoOut = compositeVideoOut
+        filter.sVideoOut = compositeVideoOut
         try filter.run(input: input, output: output, commandBuffer: commandBuffer)
     }
     
@@ -360,7 +360,7 @@ class NTSCTextureFilter {
                     sharpening: effect.vhsSharpening, 
                     phaseShift: effect.scanlinePhaseShift,
                     phaseShiftOffset: effect.scanlinePhaseShiftOffset, subcarrierAmplitude: effect.subcarrierAmplitude, 
-                    compositeVideoOut: effect.vhsCompositeVideoOut,
+                    sVideoOut: effect.vhsSVideoOut,
                     device: device,
                     pipelineCache: pipelineCache,
                     ciContext: context
@@ -375,7 +375,7 @@ class NTSCTextureFilter {
                     edgeWave: UInt(effect.vhsEdgeWave),
                     phaseShift: effect.scanlinePhaseShift,
                     phaseShiftOffset: effect.scanlinePhaseShiftOffset, 
-                    compositeVideoOut: effect.vhsCompositeVideoOut,
+                    compositeVideoOut: effect.vhsSVideoOut,
                     commandBuffer: commandBuffer
                 )
             }

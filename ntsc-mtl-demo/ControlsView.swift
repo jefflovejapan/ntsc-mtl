@@ -118,8 +118,8 @@ struct ControlsView: View {
                     Stepper(value: $effect.scanlinePhaseShiftOffset, in: 0...4, label: {
                         Text("Scanline phase shift offset: \(effect.scanlinePhaseShiftOffset)")
                     })
-                    Toggle(isOn: $effect.vhsCompositeVideoOut, label: {
-                        Text("Composite video out?")
+                    Toggle(isOn: $effect.vhsSVideoOut, label: {
+                        Text("S-video out?")
                     })
                 }
             }

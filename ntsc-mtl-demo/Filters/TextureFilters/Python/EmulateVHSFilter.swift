@@ -18,7 +18,7 @@ class EmulateVHSFilter {
     var phaseShift: ScanlinePhaseShift
     var phaseShiftOffset: Int
     var subcarrierAmplitude: Float16
-    var compositeVideoOut: Bool
+    var sVideoOut: Bool
     private let randomGenerator = CIFilter.randomGenerator()
     private var rng = SystemRandomNumberGenerator()
     private let device: MTLDevice
@@ -33,13 +33,13 @@ class EmulateVHSFilter {
     private let chromaLowpassFilter: VHSChromaLowpassFilter
     private let sharpenLowpassFilter: VHSSharpenLowpassFilter
     
-    init(tapeSpeed: VHSSpeed, sharpening: Float16, phaseShift: ScanlinePhaseShift, phaseShiftOffset: Int, subcarrierAmplitude: Float16, compositeVideoOut: Bool, device: MTLDevice, pipelineCache: MetalPipelineCache, ciContext: CIContext) {
+    init(tapeSpeed: VHSSpeed, sharpening: Float16, phaseShift: ScanlinePhaseShift, phaseShiftOffset: Int, subcarrierAmplitude: Float16, sVideoOut: Bool, device: MTLDevice, pipelineCache: MetalPipelineCache, ciContext: CIContext) {
         self.tapeSpeed = tapeSpeed
         self.sharpening = sharpening
         self.phaseShift = phaseShift
         self.phaseShiftOffset = phaseShiftOffset
         self.subcarrierAmplitude = subcarrierAmplitude
-        self.compositeVideoOut = compositeVideoOut
+        self.sVideoOut = sVideoOut
         self.device = device
         self.pipelineCache = pipelineCache
         self.ciContext = ciContext
@@ -91,7 +91,7 @@ class EmulateVHSFilter {
         try chromaVertBlend(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
         try sharpen(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
         
-        if !compositeVideoOut {
+        if !sVideoOut {
             try chromaIntoLuma(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
             try accumulateLuma(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
             try chromaFromLuma(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
