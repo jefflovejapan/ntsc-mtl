@@ -16,6 +16,7 @@ class HeadSwitchingFilter {
     var headSwitchingPoint: Float16 = NTSCEffect.default.headSwitchingPoint
     var outputNTSC: Bool = NTSCEffect.default.outputNTSC
     var headSwitchingPhase: Float16 = NTSCEffect.default.headSwitchingPhase
+    var headSwitchingSpeed: Float16 = NTSCEffect.default.headSwitchingSpeed
     private let device: MTLDevice
     private let pipelineCache: MetalPipelineCache
     private let ciContext: CIContext
@@ -74,6 +75,10 @@ class HeadSwitchingFilter {
             encoder.setBytes(&tScaleFactor, length: MemoryLayout<Float16>.size, index: 2)
             var headSwitchingPhase = headSwitchingPhase
             encoder.setBytes(&headSwitchingPhase, length: MemoryLayout<Float16>.size, index: 3)
+            var headSwitchingSpeed = headSwitchingSpeed
+            encoder.setBytes(&headSwitchingSpeed, length: MemoryLayout<Float16>.size, index: 4)
+            var yOffset: UInt = outputNTSC ? (262 - 240) * 2 : (312 - 288) * 2
+            encoder.setBytes(&yOffset, length: MemoryLayout<UInt>.size, index: 5)
         })
     }
 }
