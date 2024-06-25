@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F0D93582C2B0E16003FF553 /* HeadSwitchingFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0D93572C2B0E16003FF553 /* HeadSwitchingFilter.swift */; };
 		1F2028942C1E23BA00DFB165 /* Resolution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2028932C1E23BA00DFB165 /* Resolution.swift */; };
 		1F259EDC2C022F7500937D0A /* NTSCEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F259EDB2C022F7500937D0A /* NTSCEffect.swift */; };
 		1F2B96F12C17477200DB0B9F /* JustBlit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2B96F02C17477200DB0B9F /* JustBlit.swift */; };
@@ -87,6 +88,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1F0D93572C2B0E16003FF553 /* HeadSwitchingFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadSwitchingFilter.swift; sourceTree = "<group>"; };
 		1F2028932C1E23BA00DFB165 /* Resolution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resolution.swift; sourceTree = "<group>"; };
 		1F259EDA2C0227E400937D0A /* SettingsAndDefaults.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = SettingsAndDefaults.md; sourceTree = "<group>"; };
 		1F259EDB2C022F7500937D0A /* NTSCEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSCEffect.swift; sourceTree = "<group>"; };
@@ -336,6 +338,7 @@
 				1F9729A32C274B0D000BFCA8 /* ColorBleedFilter.swift */,
 				1F52D0732C28E44600135EAE /* TextureFilterError.swift */,
 				1F9729A52C27682F000BFCA8 /* LowpassFilter.swift */,
+				1F0D93572C2B0E16003FF553 /* HeadSwitchingFilter.swift */,
 				1FA2C2992C29CDDF00D9B99B /* HighpassFilter.swift */,
 				1FA2C28B2C29AB7800D9B99B /* VHSLumaLowpassFilter.swift */,
 				1FA2C28F2C29B79C00D9B99B /* VHSChromaLowpassFilter.swift */,
@@ -483,6 +486,7 @@
 				1F4692D12C13A27700CD7756 /* Paint.metal in Sources */,
 				1F6BFE2A2BFFBFC200883169 /* CameraView.swift in Sources */,
 				1FEE323E2C0A3FCC009F09BA /* YIQ.swift in Sources */,
+				1F0D93582C2B0E16003FF553 /* HeadSwitchingFilter.swift in Sources */,
 				1FA2C2AE2C2A158400D9B99B /* ChromaFromLumaAccumulator.metal in Sources */,
 				1F52D06E2C28B7A700135EAE /* VHSEdgeWave.metal in Sources */,
 				1FA2C2A22C29F3FD00D9B99B /* ScanlinePhaseShift.swift in Sources */,
