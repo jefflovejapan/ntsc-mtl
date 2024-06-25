@@ -26,7 +26,9 @@ class NTSCEffect {
     var scanlinePhaseShift: ScanlinePhaseShift
     var scanlinePhaseShiftOffset: Int
     let subcarrierAmplitude: Float16 = 50
+    var vhsChromaVertBlend: Bool
     var vhsSVideoOut: Bool
+    var outputNTSC: Bool
     
     init(
         blackLineBorderEnabled: Bool = false,
@@ -43,7 +45,9 @@ class NTSCEffect {
         vhsSharpening: Float16? = nil,
         scanlinePhaseShift: ScanlinePhaseShift? = nil,
         scanlinePhaseShiftOffset: Int? = nil,
-        vhsSVideoOut: Bool = false
+        vhsChromaVertBlend: Bool = true,
+        vhsSVideoOut: Bool = false,
+        outputNTSC: Bool = true
     ) {
         self.blackLineBorderEnabled = blackLineBorderEnabled
         self.blackLineBorderPct = blackLineBorderPct ?? 0.17
@@ -59,7 +63,9 @@ class NTSCEffect {
         self.vhsSharpening = vhsSharpening ?? 1.5
         self.scanlinePhaseShift = scanlinePhaseShift ?? .degrees180
         self.scanlinePhaseShiftOffset = scanlinePhaseShiftOffset ?? 0
+        self.vhsChromaVertBlend = vhsChromaVertBlend
         self.vhsSVideoOut = vhsSVideoOut
+        self.outputNTSC = outputNTSC
     }
 }
 

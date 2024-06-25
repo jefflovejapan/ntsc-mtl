@@ -53,7 +53,9 @@ class NTSCTextureFilter {
             phaseShift: effect.scanlinePhaseShift,
             phaseShiftOffset: effect.scanlinePhaseShiftOffset, 
             subcarrierAmplitude: effect.subcarrierAmplitude, 
-            sVideoOut: effect.vhsSVideoOut,
+            chromaVertBlend: effect.vhsChromaVertBlend,
+            sVideoOut: effect.vhsSVideoOut, 
+            outputNTSC: effect.outputNTSC,
             device: device,
             pipelineCache: pipelineCache,
             ciContext: ciContext
@@ -136,19 +138,16 @@ class NTSCTextureFilter {
         try justBlit(from: input, to: output, commandBuffer: commandBuffer)
     }
     
-    static func emulateVHS(input: MTLTexture, output: MTLTexture, filter: EmulateVHSFilter, edgeWave: UInt, phaseShift: ScanlinePhaseShift, phaseShiftOffset: Int, compositeVideoOut: Bool, commandBuffer: MTLCommandBuffer) throws {
+    static func emulateVHS(input: MTLTexture, output: MTLTexture, filter: EmulateVHSFilter, edgeWave: UInt, phaseShift: ScanlinePhaseShift, phaseShiftOffset: Int, sVideoOut: Bool, outputNTSC: Bool, commandBuffer: MTLCommandBuffer) throws {
         filter.edgeWave = edgeWave
         filter.phaseShift = phaseShift
         filter.phaseShiftOffset = phaseShiftOffset
-        filter.sVideoOut = compositeVideoOut
+        filter.sVideoOut = sVideoOut
+        filter.outputNTSC = outputNTSC
         try filter.run(input: input, output: output, commandBuffer: commandBuffer)
     }
     
     static func vhsChromaLoss(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
-        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
-    }
-    
-    static func compositeLowpass(input: MTLTexture, output: MTLTexture, forTV: Bool, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
         try justBlit(from: input, to: output, commandBuffer: commandBuffer)
     }
     
@@ -190,7 +189,7 @@ class NTSCTextureFilter {
             encoder.setTexture(outTexture, index: 2)
         })
     }
-    
+
     static func writeToFields(
         inputTexture: MTLTexture,
         frameNum: UInt32,
@@ -360,7 +359,9 @@ class NTSCTextureFilter {
                     sharpening: effect.vhsSharpening, 
                     phaseShift: effect.scanlinePhaseShift,
                     phaseShiftOffset: effect.scanlinePhaseShiftOffset, subcarrierAmplitude: effect.subcarrierAmplitude, 
-                    sVideoOut: effect.vhsSVideoOut,
+                    chromaVertBlend: effect.vhsChromaVertBlend, 
+                    sVideoOut: effect.vhsSVideoOut, 
+                    outputNTSC: effect.outputNTSC,
                     device: device,
                     pipelineCache: pipelineCache,
                     ciContext: context
@@ -375,7 +376,8 @@ class NTSCTextureFilter {
                     edgeWave: UInt(effect.vhsEdgeWave),
                     phaseShift: effect.scanlinePhaseShift,
                     phaseShiftOffset: effect.scanlinePhaseShiftOffset, 
-                    compositeVideoOut: effect.vhsSVideoOut,
+                    sVideoOut: effect.vhsSVideoOut, 
+                    outputNTSC: effect.outputNTSC,
                     commandBuffer: commandBuffer
                 )
             }

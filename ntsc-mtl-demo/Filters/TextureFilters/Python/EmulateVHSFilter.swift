@@ -18,7 +18,9 @@ class EmulateVHSFilter {
     var phaseShift: ScanlinePhaseShift
     var phaseShiftOffset: Int
     var subcarrierAmplitude: Float16
+    var chromaVertBlend: Bool
     var sVideoOut: Bool
+    var outputNTSC: Bool
     private let randomGenerator = CIFilter.randomGenerator()
     private var rng = SystemRandomNumberGenerator()
     private let device: MTLDevice
@@ -33,13 +35,15 @@ class EmulateVHSFilter {
     private let chromaLowpassFilter: VHSChromaLowpassFilter
     private let sharpenLowpassFilter: VHSSharpenLowpassFilter
     
-    init(tapeSpeed: VHSSpeed, sharpening: Float16, phaseShift: ScanlinePhaseShift, phaseShiftOffset: Int, subcarrierAmplitude: Float16, sVideoOut: Bool, device: MTLDevice, pipelineCache: MetalPipelineCache, ciContext: CIContext) {
+    init(tapeSpeed: VHSSpeed, sharpening: Float16, phaseShift: ScanlinePhaseShift, phaseShiftOffset: Int, subcarrierAmplitude: Float16, chromaVertBlend: Bool, sVideoOut: Bool, outputNTSC: Bool, device: MTLDevice, pipelineCache: MetalPipelineCache, ciContext: CIContext) {
         self.tapeSpeed = tapeSpeed
         self.sharpening = sharpening
         self.phaseShift = phaseShift
         self.phaseShiftOffset = phaseShiftOffset
         self.subcarrierAmplitude = subcarrierAmplitude
+        self.chromaVertBlend = chromaVertBlend
         self.sVideoOut = sVideoOut
+        self.outputNTSC = outputNTSC
         self.device = device
         self.pipelineCache = pipelineCache
         self.ciContext = ciContext
@@ -88,7 +92,9 @@ class EmulateVHSFilter {
         try edgeWave(input: input, random: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
         try lumaLowpass(input: try iter.last, output: try iter.next(), filter: lumaLowpassFilter, commandBuffer: commandBuffer)
         try chromaLowpass(input: try iter.last, output: try iter.next(), filter: chromaLowpassFilter, commandBuffer: commandBuffer)
-        try chromaVertBlend(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
+        if chromaVertBlend {
+            try chromaVertBlend(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
+        }
         try sharpen(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
         
         if !sVideoOut {
