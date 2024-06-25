@@ -85,7 +85,7 @@ class EmulateVHSFilter {
         lowpassFilter.run(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
         try edgeWave(input: input, random: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
         try lumaLowpass(input: try iter.last, output: try iter.next(), filter: lumaLowpassFilter, commandBuffer: commandBuffer)
-//        try chromaLowpass(input: try iter.last, output: try iter.next(), filter: chromaLowpassFilter, commandBuffer: commandBuffer)
+        try chromaLowpass(input: try iter.last, output: try iter.next(), filter: chromaLowpassFilter, commandBuffer: commandBuffer)
 //        try chromaVertBlend(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
 //        try sharpen(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
 //        try chromaIntoLuma(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
