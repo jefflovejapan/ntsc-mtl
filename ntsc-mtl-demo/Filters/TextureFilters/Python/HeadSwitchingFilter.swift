@@ -72,12 +72,12 @@ class HeadSwitchingFilter {
             encoder.setBytes(&frameNum, length: MemoryLayout<UInt32>.size, index: 0)
             var headSwitchingSpeed = headSwitchingSpeed
             encoder.setBytes(&headSwitchingSpeed, length: MemoryLayout<Float16>.size, index: 1)
+            var tScaleFactor: Float16 = outputNTSC ? 262.5 : 312.5
+            encoder.setBytes(&tScaleFactor, length: MemoryLayout<Float16>.size, index: 2)
 //            var phaseNoise = phaseNoise
 //            encoder.setBytes(&phaseNoise, length: MemoryLayout<Float16>.size, index: 0)
 //            var headSwitchingPoint = headSwitchingPoint
 //            encoder.setBytes(&headSwitchingPoint, length: MemoryLayout<Float16>.size, index: 1)
-//            var tScaleFactor: Float16 = outputNTSC ? 262.5 : 312.5
-//            encoder.setBytes(&tScaleFactor, length: MemoryLayout<Float16>.size, index: 2)
 //            var headSwitchingPhase = headSwitchingPhase
 //            encoder.setBytes(&headSwitchingPhase, length: MemoryLayout<Float16>.size, index: 3)
 //            var yOffset: UInt = outputNTSC ? (262 - 240) * 2 : (312 - 288) * 2
