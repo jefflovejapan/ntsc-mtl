@@ -23,16 +23,16 @@ kernel void headSwitching
  uint2 gid [[thread_position_in_grid]]
 ) {
     
-//    half4 pink = half4(1.0h);
-    half4 rand = random.read(uint2(0u, gid.y));
+    half4 pink = half4(1.0h);
+    half4 rand = random.read(uint2(0u, 0u));
 //    // randA between 0 and 1
     half randA = rand.x;
     uint width = input.get_width();
     
     float noise = 0.0f;
-//    
+    
 //    if (phaseNoise != 0.0h) {
-//        noise = mix(-0.9999f, 0.9999f, float(randA)); // Ignoring phase noise multiplier
+//        noise = mix(-0.9999f, 0.9999f, float(randA)) * phaseNoise;
 //    }
     
     uint tWidth = width + (width / 10);
@@ -47,7 +47,7 @@ kernel void headSwitching
     p = uint(fract(headSwitchingPhase + noise) * t);
     
     // gid.y is greater than y
-    if (gid.y > y) {
+    if (gid.y < y) {
         output.write(input.read(gid), gid);
         return;
     }
@@ -64,6 +64,10 @@ kernel void headSwitching
     uint ishif = x >= (tWidth / 2) ?  x - tWidth : x;
     
     uint shift = ishif - uint(float(y - gid.y) * 7.0f / 16.0f);
+    if (shift == 0) {
+        output.write(pink, gid);
+        return;
+    }
     uint x2 = (gid.x + tWidth + shift) % tWidth;
     if (x2 > width) {
         output.write(half4(0.0h, 0.0h, 0.0h, 1.0h), gid);
