@@ -16,8 +16,11 @@ kernel void headSwitching
  constant uint &frameNum [[buffer(0)]],
  constant half &headSwitchingSpeed [[buffer(1)]],
  constant half &tScaleFactor [[buffer(2)]],
+ constant half &headSwitchingPoint [[buffer(3)]],
  uint2 gid [[thread_position_in_grid]]
 ) {
+    
+    half4 pink = half4(1.0h);
 //    half4 rand = random.read(uint2(0, gid.y));
 //    // randA between 0 and 1
 //    half randA = rand.x;
@@ -33,11 +36,12 @@ kernel void headSwitching
     
     float t = float(tWidth) * float(tScaleFactor);
     
+    
     float animationProgress = float(frameNum) * float(headSwitchingSpeed) / 1000.0f;
 
-    uint p = uint(fract(/*headSwitchingPoint + */animationProgress /*+ noise*/) * t);
+    uint p = uint(fract(/*headSwitchingPoint +*/ animationProgress /*+ noise*/) * t);
 
-    uint y = p / (2u * uint(tWidth));
+    uint y = (p / uint(tWidth)) * 2u;
 //    y -= yOffset;
 //    
     // gid.y is greater than y
