@@ -14,6 +14,7 @@ kernel void headSwitching
  texture2d<half, access::read> random [[texture(1)]],
  texture2d<half, access::write> output [[texture(2)]],
  constant uint &frameNum [[buffer(0)]],
+ constant half &headSwitchingSpeed [[buffer(1)]],
  uint2 gid [[thread_position_in_grid]]
 ) {
 //    half4 rand = random.read(uint2(0, gid.y));
@@ -31,7 +32,7 @@ kernel void headSwitching
     
 //    float t = float(tWidth) * float(tScaleFactor);
     
-    float animationProgress = float(frameNum) * 50.0f / 1000.0f;
+    float animationProgress = float(frameNum) * float(headSwitchingSpeed) / 1000.0f;
     float fModdedProgress = fmod(animationProgress, 1.0f);
     half halfAnim = half(fModdedProgress);
     half4 inPx = input.read(gid);
