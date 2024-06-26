@@ -17,48 +17,54 @@ kernel void headSwitching
  constant half &headSwitchingSpeed [[buffer(1)]],
  constant half &tScaleFactor [[buffer(2)]],
  constant half &headSwitchingPoint [[buffer(3)]],
+ constant half &phaseNoise [[buffer(4)]],
+ constant half &headSwitchingPhase [[buffer(5)]],
+ constant uint &yOffset [[buffer(6)]],
  uint2 gid [[thread_position_in_grid]]
 ) {
     
-    half4 pink = half4(1.0h);
-//    half4 rand = random.read(uint2(0, gid.y));
+//    half4 pink = half4(1.0h);
+    half4 rand = random.read(uint2(0u, gid.y));
 //    // randA between 0 and 1
-//    half randA = rand.x;
+    half randA = rand.x;
     uint width = input.get_width();
-//    
-//    float noise = 0.0f;
+    
+    float noise = 0.0f;
 //    
 //    if (phaseNoise != 0.0h) {
-//        noise = mix(-1.0f, 1.0f, float(randA)); // Ignoring phase noise multiplier
+//        noise = mix(-0.9999f, 0.9999f, float(randA)); // Ignoring phase noise multiplier
 //    }
     
     uint tWidth = width + (width / 10);
     
     float t = float(tWidth) * float(tScaleFactor);
-    
-    
     float animationProgress = float(frameNum) * float(headSwitchingSpeed) / 1000.0f;
 
-    uint p = uint(fract(/*headSwitchingPoint +*/ animationProgress /*+ noise*/) * t);
+    uint p = uint(fract(headSwitchingPoint + animationProgress + noise) * t);
 
-    uint y = (p / uint(tWidth)) * 2u;
-//    y -= yOffset;
-//    
+    uint y = ((p / uint(tWidth)) * 2u) - yOffset;
+    
+    p = uint(fract(headSwitchingPhase + noise) * t);
+    
     // gid.y is greater than y
     if (gid.y > y) {
         output.write(input.read(gid), gid);
         return;
     }
     
-    uint xStartingPoint = (gid.y - y == 0) ?  uint(p) % uint(tWidth) : 0u;
+    uint xStartingPoint = (gid.y - y == 0) ?  p % uint(tWidth) : 0u;
     if (gid.x < xStartingPoint) {
         output.write(input.read(gid), gid);
         return;
     }
 
-    // gid.y is less than y
-    uint shift = uint(float(y - gid.y) * 7.0f / 16.0f);
-    uint x2 = (gid.x + shift) % tWidth;
+    // Computing x
+    uint x = p % tWidth;
+    // Computing ishif -- what do we use this for? -- only the initial value of shif
+    uint ishif = x >= (tWidth / 2) ?  x - tWidth : x;
+    
+    uint shift = ishif - uint(float(y - gid.y) * 7.0f / 16.0f);
+    uint x2 = (gid.x + tWidth + shift) % tWidth;
     if (x2 > width) {
         output.write(half4(0.0h, 0.0h, 0.0h, 1.0h), gid);
         return;
