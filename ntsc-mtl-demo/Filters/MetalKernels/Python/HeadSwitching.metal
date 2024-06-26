@@ -22,6 +22,8 @@ kernel void headSwitching
 // constant uint &yOffset [[buffer(6)]],
  uint2 gid [[thread_position_in_grid]]
 ) {
+    half4 pink = half4(1.0h);
+    half4 black = half4(-1.0h, 0.0h, 0.0h, 1.0h);
     
     half phaseNoise = 1.0h / 500.0h / 262.5h;
     half headSwitchingPoint = 1.0h - (4.5h + 0.01h) / 262.5h;
@@ -29,7 +31,8 @@ kernel void headSwitching
     uint yOffset = 0u;
     half tScaleFactor = 262.5h;
     
-    half4 pink = half4(1.0h);
+    
+    
     half4 rand = random.read(uint2(0u, 0u));
 //    // randA between 0 and 1
     half randA = rand.x;
@@ -48,15 +51,16 @@ kernel void headSwitching
 
     uint p = uint(fract(headSwitchingPoint + animationProgress + noise) * t);
 
-    uint y = ((p / uint(tWidth)) * 2u) - yOffset;
-    
-    p = uint(fract(headSwitchingPhase + noise) * t);
+    uint y = ((p / uint(tWidth)) * 2u) + yOffset;
+    uint flippedY = input.get_height() - 1u - gid.y;
     
     // gid.y is greater than y
-    if (gid.y < y) {
+    if (flippedY < y) {
         output.write(input.read(gid), gid);
         return;
     }
+    
+    uint newP = uint(fract(headSwitchingPhase + noise) * t);
     
 //    uint x = (gid.y - y == 0) ?  p % uint(tWidth) : 0u;
 //    if (gid.x < xStartingPoint) {
@@ -65,11 +69,11 @@ kernel void headSwitching
 //    }
 
     // Computing x
-    uint x = p % tWidth;
+    uint x = newP % tWidth;
     // Computing ishif -- what do we use this for? -- only the initial value of shif
     uint ishif = x >= (tWidth / 2) ?  x - tWidth : x;
     
-    uint shift = ishif - uint(float(y - gid.y) * 7.0f / 16.0f);
+    uint shift = ishif - uint(float(flippedY - y) * 7.0f / 16.0f);
     if (shift == 0) {
         output.write(pink, gid);
         return;
