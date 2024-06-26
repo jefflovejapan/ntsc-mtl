@@ -25,6 +25,7 @@ struct ControlsView: View {
                 headSwitchingView
                 colorBleedView
                 vhsView
+                headSwitchingView
             }
         }
         .background(Color.green.opacity(0.2))
@@ -77,6 +78,7 @@ struct ControlsView: View {
                 Text("Enable head switching?")
             })
             if effect.enableHeadSwitching {
+                Text("Head switching speed: \(Int(effect.headSwitchingSpeed))")
                 Slider(value: $effect.headSwitchingSpeed, in: 0...100)
             }
         }

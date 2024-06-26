@@ -124,8 +124,8 @@ class NTSCTextureFilter {
         try justBlit(from: input, to: output, commandBuffer: commandBuffer)
     }
     
-    static func vhsHeadSwitching(input: MTLTexture, output: MTLTexture, filter: HeadSwitchingFilter, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
-        try filter.run(input: input, output: output, commandBuffer: commandBuffer)
+    static func vhsHeadSwitching(input: MTLTexture, output: MTLTexture, filter: HeadSwitchingFilter, frameNum: UInt32, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        try filter.run(input: input, output: output, frameNum: frameNum, commandBuffer: commandBuffer)
     }
     
     static func chromaFromLuma(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
@@ -326,7 +326,8 @@ class NTSCTextureFilter {
             try Self.vhsHeadSwitching(
                 input: try iter.last,
                 output: try iter.next(),
-                filter: headSwitchingFilter,
+                filter: headSwitchingFilter, 
+                frameNum: frameNum,
                 commandBuffer: commandBuffer,
                 device: device,
                 pipelineCache: pipelineCache

@@ -28,9 +28,9 @@ class HeadSwitchingFilter {
         self.ciContext = ciContext
     }
     
-    func run(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+    func run(input: MTLTexture, output: MTLTexture, frameNum: UInt32, commandBuffer: MTLCommandBuffer) throws {
         do {
-            try privateRun(input: input, output: output, commandBuffer: commandBuffer)
+            try privateRun(input: input, output: output, frameNum: frameNum, commandBuffer: commandBuffer)
         } catch {
             print("Error in head switching: \(error)")
             try justBlit(from: input, to: output, commandBuffer: commandBuffer)
@@ -40,7 +40,8 @@ class HeadSwitchingFilter {
     private let randomGenerator = CIFilter.randomGenerator()
     private var rng = SystemRandomNumberGenerator()
     
-    private func privateRun(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+    private func privateRun(input: MTLTexture, output: MTLTexture, frameNum: UInt32, commandBuffer: MTLCommandBuffer) throws {
+        print("frameNum: \(frameNum)")
         let needsUpdate: Bool
         if let tex {
             needsUpdate = !(tex.width == input.width && tex.height == input.height)
@@ -77,8 +78,10 @@ class HeadSwitchingFilter {
             encoder.setBytes(&headSwitchingPhase, length: MemoryLayout<Float16>.size, index: 3)
             var headSwitchingSpeed = headSwitchingSpeed
             encoder.setBytes(&headSwitchingSpeed, length: MemoryLayout<Float16>.size, index: 4)
+            var frameNum = frameNum
+            encoder.setBytes(&frameNum, length: MemoryLayout<UInt32>.size, index: 5)
             var yOffset: UInt = outputNTSC ? (262 - 240) * 2 : (312 - 288) * 2
-            encoder.setBytes(&yOffset, length: MemoryLayout<UInt>.size, index: 5)
+            encoder.setBytes(&yOffset, length: MemoryLayout<UInt>.size, index: 6)
         })
     }
 }
