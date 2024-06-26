@@ -74,7 +74,7 @@ class NTSCEffect {
         self.vhsSVideoOut = vhsSVideoOut
         self.outputNTSC = outputNTSC
         self.enableHeadSwitching = enableHeadSwitching
-        self.headSwitchingSpeed = headSwitchingSpeed ?? 40
+        self.headSwitchingSpeed = headSwitchingSpeed ?? 10
     }
 }
 

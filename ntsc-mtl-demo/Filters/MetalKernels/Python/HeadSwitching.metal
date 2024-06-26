@@ -15,13 +15,19 @@ kernel void headSwitching
  texture2d<half, access::write> output [[texture(2)]],
  constant uint &frameNum [[buffer(0)]],
  constant half &headSwitchingSpeed [[buffer(1)]],
- constant half &tScaleFactor [[buffer(2)]],
- constant half &headSwitchingPoint [[buffer(3)]],
- constant half &phaseNoise [[buffer(4)]],
- constant half &headSwitchingPhase [[buffer(5)]],
- constant uint &yOffset [[buffer(6)]],
+// constant half &tScaleFactor [[buffer(2)]],
+// constant half &headSwitchingPoint [[buffer(3)]],
+// constant half &phaseNoise [[buffer(4)]],
+// constant half &headSwitchingPhase [[buffer(5)]],
+// constant uint &yOffset [[buffer(6)]],
  uint2 gid [[thread_position_in_grid]]
 ) {
+    
+    half phaseNoise = 1.0h / 500.0h / 262.5h;
+    half headSwitchingPoint = 1.0h - (4.5h + 0.01h) / 262.5h;
+    half headSwitchingPhase = (1.0h - 0.01h) / 262.5h;
+    uint yOffset = 0u;
+    half tScaleFactor = 262.5h;
     
     half4 pink = half4(1.0h);
     half4 rand = random.read(uint2(0u, 0u));
@@ -52,11 +58,11 @@ kernel void headSwitching
         return;
     }
     
-    uint xStartingPoint = (gid.y - y == 0) ?  p % uint(tWidth) : 0u;
-    if (gid.x < xStartingPoint) {
-        output.write(input.read(gid), gid);
-        return;
-    }
+//    uint x = (gid.y - y == 0) ?  p % uint(tWidth) : 0u;
+//    if (gid.x < xStartingPoint) {
+//        output.write(input.read(gid), gid);
+//        return;
+//    }
 
     // Computing x
     uint x = p % tWidth;
