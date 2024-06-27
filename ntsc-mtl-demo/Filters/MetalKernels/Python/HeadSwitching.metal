@@ -15,6 +15,7 @@ kernel void headSwitching
  texture2d<half, access::write> output [[texture(2)]],
  constant uint &frameNum [[buffer(0)]],
  constant half &headSwitchingSpeed [[buffer(1)]],
+ constant half &noise [[buffer(2)]],
 // constant half &tScaleFactor [[buffer(2)]],
 // constant half &headSwitchingPoint [[buffer(3)]],
 // constant half &phaseNoise [[buffer(4)]],
@@ -30,25 +31,9 @@ kernel void headSwitching
     half headSwitchingPhase = (1.0h - 0.01h) / 262.5h;
     uint yOffset = 0u;
     half tScaleFactor = 262.5h;
-    
-    
-    
-    half4 rand = random.read(uint2(0u, 0u));
-//    // randA between 0 and 1
-    half randA = rand.x;
+
     uint width = input.get_width();
     uint height = input.get_height();
-    
-    float noise = 0.0f;
-    
-    if (phaseNoise != 0.0h) {
-        noise = mix(-0.9999f, 0.9999f, float(randA)) * phaseNoise;
-    }
-    
-    if (noise == 0.0f) {
-        output.write(black, gid);
-        return;
-    }
     
     uint tWidth = width + (width / 10);
     

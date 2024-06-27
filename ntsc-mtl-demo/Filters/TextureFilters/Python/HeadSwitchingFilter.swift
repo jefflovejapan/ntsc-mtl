@@ -41,6 +41,10 @@ class HeadSwitchingFilter {
     private let randomGenerator = CIFilter.randomGenerator()
     private var rng = SystemRandomNumberGenerator()
     
+    private func deriveNoise() -> Float16 {
+        Float16.random(in: -1 ..< 1) * phaseNoise
+    }
+    
     private func privateRun(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         let needsUpdate: Bool
         if let tex {
@@ -72,6 +76,8 @@ class HeadSwitchingFilter {
             encoder.setBytes(&frameNum, length: MemoryLayout<UInt32>.size, index: 0)
             var headSwitchingSpeed = headSwitchingSpeed
             encoder.setBytes(&headSwitchingSpeed, length: MemoryLayout<Float16>.size, index: 1)
+            var noise: Float16 = deriveNoise()
+            encoder.setBytes(&noise, length: MemoryLayout<Float16>.size, index: 2)
 //            var tScaleFactor: Float16 = outputNTSC ? 262.5 : 312.5
 //            encoder.setBytes(&tScaleFactor, length: MemoryLayout<Float16>.size, index: 2)
 //            var headSwitchingPoint = headSwitchingPoint
