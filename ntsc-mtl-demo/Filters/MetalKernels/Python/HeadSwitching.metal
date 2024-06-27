@@ -37,12 +37,18 @@ kernel void headSwitching
 //    // randA between 0 and 1
     half randA = rand.x;
     uint width = input.get_width();
+    uint height = input.get_height();
     
     float noise = 0.0f;
     
-//    if (phaseNoise != 0.0h) {
-//        noise = mix(-0.9999f, 0.9999f, float(randA)) * phaseNoise;
-//    }
+    if (phaseNoise != 0.0h) {
+        noise = mix(-0.9999f, 0.9999f, float(randA)) * phaseNoise;
+    }
+    
+    if (noise == 0.0f) {
+        output.write(black, gid);
+        return;
+    }
     
     uint tWidth = width + (width / 10);
     
@@ -50,8 +56,12 @@ kernel void headSwitching
     float animationProgress = float(frameNum) * float(headSwitchingSpeed) / 1000.0f;
 
     uint p = uint(fract(headSwitchingPoint + animationProgress + noise) * t);
-
-    uint y = ((p / uint(tWidth)) * 2u) + yOffset;
+    uint y = (2u * (p / uint(tWidth))) + yOffset;
+    
+    if (y >= height) {
+        output.write(input.read(gid), gid);
+        return;
+    }
     uint flippedY = input.get_height() - 1u - gid.y;
     
     // gid.y is greater than y
@@ -71,13 +81,16 @@ kernel void headSwitching
     // Computing x
     uint x = newP % tWidth;
     // Computing ishif -- what do we use this for? -- only the initial value of shif
-    uint ishif = x >= (tWidth / 2) ?  x - tWidth : x;
-    
-    uint shift = ishif - uint(float(flippedY - y) * 7.0f / 16.0f);
-    if (shift == 0) {
-        output.write(pink, gid);
+    uint iShift = x >= (tWidth / 2) ?  x - tWidth : x;
+    if (flippedY < y) {
+        output.write(input.read(gid), gid);
         return;
     }
+    
+    // shift *= 7/16???
+    float scalingFactor = 7.0f/16.0f;
+    float floatShift = float(iShift) * pow(scalingFactor, float(flippedY - y));
+    uint shift = uint(floatShift);
     uint x2 = (gid.x + tWidth + shift) % tWidth;
     if (x2 > width) {
         output.write(half4(0.0h, 0.0h, 0.0h, 1.0h), gid);
