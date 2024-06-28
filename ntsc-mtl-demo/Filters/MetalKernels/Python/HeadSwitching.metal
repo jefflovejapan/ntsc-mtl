@@ -38,7 +38,7 @@ kernel void headSwitching
     uint tWidth = width + (width / 10);
     
     float t = float(tWidth) * float(tScaleFactor);
-    float animationProgress = float(frameNum) * float(headSwitchingSpeed) / 1000.0f;
+    float animationProgress = float(frameNum) * float(headSwitchingSpeed) / 2000.0f;
 
     uint p = uint(fract(headSwitchingPoint + animationProgress + noise) * t);
     uint y = (2u * (p / uint(tWidth))) + yOffset;
@@ -66,7 +66,7 @@ kernel void headSwitching
     // Computing x
     uint x = newP % tWidth;
     // Computing ishif -- what do we use this for? -- only the initial value of shif
-    uint iShift = x >= (tWidth / 2) ?  x - tWidth : x;
+    int iShift = x >= (tWidth / 2) ?  x - tWidth : x;
     if (flippedY < y) {
         output.write(input.read(gid), gid);
         return;
@@ -75,8 +75,8 @@ kernel void headSwitching
     // shift *= 7/16???
     float scalingFactor = 7.0f/16.0f;
     float floatShift = float(iShift) * pow(scalingFactor, float(flippedY - y));
-    uint shift = uint(floatShift);
-    uint x2 = (gid.x + tWidth + shift) % tWidth;
+    int shift = int(floatShift);
+    uint x2 = uint((int(gid.x + tWidth) + shift) % tWidth);
     if (x2 > width) {
         output.write(half4(0.0h, 0.0h, 0.0h, 1.0h), gid);
         return;

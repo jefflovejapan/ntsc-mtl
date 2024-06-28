@@ -42,7 +42,9 @@ class HeadSwitchingFilter {
     private var rng = SystemRandomNumberGenerator()
     
     private func deriveNoise() -> Float16 {
-        Float16.random(in: -1 ..< 1) * phaseNoise
+        let x = Int32.random(in: 1 ..< 2_000_000_000)
+        let noise: Float32 = ((Float32(x) / 1000000000.0) - 1.0) * Float32(phaseNoise)
+        return Float16(noise)
     }
     
     private func privateRun(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
