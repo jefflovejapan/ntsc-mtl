@@ -27,6 +27,7 @@ class NTSCTextureFilter {
     private let colorBleedFilter: ColorBleedFilter
     private let compositeLowpassFilter: CompositeLowpassFilter
     private var emulateVHSFilter: EmulateVHSFilter
+    private let headSwitchingFilter: HeadSwitchingFilter
     
     // MARK: -Filters
 
@@ -60,6 +61,7 @@ class NTSCTextureFilter {
             pipelineCache: pipelineCache,
             ciContext: ciContext
         )
+        self.headSwitchingFilter = HeadSwitchingFilter(device: device, pipelineCache: pipelineCache, ciContext: ciContext)
     }
     
     static func cutBlackLineBorder(input: MTLTexture, output: MTLTexture, blackLineEnabled: Bool, blackLineBorderPct: Float, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
@@ -122,8 +124,24 @@ class NTSCTextureFilter {
         try justBlit(from: input, to: output, commandBuffer: commandBuffer)
     }
     
-    static func vhsHeadSwitching(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
-        try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+    static func vhsHeadSwitching(
+        input: MTLTexture,
+        output: MTLTexture,
+        filter: HeadSwitchingFilter,
+        enableHeadSwitching: Bool,
+        frameNum: UInt32,
+        headSwitchingSpeed: Float16,
+        commandBuffer: MTLCommandBuffer,
+        device: MTLDevice,
+        pipelineCache: MetalPipelineCache
+    ) throws {
+        guard enableHeadSwitching else {
+            try justBlit(from: input, to: output, commandBuffer: commandBuffer)
+            return
+        }
+        filter.headSwitchingSpeed = headSwitchingSpeed
+        filter.frameNum = frameNum
+        try filter.run(input: input, output: output, commandBuffer: commandBuffer)
     }
     
     static func chromaFromLuma(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
@@ -324,6 +342,10 @@ class NTSCTextureFilter {
             try Self.vhsHeadSwitching(
                 input: try iter.last,
                 output: try iter.next(),
+                filter: headSwitchingFilter, 
+                enableHeadSwitching: effect.enableHeadSwitching, 
+                frameNum: frameNum,
+                headSwitchingSpeed: effect.headSwitchingSpeed,
                 commandBuffer: commandBuffer,
                 device: device,
                 pipelineCache: pipelineCache

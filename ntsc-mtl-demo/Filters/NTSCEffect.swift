@@ -29,6 +29,11 @@ class NTSCEffect {
     var vhsChromaVertBlend: Bool
     var vhsSVideoOut: Bool
     var outputNTSC: Bool
+    var enableHeadSwitching: Bool
+    let headSwitchingPhaseNoise: Float16 = 1.0 / 500 / 262.5
+    let headSwitchingPoint: Float16 = 1.0 - (4.5 + 0.01) / 262.5
+    let headSwitchingPhase: Float16 = (1.0 - 0.01) / 262.5
+    var headSwitchingSpeed: Float16
     
     init(
         blackLineBorderEnabled: Bool = false,
@@ -47,7 +52,9 @@ class NTSCEffect {
         scanlinePhaseShiftOffset: Int? = nil,
         vhsChromaVertBlend: Bool = true,
         vhsSVideoOut: Bool = false,
-        outputNTSC: Bool = true
+        outputNTSC: Bool = true,
+        enableHeadSwitching: Bool = true,
+        headSwitchingSpeed: Float16? = nil
     ) {
         self.blackLineBorderEnabled = blackLineBorderEnabled
         self.blackLineBorderPct = blackLineBorderPct ?? 0.17
@@ -66,6 +73,8 @@ class NTSCEffect {
         self.vhsChromaVertBlend = vhsChromaVertBlend
         self.vhsSVideoOut = vhsSVideoOut
         self.outputNTSC = outputNTSC
+        self.enableHeadSwitching = enableHeadSwitching
+        self.headSwitchingSpeed = headSwitchingSpeed ?? 10
     }
 }
 
