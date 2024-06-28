@@ -17,6 +17,7 @@ class HeadSwitchingFilter {
     var outputNTSC: Bool = NTSCEffect.default.outputNTSC
     var headSwitchingPhase: Float16 = NTSCEffect.default.headSwitchingPhase
     var headSwitchingSpeed: Float16 = NTSCEffect.default.headSwitchingSpeed
+    var frameNum: UInt32 = 0
     private let device: MTLDevice
     private let pipelineCache: MetalPipelineCache
     private let ciContext: CIContext
@@ -28,9 +29,9 @@ class HeadSwitchingFilter {
         self.ciContext = ciContext
     }
     
-    func run(input: MTLTexture, output: MTLTexture, frameNum: UInt32, commandBuffer: MTLCommandBuffer) throws {
+    func run(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         do {
-            try privateRun(input: input, output: output, frameNum: frameNum, commandBuffer: commandBuffer)
+            try privateRun(input: input, output: output, commandBuffer: commandBuffer)
         } catch {
             print("Error in head switching: \(error)")
             try justBlit(from: input, to: output, commandBuffer: commandBuffer)
@@ -40,8 +41,13 @@ class HeadSwitchingFilter {
     private let randomGenerator = CIFilter.randomGenerator()
     private var rng = SystemRandomNumberGenerator()
     
-    private func privateRun(input: MTLTexture, output: MTLTexture, frameNum: UInt32, commandBuffer: MTLCommandBuffer) throws {
-        print("frameNum: \(frameNum)")
+    private func deriveNoise() -> Float16 {
+        let x = Int32.random(in: 1 ..< 2_000_000_000)
+        let noise: Float32 = ((Float32(x) / 1000000000.0) - 1.0) * Float32(phaseNoise)
+        return Float16(noise)
+    }
+    
+    private func privateRun(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         let needsUpdate: Bool
         if let tex {
             needsUpdate = !(tex.width == input.width && tex.height == input.height)
@@ -68,20 +74,12 @@ class HeadSwitchingFilter {
             encoder.setTexture(input, index: 0)
             encoder.setTexture(tex, index: 1)
             encoder.setTexture(output, index: 2)
-            var phaseNoise = phaseNoise
-            encoder.setBytes(&phaseNoise, length: MemoryLayout<Float>.size, index: 0)
-            var headSwitchingPoint = headSwitchingPoint
-            encoder.setBytes(&headSwitchingPoint, length: MemoryLayout<Float>.size, index: 1)
-            var tScaleFactor: Float16 = outputNTSC ? 262.5 : 312.5
-            encoder.setBytes(&tScaleFactor, length: MemoryLayout<Float16>.size, index: 2)
-            var headSwitchingPhase = headSwitchingPhase
-            encoder.setBytes(&headSwitchingPhase, length: MemoryLayout<Float16>.size, index: 3)
-            var headSwitchingSpeed = headSwitchingSpeed
-            encoder.setBytes(&headSwitchingSpeed, length: MemoryLayout<Float16>.size, index: 4)
             var frameNum = frameNum
-            encoder.setBytes(&frameNum, length: MemoryLayout<UInt32>.size, index: 5)
-            var yOffset: UInt = outputNTSC ? (262 - 240) * 2 : (312 - 288) * 2
-            encoder.setBytes(&yOffset, length: MemoryLayout<UInt>.size, index: 6)
+            encoder.setBytes(&frameNum, length: MemoryLayout<UInt32>.size, index: 0)
+            var headSwitchingSpeed = headSwitchingSpeed
+            encoder.setBytes(&headSwitchingSpeed, length: MemoryLayout<Float16>.size, index: 1)
+            var noise: Float16 = deriveNoise()
+            encoder.setBytes(&noise, length: MemoryLayout<Float16>.size, index: 2)
         })
     }
 }

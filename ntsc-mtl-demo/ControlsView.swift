@@ -25,7 +25,6 @@ struct ControlsView: View {
                 headSwitchingView
                 colorBleedView
                 vhsView
-                headSwitchingView
             }
         }
         .background(Color.green.opacity(0.2))
