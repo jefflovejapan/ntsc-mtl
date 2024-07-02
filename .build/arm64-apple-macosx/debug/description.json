@@ -28,6 +28,78 @@
       "inputs" : [
         {
           "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/NTSC.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/NTSCEffect.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/Resolution.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/NTSCTextureFilter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/ColorBleedFilter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/CompositeLowpassFilter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/EmulateVHSFilter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/HeadSwitchingFilter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/HighpassFilter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/LowpassFilter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/MixFilter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/TextureFilterError.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/VHSChromaLowpassFilter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/VHSLumaLowpassFilter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/VHSSharpenLowpassFilter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Texture.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/YIQ.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/YIQChannels.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/ntsc_mtl.swift"
         },
         {
@@ -43,6 +115,24 @@
       "moduleName" : "ntsc_mtl",
       "moduleOutputPath" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.swiftmodule",
       "objects" : [
+        "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/NTSC.swift.o",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/NTSCEffect.swift.o",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/Resolution.swift.o",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/NTSCTextureFilter.swift.o",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/ColorBleedFilter.swift.o",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/CompositeLowpassFilter.swift.o",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/EmulateVHSFilter.swift.o",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/HeadSwitchingFilter.swift.o",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/HighpassFilter.swift.o",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/LowpassFilter.swift.o",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/MixFilter.swift.o",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/TextureFilterError.swift.o",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/VHSChromaLowpassFilter.swift.o",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/VHSLumaLowpassFilter.swift.o",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/VHSSharpenLowpassFilter.swift.o",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/Texture.swift.o",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/YIQ.swift.o",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/YIQChannels.swift.o",
         "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/ntsc_mtl.swift.o"
       ],
       "otherArguments" : [
@@ -65,6 +155,7 @@
         "-emit-objc-header",
         "-emit-objc-header-path",
         "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/ntsc-mtl-Swift.h",
+        "-color-diagnostics",
         "-sdk",
         "/Applications/Xcode-15.3.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk",
         "-F",
@@ -74,7 +165,6 @@
         "-L",
         "/Applications/Xcode-15.3.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
         "-g",
-        "-diagnostic-style=llvm",
         "-Xcc",
         "-isysroot",
         "-Xcc",
@@ -94,6 +184,78 @@
       "outputs" : [
         {
           "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/NTSC.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/NTSCEffect.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/Resolution.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/NTSCTextureFilter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/ColorBleedFilter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/CompositeLowpassFilter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/EmulateVHSFilter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/HeadSwitchingFilter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/HighpassFilter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/LowpassFilter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/MixFilter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/TextureFilterError.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/VHSChromaLowpassFilter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/VHSLumaLowpassFilter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/VHSSharpenLowpassFilter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/Texture.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/YIQ.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/YIQChannels.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/ntsc_mtl.swift.o"
         },
         {
@@ -102,6 +264,24 @@
         }
       ],
       "sources" : [
+        "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/NTSC.swift",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/NTSCEffect.swift",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/Resolution.swift",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/NTSCTextureFilter.swift",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/ColorBleedFilter.swift",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/CompositeLowpassFilter.swift",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/EmulateVHSFilter.swift",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/HeadSwitchingFilter.swift",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/HighpassFilter.swift",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/LowpassFilter.swift",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/MixFilter.swift",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/TextureFilterError.swift",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/VHSChromaLowpassFilter.swift",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/VHSLumaLowpassFilter.swift",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/VHSSharpenLowpassFilter.swift",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Texture.swift",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/YIQ.swift",
+        "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/YIQChannels.swift",
         "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/ntsc_mtl.swift"
       ],
       "tempsPath" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build",
@@ -152,6 +332,7 @@
         "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ModuleCache",
         "-parseable-output",
         "-parse-as-library",
+        "-color-diagnostics",
         "-sdk",
         "/Applications/Xcode-15.3.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk",
         "-F",
@@ -161,7 +342,6 @@
         "-L",
         "/Applications/Xcode-15.3.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
         "-g",
-        "-diagnostic-style=llvm",
         "-Xcc",
         "-isysroot",
         "-Xcc",
@@ -207,6 +387,24 @@
       "ntsc_mtl",
       "-incremental",
       "-c",
+      "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/NTSC.swift",
+      "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/NTSCEffect.swift",
+      "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/Resolution.swift",
+      "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/NTSCTextureFilter.swift",
+      "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/ColorBleedFilter.swift",
+      "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/CompositeLowpassFilter.swift",
+      "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/EmulateVHSFilter.swift",
+      "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/HeadSwitchingFilter.swift",
+      "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/HighpassFilter.swift",
+      "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/LowpassFilter.swift",
+      "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/MixFilter.swift",
+      "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/TextureFilterError.swift",
+      "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/VHSChromaLowpassFilter.swift",
+      "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/VHSLumaLowpassFilter.swift",
+      "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/VHSSharpenLowpassFilter.swift",
+      "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Texture.swift",
+      "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/YIQ.swift",
+      "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/YIQChannels.swift",
       "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/ntsc_mtl.swift",
       "-I",
       "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug",
@@ -229,6 +427,7 @@
       "-emit-objc-header",
       "-emit-objc-header-path",
       "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/ntsc-mtl-Swift.h",
+      "-color-diagnostics",
       "-sdk",
       "/Applications/Xcode-15.3.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk",
       "-F",
@@ -238,7 +437,6 @@
       "-L",
       "/Applications/Xcode-15.3.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
       "-g",
-      "-diagnostic-style=llvm",
       "-Xcc",
       "-isysroot",
       "-Xcc",
@@ -283,6 +481,7 @@
       "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ModuleCache",
       "-parseable-output",
       "-parse-as-library",
+      "-color-diagnostics",
       "-sdk",
       "/Applications/Xcode-15.3.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk",
       "-F",
@@ -292,7 +491,6 @@
       "-L",
       "/Applications/Xcode-15.3.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
       "-g",
-      "-diagnostic-style=llvm",
       "-Xcc",
       "-isysroot",
       "-Xcc",
@@ -335,6 +533,78 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/NTSC.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/NTSCEffect.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/Resolution.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/NTSCTextureFilter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/ColorBleedFilter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/CompositeLowpassFilter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/EmulateVHSFilter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/HeadSwitchingFilter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/HighpassFilter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/LowpassFilter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/MixFilter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/TextureFilterError.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/VHSChromaLowpassFilter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/VHSLumaLowpassFilter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Python/VHSSharpenLowpassFilter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/TextureFilters/Texture.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/YIQ.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/Filters/YIQChannels.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/ntsc_mtl.swift"
         }
       ],
@@ -360,6 +630,78 @@
         {
           "kind" : "virtual",
           "name" : "<link-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/ColorBleedFilter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/CompositeLowpassFilter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/EmulateVHSFilter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/HeadSwitchingFilter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/HighpassFilter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/LowpassFilter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/MixFilter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/NTSC.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/NTSCEffect.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/NTSCTextureFilter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/Resolution.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/Texture.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/TextureFilterError.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/VHSChromaLowpassFilter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/VHSLumaLowpassFilter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/VHSSharpenLowpassFilter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/YIQ.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/YIQChannels.swift.o"
         },
         {
           "kind" : "file",

@@ -9,6 +9,7 @@ import SwiftUI
 import AVFoundation
 import CoreImage
 import MetalKit
+import ntsc_mtl
 
 class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     private let captureSession = AVCaptureSession()
