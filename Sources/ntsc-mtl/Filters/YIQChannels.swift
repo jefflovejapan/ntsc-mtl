@@ -9,7 +9,7 @@ import Foundation
 import CoreImage
 
 public struct YIQChannels: OptionSet {
-    let rawValue: Int
+    public let rawValue: Int
     static let y = YIQChannels(rawValue: 1 << 0) // 1 << 0 = 1 (Binary 0001)
     static let i = YIQChannels(rawValue: 1 << 1) // 1 << 1 = 2 (Binary 0010)
     static let q = YIQChannels(rawValue: 1 << 2) // 1 << 2 = 4 (Binary 0100)
@@ -17,6 +17,10 @@ public struct YIQChannels: OptionSet {
 
     static let all: YIQChannels = [.y, .i, .q, .a]
     static let yiq: YIQChannels = [.y, .i, .q]
+    
+    public init(rawValue: Int) {
+        self.rawValue = rawValue
+    }
     
     var floatMix: [Float16] {
         let y: Float16 = self.contains(.y) ? 1 : 0

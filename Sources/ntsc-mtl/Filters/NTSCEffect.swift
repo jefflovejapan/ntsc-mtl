@@ -11,31 +11,31 @@ import Foundation
 public class NTSCEffect {
     static let `default` = NTSCEffect()
     
-    var blackLineBorderEnabled: Bool
-    var blackLineBorderPct: Float
-    var colorBleedEnabled: Bool
-    var colorBleedBefore: Bool
-    var colorBleedXOffset: Float
-    var colorBleedYOffset: Float
-    var interlaceMode: InterlaceMode
-    var colorBleedOutForTV: Bool
-    var enableVHSEmulation: Bool
-    var vhsEdgeWave: Float
-    var vhsTapeSpeed: VHSSpeed
-    var vhsSharpening: Float16
-    var scanlinePhaseShift: ScanlinePhaseShift
-    var scanlinePhaseShiftOffset: Int
-    let subcarrierAmplitude: Float16 = 50
-    var vhsChromaVertBlend: Bool
-    var vhsSVideoOut: Bool
-    var outputNTSC: Bool
-    var enableHeadSwitching: Bool
-    let headSwitchingPhaseNoise: Float16 = 1.0 / 500 / 262.5
-    let headSwitchingPoint: Float16 = 1.0 - (4.5 + 0.01) / 262.5
-    let headSwitchingPhase: Float16 = (1.0 - 0.01) / 262.5
-    var headSwitchingSpeed: Float16
+    public var blackLineBorderEnabled: Bool
+    public var blackLineBorderPct: Float
+    public var colorBleedEnabled: Bool
+    public var colorBleedBefore: Bool
+    public var colorBleedXOffset: Float
+    public var colorBleedYOffset: Float
+    public var interlaceMode: InterlaceMode
+    public var colorBleedOutForTV: Bool
+    public var enableVHSEmulation: Bool
+    public var vhsEdgeWave: Float
+    public var vhsTapeSpeed: VHSSpeed
+    public var vhsSharpening: Float16
+    public var scanlinePhaseShift: ScanlinePhaseShift
+    public var scanlinePhaseShiftOffset: Int
+    public let subcarrierAmplitude: Float16 = 50
+    public var vhsChromaVertBlend: Bool
+    public var vhsSVideoOut: Bool
+    public var outputNTSC: Bool
+    public var enableHeadSwitching: Bool
+    public let headSwitchingPhaseNoise: Float16 = 1.0 / 500 / 262.5
+    public let headSwitchingPoint: Float16 = 1.0 - (4.5 + 0.01) / 262.5
+    public let headSwitchingPhase: Float16 = (1.0 - 0.01) / 262.5
+    public var headSwitchingSpeed: Float16
     
-    init(
+    public init(
         blackLineBorderEnabled: Bool = false,
         blackLineBorderPct: Float? = nil,
         colorBleedEnabled: Bool = true,
@@ -78,21 +78,21 @@ public class NTSCEffect {
     }
 }
 
-enum InterlaceMode: String, Identifiable, CaseIterable {
+public enum InterlaceMode: String, Identifiable, CaseIterable {
     case full
     case interlaced
     
-    var id: String {
+    public var id: String {
         rawValue
     }
 }
 
-enum VHSSpeed: String, Identifiable, CaseIterable {
+public enum VHSSpeed: String, Identifiable, CaseIterable {
     case sp
     case lp
     case ep
     
-    var id: String {
+    public var id: String {
         rawValue
     }
     

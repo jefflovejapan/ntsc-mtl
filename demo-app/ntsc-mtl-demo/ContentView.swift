@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UIKit
+import ntsc_mtl
 
 struct ContentView: View {
     @State private var intensity: CGFloat = 0

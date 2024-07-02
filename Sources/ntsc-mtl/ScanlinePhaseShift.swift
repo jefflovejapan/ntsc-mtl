@@ -7,13 +7,13 @@
 
 import Foundation
 
-enum ScanlinePhaseShift: Int, Identifiable, CaseIterable {
+public enum ScanlinePhaseShift: Int, Identifiable, CaseIterable {
     case degrees0 = 0
     case degrees90 = 1
     case degrees180 = 2
     case degrees270 = 3
     
-    var id: Int {
+    public var id: Int {
         rawValue
     }
 }

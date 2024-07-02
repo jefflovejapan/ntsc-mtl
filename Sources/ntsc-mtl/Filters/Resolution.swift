@@ -14,11 +14,11 @@ public enum Resolution: String, Identifiable, CaseIterable {
     case res720p
     case resVGA
     
-    var id: String {
+    public var id: String {
         rawValue
     }
     
-    var sessionPreset: AVCaptureSession.Preset {
+    public var sessionPreset: AVCaptureSession.Preset {
         switch self {
         case .resVGA:
             return .vga640x480

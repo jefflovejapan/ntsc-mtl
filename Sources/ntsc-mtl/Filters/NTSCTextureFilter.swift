@@ -32,9 +32,9 @@ public class NTSCTextureFilter {
     // MARK: -Filters
 
     
-    var inputImage: CIImage?
+    public var inputImage: CIImage?
     
-    init(effect: NTSCEffect, device: MTLDevice, ciContext: CIContext) throws {
+    public init(effect: NTSCEffect, device: MTLDevice, ciContext: CIContext) throws {
         self.effect = effect
         self.device = device
         self.context = ciContext
@@ -252,7 +252,7 @@ public class NTSCTextureFilter {
     
     private var frameNum: UInt32 = 0
     
-    var outputImage: CIImage? {
+    public var outputImage: CIImage? {
         let frameNum = self.frameNum
         defer { self.frameNum += 1 }
         guard let inputImage else { return nil }

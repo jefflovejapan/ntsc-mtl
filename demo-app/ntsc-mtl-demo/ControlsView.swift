@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ntsc_mtl
 
 struct ControlsView: View {
     @Binding var showControls: Bool
