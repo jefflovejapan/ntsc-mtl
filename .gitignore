@@ -1,3 +1,4 @@
 # Ignore Xcode user data
 *.xcuserdatad/
 *.xcuserdata/
+.build
