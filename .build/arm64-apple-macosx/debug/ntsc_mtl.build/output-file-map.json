@@ -1,0 +1,11 @@
+{
+  "": {
+    "swift-dependencies": "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/master.swiftdeps"
+  },
+  "/Users/jeff/Developer/recurse/ntsc-mtl/Sources/ntsc-mtl/ntsc_mtl.swift": {
+    "dependencies": "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/ntsc_mtl.d",
+    "object": "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/ntsc_mtl.swift.o",
+    "swiftmodule": "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/ntsc_mtl~partial.swiftmodule",
+    "swift-dependencies": "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/ntsc_mtl.swiftdeps"
+  }
+}

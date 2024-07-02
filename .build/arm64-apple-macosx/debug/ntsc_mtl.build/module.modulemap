@@ -1,0 +1,4 @@
+module ntsc_mtl {
+    header "/Users/jeff/Developer/recurse/ntsc-mtl/.build/arm64-apple-macosx/debug/ntsc_mtl.build/ntsc-mtl-Swift.h"
+    requires objc
+}

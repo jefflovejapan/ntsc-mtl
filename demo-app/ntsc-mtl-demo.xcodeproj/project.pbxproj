@@ -142,6 +142,7 @@
 		1F9729A72C278848000BFCA8 /* Lowpass.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Lowpass.metal; sourceTree = "<group>"; };
 		1F9729A92C278E11000BFCA8 /* CompositeLowpassFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompositeLowpassFilter.swift; sourceTree = "<group>"; };
 		1F9729AB2C27A4B0000BFCA8 /* ComposeAndDelay.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ComposeAndDelay.metal; sourceTree = "<group>"; };
+		1F9A06FC2C345B16008A2F02 /* ntsc-mtl */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "ntsc-mtl"; path = ..; sourceTree = "<group>"; };
 		1FA2C28B2C29AB7800D9B99B /* VHSLumaLowpassFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VHSLumaLowpassFilter.swift; sourceTree = "<group>"; };
 		1FA2C28D2C29AE8C00D9B99B /* VHSSumAndScale.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = VHSSumAndScale.metal; sourceTree = "<group>"; };
 		1FA2C28F2C29B79C00D9B99B /* VHSChromaLowpassFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VHSChromaLowpassFilter.swift; sourceTree = "<group>"; };
@@ -207,6 +208,7 @@
 		1F6BFDDE2BFF799F00883169 = {
 			isa = PBXGroup;
 			children = (
+				1F9A06FC2C345B16008A2F02 /* ntsc-mtl */,
 				1F6BFE282BFFBCF000883169 /* Scratchpad.md */,
 				1FF726522C07D78D0011669D /* InitialCondition.md */,
 				1F259EDA2C0227E400937D0A /* SettingsAndDefaults.md */,
