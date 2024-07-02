@@ -188,7 +188,8 @@ public class EmulateVHSFilter {
         encoder.setTexture(input, index: 0)
         encoder.setTexture(output, index: 1)
         let threadgroups = MTLSize(width: 1, height: 1, depth: 1)
-        let threadsPerThreadgroup = MTLSize(width: 1, height: input.height, depth: 1)
+        let threadgroupHeight = input.height <= 1024 ? input.height : 1024
+        let threadsPerThreadgroup = MTLSize(width: 1, height: threadgroupHeight, depth: 1)
         encoder.dispatchThreadgroups(threadgroups, threadsPerThreadgroup: threadsPerThreadgroup)
         encoder.endEncoding()
     }
