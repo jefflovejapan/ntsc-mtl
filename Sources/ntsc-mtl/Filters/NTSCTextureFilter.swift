@@ -42,9 +42,10 @@ public class NTSCTextureFilter {
             throw Error.cantMakeTexture
         }
         self.commandQueue = commandQueue
-        guard let library = device.makeDefaultLibrary() else {
+        guard let url = Bundle.module.url(forResource: "default", withExtension: "metallib") else {
             throw Error.cantMakeLibrary
         }
+        let library = try device.makeLibrary(URL: url)
         self.pipelineCache = try MetalPipelineCache(device: device, library: library)
         self.colorBleedFilter = ColorBleedFilter(device: device, pipelineCache: pipelineCache)
         self.compositeLowpassFilter = try CompositeLowpassFilter(device: device, pipelineCache: pipelineCache)
