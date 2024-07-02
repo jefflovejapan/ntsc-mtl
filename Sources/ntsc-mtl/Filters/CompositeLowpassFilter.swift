@@ -75,7 +75,7 @@ public class CompositeLowpassFilter {
             var iDelay = Self.iDelay
             encoder.setBytes(&iDelay, length: MemoryLayout<UInt>.size, index: 0)
             var qDelay = Self.qDelay
-            encoder.setBytes(&qDelay, length: MemoryLayout<UInt>.size, index: 0)
+            encoder.setBytes(&qDelay, length: MemoryLayout<UInt>.size, index: 1)
         })
     }
 }
