@@ -571,4 +571,33 @@ Today is all about getting snow to work. I think I've convinced myself that the 
 
 - Tracking noise would be the coolest but requires `row_speckles`
 - Would be great to get snow down so we have it. We're super close
-- 
+- Remaining "just blits":
+    - ringing
+        - seems relatively important
+        - deals with ffts
+    - chroma into luma
+        - we're supposed to do it independently of the vhs one
+        - looks like the same function so we can reuse?
+    - composite preemphasis
+        - depends on composite preemphasis cut
+        - default is > 0 though so should probably add
+    - video noise
+        - would be nice to have some noise
+        - it looks like it's uniform random noise
+        - OK, slightly more structured, but not Perlin noise
+    - vhs head switching
+        - seems like the top priority
+    - chroma from luma
+        - only need this if "no color subcarrier" is true (false by default)
+    - video chroma noise
+        - noise is nice
+    - video chroma phase noise
+        - noise is nice
+    - vhs chroma loss
+        - 0 by default
+    - composite lowpass
+        - want if `composite_in_chroma_lowpass` is true (true by default)
+    - color bleed out
+        - we either color bleed before or after, just need a toggle to locate it in the pipeline
+    - blur chroma
+        - nice to have
