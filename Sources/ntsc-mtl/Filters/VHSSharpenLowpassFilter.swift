@@ -52,6 +52,8 @@ public class VHSSharpenLowpassFilter {
             encoder.setTexture(input, index: 0)
             encoder.setTexture(lowpassed, index: 1)
             encoder.setTexture(output, index: 2)
+            var sharpening = sharpening
+            encoder.setBytes(&sharpening, length: MemoryLayout<Float16>.size, index: 0)
         })
     }
 }
