@@ -17,6 +17,7 @@ public class NTSCEffect {
     public var colorBleedBefore: Bool
     public var colorBleedXOffset: Float
     public var colorBleedYOffset: Float
+    public var compositePreemphasis: Float16
     public var interlaceMode: InterlaceMode
     public var colorBleedOutForTV: Bool
     public var enableVHSEmulation: Bool
@@ -42,6 +43,7 @@ public class NTSCEffect {
         colorBleedBefore: Bool = true,
         colorBleedXOffset: Float? = nil,
         colorBleedYOffset: Float? = nil,
+        compositePreemphasis: Float16? = nil,
         interlaceMode: InterlaceMode? = nil,
         colorBleedOutForTV: Bool = false,
         enableVHSEmulation: Bool = true,
@@ -63,6 +65,7 @@ public class NTSCEffect {
         self.colorBleedBefore = colorBleedBefore
         self.colorBleedXOffset = colorBleedXOffset ?? 0
         self.colorBleedYOffset = colorBleedYOffset ?? 0
+        self.compositePreemphasis = compositePreemphasis ?? 0
         self.colorBleedOutForTV = colorBleedOutForTV
         self.enableVHSEmulation = enableVHSEmulation
         self.vhsEdgeWave = vhsEdgeWave ?? 0

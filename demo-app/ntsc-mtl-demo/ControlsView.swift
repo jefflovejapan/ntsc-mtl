@@ -23,6 +23,7 @@ struct ControlsView: View {
                 resolutionView
                 interlaceView
                 blackLineBorderView
+                compositePreemphasisView
                 headSwitchingView
                 colorBleedView
                 vhsView
@@ -69,6 +70,13 @@ struct ControlsView: View {
                 }
             }
             
+        }
+    }
+    
+    private var compositePreemphasisView: some View {
+        VStack {
+            Text("Composite preemphasis: \(Int(effect.compositePreemphasis))")
+            Slider(value: $effect.compositePreemphasis, in: 0...8)
         }
     }
     

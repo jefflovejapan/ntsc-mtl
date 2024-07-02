@@ -585,8 +585,6 @@ Today is all about getting snow to work. I think I've convinced myself that the 
         - would be nice to have some noise
         - it looks like it's uniform random noise
         - OK, slightly more structured, but not Perlin noise
-    - vhs head switching
-        - seems like the top priority
     - chroma from luma
         - only need this if "no color subcarrier" is true (false by default)
     - video chroma noise

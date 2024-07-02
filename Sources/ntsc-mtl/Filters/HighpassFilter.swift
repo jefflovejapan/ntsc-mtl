@@ -14,6 +14,9 @@ public class HighpassFilter {
     private let device: MTLDevice
     private let pipelineCache: MetalPipelineCache
     private var tex: MTLTexture?
+    var frequencyCutoff: Float {
+        lowpassFilter.frequencyCutoff
+    }
     
     
     init(lowpassFilter: LowpassFilter, device: MTLDevice, pipelineCache: MetalPipelineCache

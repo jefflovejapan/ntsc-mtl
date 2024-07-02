@@ -30,7 +30,7 @@
 		1FA64F822C15066100E54D6F /* CIImage+TestImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA64F812C15066100E54D6F /* CIImage+TestImage.swift */; };
 		1FA64F832C15123700E54D6F /* MTLTexture+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FC887362C10A62400EE14A7 /* MTLTexture+Extensions.swift */; };
 		1FA64F852C1512F200E54D6F /* TextureForImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA64F842C1512F200E54D6F /* TextureForImage.swift */; };
-		1FBA3EA02C34659C00B92E77 /* ntsc-mtl in Frameworks */ = {isa = PBXBuildFile; productRef = 1FBA3E9F2C34659C00B92E77 /* ntsc-mtl */; };
+		1FBA3EAD2C34A3F800B92E77 /* ntsc-mtl in Frameworks */ = {isa = PBXBuildFile; productRef = 1FBA3EAC2C34A3F800B92E77 /* ntsc-mtl */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,7 +69,7 @@
 		1FA64F7F2C14F5B800E54D6F /* HeadSwitchingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadSwitchingTests.swift; sourceTree = "<group>"; };
 		1FA64F812C15066100E54D6F /* CIImage+TestImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CIImage+TestImage.swift"; sourceTree = "<group>"; };
 		1FA64F842C1512F200E54D6F /* TextureForImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureForImage.swift; sourceTree = "<group>"; };
-		1FBA3E9E2C34652700B92E77 /* ntsc-mtl */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "ntsc-mtl"; path = ..; sourceTree = "<group>"; };
+		1FBA3EAB2C34A3F100B92E77 /* ntsc-mtl */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "ntsc-mtl"; path = ..; sourceTree = "<group>"; };
 		1FC887362C10A62400EE14A7 /* MTLTexture+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MTLTexture+Extensions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -78,7 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1FBA3EA02C34659C00B92E77 /* ntsc-mtl in Frameworks */,
+				1FBA3EAD2C34A3F800B92E77 /* ntsc-mtl in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -95,7 +95,7 @@
 		1F6BFDDE2BFF799F00883169 = {
 			isa = PBXGroup;
 			children = (
-				1FBA3E9E2C34652700B92E77 /* ntsc-mtl */,
+				1FBA3EAB2C34A3F100B92E77 /* ntsc-mtl */,
 				1F6BFDE92BFF799F00883169 /* ntsc-mtl-demo */,
 				1F6BFDFA2BFF79A000883169 /* ntsc-mtl-demoTests */,
 				1F6BFDE82BFF799F00883169 /* Products */,
@@ -190,7 +190,7 @@
 			);
 			name = "ntsc-mtl-demo";
 			packageProductDependencies = (
-				1FBA3E9F2C34659C00B92E77 /* ntsc-mtl */,
+				1FBA3EAC2C34A3F800B92E77 /* ntsc-mtl */,
 			);
 			productName = "ntsc-mtl-demo";
 			productReference = 1F6BFDE72BFF799F00883169 /* ntsc-mtl-demo.app */;
@@ -691,7 +691,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		1FBA3E9F2C34659C00B92E77 /* ntsc-mtl */ = {
+		1FBA3EAC2C34A3F800B92E77 /* ntsc-mtl */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = "ntsc-mtl";
 		};
