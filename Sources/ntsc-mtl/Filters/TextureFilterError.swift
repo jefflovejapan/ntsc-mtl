@@ -8,12 +8,14 @@
 import Foundation
 
 public enum TextureFilterError: Swift.Error {
+    case cantMakeBuffer
     case cantMakeTexture
     case cantMakeCommandQueue
     case cantMakeCommandBuffer
     case cantMakeComputeEncoder
     case cantMakeLibrary
     case cantMakeRandomImage
+    case cantMakeNoise
     case cantMakeFilter(String)
     case cantMakeFunction(String)
     case cantMakeBlitEncoder

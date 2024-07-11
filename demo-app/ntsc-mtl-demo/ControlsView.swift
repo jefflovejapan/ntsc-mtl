@@ -24,6 +24,7 @@ struct ControlsView: View {
                 interlaceView
                 blackLineBorderView
                 compositePreemphasisView
+                compositeNoiseView
                 headSwitchingView
                 colorBleedView
                 vhsView
@@ -77,6 +78,15 @@ struct ControlsView: View {
         VStack {
             Text("Composite preemphasis: \(Int(effect.compositePreemphasis))")
             Slider(value: $effect.compositePreemphasis, in: 0...8)
+        }
+    }
+    
+    private var compositeNoiseView: some View {
+        VStack {
+            Text("Composite noise zoom: \(effect.compositeNoiseZoom.formatted(self.twoDecimalPlaces))")
+            Slider(value: $effect.compositeNoiseZoom, in: 0...10)
+            Text("Composite noise contrast: \(effect.compositeNoiseContrast.formatted(self.twoDecimalPlaces))")
+            Slider(value: $effect.compositeNoiseContrast, in: 0...0.5)
         }
     }
     

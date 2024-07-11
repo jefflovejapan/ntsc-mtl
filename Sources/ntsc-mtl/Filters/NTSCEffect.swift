@@ -18,6 +18,8 @@ public class NTSCEffect {
     public var colorBleedXOffset: Float
     public var colorBleedYOffset: Float
     public var compositePreemphasis: Float16
+    public var compositeNoiseZoom: Float
+    public var compositeNoiseContrast: Float
     public var interlaceMode: InterlaceMode
     public var colorBleedOutForTV: Bool
     public var enableVHSEmulation: Bool
@@ -44,6 +46,8 @@ public class NTSCEffect {
         colorBleedXOffset: Float? = nil,
         colorBleedYOffset: Float? = nil,
         compositePreemphasis: Float16? = nil,
+        compositeNoiseZoom: Float? = nil,
+        compositeNoiseContrast: Float? = nil,
         interlaceMode: InterlaceMode? = nil,
         colorBleedOutForTV: Bool = false,
         enableVHSEmulation: Bool = true,
@@ -66,6 +70,8 @@ public class NTSCEffect {
         self.colorBleedXOffset = colorBleedXOffset ?? 0
         self.colorBleedYOffset = colorBleedYOffset ?? 0
         self.compositePreemphasis = compositePreemphasis ?? 0
+        self.compositeNoiseZoom = compositeNoiseZoom ?? 1
+        self.compositeNoiseContrast = compositeNoiseContrast ?? 0.1
         self.colorBleedOutForTV = colorBleedOutForTV
         self.enableVHSEmulation = enableVHSEmulation
         self.vhsEdgeWave = vhsEdgeWave ?? 0
