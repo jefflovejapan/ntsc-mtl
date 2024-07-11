@@ -16,6 +16,7 @@ enum KernelFunction: String, CaseIterable {
     case highpass
     case composeAndDelay
     case mix
+    case noise
     case vhsEdgeWave
     case vhsSumAndScale
     case vhsComposeAndDelay

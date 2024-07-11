@@ -28,6 +28,7 @@ public class NTSCTextureFilter {
     private let compositeLowpassFilter: CompositeLowpassFilter
     private var emulateVHSFilter: EmulateVHSFilter
     private let headSwitchingFilter: HeadSwitchingFilter
+    private let noiseFilter: NoiseFilter
     private let compositePreemphasisFilter: CompositePreemphasisFilter
     
     // MARK: -Filters
@@ -64,6 +65,7 @@ public class NTSCTextureFilter {
             ciContext: ciContext
         )
         self.headSwitchingFilter = HeadSwitchingFilter(device: device, pipelineCache: pipelineCache, ciContext: ciContext)
+        self.noiseFilter = NoiseFilter(device: device, pipelineCache: pipelineCache, ciContext: ciContext)
         self.compositePreemphasisFilter = CompositePreemphasisFilter(frequencyCutoff: 1_000_000, device: device, pipelineCache: pipelineCache)
     }
     
@@ -124,7 +126,17 @@ public class NTSCTextureFilter {
         try filter.run(input: input, output: output, commandBuffer: commandBuffer)
     }
     
-    static func videoNoise(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+    static func videoNoise(input: MTLTexture, output: MTLTexture, filter: NoiseFilter, zoom: Float, contrast: Float, frameNumber: UInt32, commandBuffer: MTLCommandBuffer) throws {
+        filter.zoom = zoom
+        filter.contrast = contrast
+        try filter.run(
+            input: input,
+            output: output,
+            commandBuffer: commandBuffer
+        )
+    }
+    
+    static func snow(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
         try justBlit(from: input, to: output, commandBuffer: commandBuffer)
     }
     
@@ -338,6 +350,16 @@ public class NTSCTextureFilter {
             )
             
             try Self.videoNoise(
+                input: try iter.last,
+                output: try iter.next(),
+                filter: noiseFilter,
+                zoom: effect.compositeNoiseZoom,
+                contrast: effect.compositeNoiseContrast,
+                frameNumber: frameNum,
+                commandBuffer: commandBuffer
+            )
+            
+            try Self.snow(
                 input: try iter.last,
                 output: try iter.next(),
                 commandBuffer: commandBuffer,

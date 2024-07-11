@@ -14,13 +14,19 @@ let package = Package(
       name: "ntsc-mtl",
       targets: ["ntsc-mtl"])
   ],
+  dependencies: [
+    .package(url: "https://github.com/JoshuaSullivan/SimplexNoiseFilter.git", from: "1.0.0"),
+  ],
   targets: [
     // Targets are the basic building blocks of a package, defining a module or a test suite.
     // Targets can depend on other targets in this package and products from dependencies.
     .target(
       name: "ntsc-mtl",
+      dependencies: [
+        .product(name: "SimplexNoiseFilter", package: "SimplexNoiseFilter")
+      ],
       resources: [
-        .process("Shaders")
+        .process("Shaders"),
       ]),
     .testTarget(
       name: "ntsc-mtlTests",
