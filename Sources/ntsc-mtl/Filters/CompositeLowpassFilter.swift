@@ -31,9 +31,9 @@ public class CompositeLowpassFilter {
         self.pipelineCache = pipelineCache
     }
     
-    func run(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+    func run(input: MTLTexture, texA: MTLTexture, texB: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         do {
-            try privateRun(input: input, output: output, commandBuffer: commandBuffer)
+            try privateRun(input: input, iTex: texA, qTex: texB, output: output, commandBuffer: commandBuffer)
         } catch {
             print("Error in private run: \(error)")
             try justBlit(from: input, to: output, commandBuffer: commandBuffer)
@@ -42,25 +42,11 @@ public class CompositeLowpassFilter {
     
     private func privateRun(
         input: MTLTexture,
+        iTex: MTLTexture,
+        qTex: MTLTexture,
         output: MTLTexture,
         commandBuffer: MTLCommandBuffer
     ) throws {
-        let needsUpdate: Bool
-        if let iTex {
-            needsUpdate = !(iTex.width == input.width && iTex.height == input.height)
-        } else {
-            needsUpdate = true
-        }
-        if needsUpdate {
-            let textures = Array(Texture.textures(from: input, device: device).prefix(2))
-            self.iTex = textures[0]
-            self.qTex = textures[1]
-        }
-        
-        guard let iTex, let qTex else {
-            throw Error.cantMakeTexture
-        }
-        
         iLowpassFilter.run(input: input, output: iTex, commandBuffer: commandBuffer)
         qLowpassFilter.run(input: input, output: qTex, commandBuffer: commandBuffer)
         try composeAndDelay(y: input, i: iTex, q: qTex, output: output, commandBuffer: commandBuffer)

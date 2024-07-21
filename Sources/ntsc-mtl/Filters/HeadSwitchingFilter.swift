@@ -21,7 +21,6 @@ public class HeadSwitchingFilter {
     private let device: MTLDevice
     private let pipelineCache: MetalPipelineCache
     private let ciContext: CIContext
-    private var tex: MTLTexture?
     
     init(device: MTLDevice, pipelineCache: MetalPipelineCache, ciContext: CIContext) {
         self.device = device
@@ -29,9 +28,9 @@ public class HeadSwitchingFilter {
         self.ciContext = ciContext
     }
     
-    func run(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+    func run(input: MTLTexture, tex: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         do {
-            try privateRun(input: input, output: output, commandBuffer: commandBuffer)
+            try privateRun(input: input, tex: tex, output: output, commandBuffer: commandBuffer)
         } catch {
             print("Error in head switching: \(error)")
             try justBlit(from: input, to: output, commandBuffer: commandBuffer)
@@ -47,20 +46,7 @@ public class HeadSwitchingFilter {
         return Float16(noise)
     }
     
-    private func privateRun(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        let needsUpdate: Bool
-        if let tex {
-            needsUpdate = !(tex.width == input.width && tex.height == input.height)
-        } else {
-            needsUpdate = true
-        }
-        if needsUpdate {
-            tex = Texture.texture(from: input, device: device)
-        }
-        guard let tex else {
-            throw Error.cantMakeTexture
-        }
-        
+    private func privateRun(input: MTLTexture, tex: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         let randomX: UInt = rng.next(upperBound: 200)
         let randomY: UInt = rng.next(upperBound: 200)
             
