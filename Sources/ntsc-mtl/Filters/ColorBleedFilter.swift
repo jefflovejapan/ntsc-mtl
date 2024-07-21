@@ -11,14 +11,12 @@ import Metal
 public class ColorBleedFilter {
     typealias Error = TextureFilterError
     
-    let device: MTLDevice
     let pipelineCache: MetalPipelineCache
     
     var xOffset: Int = Int(NTSCEffect.default.colorBleedXOffset)
     var yOffset: Int = Int(NTSCEffect.default.colorBleedYOffset)
     
-    init(device: MTLDevice, pipelineCache: MetalPipelineCache) {
-        self.device = device
+    init(pipelineCache: MetalPipelineCache) {
         self.pipelineCache = pipelineCache
     }
     

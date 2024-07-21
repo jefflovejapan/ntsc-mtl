@@ -23,7 +23,6 @@ public class EmulateVHSFilter {
     var outputNTSC: Bool
     private let randomGenerator = CIFilter.randomGenerator()
     private var rng = SystemRandomNumberGenerator()
-    private let device: MTLDevice
     private let pipelineCache: MetalPipelineCache
     private let ciContext: CIContext
     private let lowpassFilter: LowpassFilter
@@ -41,10 +40,9 @@ public class EmulateVHSFilter {
         self.chromaVertBlend = chromaVertBlend
         self.sVideoOut = sVideoOut
         self.outputNTSC = outputNTSC
-        self.device = device
         self.pipelineCache = pipelineCache
         self.ciContext = ciContext
-        self.mixFilter = MixFilter(device: device, pipelineCache: pipelineCache)
+        self.mixFilter = MixFilter(pipelineCache: pipelineCache)
         self.lowpassFilter = LowpassFilter(frequencyCutoff: tapeSpeed.lumaCut, countInSeries: 3, device: device)
         self.lumaLowpassFilter = VHSLumaLowpassFilter(frequencyCutoff: tapeSpeed.lumaCut, device: device, pipelineCache: pipelineCache)
         self.chromaLowpassFilter = VHSChromaLowpassFilter(frequencyCutoff: tapeSpeed.chromaCut, chromaDelay: tapeSpeed.chromaDelay, device: device, pipelineCache: pipelineCache)

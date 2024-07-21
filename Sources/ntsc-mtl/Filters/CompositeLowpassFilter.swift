@@ -11,7 +11,6 @@ import MetalPerformanceShaders
 
 public class CompositeLowpassFilter {
     typealias Error = TextureFilterError
-    private let device: MTLDevice
     private let pipelineCache: MetalPipelineCache
     private let iLowpassFilter: LowpassFilter
     private let qLowpassFilter: LowpassFilter
@@ -27,7 +26,6 @@ public class CompositeLowpassFilter {
     init(device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
         self.iLowpassFilter = LowpassFilter(frequencyCutoff: Self.iFrequencyCutoff, countInSeries: 3, device: device)
         self.qLowpassFilter = LowpassFilter(frequencyCutoff: Self.qFrequencyCutoff, countInSeries: 3, device: device)
-        self.device = device
         self.pipelineCache = pipelineCache
     }
     

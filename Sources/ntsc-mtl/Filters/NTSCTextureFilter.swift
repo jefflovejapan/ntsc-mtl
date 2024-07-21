@@ -52,7 +52,7 @@ public class NTSCTextureFilter {
         }
         let library = try device.makeLibrary(URL: url)
         self.pipelineCache = try MetalPipelineCache(device: device, library: library)
-        self.colorBleedFilter = ColorBleedFilter(device: device, pipelineCache: pipelineCache)
+        self.colorBleedFilter = ColorBleedFilter(pipelineCache: pipelineCache)
         self.compositeLowpassFilter = try CompositeLowpassFilter(device: device, pipelineCache: pipelineCache)
         self.emulateVHSFilter = EmulateVHSFilter(
             tapeSpeed: effect.vhsTapeSpeed,

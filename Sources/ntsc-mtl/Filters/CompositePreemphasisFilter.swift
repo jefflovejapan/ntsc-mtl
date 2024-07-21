@@ -10,13 +10,11 @@ import Metal
 
 public class CompositePreemphasisFilter {
     typealias Error = TextureFilterError
-    private let device: MTLDevice
     private let pipelineCache: MetalPipelineCache
     private var highpassFilter: HighpassFilter
     var preemphasis: Float16 = NTSCEffect.default.compositePreemphasis
     
     init(frequencyCutoff: Float, device: MTLDevice, pipelineCache: MetalPipelineCache) {
-        self.device = device
         self.pipelineCache = pipelineCache
         let lowpass = LowpassFilter(frequencyCutoff: frequencyCutoff, device: device)
         self.highpassFilter = HighpassFilter(lowpassFilter: lowpass, device: device, pipelineCache: pipelineCache)

@@ -13,11 +13,9 @@ class MixFilter {
     var min: Float16 = 0
     var max: Float16 = 1
     
-    private let device: MTLDevice
     private let pipelineCache: MetalPipelineCache
     
-    init(device: MTLDevice, pipelineCache: MetalPipelineCache) {
-        self.device = device
+    init(pipelineCache: MetalPipelineCache) {
         self.pipelineCache = pipelineCache
     }
     

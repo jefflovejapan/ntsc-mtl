@@ -14,13 +14,11 @@ public class VHSChromaLowpassFilter {
     let frequencyCutoff: Float
     let chromaDelay: UInt
     private let tripleLowpass: LowpassFilter
-    private let device: MTLDevice
     private let pipelineCache: MetalPipelineCache
     
     init(frequencyCutoff: Float, chromaDelay: UInt, device: MTLDevice, pipelineCache: MetalPipelineCache) {
         self.frequencyCutoff = frequencyCutoff
         self.chromaDelay = chromaDelay
-        self.device = device
         self.pipelineCache = pipelineCache
         self.tripleLowpass = LowpassFilter(frequencyCutoff: frequencyCutoff, countInSeries: 3, device: device)
     }
