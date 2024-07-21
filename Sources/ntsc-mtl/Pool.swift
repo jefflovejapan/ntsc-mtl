@@ -8,9 +8,6 @@
 import Foundation
 
 class Pool<A> {
-    enum Error: Swift.Error {
-        case noValidElement
-    }
     typealias Element = A
     let vals: Array<Element>
     var currentIndex = 0
@@ -19,26 +16,18 @@ class Pool<A> {
         self.vals = vals
     }
     
-    func next() throws -> Element {
+    func next() -> Element {
         defer { currentIndex = (currentIndex + 1) % vals.count }
-        if vals.indices.contains(currentIndex) {
-            return vals[currentIndex]
-        }
-        throw Error.noValidElement
+        return vals[currentIndex]
     }
     
     var last: Element {
-        get throws {
-            let prevIndex = currentIndex - 1
-            if vals.indices.contains(prevIndex) {
-                return vals[prevIndex]
-            } else {
-                let lastIndex = vals.endIndex - 1
-                if vals.indices.contains(lastIndex) {
-                    return vals[lastIndex]
-                }
-                throw Error.noValidElement
-            }
+        let prevIndex = currentIndex - 1
+        if vals.indices.contains(prevIndex) {
+            return vals[prevIndex]
+        } else {
+            let lastIndex = vals.endIndex - 1
+            return vals[lastIndex]
         }
     }
 }
