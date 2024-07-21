@@ -1,5 +1,5 @@
 //
-//  IteratorThing.swift
+//  Pool.swift
 //  ntsc-mtl-demo
 //
 //  Created by Jeffrey Blagdon on 2024-06-07.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-class IteratorThing<A> {
+class Pool<A> {
     enum Error: Swift.Error {
         case noValidElement
     }

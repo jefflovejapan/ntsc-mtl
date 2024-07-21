@@ -84,25 +84,25 @@ public class EmulateVHSFilter {
             throw Error.cantMakeTexture
         }
         
-        let iter = IteratorThing(vals: [texA, texB, texC])
+        let pool = Pool(vals: [texA, texB, texC])
         
-        try writeRandom(to: try iter.next(), commandBuffer: commandBuffer)
-        try mixRandom(from: try iter.last, to: try iter.next(), commandBuffer: commandBuffer)
-        lowpassFilter.run(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
-        try edgeWave(input: input, random: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
-        try lumaLowpass(input: try iter.last, output: try iter.next(), filter: lumaLowpassFilter, commandBuffer: commandBuffer)
-        try chromaLowpass(input: try iter.last, output: try iter.next(), filter: chromaLowpassFilter, commandBuffer: commandBuffer)
+        try writeRandom(to: try pool.next(), commandBuffer: commandBuffer)
+        try mixRandom(from: try pool.last, to: try pool.next(), commandBuffer: commandBuffer)
+        lowpassFilter.run(input: try pool.last, output: try pool.next(), commandBuffer: commandBuffer)
+        try edgeWave(input: input, random: try pool.last, output: try pool.next(), commandBuffer: commandBuffer)
+        try lumaLowpass(input: try pool.last, output: try pool.next(), filter: lumaLowpassFilter, commandBuffer: commandBuffer)
+        try chromaLowpass(input: try pool.last, output: try pool.next(), filter: chromaLowpassFilter, commandBuffer: commandBuffer)
         if chromaVertBlend {
-            try chromaVertBlend(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
+            try chromaVertBlend(input: try pool.last, output: try pool.next(), commandBuffer: commandBuffer)
         }
-        try sharpen(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
+        try sharpen(input: try pool.last, output: try pool.next(), commandBuffer: commandBuffer)
         
         if !sVideoOut {
-            try chromaIntoLuma(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
-            try accumulateLuma(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
-            try chromaFromLuma(input: try iter.last, output: try iter.next(), commandBuffer: commandBuffer)
+            try chromaIntoLuma(input: try pool.last, output: try pool.next(), commandBuffer: commandBuffer)
+            try accumulateLuma(input: try pool.last, output: try pool.next(), commandBuffer: commandBuffer)
+            try chromaFromLuma(input: try pool.last, output: try pool.next(), commandBuffer: commandBuffer)
         }
-        try justBlit(from: try iter.last, to: output, commandBuffer: commandBuffer)
+        try justBlit(from: try pool.last, to: output, commandBuffer: commandBuffer)
     }
     
     private func writeRandom(to texture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
