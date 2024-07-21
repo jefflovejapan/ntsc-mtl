@@ -80,23 +80,23 @@ public class EmulateVHSFilter {
         commandBuffer: MTLCommandBuffer
     ) throws {
         let pool = Pool(vals: [texA, texB, texC, texD, texE])
-        try writeRandom(to: try pool.next(), commandBuffer: commandBuffer)
-        try mixRandom(from: try pool.last, to: try pool.next(), commandBuffer: commandBuffer)
-        lowpassFilter.run(input: try pool.last, output: try pool.next(), commandBuffer: commandBuffer)
-        try edgeWave(input: input, random: try pool.last, output: try pool.next(), commandBuffer: commandBuffer)
-        try lumaLowpass(input: try pool.last, texA: try pool.next(), texB: try pool.next(), texC: try pool.next(), output: try pool.next(), filter: lumaLowpassFilter, commandBuffer: commandBuffer)
-        try chromaLowpass(input: try pool.last, texA: try pool.next(), output: try pool.next(), filter: chromaLowpassFilter, commandBuffer: commandBuffer)
+        try writeRandom(to: pool.next(), commandBuffer: commandBuffer)
+        try mixRandom(from: pool.last, to: pool.next(), commandBuffer: commandBuffer)
+        lowpassFilter.run(input: pool.last, output: pool.next(), commandBuffer: commandBuffer)
+        try edgeWave(input: input, random: pool.last, output: pool.next(), commandBuffer: commandBuffer)
+        try lumaLowpass(input: pool.last, texA: pool.next(), texB: pool.next(), texC: pool.next(), output: pool.next(), filter: lumaLowpassFilter, commandBuffer: commandBuffer)
+        try chromaLowpass(input: pool.last, texA: pool.next(), output: pool.next(), filter: chromaLowpassFilter, commandBuffer: commandBuffer)
         if chromaVertBlend {
-            try chromaVertBlend(input: try pool.last, output: try pool.next(), commandBuffer: commandBuffer)
+            try chromaVertBlend(input: pool.last, output: pool.next(), commandBuffer: commandBuffer)
         }
-        try sharpen(input: try pool.last, tex: try pool.next(), output: try pool.next(), commandBuffer: commandBuffer)
+        try sharpen(input: pool.last, tex: pool.next(), output: pool.next(), commandBuffer: commandBuffer)
         
         if !sVideoOut {
-            try chromaIntoLuma(input: try pool.last, output: try pool.next(), commandBuffer: commandBuffer)
-            try accumulateLuma(input: try pool.last, output: try pool.next(), commandBuffer: commandBuffer)
-            try chromaFromLuma(input: try pool.last, output: try pool.next(), commandBuffer: commandBuffer)
+            try chromaIntoLuma(input: pool.last, output: pool.next(), commandBuffer: commandBuffer)
+            try accumulateLuma(input: pool.last, output: pool.next(), commandBuffer: commandBuffer)
+            try chromaFromLuma(input: pool.last, output: pool.next(), commandBuffer: commandBuffer)
         }
-        try justBlit(from: try pool.last, to: output, commandBuffer: commandBuffer)
+        try justBlit(from: pool.last, to: output, commandBuffer: commandBuffer)
     }
     
     private func writeRandom(to texture: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
