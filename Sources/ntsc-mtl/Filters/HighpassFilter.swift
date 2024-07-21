@@ -13,7 +13,6 @@ public class HighpassFilter {
     private let lowpassFilter: LowpassFilter
     private let device: MTLDevice
     private let pipelineCache: MetalPipelineCache
-    private var tex: MTLTexture?
     var frequencyCutoff: Float {
         lowpassFilter.frequencyCutoff
     }
@@ -26,20 +25,7 @@ public class HighpassFilter {
         self.pipelineCache = pipelineCache
     }
     
-    func run(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        let needsUpdate: Bool
-        if let tex {
-            needsUpdate = !(tex.width == input.width && tex.height == input.height)
-        } else {
-            needsUpdate = true
-        }
-        if needsUpdate {
-            tex = Texture.texture(from: input, device: device)
-        }
-        guard let tex else {
-            throw Error.cantMakeTexture
-        }
-        
+    func run(input: MTLTexture, tex: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
         lowpassFilter.run(input: input, output: tex, commandBuffer: commandBuffer)        
         try encodeKernelFunction(.highpass, pipelineCache: pipelineCache, textureWidth: input.width, textureHeight: input.height, commandBuffer: commandBuffer, encode: { encoder in
             encoder.setTexture(input, index: 0)

@@ -20,9 +20,12 @@ public class NTSCTextureFilter {
     private var textureA: MTLTexture?
     private var textureB: MTLTexture?
     private var textureC: MTLTexture?
+    private var textureD: MTLTexture?
+    private var textureE: MTLTexture?
+    private var textureF: MTLTexture?
+    private var textureG: MTLTexture?
     private var outTexture1: MTLTexture?
     private var outTexture2: MTLTexture?
-    private var outTexture3: MTLTexture?
     
     private let colorBleedFilter: ColorBleedFilter
     private let compositeLowpassFilter: CompositeLowpassFilter
@@ -109,8 +112,8 @@ public class NTSCTextureFilter {
         try filter.run(input: input, output: output, commandBuffer: commandBuffer)
     }
     
-    static func compositeLowpass(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, filter: CompositeLowpassFilter, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
-        try filter.run(input: input, output: output, commandBuffer: commandBuffer)
+    static func compositeLowpass(input: MTLTexture, texA: MTLTexture, texB: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, filter: CompositeLowpassFilter, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+        try filter.run(input: input, texA: texA, texB: texB, output: output, commandBuffer: commandBuffer)
     }
     
     static func ringing(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
@@ -121,16 +124,17 @@ public class NTSCTextureFilter {
         try justBlit(from: input, to: output, commandBuffer: commandBuffer)
     }
     
-    static func compositePreemphasis(input: MTLTexture, output: MTLTexture, filter: CompositePreemphasisFilter, preemphasis: Float16, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
+    static func compositePreemphasis(input: MTLTexture, texA: MTLTexture, texB: MTLTexture, output: MTLTexture, filter: CompositePreemphasisFilter, preemphasis: Float16, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
         filter.preemphasis = preemphasis
-        try filter.run(input: input, output: output, commandBuffer: commandBuffer)
+        try filter.run(input: input, texA: texA, texB: texB, output: output, commandBuffer: commandBuffer)
     }
     
-    static func videoNoise(input: MTLTexture, output: MTLTexture, filter: NoiseFilter, zoom: Float, contrast: Float, frameNumber: UInt32, commandBuffer: MTLCommandBuffer) throws {
+    static func videoNoise(input: MTLTexture, tex: MTLTexture, output: MTLTexture, filter: NoiseFilter, zoom: Float, contrast: Float, frameNumber: UInt32, commandBuffer: MTLCommandBuffer) throws {
         filter.zoom = zoom
         filter.contrast = contrast
         try filter.run(
             input: input,
+            tex: tex,
             output: output,
             commandBuffer: commandBuffer
         )
@@ -142,6 +146,7 @@ public class NTSCTextureFilter {
     
     static func vhsHeadSwitching(
         input: MTLTexture,
+        tex: MTLTexture,
         output: MTLTexture,
         filter: HeadSwitchingFilter,
         enableHeadSwitching: Bool,
@@ -157,7 +162,7 @@ public class NTSCTextureFilter {
         }
         filter.headSwitchingSpeed = headSwitchingSpeed
         filter.frameNum = frameNum
-        try filter.run(input: input, output: output, commandBuffer: commandBuffer)
+        try filter.run(input: input, tex: tex, output: output, commandBuffer: commandBuffer)
     }
     
     static func chromaFromLuma(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
@@ -172,13 +177,28 @@ public class NTSCTextureFilter {
         try justBlit(from: input, to: output, commandBuffer: commandBuffer)
     }
     
-    static func emulateVHS(input: MTLTexture, output: MTLTexture, filter: EmulateVHSFilter, edgeWave: UInt, phaseShift: ScanlinePhaseShift, phaseShiftOffset: Int, sVideoOut: Bool, outputNTSC: Bool, commandBuffer: MTLCommandBuffer) throws {
+    static func emulateVHS(
+        input: MTLTexture,
+        texA: MTLTexture,
+        texB: MTLTexture,
+        texC: MTLTexture,
+        texD: MTLTexture,
+        texE: MTLTexture,
+        output: MTLTexture,
+        filter: EmulateVHSFilter,
+        edgeWave: UInt,
+        phaseShift: ScanlinePhaseShift,
+        phaseShiftOffset: Int,
+        sVideoOut: Bool,
+        outputNTSC: Bool,
+        commandBuffer: MTLCommandBuffer
+    ) throws {
         filter.edgeWave = edgeWave
         filter.phaseShift = phaseShift
         filter.phaseShiftOffset = phaseShiftOffset
         filter.sVideoOut = sVideoOut
         filter.outputNTSC = outputNTSC
-        try filter.run(input: input, output: output, commandBuffer: commandBuffer)
+        try filter.run(input: input, texA: texA, texB: texB, texC: texC, texD: texD, texE: texE, output: output, commandBuffer: commandBuffer)
     }
     
     static func vhsChromaLoss(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer, device: MTLDevice, pipelineCache: MetalPipelineCache) throws {
@@ -253,16 +273,19 @@ public class NTSCTextureFilter {
             self.context.render(inputImage, to: textureA, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: self.context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
             return
         }
-        let textures = Array(Texture.textures(width: Int(inputImage.extent.width), height: Int(inputImage.extent.height), pixelFormat: .rgba16Float, device: device).prefix(6))
-        guard textures.count == 6 else {
+        let textures = Array(Texture.textures(width: Int(inputImage.extent.width), height: Int(inputImage.extent.height), pixelFormat: .rgba16Float, device: device).prefix(9))
+        guard textures.count == 9 else {
             throw Error.cantMakeTexture
         }
         self.textureA = textures[0]
         self.textureB = textures[1]
         self.textureC = textures[2]
-        self.outTexture1 = textures[3]
-        self.outTexture2 = textures[4]
-        self.outTexture3 = textures[5]
+        self.textureD = textures[3]
+        self.textureE = textures[4]
+        self.textureF = textures[5]
+        self.textureG = textures[6]
+        self.outTexture1 = textures[7]
+        self.outTexture2 = textures[8]
         context.render(inputImage, to: textureA!, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
     }
     
@@ -283,13 +306,13 @@ public class NTSCTextureFilter {
             print("Couldn't make command buffer")
             return nil
         }
-        let textures: [MTLTexture] = [textureA!, textureB!, textureC!]
-        let iter = IteratorThing(vals: textures)
+        let textures: [MTLTexture] = [textureA!, textureB!, textureC!, textureD!, textureE!, textureF!, textureG!]
+        let pool = Pool(vals: textures)
         
         do {
             try Self.cutBlackLineBorder(
-                input: try iter.next(),
-                output: try iter.next(),
+                input: try pool.next(),
+                output: try pool.next(),
                 blackLineEnabled: effect.blackLineBorderEnabled,
                 blackLineBorderPct: effect.blackLineBorderPct,
                 commandBuffer: commandBuffer,
@@ -298,15 +321,15 @@ public class NTSCTextureFilter {
             )
              // Step 0: convert to YIQ
             try Self.convertToYIQ(
-                try iter.last,
-                output: try iter.next(),
+                try pool.last,
+                output: try pool.next(),
                 commandBuffer: commandBuffer,
                 device: device,
                 pipelineCache: pipelineCache
             )
             try Self.colorBleedIn(
-                input: try iter.last,
-                output: try iter.next(),
+                input: try pool.last,
+                output: try pool.next(),
                 colorBleedEnabled: effect.colorBleedEnabled,
                 colorBleedX: effect.colorBleedXOffset,
                 colorBleedY: effect.colorBleedYOffset,
@@ -315,8 +338,10 @@ public class NTSCTextureFilter {
             )
             
             try Self.compositeLowpass(
-                input: try iter.last,
-                output: try iter.next(),
+                input: try pool.last,
+                texA: try pool.next(),
+                texB: try pool.next(),
+                output: try pool.next(),
                 commandBuffer: commandBuffer, 
                 filter: compositeLowpassFilter,
                 device: device,
@@ -324,24 +349,26 @@ public class NTSCTextureFilter {
             )
             
             try Self.ringing(
-                input: try iter.last,
-                output: try iter.next(),
+                input: try pool.last,
+                output: try pool.next(),
                 commandBuffer: commandBuffer,
                 device: device,
                 pipelineCache: pipelineCache
             )
             
             try Self.chromaIntoLuma(
-                input: try iter.last,
-                output: try iter.next(),
+                input: try pool.last,
+                output: try pool.next(),
                 commandBuffer: commandBuffer,
                 device: device,
                 pipelineCache: pipelineCache
             )
             
             try Self.compositePreemphasis(
-                input: try iter.last,
-                output: try iter.next(),
+                input: try pool.last,
+                texA: try pool.next(),
+                texB: try pool.next(),
+                output: try pool.next(),
                 filter: compositePreemphasisFilter,
                 preemphasis: effect.compositePreemphasis,
                 commandBuffer: commandBuffer,
@@ -350,8 +377,9 @@ public class NTSCTextureFilter {
             )
             
             try Self.videoNoise(
-                input: try iter.last,
-                output: try iter.next(),
+                input: try pool.last,
+                tex: try pool.next(),
+                output: try pool.next(),
                 filter: noiseFilter,
                 zoom: effect.compositeNoiseZoom,
                 contrast: effect.compositeNoiseContrast,
@@ -360,16 +388,17 @@ public class NTSCTextureFilter {
             )
             
             try Self.snow(
-                input: try iter.last,
-                output: try iter.next(),
+                input: try pool.last,
+                output: try pool.next(),
                 commandBuffer: commandBuffer,
                 device: device,
                 pipelineCache: pipelineCache
             )
             
             try Self.vhsHeadSwitching(
-                input: try iter.last,
-                output: try iter.next(),
+                input: try pool.last,
+                tex: try pool.next(),
+                output: try pool.next(),
                 filter: headSwitchingFilter, 
                 enableHeadSwitching: effect.enableHeadSwitching, 
                 frameNum: frameNum,
@@ -380,24 +409,24 @@ public class NTSCTextureFilter {
             )
             
             try Self.chromaFromLuma(
-                input: try iter.last,
-                output: try iter.next(),
+                input: try pool.last,
+                output: try pool.next(),
                 commandBuffer: commandBuffer,
                 device: device,
                 pipelineCache: pipelineCache
             )
             
             try Self.videoChromaNoise(
-                input: try iter.last,
-                output: try iter.next(),
+                input: try pool.last,
+                output: try pool.next(),
                 commandBuffer: commandBuffer,
                 device: device,
                 pipelineCache: pipelineCache
             )
             
             try Self.videoChromaPhaseNoise(
-                input: try iter.last,
-                output: try iter.next(),
+                input: try pool.last,
+                output: try pool.next(),
                 commandBuffer: commandBuffer,
                 device: device,
                 pipelineCache: pipelineCache
@@ -420,8 +449,13 @@ public class NTSCTextureFilter {
             
             if effect.enableVHSEmulation {
                 try Self.emulateVHS(
-                    input: try iter.last,
-                    output: try iter.next(),
+                    input: try pool.last,
+                    texA: try pool.next(),
+                    texB: try pool.next(),
+                    texC: try pool.next(),
+                    texD: try pool.next(),
+                    texE: try pool.next(),
+                    output: try pool.next(),
                     filter: emulateVHSFilter,
                     edgeWave: UInt(effect.vhsEdgeWave),
                     phaseShift: effect.scanlinePhaseShift,
@@ -433,16 +467,18 @@ public class NTSCTextureFilter {
             }
             
             try Self.vhsChromaLoss(
-                input: try iter.last,
-                output: try iter.next(),
+                input: try pool.last,
+                output: try pool.next(),
                 commandBuffer: commandBuffer,
                 device: device,
                 pipelineCache: pipelineCache
             )
 
             try Self.compositeLowpass(
-                input: try iter.last,
-                output: try iter.next(),
+                input: try pool.last,
+                texA: try pool.next(),
+                texB: try pool.next(),
+                output: try pool.next(),
                 commandBuffer: commandBuffer,
                 filter: compositeLowpassFilter,
                 device: device,
@@ -450,8 +486,8 @@ public class NTSCTextureFilter {
             )
             
             try Self.colorBleedOut(
-                input: try iter.last,
-                output: try iter.next(),
+                input: try pool.last,
+                output: try pool.next(),
                 forTV: effect.colorBleedOutForTV,
                 commandBuffer: commandBuffer,
                 device: device,
@@ -459,8 +495,8 @@ public class NTSCTextureFilter {
             )
             
             try Self.blurChroma(
-                input: try iter.last,
-                output: try iter.next(),
+                input: try pool.last,
+                output: try pool.next(),
                 forTV: effect.colorBleedOutForTV,
                 commandBuffer: commandBuffer,
                 device: device,
@@ -468,27 +504,27 @@ public class NTSCTextureFilter {
             )
             
             try Self.writeToFields(
-                inputTexture: try iter.last,
+                inputTexture: try pool.last,
                 frameNum: frameNum,
                 interlaceMode: .interlaced,
                 interTexA: outTexture1!,
                 interTexB: outTexture2!,
-                outTex: try iter.next(),
+                outTex: try pool.next(),
                 commandBuffer: commandBuffer,
                 device: device,
                 pipelineCache: pipelineCache
             )
 
             try Self.convertToRGB(
-                try iter.last,
-                output: try iter.next(),
+                try pool.last,
+                output: try pool.next(),
                 commandBuffer: commandBuffer,
                 device: device,
                 pipelineCache: pipelineCache
             )
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()
-            return CIImage(mtlTexture: try iter.last)
+            return CIImage(mtlTexture: try pool.last)
         } catch {
             print("Error generating output image: \(error)")
             return nil

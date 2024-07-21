@@ -16,7 +16,6 @@ public class VHSSharpenLowpassFilter {
     private let device: MTLDevice
     private let pipelineCache: MetalPipelineCache
     private let tripleLowpass: LowpassFilter
-    private var texA: MTLTexture?
     
     init(frequencyCutoff: Float, sharpening: Float16, device: MTLDevice, pipelineCache: MetalPipelineCache) {
         self.frequencyCutoff = frequencyCutoff
@@ -26,25 +25,9 @@ public class VHSSharpenLowpassFilter {
         self.tripleLowpass = LowpassFilter(frequencyCutoff: frequencyCutoff, countInSeries: 3, device: device)
     }
     
-    func run(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        let needsUpdate: Bool
-        if let texA {
-            needsUpdate = !(texA.width == input.width && texA.height == input.height)
-        } else {
-            needsUpdate = true
-        }
-        if needsUpdate {
-            guard let tex = Texture.texture(from: input, device: device) else {
-                throw Error.cantMakeTexture
-            }
-            
-            texA = tex
-        }
-        guard let texA else {
-            throw Error.cantMakeTexture
-        }
-        tripleLowpass.run(input: input, output: texA, commandBuffer: commandBuffer)
-        try vhsSharpen(input: input, lowpassed: texA, output: output, commandBuffer: commandBuffer)
+    func run(input: MTLTexture, tex: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        tripleLowpass.run(input: input, output: tex, commandBuffer: commandBuffer)
+        try vhsSharpen(input: input, lowpassed: tex, output: output, commandBuffer: commandBuffer)
     }
     
     private func vhsSharpen(input: MTLTexture, lowpassed: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {

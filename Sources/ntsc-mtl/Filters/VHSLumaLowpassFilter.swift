@@ -16,8 +16,6 @@ public class VHSLumaLowpassFilter {
     private let tripleLowpass: LowpassFilter
     private let device: MTLDevice
     private let pipelineCache: MetalPipelineCache
-    private var texA: MTLTexture?
-    private var texB: MTLTexture?
     
     init(frequencyCutoff: Float, device: MTLDevice, pipelineCache: MetalPipelineCache) {
         self.frequencyCutoff = frequencyCutoff
@@ -29,28 +27,13 @@ public class VHSLumaLowpassFilter {
         self.tripleLowpass = LowpassFilter(frequencyCutoff: frequencyCutoff, countInSeries: 3, device: device)
     }
     
-    func run(input: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
-        let needsUpdate: Bool
-        if let texA {
-            needsUpdate = !(texA.width == input.width && texA.height == input.height)
-        } else {
-            needsUpdate = true
-        }
-        if needsUpdate {
-            let texs = Array(Texture.textures(from: input, device: device).prefix(3))
-            guard texs.count == 3 else {
-                throw Error.cantMakeTexture
-            }
-            
-            texA = texs[0]
-            texB = texs[1]
-        }
-        guard let texA, let texB else {
-            throw Error.cantMakeTexture
-        }
-        tripleLowpass.run(input: input, output: texA, commandBuffer: commandBuffer)
-        try preHighpass.run(input: input, output: texB, commandBuffer: commandBuffer)
-        try vhsSumAndScale(input: input, triple: texA, pre: texB, output: output, commandBuffer: commandBuffer)
+    func run(input: MTLTexture, texA: MTLTexture, texB: MTLTexture, texC: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
+        let tripleLowpassed = texA
+        tripleLowpass.run(input: input, output: tripleLowpassed, commandBuffer: commandBuffer)
+        let spare = texB
+        let preHighpassed = texC
+        try preHighpass.run(input: input, tex: spare, output: texC, commandBuffer: commandBuffer)
+        try vhsSumAndScale(input: input, triple: tripleLowpassed, pre: preHighpassed, output: output, commandBuffer: commandBuffer)
     }
     
     private func vhsSumAndScale(input: MTLTexture, triple: MTLTexture, pre: MTLTexture, output: MTLTexture, commandBuffer: MTLCommandBuffer) throws {
