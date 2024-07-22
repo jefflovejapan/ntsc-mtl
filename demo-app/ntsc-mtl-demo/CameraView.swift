@@ -36,6 +36,7 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         let context = CIContext(mtlCommandQueue: commandQueue)
         self.ciContext = context
         let mtkView = MTKView(frame: .zero, device: device)
+        mtkView.colorPixelFormat = .rgba16Float
         mtkView.framebufferOnly = false
         mtkView.enableSetNeedsDisplay = true
         mtkView.isPaused = false
