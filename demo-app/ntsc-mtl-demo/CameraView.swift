@@ -18,6 +18,7 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     private let device: MTLDevice
     private let mtkView: MTKView
     private let commandQueue: MTLCommandQueue
+    private static let sessionQueue = DispatchQueue(label: "cameraQueue")
     let filter: NTSCTextureFilter!
     
     var isFilterEnabled: Bool
@@ -78,10 +79,11 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             return
         }
         captureSession.addInput(input)
-        
-        videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "cameraQueue"))
+        videoOutput.setSampleBufferDelegate(self, queue: Self.sessionQueue)
         captureSession.addOutput(videoOutput)
-        captureSession.startRunning()
+        Self.sessionQueue.async {
+            self.captureSession.startRunning()
+        }
     }
     
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
