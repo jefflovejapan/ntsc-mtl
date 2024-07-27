@@ -59,7 +59,10 @@ class MetalPipelineCache {
             throw Error.cantMakeFunction(function)
         }
         do {
-            let pipelineState = try device.makeComputePipelineState(function: fn)
+            let pipelineDescriptor = MTLComputePipelineDescriptor()
+            pipelineDescriptor.computeFunction = fn
+            pipelineDescriptor.label = function.rawValue
+            let pipelineState = try device.makeComputePipelineState(descriptor: pipelineDescriptor, options: []).0
             self.pipelineStateByFunction[function] = pipelineState
             return pipelineState
         } catch {
