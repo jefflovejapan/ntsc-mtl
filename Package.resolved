@@ -1,0 +1,15 @@
+{
+  "originHash" : "13b857a9ab087da85488d8825341f88db730473713a858b94e6f3c31215c4bd7",
+  "pins" : [
+    {
+      "identity" : "simplexnoisefilter",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/JoshuaSullivan/SimplexNoiseFilter.git",
+      "state" : {
+        "revision" : "8134ebd7b68301e2b473b0c2a8d601c4ff1c764b",
+        "version" : "1.0.0"
+      }
+    }
+  ],
+  "version" : 3
+}

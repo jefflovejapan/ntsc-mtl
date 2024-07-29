@@ -26,7 +26,7 @@ kernel void chromaFromLumaAccumulator
         half y2 = (x + 2 < width) ? input.read(uint2(x + 2, row)).x : half(0.0);
         half yd4 = (x >= 2) ? input.read(uint2(x - 2, row)).x : half(0.0);
         rowValue += (y2 - yd4);
-        inPx.x = rowValue * 0.25h;
-        output.write(inPx, gid);
     }
+    inPx.x = rowValue * 0.25h;
+    output.write(inPx, gid);
 }
