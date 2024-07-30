@@ -18,6 +18,7 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     private let device: MTLDevice
     private let mtkView: MTKView
     private let commandQueue: MTLCommandQueue
+    private static let sessionQueue = DispatchQueue(label: "cameraQueue")
     let filter: NTSCTextureFilter!
     
     var isFilterEnabled: Bool
@@ -78,10 +79,11 @@ class CameraUIView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             return
         }
         captureSession.addInput(input)
-        
-        videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "cameraQueue"))
+        videoOutput.setSampleBufferDelegate(self, queue: Self.sessionQueue)
         captureSession.addOutput(videoOutput)
-        captureSession.startRunning()
+        Self.sessionQueue.async {
+            self.captureSession.startRunning()
+        }
     }
     
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
@@ -121,24 +123,9 @@ struct CameraView: UIViewRepresentable {
 
 extension CameraUIView: MTKViewDelegate {
     func draw(in view: MTKView) {
-        guard let lastImage else {
+        guard let lastImage, let commandBuffer = self.commandQueue.makeCommandBuffer() else {
             return
         }
-        guard let drawable = view.currentDrawable else {
-            return
-        }
-        guard let commandBuffer = self.commandQueue.makeCommandBuffer() else {
-            return
-        }
-        let dSize = view.drawableSize
-        let destination = CIRenderDestination(
-            width: Int(dSize.width),
-            height: Int(dSize.height),
-            pixelFormat: view.colorPixelFormat, 
-            commandBuffer: commandBuffer,
-            mtlTextureProvider: {
-                drawable.texture
-            })
         
         // Apply CIFilter
         let outputImage: CIImage?
@@ -152,6 +139,19 @@ extension CameraUIView: MTKViewDelegate {
         guard let outputImage else {
             return
         }
+        
+        guard let drawable = view.currentDrawable else {
+            return
+        }
+        let dSize = view.drawableSize
+        let destination = CIRenderDestination(
+            width: Int(dSize.width),
+            height: Int(dSize.height),
+            pixelFormat: view.colorPixelFormat,
+            commandBuffer: commandBuffer,
+            mtlTextureProvider: {
+                drawable.texture
+            })
         
         let widthMultiple = dSize.width / outputImage.extent.size.width
         let heightMultiple = dSize.height / outputImage.extent.size.height

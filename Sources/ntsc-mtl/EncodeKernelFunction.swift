@@ -16,6 +16,6 @@ func encodeKernelFunction(_ kernelFunction: KernelFunction, pipelineCache: Metal
     
     encoder.setComputePipelineState(pipelineState)
     encode(encoder)
-    encoder.dispatchThreads(textureWidth: textureWidth, textureHeight: textureHeight)
+    encoder.dispatchThreads(textureWidth: textureWidth, textureHeight: textureHeight, threadgroupScale: pipelineState.threadExecutionWidth)
     encoder.endEncoding()
 }

@@ -21,7 +21,7 @@ public enum Texture {
             height: height,
             mipmapped: false
         )
-        textureDescriptor.usage = [.shaderRead, .shaderWrite, .renderTarget]
+        textureDescriptor.usage = [.shaderRead, .shaderWrite]
         return device.makeTexture(descriptor: textureDescriptor)
     }
     

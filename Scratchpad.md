@@ -599,3 +599,14 @@ Today is all about getting snow to work. I think I've convinced myself that the 
         - we either color bleed before or after, just need a toggle to locate it in the pipeline
     - blur chroma
         - nice to have
+
+### Performance
+
+- Could have the filter function differently:
+    - Expose a texture to render to (e.g., inTextures.first, or a single named texture)
+    - Run the filter
+    - Filter returns pool.last
+    - Consumer can then blit to drawable.texture, present drawable, commit buffer
+- Feels like waiting for the output image on every iteration of the filter is killing us
+- Also need to check whether making the texture bgra again makes a difference
+

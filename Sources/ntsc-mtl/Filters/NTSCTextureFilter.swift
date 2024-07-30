@@ -17,13 +17,7 @@ public class NTSCTextureFilter {
     private let context: CIContext
     private let commandQueue: MTLCommandQueue
     private let pipelineCache: MetalPipelineCache
-    private var textureA: MTLTexture?
-    private var textureB: MTLTexture?
-    private var textureC: MTLTexture?
-    private var textureD: MTLTexture?
-    private var textureE: MTLTexture?
-    private var textureF: MTLTexture?
-    private var textureG: MTLTexture?
+    private var inTextures: [MTLTexture] = []
     private var outTexture1: MTLTexture?
     private var outTexture2: MTLTexture?
     
@@ -269,24 +263,19 @@ public class NTSCTextureFilter {
             throw Error.cantMakeCommandBuffer
         }
         defer { commandBuffer.commit() }
-        if let textureA, textureA.width == Int(inputImage.extent.width), textureA.height == Int(inputImage.extent.height) {
+        if let textureA = inTextures.first, textureA.width == Int(inputImage.extent.width), textureA.height == Int(inputImage.extent.height) {
             self.context.render(inputImage, to: textureA, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: self.context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
             return
         }
-        let textures = Array(Texture.textures(width: Int(inputImage.extent.width), height: Int(inputImage.extent.height), pixelFormat: .rgba16Float, device: device).prefix(9))
-        guard textures.count == 9 else {
+        let texCount = 12
+        let textures = Array(Texture.textures(width: Int(inputImage.extent.width), height: Int(inputImage.extent.height), pixelFormat: .rgba16Float, device: device).prefix(texCount))
+        guard textures.count == texCount else {
             throw Error.cantMakeTexture
         }
-        self.textureA = textures[0]
-        self.textureB = textures[1]
-        self.textureC = textures[2]
-        self.textureD = textures[3]
-        self.textureE = textures[4]
-        self.textureF = textures[5]
-        self.textureG = textures[6]
-        self.outTexture1 = textures[7]
-        self.outTexture2 = textures[8]
-        context.render(inputImage, to: textureA!, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
+        self.inTextures = Array(textures[0 ..< texCount - 2])
+        self.outTexture1 = textures[texCount - 2]
+        self.outTexture2 = textures[texCount - 1]
+        context.render(inputImage, to: inTextures.first!, commandBuffer: commandBuffer, bounds: inputImage.extent, colorSpace: context.workingColorSpace ?? CGColorSpaceCreateDeviceRGB())
     }
     
     private var frameNum: UInt32 = 0
@@ -306,8 +295,7 @@ public class NTSCTextureFilter {
             print("Couldn't make command buffer")
             return nil
         }
-        let textures: [MTLTexture] = [textureA!, textureB!, textureC!, textureD!, textureE!, textureF!, textureG!]
-        let pool = Pool(vals: textures)
+        let pool = Pool(vals: inTextures)
         
         do {
             try Self.cutBlackLineBorder(
