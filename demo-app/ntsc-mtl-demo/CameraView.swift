@@ -123,24 +123,9 @@ struct CameraView: UIViewRepresentable {
 
 extension CameraUIView: MTKViewDelegate {
     func draw(in view: MTKView) {
-        guard let lastImage else {
+        guard let lastImage, let commandBuffer = self.commandQueue.makeCommandBuffer() else {
             return
         }
-        guard let drawable = view.currentDrawable else {
-            return
-        }
-        guard let commandBuffer = self.commandQueue.makeCommandBuffer() else {
-            return
-        }
-        let dSize = view.drawableSize
-        let destination = CIRenderDestination(
-            width: Int(dSize.width),
-            height: Int(dSize.height),
-            pixelFormat: view.colorPixelFormat, 
-            commandBuffer: commandBuffer,
-            mtlTextureProvider: {
-                drawable.texture
-            })
         
         // Apply CIFilter
         let outputImage: CIImage?
@@ -154,6 +139,19 @@ extension CameraUIView: MTKViewDelegate {
         guard let outputImage else {
             return
         }
+        
+        guard let drawable = view.currentDrawable else {
+            return
+        }
+        let dSize = view.drawableSize
+        let destination = CIRenderDestination(
+            width: Int(dSize.width),
+            height: Int(dSize.height),
+            pixelFormat: view.colorPixelFormat,
+            commandBuffer: commandBuffer,
+            mtlTextureProvider: {
+                drawable.texture
+            })
         
         let widthMultiple = dSize.width / outputImage.extent.size.width
         let heightMultiple = dSize.height / outputImage.extent.size.height

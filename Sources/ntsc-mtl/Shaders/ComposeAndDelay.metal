@@ -18,10 +18,21 @@ kernel void composeAndDelay
  constant uint &qDelay [[buffer(1)]],
  uint2 gid [[thread_position_in_grid]]
  ) {
+    // Read y texture pixel
     half4 yPx = y.read(gid);
-    uint2 iCoord = uint2(gid.x + iDelay, gid.y);
-    half4 iPx = iCoord.x < y.get_width() ? i.read(iCoord) : yPx;
-    uint2 qCoord = uint2(gid.x + qDelay, gid.y);
-    half4 qPx = qCoord.x < y.get_width() ? q.read(qCoord) : yPx;
+
+    // Calculate coordinates for i and q textures
+    uint2 iCoord = gid + uint2(iDelay, 0);
+    uint2 qCoord = gid + uint2(qDelay, 0);
+
+    // Ensure coordinates are within bounds
+    iCoord.x = min(iCoord.x, i.get_width() - 1);
+    qCoord.x = min(qCoord.x, q.get_width() - 1);
+
+    // Read i and q texture pixels
+    half4 iPx = i.read(iCoord);
+    half4 qPx = q.read(qCoord);
+
+    // Write the composed pixel to the output texture
     out.write(half4(yPx.x, iPx.y, qPx.z, yPx.w), gid);
 }
