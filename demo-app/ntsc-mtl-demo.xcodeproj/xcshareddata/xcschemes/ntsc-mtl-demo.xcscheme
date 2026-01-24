@@ -74,7 +74,6 @@
       debugServiceExtension = "internal"
       enableGPUValidationMode = "1"
       showGraphicsOverview = "Yes"
-      logGraphicsOverview = "Yes"
       allowLocationSimulation = "YES">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
